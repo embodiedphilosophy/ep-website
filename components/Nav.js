@@ -1,0 +1,25 @@
+import Logo from './Logo';
+import { site } from '@/lib/site';
+export default function Nav() {
+  return (
+    <header className="nav">
+      <div className="wrap nav-inner">
+        <a className="brand" href="/" aria-label="Embodied Philosophy home">
+          <Logo />
+          <div className="name">Embodied<span>·</span>Philosophy</div>
+        </a>
+        <nav className="links" aria-label="Main">
+          <a href="/#path">Programs</a>
+          <a href="/events">Events</a>
+          <a href="/#chitheads">Listen</a>
+          <a href="/#tarka">Tarka</a>
+          <a href="/#about">About</a>
+        </nav>
+        <div className="nav-cta">
+          <a className="signin" href={site.links.signIn}>Sign in</a>
+          <a className="btn btn-primary" href="/#join">Join Free</a>
+        </div>
+      </div>
+    </header>
+  );
+}

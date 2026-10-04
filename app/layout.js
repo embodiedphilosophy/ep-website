@@ -6,6 +6,13 @@ export const metadata = {
   title: 'Embodied Philosophy — An online school for the contemplative life',
   description: 'Yoga philosophy, meditation, and the world’s contemplative traditions, for thinking practitioners.',
   metadataBase: new URL('https://www.embodiedphilosophy.com'),
+  openGraph: {
+    siteName: 'Embodied Philosophy',
+    type: 'website',
+    title: 'Embodied Philosophy — An online school for the contemplative life',
+    description: 'Yoga philosophy, meditation, and the world’s contemplative traditions, for thinking practitioners.',
+  },
+  twitter: { card: 'summary_large_image' },
 };
 export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#FAF5EB' };
 

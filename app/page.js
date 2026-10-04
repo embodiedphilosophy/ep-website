@@ -1,4 +1,5 @@
 import Events from '@/components/Events';
+import Collage from '@/components/Collage';
 import KitForm from '@/components/KitForm';
 import { getEvents } from '@/lib/events';
 import { getEpisodes } from '@/lib/podcast';
@@ -42,7 +43,7 @@ export default async function Home() {
                 : <a href="/events">See upcoming events</a>}
             </div>
           </div>
-          <div className="hero-aside"><img className="hero-art" src="/art/hero-lotus.svg" alt="" width="440" height="385" /></div>
+          <div className="hero-aside"><Collage img="yogi-shiva" ground="navy" className="hero-collage" alt="Kalighat painting of a yogi" /></div>
         </div>
       </section>
 
@@ -64,7 +65,6 @@ export default async function Home() {
           <div className="path-grid">
             <div className="tier">
               <div className="step">Start here — Free</div>
-              <img className="tier-art" src="/art/lotus-bud.svg" alt="" width="64" height="66" />
               <h3>Living Room Lectures</h3>
               <div className="price">Free · Live &amp; online</div>
               <p>A monthly live series where we explore the meeting point of the contemplative traditions and contemporary life. No commitment — just come, think, and practice with us.</p>
@@ -72,7 +72,6 @@ export default async function Home() {
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--ochre)' }}>
               <div className="step">Build fluency</div>
-              <img className="tier-art" src="/art/lotus-opening.svg" alt="" width="64" height="66" />
               <h3>Wisdom School</h3>
               <div className="price">{site.prices.wisdomYear} / year · Rolling enrollment</div>
               <p>The Attention Project — weekly meditations, monthly lectures, and 1,000+ hours of on-demand courses. Become fluent in the foundational concepts of the traditions.</p>
@@ -80,7 +79,6 @@ export default async function Home() {
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--pine)' }}>
               <div className="step">Go all the way</div>
-              <img className="tier-art" src="/art/lotus-full.svg" alt="" width="64" height="66" />
               <h3>Sādhana School</h3>
               <div className="price">From {site.prices.sadhanaSemesterFrom} / semester · 2026–2027</div>
               <p>Our flagship year of guided study and practice. Four immersive semesters, monthly workshops, and a community of serious practitioners walking the path together.</p>
@@ -110,7 +108,7 @@ export default async function Home() {
       {/* SADHANA SCHOOL */}
       <section className="sec path" id="sadhana">
         <div className="wrap feature">
-          <div className="art art-sand"><img src="/art/kalasha.svg" alt="" width="400" height="360" /></div>
+          <Collage img="holyman-tigers" ground="vermilion" ring="#F2E9D8" ringPos="tl" className="art" alt="Kalighat painting of a holy man with tigers" />
           <div>
             <span className="eyebrow">The Flagship · 2026–2027</span>
             <h2>Sādhana School</h2>
@@ -139,7 +137,7 @@ export default async function Home() {
       {/* WISDOM SCHOOL */}
       <section className="sec" id="wisdom">
         <div className="wrap feature rev">
-          <div className="art art-cream"><img src="/art/parrot.svg" alt="" width="400" height="360" /></div>
+          <Collage img="woman-music" ground="slate" ring="#EBA329" ringPos="tr" className="art" alt="Kalighat painting of a woman playing music" />
           <div>
             <span className="eyebrow">Membership · The Attention Project</span>
             <h2>Wisdom School</h2>
@@ -238,9 +236,9 @@ export default async function Home() {
       <section className="sec tarka" id="tarka">
         <div className="wrap tarka-inner">
           <div className="stack">
-            <div className="issue" style={{ background: 'linear-gradient(160deg,#20302A,#2C4239)' }}>Death</div>
-            <div className="issue" style={{ background: 'linear-gradient(160deg,#A5432A,#83341F)', marginTop: 22 }}>Bhakti</div>
-            <div className="issue" style={{ background: 'linear-gradient(160deg,#B98A3E,#8a6526)' }}>Illusion</div>
+            {[['sp', 'On the Scholar-Practitioner'], ['bhakti', 'On Bhakti'], ['illusion', 'On Illusion'], ['death', 'On Death']].map(([k, t], i) => (
+              <img key={k} className={`cover c${i}`} src={`/img/tarka-${k}.jpg`} alt={`Tarka: ${t}`} width="360" height="473" />
+            ))}
           </div>
           <div>
             <span className="eyebrow">Our Journal</span>
@@ -258,7 +256,7 @@ export default async function Home() {
       {/* ABOUT */}
       <section className="sec about" id="about">
         <div className="wrap about-inner">
-          <div className="founder art-sand"><img src="/art/dipa.svg" alt="" width="400" height="340" /></div>
+          <Collage img="mirror" ground="black" ring="#EBA329" ringPos="tl" className="founder" alt="Kalighat painting of a woman with a mirror" />
           <div>
             <span className="eyebrow">Our Purpose</span>
             <blockquote>“We started Embodied Philosophy to take the wisdom traditions seriously — as living philosophy, not decoration. A place where the life of the mind and the life of practice belong together.”</blockquote>
@@ -271,7 +269,6 @@ export default async function Home() {
       {/* FINAL CTA */}
       <section className="final">
         <div className="wrap">
-          <img className="final-art" src="/art/lotus-full.svg" alt="" width="72" height="74" />
           <span className="eyebrow">Begin today — it’s free</span>
           <h2>Where ancient wisdom meets the modern life.</h2>
           <p>Get the free Yoga Philosophy Reading List and the weekly Living Room Letter. Start where you are.</p>

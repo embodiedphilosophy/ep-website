@@ -16,10 +16,11 @@ export default function Footer() {
           <div className="fcol"><h4>About</h4>
             <a href="/#about">Our Story</a><a href="#">Teachers</a><a href="#">Contribute</a><a href="mailto:hello@embodiedphilosophy.com">Contact</a></div>
         </div>
+        <p className="credits">Images: 19th-century Kalighat paintings. Cleveland Museum of Art (CC0); Wellcome Collection and Bodleian Library (CC BY 4.0); Bodleian Library, British Library, LACMA, Victoria and Albert Museum (public domain); Wikimedia Commons contributors (CC BY-SA).</p>
         <div className="foot-bottom">
           <div>© {new Date().getFullYear()} Embodied Philosophy. All rights reserved.</div>
           <div className="socials"><a href={s.instagram}>Instagram</a><a href={s.youtube}>YouTube</a><a href={s.facebook}>Facebook</a><a href={s.spotify}>Spotify</a></div>
-          <div>Illustrations after the Kalighat paṭ painters of 19th-century Kolkata · Privacy · Terms</div>
+          <div>Privacy · Terms</div>
         </div>
       </div>
     </footer>

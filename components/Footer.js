@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="wrap">
         <div className="foot-grid">
           <div>
-            <div className="name">Embodied<span>·</span>Philosophy</div>
+            <img className="wordmark" src="/brand/ep-wordmark-white.png" alt="Embodied Philosophy" width="163" height="40" />
             <p className="mini">An online school for yoga philosophy, meditation, and contemplative study, for thinking practitioners.</p>
           </div>
           <div className="fcol"><h4>Study</h4>
@@ -19,7 +19,7 @@ export default function Footer() {
         <div className="foot-bottom">
           <div>© {new Date().getFullYear()} Embodied Philosophy. All rights reserved.</div>
           <div className="socials"><a href={s.instagram}>Instagram</a><a href={s.youtube}>YouTube</a><a href={s.facebook}>Facebook</a><a href={s.spotify}>Spotify</a></div>
-          <div>Privacy · Terms</div>
+          <div>Illustrations after the Kalighat paṭ painters of 19th-century Kolkata · Privacy · Terms</div>
         </div>
       </div>
     </footer>

@@ -1,12 +1,10 @@
-import Logo from './Logo';
 import { site } from '@/lib/site';
 export default function Nav() {
   return (
     <header className="nav">
       <div className="wrap nav-inner">
         <a className="brand" href="/" aria-label="Embodied Philosophy home">
-          <Logo />
-          <div className="name">Embodied<span>·</span>Philosophy</div>
+          <img className="wordmark" src="/brand/ep-wordmark-black.png" alt="Embodied Philosophy" width="147" height="36" />
         </a>
         <nav className="links" aria-label="Main">
           <a href="/#path">Programs</a>

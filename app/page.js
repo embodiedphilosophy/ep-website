@@ -14,22 +14,6 @@ const KIT = {
 };
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
-function Medallion() {
-  return (
-    <svg className="medallion" viewBox="0 0 340 340" fill="none" aria-hidden="true">
-      <circle cx="170" cy="170" r="150" stroke="#D8C9AE" strokeWidth="1.2" />
-      <circle cx="170" cy="170" r="120" stroke="#D8C9AE" strokeWidth="1.2" />
-      <g stroke="#B98A3E" strokeWidth="1.1" opacity=".9">
-        {[0, 45, 90, 135, 180, 225, 270, 315].map(r => (
-          <path key={r} d="M170 50 C150 100 150 130 170 170 C190 130 190 100 170 50Z" transform={`rotate(${r} 170 170)`} />
-        ))}
-      </g>
-      <circle cx="170" cy="170" r="150" stroke="#A5432A" strokeWidth="1" opacity=".35" />
-      <circle cx="170" cy="170" r="16" fill="#A5432A" />
-      <circle cx="170" cy="170" r="7" fill="#FAF5EB" />
-    </svg>
-  );
-}
 
 export default async function Home() {
   const [events, episodes] = await Promise.all([getEvents(), getEpisodes(5)]);
@@ -58,7 +42,7 @@ export default async function Home() {
                 : <a href="/events">See upcoming events</a>}
             </div>
           </div>
-          <div className="hero-aside"><Medallion /></div>
+          <div className="hero-aside"><img className="hero-art" src="/art/hero-lotus.svg" alt="" width="440" height="385" /></div>
         </div>
       </section>
 
@@ -80,6 +64,7 @@ export default async function Home() {
           <div className="path-grid">
             <div className="tier">
               <div className="step">Start here — Free</div>
+              <img className="tier-art" src="/art/lotus-bud.svg" alt="" width="64" height="66" />
               <h3>Living Room Lectures</h3>
               <div className="price">Free · Live &amp; online</div>
               <p>A monthly live series where we explore the meeting point of the contemplative traditions and contemporary life. No commitment — just come, think, and practice with us.</p>
@@ -87,6 +72,7 @@ export default async function Home() {
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--ochre)' }}>
               <div className="step">Build fluency</div>
+              <img className="tier-art" src="/art/lotus-opening.svg" alt="" width="64" height="66" />
               <h3>Wisdom School</h3>
               <div className="price">{site.prices.wisdomYear} / year · Rolling enrollment</div>
               <p>The Attention Project — weekly meditations, monthly lectures, and 1,000+ hours of on-demand courses. Become fluent in the foundational concepts of the traditions.</p>
@@ -94,6 +80,7 @@ export default async function Home() {
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--pine)' }}>
               <div className="step">Go all the way</div>
+              <img className="tier-art" src="/art/lotus-full.svg" alt="" width="64" height="66" />
               <h3>Sādhana School</h3>
               <div className="price">From {site.prices.sadhanaSemesterFrom} / semester · 2026–2027</div>
               <p>Our flagship year of guided study and practice. Four immersive semesters, monthly workshops, and a community of serious practitioners walking the path together.</p>
@@ -123,15 +110,7 @@ export default async function Home() {
       {/* SADHANA SCHOOL */}
       <section className="sec path" id="sadhana">
         <div className="wrap feature">
-          <div className="art" style={{ background: 'radial-gradient(70% 90% at 30% 20%, rgba(185,138,62,.35), transparent 60%), linear-gradient(160deg,#2C4239,#20302A)' }}>
-            <svg viewBox="0 0 400 420" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} fill="none" opacity=".5" aria-hidden="true">
-              <g stroke="#EADDC6" strokeWidth="1">
-                <circle cx="200" cy="210" r="150" /><circle cx="200" cy="210" r="110" /><circle cx="200" cy="210" r="70" />
-                <path d="M200 60 V360 M50 210 H350 M95 105 L305 315 M305 105 L95 315" />
-              </g>
-              <circle cx="200" cy="210" r="14" fill="#A5432A" />
-            </svg>
-          </div>
+          <div className="art art-sand"><img src="/art/kalasha.svg" alt="" width="400" height="360" /></div>
           <div>
             <span className="eyebrow">The Flagship · 2026–2027</span>
             <h2>Sādhana School</h2>
@@ -160,17 +139,7 @@ export default async function Home() {
       {/* WISDOM SCHOOL */}
       <section className="sec" id="wisdom">
         <div className="wrap feature rev">
-          <div className="art" style={{ background: 'radial-gradient(70% 90% at 70% 30%, rgba(165,67,42,.30), transparent 60%), linear-gradient(160deg,#EADDC6,#E0CDA9)' }}>
-            <svg viewBox="0 0 400 420" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} fill="none" aria-hidden="true">
-              <g stroke="#A5432A" strokeWidth="1.1" opacity=".55">
-                <circle cx="200" cy="210" r="140" />
-                {[0, 60, 120, 180, 240, 300].map(r => (
-                  <path key={r} d="M200 70 C175 140 175 180 200 210 C225 180 225 140 200 70Z" transform={`rotate(${r} 200 210)`} />
-                ))}
-              </g>
-              <circle cx="200" cy="210" r="12" fill="#20302A" />
-            </svg>
-          </div>
+          <div className="art art-cream"><img src="/art/parrot.svg" alt="" width="400" height="360" /></div>
           <div>
             <span className="eyebrow">Membership · The Attention Project</span>
             <h2>Wisdom School</h2>
@@ -222,6 +191,7 @@ export default async function Home() {
           </div>
           <div className="pod-grid">
             <div className="player">
+              {latest.image && <img className="ep-art" src={latest.image} alt="" width="120" height="120" />}
               <div className="now">◈ Latest episode{latest.num ? ` · Ep. ${latest.num}` : ''}</div>
               <h3>{latest.title}</h3>
               {latest.guest && <div className="guest">{latest.guest}</div>}
@@ -288,12 +258,7 @@ export default async function Home() {
       {/* ABOUT */}
       <section className="sec about" id="about">
         <div className="wrap about-inner">
-          <div className="founder" style={{ background: 'radial-gradient(80% 80% at 50% 25%, rgba(185,138,62,.30), transparent 65%), linear-gradient(160deg,#2C4239,#20302A)' }}>
-            <svg viewBox="0 0 300 360" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} fill="none" opacity=".45" aria-hidden="true">
-              <g stroke="#EADDC6" strokeWidth="1"><circle cx="150" cy="150" r="80" /><circle cx="150" cy="150" r="120" /></g>
-              <circle cx="150" cy="150" r="10" fill="#A5432A" />
-            </svg>
-          </div>
+          <div className="founder art-sand"><img src="/art/dipa.svg" alt="" width="400" height="340" /></div>
           <div>
             <span className="eyebrow">Our Purpose</span>
             <blockquote>“We started Embodied Philosophy to take the wisdom traditions seriously — as living philosophy, not decoration. A place where the life of the mind and the life of practice belong together.”</blockquote>
@@ -306,6 +271,7 @@ export default async function Home() {
       {/* FINAL CTA */}
       <section className="final">
         <div className="wrap">
+          <img className="final-art" src="/art/lotus-full.svg" alt="" width="72" height="74" />
           <span className="eyebrow">Begin today — it’s free</span>
           <h2>Where ancient wisdom meets the modern life.</h2>
           <p>Get the free Yoga Philosophy Reading List and the weekly Living Room Letter. Start where you are.</p>

@@ -252,3 +252,17 @@
   .page-head h1{font-size:56px}
   .page-head p{font-size:18px;color:var(--ink-soft);margin-top:14px;max-width:620px}
   .co-close{display:none}
+
+  /* brand + Kalighat-inspired art */
+  .wordmark{display:block;height:36px;width:auto}
+  footer .wordmark{height:40px}
+  .hero-art{width:100%;max-width:440px;height:auto}
+  .tier-art{width:64px;height:auto;margin:-4px 0 4px -6px}
+  .feature .art{display:flex;align-items:center;justify-content:center}
+  .feature .art img,.founder img{width:86%;height:auto;max-height:92%}
+  .founder{display:flex;align-items:center;justify-content:center}
+  .art-sand{background:radial-gradient(80% 70% at 50% 40%, #F4EBDB, #EADDC6)}
+  .art-cream{background:radial-gradient(80% 70% at 50% 40%, #FAF5EB, #F0E5D1)}
+  .final-art{display:block;margin:0 auto 10px;width:72px;height:auto}
+  .ep-art{float:right;width:120px;height:120px;border-radius:4px;margin:0 0 12px 18px;border:1px solid rgba(255,255,255,.15);object-fit:cover}
+  @media(max-width:520px){.ep-art{width:84px;height:84px}}

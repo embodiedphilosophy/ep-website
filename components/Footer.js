@@ -14,7 +14,7 @@ export default async function Footer() {
           <div className="fcol"><h4>Study</h4>
             <a href="/sadhana-school">Sādhana School</a><a href="/wisdom-school">Wisdom School</a><a href="/meditation-pass">Meditation Pass</a><a href={site.links.wisdomCatalog}>Course Catalog</a><a href="#">Certificate Programs</a></div>
           <div className="fcol"><h4>Explore</h4>
-            <a href="/events">Upcoming Events</a><a href="/living-room-lectures">Living Room Lectures</a><a href="/podcast">Chitheads Podcast</a><a href={site.links.tarkaSubstack}>Tarka Journal</a><a href="/#join">The Living Room Letter</a></div>
+            <a href="/events">Upcoming Events</a><a href="/living-room-lectures">Living Room Lectures</a><a href="/podcast">Chitheads Podcast</a><a href={site.links.tarkaSubstack}>Tarka Journal</a><a href="/#join">The Weekly Scaffolding</a></div>
           <div className="fcol"><h4>About</h4>
             <a href="/about">Our Story</a><a href="/teachers">Teachers</a><a href="/contribute">Contribute</a><a href="/contact">Contact</a></div>
         </div>

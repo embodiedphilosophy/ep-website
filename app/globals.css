@@ -512,3 +512,6 @@
   .ascend p{max-width:640px;color:var(--ink-soft);margin-top:8px}
   @media(max-width:980px){.season-feature{grid-template-columns:1fr}.season-grid,.faculty{grid-template-columns:repeat(2,1fr)}.rhythm-grid,.pathways{grid-template-columns:1fr}}
   @media(max-width:600px){.season-grid,.faculty,.ss-plans{grid-template-columns:1fr}}
+
+  /* Two-line aphorism headline */
+  .hero h1.h1-aphorism{font-size:clamp(44px,5.4vw,72px);line-height:1.06}

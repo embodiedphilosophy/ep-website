@@ -31,9 +31,9 @@ export default async function Home() {
       <section className="hero">
         <div className="wrap hero-inner">
           <div>
-            <span className="lead-tag">◈ An online school for the contemplative life</span>
-            <h1>Ancient wisdom,<br />seriously studied.<br /><em>Deeply practiced.</em></h1>
-            <p className="sub">Yoga philosophy, meditation, and the world’s contemplative traditions — for thinking practitioners who want more than a workout.</p>
+            <span className="lead-tag">◈ Serving seekers &amp; scholar-practitioners since 2015</span>
+            <h1 className="h1-aphorism">The spirit ponders.<br /><em>The heart concludes.</em></h1>
+            <p className="sub">Yoga philosophy, meditation, and contemplative teachings from the world’s wisdom and esoteric traditions, for serious students who want to refine their knowledge and deepen their practice.</p>
             <div className="hero-cta">
               <a className="btn btn-primary" href={site.links.quiz}>Get your free Practice Report →</a>
               <div className="hint">◇&nbsp; Answer a few questions about your practice and get a <b>personalized path</b> through the teachings. Free, and takes a few minutes.</div>
@@ -61,8 +61,8 @@ export default async function Home() {
         <div className="wrap">
           <div className="sec-head center">
             <span className="eyebrow">The Path</span>
-            <h2>Begin anywhere. Go as deep as you like.</h2>
-            <p>Three ways to study with us — from free monthly gatherings to a full year of transformative practice.</p>
+            <h2>Where to begin, and when to go deep.</h2>
+            <p>Three ways to study with us, from free monthly lectures to a full school year.</p>
           </div>
           <div className="path-grid">
             <div className="tier">
@@ -99,8 +99,8 @@ export default async function Home() {
         <div className="wrap">
           <div className="sec-head center">
             <span className="eyebrow">Upcoming — Live &amp; Online</span>
-            <h2>Something to practice, every month</h2>
-            <p>Free lectures, seasonal immersions, and live sessions inside the schools. New dates appear here as soon as they’re scheduled.</p>
+            <h2>Somewhere to practice every week.</h2>
+            <p>Weekly meditations, workshops, semesters of study, and annual celebrations of study and practice.</p>
           </div>
           <Events events={events} limit={6} links={site.links} />
           <div className="events-foot"><a className="btn btn-ghost" href="/events">See the full calendar</a></div>
@@ -170,8 +170,8 @@ export default async function Home() {
           <div className="letter">
             <div>
               <span className="eyebrow light">Every Sunday · Free</span>
-              <h2>The Living Room Letter</h2>
-              <p>A weekly note with a teaching to sit with, a practice to try, and everything happening in the school this week. It’s the easiest way to stay close to the work.</p>
+              <h2>The Weekly Scaffolding</h2>
+              <p>A weekly wisdom studies e-zine with teachings, simple practices, bite-sized translations of Sanskrit texts, and all you need to know about what’s coming up at Embodied Philosophy.</p>
             </div>
             <div>
               <KitForm formId={KIT.letter} button="Subscribe" buttonClass="btn btn-light" hintClass="hint" success="You’re in. Check your inbox to confirm." />
@@ -187,7 +187,7 @@ export default async function Home() {
           <div className="sec-head center">
             <span className="eyebrow light">The Podcast</span>
             <h2>Chitheads</h2>
-            <p>Long-form conversations at the edge of the contemplative life — with the teachers, scholars, and practitioners shaping how we understand these traditions.</p>
+            <p>Long-form conversations with scholars, teachers, best-selling authors, and devotional leaders on yoga and meditation practice, esoteric wisdom, world philosophies, and the human spiritual condition.</p>
           </div>
           <div className="pod-grid">
             <div className="player">
@@ -224,7 +224,7 @@ export default async function Home() {
         <div className="wrap">
           <div className="sec-head center">
             <span className="eyebrow">From the community</span>
-            <h2>Study that actually changes you</h2>
+            <h2>Hear what our students have to say…</h2>
           </div>
           <div className="quotes">
             {quotes.map(q => (
@@ -246,10 +246,10 @@ export default async function Home() {
             <span className="eyebrow">Our Journal</span>
             <h2 style={{ fontSize: 44, margin: '14px 0 6px' }}>Tarka</h2>
             <p className="serif-lead">A journal of yoga philosophy, contemplative studies, and the world’s wisdom traditions.</p>
-            <p style={{ color: 'var(--ink-soft)', fontSize: 16, marginTop: 18, maxWidth: 480 }}>Essays, translations, and reflections from leading scholars and practitioners — now published and growing at tarkajournal.com. Read freely, or go deeper with the collected print issues.</p>
+            <p style={{ color: 'var(--ink-soft)', fontSize: 16, marginTop: 18, maxWidth: 480 }}>Essays, translations, and reflections from leading scholars and practitioners from around the world, now published and growing at tarkajournal.com. Read previous articles, or grab one of our beautiful print issues for your study library.</p>
             <div style={{ marginTop: 26, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
               <a className="btn btn-primary" href={site.links.tarkaSubstack}>Read Tarka →</a>
-              <a className="btn btn-ghost" href={site.links.tarkaPrint}>Browse print issues</a>
+              <a className="btn btn-ghost" href="https://www.tarkajournal.com/store">Browse print issues</a>
             </div>
           </div>
         </div>
@@ -261,8 +261,8 @@ export default async function Home() {
           <Collage img="mirror" ground="black" ring="#EBA329" ringPos="tl" className="founder" alt="Kalighat painting of a woman with a mirror" />
           <div>
             <span className="eyebrow">Our Purpose</span>
-            <blockquote>“We started Embodied Philosophy to take the wisdom traditions seriously — as living philosophy, not decoration. A place where the life of the mind and the life of practice belong together.”</blockquote>
-            <div className="sig">— <b>Jacob Kyle</b>, Founder &amp; Director</div>
+            <blockquote>“What remains is a focused commitment to what inspired this project in the first place: a space for rigorous study, meaningful practice, and the cultivation of wisdom that speaks to the depth of human experience.”</blockquote>
+            <div className="sig">— <b>Jacob Kyle</b>, Founder &amp; Director, from <a href="https://www.jacobkyle.com/p/an-untold-history-of-embodied-philosophy-47f"><i>An Untold History of Embodied Philosophy</i></a></div>
             <div style={{ marginTop: 24 }}><a className="btn btn-ghost" href="/about">Read our story →</a></div>
           </div>
         </div>
@@ -272,8 +272,8 @@ export default async function Home() {
       <section className="final">
         <div className="wrap">
           <span className="eyebrow">Begin today — it’s free</span>
-          <h2>Where ancient wisdom meets the modern life.</h2>
-          <p>Get the free Yoga Philosophy Reading List and the weekly Living Room Letter. Start where you are.</p>
+          <h2>Where ancient wisdom meets modern life.</h2>
+          <p>Get the free Yoga Philosophy Reading List and the Weekly Scaffolding e-zine. Start from where you are.</p>
           <KitForm formId={KIT.join} button="Join free →" success="Welcome. Check your inbox to confirm." />
         </div>
       </section>

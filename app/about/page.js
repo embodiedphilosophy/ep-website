@@ -25,8 +25,8 @@ export default function About() {
       </div></section>
       <section className="sec" style={{ paddingTop: 0 }}><div className="wrap">
         <div className="letter">
-          <div><span className="eyebrow light">Every Sunday · Free</span><h2>The Living Room Letter</h2>
-            <p>A teaching to sit with, a practice to try, and everything happening in the school this week.</p></div>
+          <div><span className="eyebrow light">Every Sunday · Free</span><h2>The Weekly Scaffolding</h2>
+            <p>A weekly wisdom studies e-zine with teachings, simple practices, bite-sized translations of Sanskrit texts, and what’s coming up at Embodied Philosophy.</p></div>
           <div><KitForm formId={process.env.NEXT_PUBLIC_KIT_FORM_LETTER} button="Subscribe" buttonClass="btn btn-light" hintClass="hint" success="You’re in. Check your inbox to confirm." /></div>
         </div>
       </div></section>

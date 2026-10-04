@@ -70,7 +70,7 @@ export default function Events({ events, limit = 6, hideFilters = false, links =
       </div>}
       <div className="events-grid" aria-live="polite">
         {list.length === 0 ? (
-          <div className="events-empty">{EMPTY[filter]} <a href="/#join">Get the Living Room Letter</a> to hear about new dates first.</div>
+          <div className="events-empty">{EMPTY[filter]} <a href="/#join">Get the Weekly Scaffolding</a> to hear about new dates first.</div>
         ) : list.map(e => (
           <div className="evt" key={e.id || e.title + e.date}>
             <div className="date-chip"><div className="m">{month(e.date)}</div><div className="d">{day(e.date)}</div></div>

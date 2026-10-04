@@ -287,3 +287,37 @@
   .tarka .c3{left:57%;top:44px;transform:rotate(8deg)}
   @media(max-width:820px){.tarka .stack{height:320px}}
   @media(max-width:520px){.ep-art{width:84px;height:84px}.tarka .stack{height:240px}}
+
+  /* inner pages */
+  .page-hero .hero-inner{padding:64px 0 72px}
+  .page-hero h1{font-size:60px;margin-top:12px}
+  .page-hero .btns{display:flex;gap:14px;flex-wrap:wrap}
+  .prose{max-width:720px}
+  .prose h2{font-size:36px;margin:40px 0 12px}
+  .prose h2:first-child{margin-top:0}
+  .prose p{font-size:17.5px;color:var(--ink-soft);margin:0 0 16px}
+  .prose a:not(.btn){color:var(--terra);border-bottom:1px solid var(--ochre)}
+  .plain{list-style:none;margin:8px 0 20px}
+  .plain li{font-size:17px;color:var(--ink-soft);padding:10px 0;border-bottom:1px solid var(--line)}
+  .plain b{color:var(--ink)}
+  .teacher-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .teacher{background:var(--ivory);border:1px solid var(--line);border-top:3px solid var(--terra);padding:28px 26px}
+  .teacher h3{font-size:28px;margin-top:16px}
+  .teacher .role{font-size:13.5px;color:var(--terra);font-weight:600;margin:4px 0 12px}
+  .teacher p{font-size:15px;color:var(--ink-soft)}
+  .mono-avatar{width:64px;height:64px;border-radius:50%;background:var(--pine);color:var(--ivory);display:flex;align-items:center;justify-content:center;font-family:var(--font-serif),serif;font-size:24px;font-weight:600}
+  .contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .card{background:var(--ivory);border:1px solid var(--line);padding:30px 28px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+  .card h3{font-size:28px}
+  .card p{font-size:15.5px;color:var(--ink-soft);flex:1}
+  .dark-subs{margin-top:24px}
+  .dark-subs a{color:var(--ink);border-color:var(--line)}
+  .ep-archive{display:flex;flex-direction:column;max-width:860px}
+  .ep-row{display:flex;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+  .ep-row img,.ep-ph{width:72px;height:72px;border-radius:3px;object-fit:cover;flex:none;background:var(--sand)}
+  .ep-t{font-family:var(--font-serif),serif;font-size:22px;font-weight:600;line-height:1.2}
+  .ep-n{font-family:var(--font-sans),sans-serif;font-size:12px;font-weight:700;color:var(--terra);margin-right:10px;letter-spacing:.5px}
+  .ep-m{font-size:14px;color:var(--ink-soft);margin-top:4px}
+  .ep-row:hover .ep-t{color:var(--terra)}
+  @media(max-width:900px){.teacher-grid,.contact-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.teacher-grid,.contact-grid{grid-template-columns:1fr}.page-hero h1{font-size:42px}}

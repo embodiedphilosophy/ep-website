@@ -10,11 +10,11 @@ export default function Footer() {
             <p className="mini">An online school for yoga philosophy, meditation, and contemplative study, for thinking practitioners.</p>
           </div>
           <div className="fcol"><h4>Study</h4>
-            <a href="/#sadhana">Sādhana School</a><a href="/#wisdom">Wisdom School</a><a href={site.links.wisdomCatalog}>Course Catalog</a><a href="#">Certificate Programs</a></div>
+            <a href="/sadhana-school">Sādhana School</a><a href="/wisdom-school">Wisdom School</a><a href={site.links.wisdomCatalog}>Course Catalog</a><a href="#">Certificate Programs</a></div>
           <div className="fcol"><h4>Explore</h4>
-            <a href="/events">Upcoming Events</a><a href="/#chitheads">Chitheads Podcast</a><a href={site.links.tarkaSubstack}>Tarka Journal</a><a href="/#join">The Living Room Letter</a></div>
+            <a href="/events">Upcoming Events</a><a href="/podcast">Chitheads Podcast</a><a href={site.links.tarkaSubstack}>Tarka Journal</a><a href="/#join">The Living Room Letter</a></div>
           <div className="fcol"><h4>About</h4>
-            <a href="/#about">Our Story</a><a href="#">Teachers</a><a href="#">Contribute</a><a href="mailto:hello@embodiedphilosophy.com">Contact</a></div>
+            <a href="/about">Our Story</a><a href="/teachers">Teachers</a><a href="/contribute">Contribute</a><a href="/contact">Contact</a></div>
         </div>
         <p className="credits">Images: 19th-century Kalighat paintings. Cleveland Museum of Art (CC0); Wellcome Collection and Bodleian Library (CC BY 4.0); Bodleian Library, British Library, LACMA, Victoria and Albert Museum (public domain); Wikimedia Commons contributors (CC BY-SA).</p>
         <div className="foot-bottom">

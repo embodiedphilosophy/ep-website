@@ -75,14 +75,14 @@ export default async function Home() {
               <h3>Wisdom School</h3>
               <div className="price">{site.prices.wisdomYear} / year · Rolling enrollment</div>
               <p>The Attention Project — weekly meditations, monthly lectures, and 1,000+ hours of on-demand courses. Become fluent in the foundational concepts of the traditions.</p>
-              <a className="go" href="#wisdom">Become a member <span className="arw">→</span></a>
+              <a className="go" href="/wisdom-school">Become a member <span className="arw">→</span></a>
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--pine)' }}>
               <div className="step">Go all the way</div>
               <h3>Sādhana School</h3>
               <div className="price">From {site.prices.sadhanaSemesterFrom} / semester · 2026–2027</div>
               <p>Our flagship year of guided study and practice. Four immersive semesters, monthly workshops, and a community of serious practitioners walking the path together.</p>
-              <a className="go" href="#sadhana">Explore the year <span className="arw">→</span></a>
+              <a className="go" href="/sadhana-school">Explore the year <span className="arw">→</span></a>
             </div>
           </div>
           <div className="quiz-cta">
@@ -211,7 +211,7 @@ export default async function Home() {
                   <div><div className="epttl">{ep.title}</div><div className="epmeta">{[ep.guest, ep.duration].filter(Boolean).join(' · ')}</div></div>
                 </a>
               ))}
-              <div style={{ marginTop: 22 }}><a className="btn btn-outline-light" href={site.links.podcast.spreaker}>Browse all episodes →</a></div>
+              <div style={{ marginTop: 22 }}><a className="btn btn-outline-light" href="/podcast">Browse all episodes →</a></div>
             </div>
           </div>
         </div>
@@ -261,7 +261,7 @@ export default async function Home() {
             <span className="eyebrow">Our Purpose</span>
             <blockquote>“We started Embodied Philosophy to take the wisdom traditions seriously — as living philosophy, not decoration. A place where the life of the mind and the life of practice belong together.”</blockquote>
             <div className="sig">— <b>Jacob Kyle</b>, Founder &amp; Director</div>
-            <div style={{ marginTop: 24 }}><a className="btn btn-ghost" href="#">Read our story →</a></div>
+            <div style={{ marginTop: 24 }}><a className="btn btn-ghost" href="/about">Read our story →</a></div>
           </div>
         </div>
       </section>

@@ -7,11 +7,12 @@ export default function Nav() {
           <img className="wordmark" src="/brand/ep-wordmark-black.png" alt="Embodied Philosophy" width="147" height="36" />
         </a>
         <nav className="links" aria-label="Main">
-          <a href="/#path">Programs</a>
+          <a href="/wisdom-school">Wisdom School</a>
+          <a href="/sadhana-school">Sādhana School</a>
           <a href="/events">Events</a>
-          <a href="/#chitheads">Listen</a>
+          <a href="/podcast">Listen</a>
           <a href="/#tarka">Tarka</a>
-          <a href="/#about">About</a>
+          <a href="/about">About</a>
         </nav>
         <div className="nav-cta">
           <a className="signin" href={site.links.signIn}>Sign in</a>

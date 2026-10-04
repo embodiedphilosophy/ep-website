@@ -243,7 +243,7 @@ export default async function Home() {
                   <div><div className="epttl">{ep.title}</div><div className="epmeta">{[ep.guest, ep.duration].filter(Boolean).join(' · ')}</div></div>
                 </a>
               ))}
-              <div style={{ marginTop: 22 }}><a className="btn btn-outline-light" href="#">Browse all episodes →</a></div>
+              <div style={{ marginTop: 22 }}><a className="btn btn-outline-light" href={site.links.podcast.spreaker}>Browse all episodes →</a></div>
             </div>
           </div>
         </div>

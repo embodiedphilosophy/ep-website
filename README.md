@@ -13,6 +13,21 @@ Next.js site, deployed on Vercel.
 Until a setting is filled in, the site shows placeholder content (`data/events.json`, placeholder episodes).
 Add settings in Vercel > Project > Settings > Environment Variables, then redeploy.
 
+## The EP Website sheet
+One Google Sheet runs the site's content. Publish the **entire document** to the web as CSV
+(File → Share → Publish to web → Entire document → Comma-separated values) and set
+`EVENTS_SHEET_CSV_URL` to the events tab's published link. The site reads the other tabs from the same link.
+
+| Tab | Feeds |
+|---|---|
+| EP Site Events | Events everywhere, Living Room Lecture replays |
+| Teachers | Teachers page (name, role, bio, photo_url, order, publish) |
+| Testimonials | Homepage quotes (quote, name, role, program = home, publish) |
+| Links & Prices | Every checkout/enroll link, prices, sign-in, catalog, quiz, Tarka, Sādhana theme |
+| Stats | Homepage numbers (number, label, order) |
+
+If a tab can't be read, the site falls back to the copies in `data/` and `lib/site.js`.
+
 ## Events sheet columns
 `id, title, date, end_date, time, program, price, host, note, registration_url, series, publish`
 

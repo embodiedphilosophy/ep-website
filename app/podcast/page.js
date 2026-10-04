@@ -1,9 +1,10 @@
 import PageHero from '@/components/PageHero';
 import { getEpisodes } from '@/lib/podcast';
-import { site } from '@/lib/site';
+import { getSite } from '@/lib/content';
 export const revalidate = 3600;
 export const metadata = { title: 'Chitheads Podcast — Embodied Philosophy' };
 export default async function Podcast() {
+  const site = await getSite();
   const episodes = await getEpisodes(300);
   const p = site.links.podcast;
   return (

@@ -1,5 +1,6 @@
-import { site } from '@/lib/site';
-export default function Nav() {
+import { getSite } from '@/lib/content';
+export default async function Nav() {
+  const site = await getSite();
   return (
     <header className="nav">
       <div className="wrap nav-inner">

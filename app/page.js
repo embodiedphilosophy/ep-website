@@ -4,7 +4,7 @@ import KitForm from '@/components/KitForm';
 import { getEvents } from '@/lib/events';
 import { getEpisodes } from '@/lib/podcast';
 import { longDate } from '@/lib/dates';
-import { site } from '@/lib/site';
+import { getSite, getTestimonials } from '@/lib/content';
 
 export const revalidate = 300; // re-check the events sheet every 5 minutes
 
@@ -17,6 +17,8 @@ const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 
 export default async function Home() {
+  const site = await getSite();
+  const quotes = (await getTestimonials('home')).slice(0, 3);
   const [events, episodes] = await Promise.all([getEvents(), getEpisodes(5)]);
   const nextPublic = events.find(e => e.program === 'lrl' || e.program === 'seasonal');
   const sadhanaNext = events.filter(e => e.program === 'sadhana').slice(0, 2);
@@ -74,7 +76,7 @@ export default async function Home() {
               <div className="step">Build fluency</div>
               <h3>Wisdom School</h3>
               <div className="price">{site.prices.wisdomYear} / year · Rolling enrollment</div>
-              <p>The Attention Project — weekly meditations, monthly lectures, and 1,000+ hours of on-demand courses. Become fluent in the foundational concepts of the traditions.</p>
+              <p>Weekly meditations, monthly lectures, and 1,000+ hours of on-demand courses. Become fluent in the foundational concepts of the traditions.</p>
               <a className="go" href="/wisdom-school">Become a member <span className="arw">→</span></a>
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--pine)' }}>
@@ -100,7 +102,7 @@ export default async function Home() {
             <h2>Something to practice, every month</h2>
             <p>Free lectures, seasonal immersions, and live sessions inside the schools. New dates appear here as soon as they’re scheduled.</p>
           </div>
-          <Events events={events} limit={6} />
+          <Events events={events} limit={6} links={site.links} />
           <div className="events-foot"><a className="btn btn-ghost" href="/events">See the full calendar</a></div>
         </div>
       </section>
@@ -139,7 +141,7 @@ export default async function Home() {
         <div className="wrap feature rev">
           <Collage img="woman-music" ground="slate" ring="#EBA329" ringPos="tr" className="art" alt="Kalighat painting of a woman playing music" />
           <div>
-            <span className="eyebrow">Membership · The Attention Project</span>
+            <span className="eyebrow">Membership</span>
             <h2>Wisdom School</h2>
             <div className="theme">A year-long practice of paying attention</div>
             <ul>
@@ -225,9 +227,9 @@ export default async function Home() {
             <h2>Study that actually changes you</h2>
           </div>
           <div className="quotes">
-            <div className="q"><div className="mark">“</div><p>I’ve taken workshops for fifteen years. This is the first place that treated me like a thinker and a practitioner at once.</p><div className="who">Maya R.</div><div className="role">Yoga teacher, Portland</div></div>
-            <div className="q"><div className="mark">“</div><p>The weekly meditations gave me a daily practice that finally stuck. The lectures gave it meaning.</p><div className="who">David L.</div><div className="role">Wisdom School member</div></div>
-            <div className="q"><div className="mark">“</div><p>Sādhana School was the most rigorous, most nourishing year of study I’ve ever done. Worth every hour.</p><div className="who">Priya S.</div><div className="role">Therapist &amp; scholar-practitioner</div></div>
+            {quotes.map(q => (
+              <div className="q" key={q.quote}><div className="mark">“</div><p>{q.quote}</p><div className="who">{q.name}</div><div className="role">{q.role}</div></div>
+            ))}
           </div>
         </div>
       </section>

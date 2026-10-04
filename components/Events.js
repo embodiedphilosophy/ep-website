@@ -36,12 +36,12 @@ function Teachers({ list }) {
   );
 }
 
-function Action({ e }) {
+function Action({ e, links }) {
   const price = lower(e.price);
   if (hasDropIn(e)) {
     return (
       <div className="reg-stack">
-        <a className="reg" href={e.dropin_url || site.links.meditationMonthly}>Drop-in Access →</a>
+        <a className="reg" href={e.dropin_url || links.meditationMonthly}>Drop-in Access →</a>
         <a className="reg reg-sub" href="/wisdom-school">Become a member →</a>
       </div>
     );
@@ -50,11 +50,11 @@ function Action({ e }) {
   if (e.registration_url) return <a className="reg" href={e.registration_url}>{price === 'enroll' ? 'Enroll →' : 'Register →'}</a>;
   if (e.program === 'sadhana') return price === 'enroll'
     ? <a className="reg" href="/sadhana-school">Enroll →</a>
-    : <a className="reg" href={site.links.signIn}>Sign in →</a>;
+    : <a className="reg" href={links.signIn}>Sign in →</a>;
   return <a className="reg" href="/#join">Get updates →</a>;
 }
 
-export default function Events({ events, limit = 6, hideFilters = false }) {
+export default function Events({ events, limit = 6, hideFilters = false, links = site.links }) {
   const [filter, setFilter] = useState('all');
   const seen = new Set();
   const list = events
@@ -80,7 +80,7 @@ export default function Events({ events, limit = 6, hideFilters = false }) {
               <div className="meta"><Pill price={e.price} />{hasDropIn(e) && <span className="pill dropin">Drop-In</span>} {[e.time, e.note].filter(Boolean).join(', ')}</div>
               <Teachers list={e.teachers} />
             </div>
-            <Action e={e} />
+            <Action e={e} links={links} />
           </div>
         ))}
       </div>

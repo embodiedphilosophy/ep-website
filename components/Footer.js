@@ -1,5 +1,6 @@
-import { site } from '@/lib/site';
-export default function Footer() {
+import { getSite } from '@/lib/content';
+export default async function Footer() {
+  const site = await getSite();
   const s = site.links.social;
   return (
     <footer>

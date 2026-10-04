@@ -1,5 +1,6 @@
 import PageHero from '@/components/PageHero';
 import Events from '@/components/Events';
+import { getSite } from '@/lib/content';
 import KitForm from '@/components/KitForm';
 import ReplayPlayer from '@/components/ReplayPlayer';
 import { getEvents, getPastEvents } from '@/lib/events';
@@ -15,6 +16,7 @@ const names = t => String(t || '').split(',').map(s => s.trim()).filter(Boolean)
 const withLine = t => { const n = names(t); return n.length ? 'With ' + (n.length > 1 ? n.slice(0, -1).join(', ') + ' & ' + n.at(-1) : n[0]) : ''; };
 
 export default async function LivingRoomLectures() {
+  const site = await getSite();
   const upcoming = (await getEvents()).filter(e => e.program === 'lrl');
   const past = (await getPastEvents()).filter(e => e.program === 'lrl' && e.video_id);
   const next = upcoming[0];
@@ -31,7 +33,7 @@ export default async function LivingRoomLectures() {
 
       <section className="sec"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">Upcoming</span><h2>Join us live</h2></div>
-        <Events events={upcoming} limit={12} hideFilters />
+        <Events events={upcoming} limit={12} hideFilters links={site.links} />
       </div></section>
 
       <section className="sec path" id="past"><div className="wrap">

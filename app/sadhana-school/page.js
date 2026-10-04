@@ -2,10 +2,11 @@ import PageHero from '@/components/PageHero';
 import Events from '@/components/Events';
 import { getEvents } from '@/lib/events';
 import { longDate } from '@/lib/dates';
-import { site } from '@/lib/site';
+import { getSite } from '@/lib/content';
 export const revalidate = 300;
 export const metadata = { title: 'Sādhana School 2026–27 — Embodied Philosophy' };
 export default async function SadhanaSchool() {
+  const site = await getSite();
   const events = (await getEvents()).filter(e => e.program === 'sadhana');
   const start = events.find(e => /begins/i.test(e.title));
   return (
@@ -29,7 +30,7 @@ export default async function SadhanaSchool() {
       </div></section>
       <section className="sec path"><div className="wrap">
         <div className="sec-head"><h2>Key dates</h2></div>
-        <Events events={events} limit={12} />
+        <Events events={events} limit={12} links={site.links} />
       </div></section>
       <section className="sec"><div className="wrap prose">
         <h2>Questions before you enroll?</h2>

@@ -1,7 +1,8 @@
 import PageHero from '@/components/PageHero';
-import { site } from '@/lib/site';
+import { getSite } from '@/lib/content';
 export const metadata = { title: 'Contact — Embodied Philosophy' };
-export default function Contact() {
+export default async function Contact() {
+  const site = await getSite();
   return (
     <>
       <PageHero eyebrow="Contact" title="We’d love to hear from you." img="lady-kohl" ground="slate"

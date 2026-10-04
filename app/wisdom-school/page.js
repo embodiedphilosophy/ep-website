@@ -1,14 +1,15 @@
 import PageHero from '@/components/PageHero';
 import Events from '@/components/Events';
 import { getEvents } from '@/lib/events';
-import { site } from '@/lib/site';
+import { getSite } from '@/lib/content';
 export const revalidate = 300;
 export const metadata = { title: 'Wisdom School — Embodied Philosophy' };
 export default async function WisdomSchool() {
+  const site = await getSite();
   const events = (await getEvents()).filter(e => e.program === 'wisdom');
   return (
     <>
-      <PageHero eyebrow="Membership · The Attention Project" title="Wisdom School" img="woman-music" ground="slate"
+      <PageHero eyebrow="Membership" title="Wisdom School" img="woman-music" ground="slate"
         lede="A year-long practice of paying attention: a live guided meditation every week, a new lecture every month, and more than 1,000 hours of courses on the world’s contemplative traditions.">
         <div className="btns" style={{ marginTop: 28 }}>
           <a className="btn btn-primary" href={site.links.wisdomJoin}>Become a member — {site.prices.wisdomYear}/yr</a>
@@ -25,7 +26,7 @@ export default async function WisdomSchool() {
       </div></section>
       <section className="sec path"><div className="wrap">
         <div className="sec-head"><h2>Coming up for members</h2></div>
-        <Events events={events} limit={8} />
+        <Events events={events} limit={8} links={site.links} />
       </div></section>
       <section className="sec"><div className="wrap prose">
         <h2>Just want the meditations?</h2>

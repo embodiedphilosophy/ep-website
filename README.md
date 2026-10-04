@@ -61,3 +61,17 @@ if the title, date, time or length changed. Run it immediately: `/api/zoom/sync?
 - Recurring `zoom_registration`: `once` (register once for every session, e.g. a semester) or `each`
 - Free events with zoom = TRUE: sign-ups on the Living Room Lectures page register people in Zoom automatically.
 Meetings are matched by a tag like `[ep:lrl-2026-11]` in the Zoom agenda, so don't remove it.
+
+## One calendar: the Master Schedule (EP-Programming-Calendar)
+When CALENDAR_SHEET_ID and the Google service account are set, the website's events and the Ops dashboard
+both read the Master Schedule. Per-row columns (Time, Website, Public Title, Teachers, Course Host, Zoom,
+Duration, Registration URL, Video ID, Summary) override the **Track Defaults** tab. Without those settings
+the site falls back to the EP Website sheet.
+
+## Ops dashboard (/ops)
+- Sign-in: email link (Resend) for anyone on the **Team** tab. Directors see everyone.
+- Tasks: Motion is the master list. Tasks labelled with a person's name or one of their roles appear for them;
+  ticking one off completes it in Motion.
+- Daily job (/api/ops/daily): creates calendar tasks in Motion from **Task Templates** (next 30 days),
+  welcomes newly assigned teachers, and emails teachers and course hosts a week before, the day before and
+  the day of, with the Zoom link.

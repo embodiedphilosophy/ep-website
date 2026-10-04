@@ -5,12 +5,12 @@ import { site } from '@/lib/site';
 
 const FILTERS = [
   ['all', 'All'], ['free', 'Free'], ['lrl', 'Living Room Lectures'],
-  ['wisdom', 'Wisdom School'], ['sadhana', 'Sādhana School'], ['seasonal', 'Seasonal'],
+  ['wisdom', 'Wisdom School'], ['sadhana', 'Sādhana School'], ['seasonal', 'Seasonal'], ['chitheads', 'CHITHEADS Live'],
 ];
 const EMPTY = {
   all: 'Nothing is scheduled right now.', free: 'No free events are scheduled yet.',
   lrl: 'The next Living Room Lecture hasn’t been announced yet.', wisdom: 'No member sessions are scheduled yet.',
-  sadhana: 'No Sādhana School dates are scheduled yet.', seasonal: 'No seasonal immersions are scheduled yet.',
+  sadhana: 'No Sādhana School dates are scheduled yet.', seasonal: 'No seasonal immersions are scheduled yet.', chitheads: 'No CHITHEADS Live dates are scheduled yet.',
 };
 const lower = s => String(s || '').toLowerCase();
 const isFree = e => ['free', 'pay what you can', 'by donation'].includes(lower(e.price));

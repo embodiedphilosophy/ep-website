@@ -35,7 +35,7 @@ export default async function WisdomSchool() {
           <a className="btn btn-primary" href={site.links.meditationMonthly}>Start your free week — $9.99/month</a>
           <a className="btn btn-ghost" href={site.links.meditationYearly}>Or $99/year</a>
         </div>
-        <p><a href={site.links.quiz}>Not sure where to start? Take the free Practice Report.</a></p>
+        <p><a href="/meditation-pass">See upcoming Meditation Mondays and plans</a> · <a href={site.links.quiz}>Take the free Practice Report</a></p>
       </div></section>
     </>
   );

@@ -353,3 +353,34 @@
   @media(max-width:520px){.gate-card form{flex-direction:column}.gate-card p{display:none}}
 
   .teacher-photo{width:64px;height:64px;border-radius:50%;object-fit:cover}
+
+  /* Meditation Pass */
+  .past-grid.three{grid-template-columns:repeat(3,1fr)}
+  .gate-back{display:block;margin-top:12px;background:none;border:none;font:inherit;font-size:13.5px;color:var(--ink-soft);text-decoration:underline;cursor:pointer}
+  .gate-card .btn{display:inline-flex}
+  .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .benefit{border-top:2px solid var(--ochre);padding-top:16px}
+  .benefit h3{font-size:24px}
+  .benefit p{font-size:15.5px;color:var(--ink-soft);margin-top:8px}
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+  .plan{position:relative;background:var(--ivory);border:1px solid var(--line);border-radius:3px;padding:30px 26px;display:flex;flex-direction:column;gap:12px}
+  .plan.featured{border:2px solid var(--ink);box-shadow:0 14px 34px rgba(30,26,20,.10)}
+  .plan h3{font-size:30px}
+  .badge-top{position:absolute;top:-12px;left:22px;background:var(--ink);color:var(--ivory);font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px}
+  .amt{font-family:var(--font-serif),serif;font-size:44px;font-weight:600;line-height:1}
+  .amt span{font-family:var(--font-sans),sans-serif;font-size:14px;font-weight:500;color:var(--ink-soft)}
+  .save{font-size:13.5px;font-weight:600;color:var(--terra);min-height:20px}
+  .plan-sub{font-size:15px;color:var(--ink-soft)}
+  .plan .btn{justify-content:center}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:30px;padding:3px;align-self:flex-start;background:#fff}
+  .toggle button{font:inherit;font-size:13px;font-weight:600;border:none;background:transparent;padding:6px 14px;border-radius:30px;cursor:pointer;color:var(--ink-soft)}
+  .toggle button[aria-pressed="true"]{background:var(--ink);color:var(--ivory)}
+  .toggle button:focus-visible{outline:2px solid var(--terra);outline-offset:2px}
+  .feat{list-style:none;margin-top:8px;border-top:1px solid var(--line)}
+  .feat li{font-size:14.5px;padding:9px 0;border-bottom:1px solid var(--line);display:flex;gap:10px}
+  .feat li span[aria-hidden]{width:16px;flex:none;font-weight:700}
+  .feat li.on span[aria-hidden]{color:var(--pine)}
+  .feat li.off{color:#a39a8a}
+  .feat s{text-decoration-thickness:1px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media(max-width:900px){.pricing,.benefits,.past-grid.three{grid-template-columns:1fr}}

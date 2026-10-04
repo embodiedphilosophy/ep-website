@@ -42,7 +42,7 @@ function Action({ e, links }) {
     return (
       <div className="reg-stack">
         <a className="reg" href={e.dropin_url || links.dropinMeditation || links.meditationMonthly}>Drop-in Access →</a>
-        <a className="reg reg-sub" href="/wisdom-school">Become a member →</a>
+        <a className="reg reg-sub" href="/meditation-pass#pricing">Join the Meditation Pass →</a>
       </div>
     );
   }
@@ -54,12 +54,12 @@ function Action({ e, links }) {
   return <a className="reg" href="/#join">Get updates →</a>;
 }
 
-export default function Events({ events, limit = 6, hideFilters = false, links = site.links }) {
+export default function Events({ events, limit = 6, hideFilters = false, links = site.links, allSessions = false }) {
   const [filter, setFilter] = useState('all');
   const seen = new Set();
   const list = events
     .filter(e => filter === 'all' ? true : filter === 'free' ? isFree(e) : e.program === filter)
-    .filter(e => !e.series || (!seen.has(e.series) && seen.add(e.series)))
+    .filter(e => allSessions || !e.series || (!seen.has(e.series) && seen.add(e.series)))
     .slice(0, limit);
   return (
     <>

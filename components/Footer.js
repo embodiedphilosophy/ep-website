@@ -11,7 +11,7 @@ export default async function Footer() {
             <p className="mini">An online school for yoga philosophy, meditation, and contemplative study, for thinking practitioners.</p>
           </div>
           <div className="fcol"><h4>Study</h4>
-            <a href="/sadhana-school">Sādhana School</a><a href="/wisdom-school">Wisdom School</a><a href={site.links.wisdomCatalog}>Course Catalog</a><a href="#">Certificate Programs</a></div>
+            <a href="/sadhana-school">Sādhana School</a><a href="/wisdom-school">Wisdom School</a><a href="/meditation-pass">Meditation Pass</a><a href={site.links.wisdomCatalog}>Course Catalog</a><a href="#">Certificate Programs</a></div>
           <div className="fcol"><h4>Explore</h4>
             <a href="/events">Upcoming Events</a><a href="/living-room-lectures">Living Room Lectures</a><a href="/podcast">Chitheads Podcast</a><a href={site.links.tarkaSubstack}>Tarka Journal</a><a href="/#join">The Living Room Letter</a></div>
           <div className="fcol"><h4>About</h4>

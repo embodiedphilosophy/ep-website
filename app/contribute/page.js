@@ -3,18 +3,19 @@ export const metadata = { title: 'Contribute — Embodied Philosophy' };
 export default function Contribute() {
   return (
     <>
-      <PageHero eyebrow="Contribute" title="Help keep this teaching open." img="lady-pitcher" ground="navy"
-        lede="Many of our programs are free or pay what you can. Contributions from our community keep them that way, and fund scholarships, translations and Tarka." />
+      <PageHero eyebrow="Get involved" title="Contribute to Embodied Philosophy." img="lady-pitcher" ground="navy"
+        lede="We are always looking for writers, teachers, scholars, activists and researchers to help shape our school, our journal and our podcast." />
       <section className="sec"><div className="wrap prose">
-        <h2>Where your support goes</h2>
+        <h2>Where you can contribute</h2>
         <ul className="plain">
-          <li><b>Open programs.</b> Free Living Room Lectures and pay-what-you-can immersions like our Navarātri and summer sādhanas.</li>
-          <li><b>Access.</b> Sliding-scale places and BIPOC rates across our schools.</li>
-          <li><b>Translation and publishing.</b> New translations of primary texts, and Tarka, our journal.</li>
+          <li><b>Tarka Journal.</b> Essays, translations and reflections on yoga philosophy and the contemplative traditions.</li>
+          <li><b>Chitheads.</b> Guest suggestions and conversation ideas for the podcast.</li>
+          <li><b>Teaching.</b> Courses for Wisdom School, guest sessions in Sādhana School, and new educational offerings.</li>
+          <li><b>Behind the scenes.</b> Course hosts, facilitators, proofreaders, editors, and podcast quote-finders.</li>
         </ul>
-        <h2>Ways to give</h2>
-        <p>Make a one-time or monthly contribution, or pay a little more when you join a pay-what-you-can program. For larger gifts or partnerships, write to us at <a href="mailto:hello@embodiedphilosophy.com">hello@embodiedphilosophy.com</a>.</p>
-        <p><a className="btn btn-primary" href="#">Make a contribution</a></p>
+        <h2>How to get in touch</h2>
+        <p>Tell us a little about yourself and what you’d like to contribute, with links to your work, at <a href="mailto:hello@embodiedphilosophy.com?subject=Contributing%20to%20Embodied%20Philosophy">hello@embodiedphilosophy.com</a>.</p>
+        <p><a className="btn btn-primary" href="mailto:hello@embodiedphilosophy.com?subject=Contributing%20to%20Embodied%20Philosophy">Get in touch</a></p>
       </div></section>
     </>
   );

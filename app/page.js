@@ -244,9 +244,9 @@ export default async function Home() {
             <span className="eyebrow">Our Journal</span>
             <h2 style={{ fontSize: 44, margin: '14px 0 6px' }}>Tarka</h2>
             <p className="serif-lead">A journal of yoga philosophy, contemplative studies, and the world’s wisdom traditions.</p>
-            <p style={{ color: 'var(--ink-soft)', fontSize: 16, marginTop: 18, maxWidth: 480 }}>Essays, translations, and reflections from leading scholars and practitioners — now published and growing on Substack. Read freely, or go deeper with the collected print issues.</p>
+            <p style={{ color: 'var(--ink-soft)', fontSize: 16, marginTop: 18, maxWidth: 480 }}>Essays, translations, and reflections from leading scholars and practitioners — now published and growing at tarkajournal.com. Read freely, or go deeper with the collected print issues.</p>
             <div style={{ marginTop: 26, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-              <a className="btn btn-primary" href={site.links.tarkaSubstack}>Read Tarka on Substack →</a>
+              <a className="btn btn-primary" href={site.links.tarkaSubstack}>Read Tarka →</a>
               <a className="btn btn-ghost" href={site.links.tarkaPrint}>Browse print issues</a>
             </div>
           </div>

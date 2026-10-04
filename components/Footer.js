@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="foot-bottom">
           <div>© {new Date().getFullYear()} Embodied Philosophy. All rights reserved.</div>
           <div className="socials"><a href={s.instagram}>Instagram</a><a href={s.youtube}>YouTube</a><a href={s.facebook}>Facebook</a><a href={s.spotify}>Spotify</a></div>
-          <div>Privacy · Terms</div>
+          <div><a href={site.links.privacy}>Privacy</a> · <a href={site.links.terms}>Terms</a></div>
         </div>
       </div>
     </footer>

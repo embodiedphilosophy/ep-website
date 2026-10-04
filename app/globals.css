@@ -416,3 +416,21 @@
   .ops-meet .t{font-family:var(--font-serif),serif;font-size:20px;font-weight:600}
   .ops-meet .w,.ops-meet .z{font-size:13.5px;color:var(--ink-soft)}
   @media(max-width:860px){.ops-grid{grid-template-columns:1fr}.ops-tasks li{flex-direction:column;gap:4px}}
+
+  /* Replay gate: fit inside small players (e.g. the 3-across Meditation Pass replays) */
+  .replay-frame{container-type:inline-size}
+  .gate{overflow:auto}
+  .gate-card{max-height:100%;overflow:auto}
+  @container (max-width:520px){
+    .gate{padding:10px}
+    .gate-card{padding:14px 16px;text-align:center}
+    .gate-card h3{font-size:20px;line-height:1.15}
+    .gate-card p{display:none}
+    .gate-card .btn{padding:10px 12px;font-size:13.5px;margin-top:10px;width:100%;justify-content:center}
+    .gate-card .gate-back{margin:8px auto 0;font-size:12.5px}
+    .gate-card form{flex-direction:column}
+  }
+  @container (max-width:300px){
+    .gate-card h3{font-size:17px}
+    .gate-card .gate-back{display:none}
+  }

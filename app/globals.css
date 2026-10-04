@@ -332,3 +332,22 @@
   .reg-stack{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
   .reg-sub{font-weight:500;color:var(--ink-soft)}
   @media(max-width:820px){.reg-stack{grid-column:2}}
+
+  /* Living Room Lectures replays */
+  .past-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:34px}
+  .past h3{font-size:28px;margin-top:6px}
+  .past p{font-size:15.5px;color:var(--ink-soft);margin-top:8px}
+  .past-meta{font-size:12.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--terra);margin-top:14px}
+  .past-with{font-size:14px;color:var(--ink);margin-top:4px}
+  .replay-frame{position:relative;aspect-ratio:16/9;background:#1A1613;border-radius:3px;overflow:hidden}
+  .replay-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .replay-note{font-size:12.5px;color:var(--ink-soft);margin-top:8px}
+  .gate{position:absolute;inset:0;background:rgba(26,22,19,.82);display:flex;align-items:center;justify-content:center;padding:18px}
+  .gate-card{background:var(--ivory);max-width:440px;width:100%;padding:24px 24px 20px;border-radius:3px}
+  .gate-card h3{font-size:26px}
+  .gate-card p{font-size:14.5px;color:var(--ink-soft);margin:8px 0 14px}
+  .gate-card form{display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:3px;padding:6px 6px 6px 12px}
+  .gate-card input{flex:1;border:none;outline:none;font:inherit;font-size:15px;background:transparent;min-width:0}
+  .gate-card .btn{padding:11px 14px;font-size:14px}
+  @media(max-width:820px){.past-grid{grid-template-columns:1fr}}
+  @media(max-width:520px){.gate-card form{flex-direction:column}.gate-card p{display:none}}

@@ -68,7 +68,7 @@ export default async function Home() {
               <h3>Living Room Lectures</h3>
               <div className="price">Free · Live &amp; online</div>
               <p>A monthly live series where we explore the meeting point of the contemplative traditions and contemporary life. No commitment — just come, think, and practice with us.</p>
-              <a className="go" href="/events">See what’s coming <span className="arw">→</span></a>
+              <a className="go" href="/living-room-lectures">See what’s coming <span className="arw">→</span></a>
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--ochre)' }}>
               <div className="step">Build fluency</div>

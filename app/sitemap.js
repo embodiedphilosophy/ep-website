@@ -1,6 +1,6 @@
 const BASE = 'https://www.embodiedphilosophy.com';
 export default function sitemap() {
-  const pages = ['', '/wisdom-school', '/sadhana-school', '/events', '/podcast', '/about', '/teachers', '/contribute', '/contact'];
+  const pages = ['', '/wisdom-school', '/sadhana-school', '/events', '/living-room-lectures', '/podcast', '/about', '/teachers', '/contribute', '/contact'];
   return pages.map(p => ({
     url: BASE + p,
     lastModified: new Date(),

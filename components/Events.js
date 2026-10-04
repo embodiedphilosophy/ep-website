@@ -46,7 +46,7 @@ function Action({ e }) {
       </div>
     );
   }
-  if (price === 'free') return <a className="reg" href={e.registration_url || '/#join'}>Sign up for Free →</a>;
+  if (price === 'free') return <a className="reg" href={e.registration_url || (e.program === 'lrl' ? '/living-room-lectures#signup' : '/#join')}>Sign up for Free →</a>;
   if (e.registration_url) return <a className="reg" href={e.registration_url}>{price === 'enroll' ? 'Enroll →' : 'Register →'}</a>;
   if (e.program === 'sadhana') return price === 'enroll'
     ? <a className="reg" href="/sadhana-school">Enroll →</a>
@@ -54,7 +54,7 @@ function Action({ e }) {
   return <a className="reg" href="/#join">Get updates →</a>;
 }
 
-export default function Events({ events, limit = 6 }) {
+export default function Events({ events, limit = 6, hideFilters = false }) {
   const [filter, setFilter] = useState('all');
   const seen = new Set();
   const list = events
@@ -63,11 +63,11 @@ export default function Events({ events, limit = 6 }) {
     .slice(0, limit);
   return (
     <>
-      <div className="filters" role="group" aria-label="Filter events">
+      {!hideFilters && <div className="filters" role="group" aria-label="Filter events">
         {FILTERS.map(([k, label]) => (
           <button key={k} aria-pressed={filter === k} onClick={() => setFilter(k)}>{label}</button>
         ))}
-      </div>
+      </div>}
       <div className="events-grid" aria-live="polite">
         {list.length === 0 ? (
           <div className="events-empty">{EMPTY[filter]} <a href="/#join">Get the Living Room Letter</a> to hear about new dates first.</div>

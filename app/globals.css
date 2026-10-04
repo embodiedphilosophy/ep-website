@@ -443,3 +443,12 @@
   .cookie .btn{padding:10px 14px;font-size:14px}
   .linklike{background:none;border:none;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline}
   @media(max-width:560px){.cookie{flex-direction:column;align-items:stretch}.cookie-btns .btn{flex:1;justify-content:center}}
+
+  /* Hero: Practice Report CTA; Reading List moved below the paths */
+  .hero-cta{margin-top:30px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;max-width:520px}
+  .hero-cta .btn{font-size:17px;padding:16px 26px}
+  .hero-cta .hint{font-size:14px;color:var(--ink-soft)}
+  .reading-cta .reading-form{flex:1;min-width:280px;max-width:460px}
+  .reading-cta .reading-form form{display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:3px;padding:6px 6px 6px 14px}
+  .reading-cta .reading-form input{flex:1;border:none;outline:none;font:inherit;font-size:15px;background:transparent;min-width:0}
+  .reading-cta > div:first-child{flex:1;min-width:240px}

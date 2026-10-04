@@ -34,9 +34,9 @@ export default async function Home() {
             <span className="lead-tag">◈ An online school for the contemplative life</span>
             <h1>Ancient wisdom,<br />seriously studied.<br /><em>Deeply practiced.</em></h1>
             <p className="sub">Yoga philosophy, meditation, and the world’s contemplative traditions — for thinking practitioners who want more than a workout.</p>
-            <div className="capture" id="join">
-              <KitForm formId={KIT.reading} button="Send my reading list" success="Your reading list is on its way. Check your inbox to confirm." />
-              <div className="hint">◇&nbsp; Get the free <b>Yoga Philosophy Reading List</b> — join 85,000 seekers. Unsubscribe anytime.</div>
+            <div className="hero-cta">
+              <a className="btn btn-primary" href={site.links.quiz}>Get your free Practice Report →</a>
+              <div className="hint">◇&nbsp; Answer a few questions about your practice and get a <b>personalized path</b> through the teachings. Free, and takes a few minutes.</div>
             </div>
             <div className="next-live">
               <span className="dot" />
@@ -87,9 +87,9 @@ export default async function Home() {
               <a className="go" href="/sadhana-school">Explore the year <span className="arw">→</span></a>
             </div>
           </div>
-          <div className="quiz-cta">
-            <div><b>Not sure where to begin?</b><span>Answer a few questions about your practice and get a personal study path.</span></div>
-            <a className="btn btn-ghost" href={site.links.quiz}>Take the practice quiz</a>
+          <div className="quiz-cta reading-cta" id="join">
+            <div><b>Prefer to start with books?</b><span>Get the free Yoga Philosophy Reading List. Join 85,000 seekers. Unsubscribe anytime.</span></div>
+            <div className="reading-form"><KitForm formId={KIT.reading} button="Send my reading list" success="Your reading list is on its way. Check your inbox to confirm." /></div>
           </div>
         </div>
       </section>

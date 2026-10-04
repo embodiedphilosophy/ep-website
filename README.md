@@ -25,6 +25,7 @@ One Google Sheet runs the site's content. Publish the **entire document** to the
 | Testimonials | Homepage quotes (quote, name, role, program = home, publish) |
 | Links & Prices | Every checkout/enroll link, prices, sign-in, catalog, quiz, Tarka, Sādhana theme |
 | Stats | Homepage numbers (number, label, order) |
+| Recurring | Weekly series (e.g. Meditation Mondays): the site generates the next 10 dates itself. Use skip_dates (comma-separated YYYY-MM-DD) for weeks off |
 
 If a tab can't be read, the site falls back to the copies in `data/` and `lib/site.js`.
 
@@ -46,3 +47,8 @@ The site re-reads the sheet every 5 minutes.
 npm install
 npm run dev
 ```
+
+## Meditation Mondays drop-in → Zoom
+Kit product purchase → `/api/kit/dropin?key=KIT_WEBHOOK_SECRET` → the buyer is registered in Zoom for the
+next session only, and Zoom emails their personal link. Settings: see `.env.example`.
+Zoom meeting must be recurring, with registration required and "Attendees register for each occurrence".

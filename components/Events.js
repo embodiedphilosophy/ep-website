@@ -41,7 +41,7 @@ function Action({ e, links }) {
   if (hasDropIn(e)) {
     return (
       <div className="reg-stack">
-        <a className="reg" href={e.dropin_url || links.meditationMonthly}>Drop-in Access →</a>
+        <a className="reg" href={e.dropin_url || links.dropinMeditation || links.meditationMonthly}>Drop-in Access →</a>
         <a className="reg reg-sub" href="/wisdom-school">Become a member →</a>
       </div>
     );

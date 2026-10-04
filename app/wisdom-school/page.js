@@ -30,7 +30,11 @@ export default async function WisdomSchool() {
       <section className="sec"><div className="wrap prose">
         <h2>Just want the meditations?</h2>
         <p>The <b>Meditation Pass</b> gets you into Meditation Mondays and their replays for $9.99 a month, or $99 a year, with a free first week. You can upgrade to full membership at any time.</p>
-        <p><a className="btn btn-ghost" href={site.links.quiz}>Find your practice with the free Practice Report</a></p>
+        <div className="btns" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', margin: '8px 0 20px' }}>
+          <a className="btn btn-primary" href={site.links.meditationMonthly}>Start your free week — $9.99/month</a>
+          <a className="btn btn-ghost" href={site.links.meditationYearly}>Or $99/year</a>
+        </div>
+        <p><a href={site.links.quiz}>Not sure where to start? Take the free Practice Report.</a></p>
       </div></section>
     </>
   );

@@ -22,11 +22,34 @@ function Pill({ price }) {
   return <span className={`pill ${cls}`}>{price}</span>;
 }
 
+const initials = n => { const w = n.replace(/[\[\]]/g, '').split(' ').filter(Boolean); return ((w[0]?.[0] || '') + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase(); };
+const hasDropIn = e => e.series === 'meditation-mondays' || !!e.dropin_url;
+
+function Teachers({ list }) {
+  const names = String(list || '').split(',').map(t => t.trim()).filter(Boolean);
+  if (!names.length) return null;
+  return (
+    <div className="teachers">
+      <span className="faces" aria-hidden="true">{names.map(n => <span className="face" key={n}>{initials(n)}</span>)}</span>
+      <span>With {names.length > 1 ? names.slice(0, -1).join(', ') + ' & ' + names[names.length - 1] : names[0]}</span>
+    </div>
+  );
+}
+
 function Action({ e }) {
-  if (e.registration_url) return <a className="reg" href={e.registration_url}>{e.program === 'sadhana' && lower(e.price) === 'enroll' ? 'Enroll →' : 'Register →'}</a>;
-  if (e.program === 'wisdom') return <a className="reg" href="/#wisdom">Become a member →</a>;
-  if (e.program === 'sadhana') return lower(e.price) === 'enroll'
-    ? <a className="reg" href="/#sadhana">Enroll →</a>
+  const price = lower(e.price);
+  if (hasDropIn(e)) {
+    return (
+      <div className="reg-stack">
+        <a className="reg" href={e.dropin_url || site.links.meditationMonthly}>Drop-in Access →</a>
+        <a className="reg reg-sub" href="/wisdom-school">Become a member →</a>
+      </div>
+    );
+  }
+  if (price === 'free') return <a className="reg" href={e.registration_url || '/#join'}>Sign up for Free →</a>;
+  if (e.registration_url) return <a className="reg" href={e.registration_url}>{price === 'enroll' ? 'Enroll →' : 'Register →'}</a>;
+  if (e.program === 'sadhana') return price === 'enroll'
+    ? <a className="reg" href="/sadhana-school">Enroll →</a>
     : <a className="reg" href={site.links.signIn}>Sign in →</a>;
   return <a className="reg" href="/#join">Get updates →</a>;
 }
@@ -54,7 +77,8 @@ export default function Events({ events, limit = 6 }) {
             <div>
               <div className="ttl">{e.title}</div>
               {e.host && <div className="host">{e.host}</div>}
-              <div className="meta"><Pill price={e.price} /> {[e.time, e.note].filter(Boolean).join(', ')}</div>
+              <div className="meta"><Pill price={e.price} />{hasDropIn(e) && <span className="pill dropin">Drop-In</span>} {[e.time, e.note].filter(Boolean).join(', ')}</div>
+              <Teachers list={e.teachers} />
             </div>
             <Action e={e} />
           </div>

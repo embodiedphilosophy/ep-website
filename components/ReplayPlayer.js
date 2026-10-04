@@ -20,7 +20,11 @@ export default function ReplayPlayer({ videoId, title, previewMinutes = 15, form
   const [unlocked, setUnlocked] = useState(false);
   const [gated, setGated] = useState(false);
   const limit = previewMinutes * 60;
-  const [id, hash] = String(videoId).split('/');
+  // Accepts "123456789", "123456789/abc123", a leading slash, or a full vimeo.com link
+  const clean = String(videoId).trim().replace(/^https?:\/\/(www\.|player\.)?vimeo\.com\/(video\/)?/, '').replace(/\?.*$/, '').replace(/^\/+|\/+$/g, '');
+  const hParam = (String(videoId).match(/[?&]h=([\w]+)/) || [])[1];
+  const [id, pathHash] = clean.split('/');
+  const hash = pathHash || hParam;
   const src = `https://player.vimeo.com/video/${id}?${hash ? `h=${hash}&` : ''}dnt=1&title=0&byline=0&portrait=0`;
 
   useEffect(() => {

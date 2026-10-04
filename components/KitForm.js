@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { track } from '@/lib/track';
 
 // Posts directly to a Kit form. Without a form ID (local preview) it just shows the success state.
 export default function KitForm({ formId, onSuccess, button, buttonClass = 'btn btn-primary', success = 'Check your inbox to confirm.', hintClass = 'form-ok' }) {
@@ -8,7 +9,7 @@ export default function KitForm({ formId, onSuccess, button, buttonClass = 'btn 
     e.preventDefault();
     const email = new FormData(e.currentTarget).get('email_address');
     setState('sending');
-    if (!formId) { setState('ok'); onSuccess?.(email); return; }
+    if (!formId) { setState('ok'); track('Lead', { content_name: 'signup' }); onSuccess?.(email); return; }
     try {
       const res = await fetch(`https://app.kit.com/forms/${formId}/subscriptions`, {
         method: 'POST',
@@ -16,7 +17,7 @@ export default function KitForm({ formId, onSuccess, button, buttonClass = 'btn 
         body: new URLSearchParams({ email_address: email }),
       });
       setState(res.ok ? 'ok' : 'error');
-      if (res.ok) onSuccess?.(email);
+      if (res.ok) { track('Lead', { content_name: String(formId) }); onSuccess?.(email); }
     } catch { setState('error'); }
   }
   if (state === 'ok') return <p className={hintClass} role="status">{success}</p>;

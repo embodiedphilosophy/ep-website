@@ -1,4 +1,5 @@
 import { getSite } from '@/lib/content';
+import CookiePrefsLink from './CookiePrefsLink';
 export default async function Footer() {
   const site = await getSite();
   const s = site.links.social;
@@ -21,7 +22,7 @@ export default async function Footer() {
         <div className="foot-bottom">
           <div>© {new Date().getFullYear()} Embodied Philosophy. All rights reserved.</div>
           <div className="socials"><a href={s.instagram}>Instagram</a><a href={s.youtube}>YouTube</a><a href={s.facebook}>Facebook</a><a href={s.spotify}>Spotify</a></div>
-          <div><a href={site.links.privacy}>Privacy</a> · <a href={site.links.terms}>Terms</a></div>
+          <div><a href={site.links.privacy}>Privacy</a> · <a href={site.links.terms}>Terms</a><CookiePrefsLink /></div>
         </div>
       </div>
     </footer>

@@ -1,6 +1,7 @@
 import './globals.css';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
+import Tracking from '@/components/Tracking';
 
 export const metadata = {
   title: 'Embodied Philosophy — An online school for the contemplative life',
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
         <Nav />
         <main>{children}</main>
         <Footer />
+        <Tracking />
       </body>
     </html>
   );

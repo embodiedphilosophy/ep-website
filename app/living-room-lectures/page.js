@@ -1,7 +1,7 @@
 import PageHero from '@/components/PageHero';
 import Events from '@/components/Events';
 import { getSite } from '@/lib/content';
-import KitForm from '@/components/KitForm';
+import EventSignup from '@/components/EventSignup';
 import ReplayPlayer from '@/components/ReplayPlayer';
 import { getEvents, getPastEvents } from '@/lib/events';
 import { longDate } from '@/lib/dates';
@@ -26,7 +26,8 @@ export default async function LivingRoomLectures() {
         lede="A free monthly gathering where we explore the meeting point of the contemplative traditions and contemporary life. No commitment: come, think, and practice with us.">
         {next && <p className="upnext" style={{ marginTop: 18 }}><b>Next lecture:</b> {next.title.replace(/^Living Room Lecture:\s*/, '')}, {longDate(next.date)}{next.time ? `, ${next.time}` : ''}</p>}
         <div className="capture" id="signup" style={{ marginTop: 22 }}>
-          <KitForm formId={FORM} button="Sign up for Free" success="You’re signed up. We’ll email you before each lecture." />
+          <EventSignup formId={FORM} eventId={next?.zoom?.toUpperCase?.() === 'TRUE' ? next.id : undefined}
+            success={next?.zoom?.toUpperCase?.() === 'TRUE' ? 'You’re signed up. Your personal Zoom link is on its way from Zoom.' : 'You’re signed up. We’ll email you before each lecture.'} />
           <div className="hint">Get the link for every upcoming lecture, and full access to the replays.</div>
         </div>
       </PageHero>

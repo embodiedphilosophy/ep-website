@@ -1,0 +1,3 @@
+{
+  "crons": [{ "path": "/api/zoom/sync", "schedule": "0 13 * * *" }]
+}

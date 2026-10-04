@@ -52,3 +52,12 @@ npm run dev
 Kit product purchase → `/api/kit/dropin?key=KIT_WEBHOOK_SECRET` → the buyer is registered in Zoom for the
 next session only, and Zoom emails their personal link. Settings: see `.env.example`.
 Zoom meeting must be recurring, with registration required and "Attendees register for each occurrence".
+
+## Automatic Zoom meetings
+Set `zoom` = TRUE on any row in **EP Site Events** (one-off events) or **Recurring** (weekly series).
+Once a day (vercel.json cron), `/api/zoom/sync` creates the Zoom meeting with registration on, or updates it
+if the title, date, time or length changed. Run it immediately: `/api/zoom/sync?key=CRON_SECRET`.
+- `duration_minutes`: optional, default 90
+- Recurring `zoom_registration`: `once` (register once for every session, e.g. a semester) or `each`
+- Free events with zoom = TRUE: sign-ups on the Living Room Lectures page register people in Zoom automatically.
+Meetings are matched by a tag like `[ep:lrl-2026-11]` in the Zoom agenda, so don't remove it.

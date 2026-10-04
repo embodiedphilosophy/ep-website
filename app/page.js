@@ -261,8 +261,8 @@ export default async function Home() {
           <Collage img="mirror" ground="black" ring="#EBA329" ringPos="tl" className="founder" alt="Kalighat painting of a woman with a mirror" />
           <div>
             <span className="eyebrow">Our Purpose</span>
-            <blockquote>“What remains is a focused commitment to what inspired this project in the first place: a space for rigorous study, meaningful practice, and the cultivation of wisdom that speaks to the depth of human experience.”</blockquote>
-            <div className="sig">— <b>Jacob Kyle</b>, Founder &amp; Director, from <a href="https://www.jacobkyle.com/p/an-untold-history-of-embodied-philosophy-47f"><i>An Untold History of Embodied Philosophy</i></a></div>
+            <blockquote>“In modern society, education has largely lost the original spirit of the humanities, wherein the focus of education is the cultivation of wisdom, insight, wonder, creativity, and imagination. Embodied Philosophy’s mission is to fill that void and contribute to the renaissance of a contemplative humanities.”</blockquote>
+            <div className="sig">— <b>Jacob Kyle</b>, Founder &amp; Director</div>
             <div style={{ marginTop: 24 }}><a className="btn btn-ghost" href="/about">Read our story →</a></div>
           </div>
         </div>

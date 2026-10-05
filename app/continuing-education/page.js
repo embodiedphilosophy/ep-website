@@ -7,7 +7,7 @@ export const metadata = {
   description: 'Earn Yoga Alliance continuing education training hours studying yoga philosophy, the subtle body, mantra and meditation with leading scholars and practitioners. Certificates included.',
 };
 
-const YA_URL = 'https://www.yogaalliance.org/Credentialing/Continuing_Education';
+const YA_URL = 'https://help.yogaalliance.org/s/article/Does-Yoga-Alliance-have-any-Continuing-Education-requirements-for-Registered-Yoga-Teachers-What-happens-if-I-cannot-complete-them';
 const FAQ = [
   ['Do these hours count toward my Yoga Alliance requirement?', 'Registered teachers complete continuing education in Yoga Alliance’s educational categories and log the hours themselves. Each pathway lists its category and hours, and your certificate records both, so you can log them as training hours. Yoga Alliance sets the rules and can change them, so check the current requirements for your credential.'],
   ['Can I study entirely online, at my own pace?', 'Yes. Yoga Alliance currently allows all continuing-education training hours to be earned through online learning, and every pathway is self-paced. Live sessions are a bonus, not a requirement.'],

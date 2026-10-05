@@ -95,7 +95,7 @@ export default function PricingCards({ prices, links, hours = '650+' }) {
           : <div className="amt">{prices.meditationYearly}<span> / year</span></div>}
         {pass === 'annual' ? <Savings monthly={prices.meditationMonthly} annual={prices.meditationYearly} /> : <div className="save">Start with a free week</div>}
         <p className="plan-sub">Every Meditation Monday, live, plus replays of every session.</p>
-        <a className="btn btn-primary" href={pass === 'monthly' ? links.meditationMonthly : links.meditationYearly}>Start your free week</a>
+        <a className="btn btn-primary" href={pass === 'monthly' ? links.meditationMonthly : links.meditationYearly}>{pass === 'monthly' ? 'Start your free week' : 'Join for the year'}</a>
         <Features plan="pass" hours={hours} />
       </article>
 

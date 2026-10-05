@@ -13,7 +13,7 @@ const FAQ = [
   ['Can I study entirely online, at my own pace?', 'Yes. Yoga Alliance currently allows all continuing-education training hours to be earned through online learning, and every pathway is self-paced. Live sessions are a bonus, not a requirement.'],
   ['How do I get my certificate?', 'When you complete a pathway, you receive a certificate of completion with your name, the pathway, the hours, the educational category and the date, ready to keep for your records.'],
   ['I’m not registered with Yoga Alliance. Is this still useful?', 'Yes. Many teachers study with us simply to deepen their teaching, and other credentialing bodies may accept the hours. Check with yours.'],
-  ['What if I’m already a Wisdom School member?', 'Then you already have access to every pathway. Complete any of them to receive your certificate.'],
+  ['What if I’m already a Wisdom School member?', 'Wisdom School Plus members already have every pathway and CE certificates. If you’re on Wisdom School, you can upgrade to Plus at any time and the remaining value of your plan is credited.'],
 ];
 
 export default async function ContinuingEducation() {
@@ -21,9 +21,10 @@ export default async function ContinuingEducation() {
   const pathways = (await getPathways()).filter(p => Number(p.ce_hours) > 0);
   const total = pathways.reduce((n, p) => n + Number(p.ce_hours || 0), 0);
   const yacep = String(site.yacep || '').toUpperCase() === 'TRUE';
-  const separate = !!site.prices.ce;
-  const joinHref = separate ? (site.links.ceJoin || site.links.wisdomJoin) : site.links.wisdomJoin;
-  const priceLine = separate ? `${site.prices.ce}` : `${site.prices.wisdomYear}/yr`;
+  // CE certificates come with Wisdom School Plus (ce_price / ce_join in the sheet can override)
+  const ceYear = site.prices.ce || site.prices.wisdomPlusYear;
+  const joinHref = site.links.ceJoin || site.links.wisdomPlusJoin || site.links.wisdomJoin;
+  const priceLine = `${ceYear}/yr`;
 
   return (
     <>
@@ -62,17 +63,18 @@ export default async function ContinuingEducation() {
       </div></section>
 
       <section className="sec" id="join"><div className="wrap">
-        <div className="sec-head center"><span className="eyebrow">Join</span><h2>{separate ? 'The teachers’ plan' : 'Included with Wisdom School'}</h2></div>
+        <div className="sec-head center"><span className="eyebrow">Join</span><h2>Included with Wisdom School Plus</h2></div>
         <div className="ss-plans" style={{ gridTemplateColumns: '1fr', maxWidth: 520 }}>
           <article className="plan featured">
-            <h3>{separate ? 'Wisdom School for Teachers' : 'Wisdom School'}</h3>
-            <div className="amt">{separate ? site.prices.ce : site.prices.wisdomYear}<span>{separate ? '' : ' / year'}</span></div>
+            <h3>Wisdom School Plus</h3>
+            <div className="amt">{ceYear}<span> / year</span></div>
+            {site.prices.wisdomPlusMonthly && <p className="plan-sub">or {site.prices.wisdomPlusMonthly} / month</p>}
             <ul className="feat">
               <li className="on"><span aria-hidden="true">✓</span>Every CE pathway, with certificates</li>
               <li className="on"><span aria-hidden="true">✓</span>{total > 0 ? `${total}+ hours of CE-eligible study` : 'CE-eligible study across every pathway'}</li>
               <li className="on"><span aria-hidden="true">✓</span>Meditation Mondays, live every week</li>
               <li className="on"><span aria-hidden="true">✓</span>Monthly lectures and seasonal workshops</li>
-              <li className="on"><span aria-hidden="true">✓</span>The full library of more than 1,000 hours</li>
+              <li className="on"><span aria-hidden="true">✓</span>Certificate programs and past programming</li>
             </ul>
             <a className="btn btn-primary" href={joinHref}>Start earning hours</a>
           </article>

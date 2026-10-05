@@ -79,7 +79,7 @@ export default async function MeditationPass() {
 
       <section className="sec path" id="pricing"><div className="wrap">
         <div className="sec-head center"><span className="eyebrow">Choose your way in</span><h2>Plans and pricing</h2></div>
-        <PricingCards prices={site.prices} links={site.links} />
+        <PricingCards prices={site.prices} links={site.links} hours={site.libraryHours} />
       </div></section>
     </>
   );

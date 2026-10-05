@@ -14,7 +14,7 @@ export default function About() {
         <p>Every program pairs study with practice. Lectures give the ideas their context and precision; guided meditation, mantra and reflection make them something you live. We teach in community, live and online, with recordings for every session.</p>
         <ul className="plain">
           <li><b>Living Room Lectures</b>: free monthly talks open to everyone.</li>
-          <li><b>Wisdom School</b>: a membership with weekly meditation, monthly lectures, and a library of more than 1,000 hours of courses.</li>
+          <li><b>Wisdom School</b>: a membership with weekly meditation, monthly lectures, and and, with Wisdom School Plus, a library of learning pathways and certificate programs.</li>
           <li><b>Sādhana School</b>: our flagship year of guided study and daily practice.</li>
           <li><b>Tarka</b>: our journal of yoga philosophy and contemplative studies.</li>
           <li><b>Chitheads</b>: long-form conversations with teachers and scholars.</li>

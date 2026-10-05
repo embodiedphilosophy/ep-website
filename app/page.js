@@ -76,7 +76,7 @@ export default async function Home() {
               <div className="step">Build fluency</div>
               <h3>Wisdom School</h3>
               <div className="price">{site.prices.wisdomYear} / year · Rolling enrollment</div>
-              <p>Weekly meditations, monthly lectures, and 1,000+ hours of on-demand courses. Become fluent in the foundational concepts of the traditions.</p>
+              <p>Weekly meditations, monthly lectures and seasonal workshops, with a library of learning pathways in Wisdom School Plus. Become fluent in the foundational concepts of the traditions.</p>
               <a className="go" href="/wisdom-school">Become a member <span className="arw">→</span></a>
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--pine)' }}>
@@ -147,7 +147,7 @@ export default async function Home() {
             <ul>
               <li>A live guided meditation every week — build a real daily practice</li>
               <li>A new lecture every month on the traditions and their texts</li>
-              <li>1,000+ hours of on-demand courses, yours the moment you join</li>
+              <li>With Plus: {site.libraryHours} hours of learning pathways and certificate programs</li>
               <li>A community of lifetime learners: teachers, therapists &amp; scholars</li>
             </ul>
             <div className="week">

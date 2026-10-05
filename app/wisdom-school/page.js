@@ -8,7 +8,7 @@ import { longDate } from '@/lib/dates';
 export const revalidate = 300;
 export const metadata = {
   title: 'Wisdom School — Embodied Philosophy',
-  description: 'A weekly live meditation, a monthly lecture, seasonal workshops, and a 1,000-hour library arranged into guided learning pathways.',
+  description: 'A weekly live meditation, a monthly lecture, seasonal workshops and, with Wisdom School Plus, a library of learning pathways and certificate programs.',
 };
 
 const isMM = e => e.series === 'meditation-mondays';
@@ -48,9 +48,9 @@ export default async function WisdomSchool() {
   return (
     <>
       <PageHero eyebrow="Membership" title="Wisdom School" img="woman-music" ground="slate"
-        lede="Contemplative study for modern life. A live meditation every week, a lecture every month, seasonal workshops, and a 1,000-hour library arranged into guided learning pathways, so you always know where to go next.">
+        lede="Contemplative study for modern life. A live meditation every week, a lecture every month, and seasonal workshops. With Wisdom School Plus, add every learning pathway, our certificate programs and continuing-education certificates.">
         <div className="btns" style={{ marginTop: 28 }}>
-          <a className="btn btn-primary" href={site.links.wisdomJoin}>Join Wisdom School — {site.prices.wisdomYear}/yr</a>
+          <a className="btn btn-primary" href="#pricing">Join Wisdom School — from {site.prices.wisdomYear}/yr</a>
           <a className="btn btn-ghost" href="/meditation-pass">Just the meditations — {site.prices.meditationMonthly}/mo</a>
         </div>
       </PageHero>
@@ -68,7 +68,7 @@ export default async function WisdomSchool() {
 
       <section className="sec path"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">Learning pathways</span><h2>Start with your question</h2>
-          <p>The library holds more than 1,000 hours of courses gathered over a decade. Pathways turn it into a guided route: pick the question you’re living with, and follow a sequence of courses chosen to answer it.</p></div>
+          <p>With Wisdom School Plus, the library holds {site.libraryHours} hours of teaching gathered over a decade. Pathways turn it into a guided route: pick the question you’re living with, and follow a sequence of courses chosen to answer it.</p></div>
         <div className="pathways">
           {pathways.map(p => (
             <article key={p.title} className="pathway">
@@ -86,12 +86,26 @@ export default async function WisdomSchool() {
       </div></section>
 
       <section className="sec"><div className="wrap">
-        <div className="sec-head"><span className="eyebrow">One membership</span><h2>Everything is included</h2></div>
-        <div className="path-grid">
-          <div className="tier"><h3>The live rhythm</h3><p>Weekly Meditation Mondays, the monthly lecture and seasonal workshops, live on Zoom and recorded.</p></div>
-          <div className="tier" style={{ borderTopColor: 'var(--ochre)' }}><h3>The whole library</h3><p>Every course, lecture and workshop in the archive, from classical yoga philosophy to somatics, Tantra and the wider contemplative world.</p></div>
-          <div className="tier" style={{ borderTopColor: 'var(--pine)' }}><h3>Guided pathways</h3><p>Curated routes through the library, organized around the questions people actually bring to practice.</p></div>
+        <div className="sec-head"><span className="eyebrow">Two ways to join</span><h2>Wisdom School and Wisdom School Plus</h2>
+          <p>Both include the full live rhythm of the year. Plus adds the library: every pathway, our certificate programs and past programming.</p></div>
+        <div className="tier-compare">
+          <div className="tier"><h3>Wisdom School</h3><div className="tc-price">{site.prices.wisdomYear}/year{site.prices.wisdomMonthly ? ` · or ${site.prices.wisdomMonthly}/month` : ''}</div>
+            <ul className="plain">
+              <li>Meditation Mondays, live every week, with replays</li>
+              <li>The monthly lecture and seasonal workshops</li>
+              <li>This year’s programming, on demand</li>
+              <li>A starter learning pathway</li>
+            </ul></div>
+          <div className="tier tier-plus"><h3>Wisdom School Plus</h3><div className="tc-price">{site.prices.wisdomPlusYear}/year{site.prices.wisdomPlusMonthly ? ` · or ${site.prices.wisdomPlusMonthly}/month` : ''}</div>
+            <ul className="plain">
+              <li>Everything in Wisdom School</li>
+              <li>Every learning pathway ({site.libraryHours} hours)</li>
+              <li>Certificate programs: Yoga Philosophy, Embodied Therapy, Buddhist Psychology and more</li>
+              <li>Past years of programming</li>
+              <li>Continuing-education certificates for yoga teachers</li>
+            </ul></div>
         </div>
+        <p style={{ marginTop: 18 }}>Upgrade from Wisdom School to Plus at any time; the remaining value of your plan is credited.</p>
       </div></section>
 
       {faculty.length > 0 && (
@@ -106,7 +120,7 @@ export default async function WisdomSchool() {
 
       <section className="sec" id="pricing"><div className="wrap">
         <div className="sec-head center"><span className="eyebrow">Choose your way in</span><h2>Plans and pricing</h2></div>
-        <PricingCards prices={site.prices} links={site.links} />
+        <PricingCards prices={site.prices} links={site.links} hours={site.libraryHours} />
       </div></section>
 
       <section className="sec path"><div className="wrap">

@@ -57,7 +57,7 @@
       radial-gradient(120% 90% at 78% 8%, rgba(165,67,42,.10), transparent 55%),
       radial-gradient(90% 80% at 12% 95%, rgba(32,48,42,.10), transparent 60%),
       linear-gradient(180deg,#FAF5EB 0%, #F4EBDB 100%)}
-  .hero-inner{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:74px 0 84px}
+  .hero-inner{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding-top:74px;padding-bottom:84px}
   .hero h1{font-size:70px;letter-spacing:-.5px}
   .hero h1 em{font-style:italic;color:var(--terra)}
   .hero p.sub{font-size:19px;color:var(--ink-soft);max-width:520px;margin-top:22px}
@@ -68,11 +68,11 @@
   .hero-aside{display:flex;justify-content:center}
   .medallion{width:340px;height:340px;position:relative}
   .lead-tag{display:inline-flex;align-items:center;gap:8px;background:var(--sand);border:1px solid var(--line);color:var(--terra-deep);font-size:12.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:40px;margin-bottom:26px}
-  @media(max-width:900px){.hero-inner{grid-template-columns:1fr;padding:44px 0}.hero h1{font-size:48px}.hero-aside{display:none}}
+  @media(max-width:900px){.hero-inner{grid-template-columns:1fr;padding-top:44px;padding-bottom:44px}.hero h1{font-size:48px}.hero-aside{display:none}}
 
   /* ---------- TRUST BAR ---------- */
   .trust{background:var(--pine);color:var(--ivory)}
-  .trust-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;padding:26px 0}
+  .trust-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;padding-top:26px;padding-bottom:26px}
   .stat{text-align:center;flex:1;min-width:150px}
   .stat .n{font-family:var(--font-serif),serif;font-size:34px;font-weight:600;color:#fff}
   .stat .l{font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:2px}
@@ -289,7 +289,7 @@
   @media(max-width:520px){.ep-art{width:84px;height:84px}.tarka .stack{height:240px}}
 
   /* inner pages */
-  .page-hero .hero-inner{padding:64px 0 72px}
+  .page-hero .hero-inner{padding-top:64px;padding-bottom:72px}
   .page-hero h1{font-size:60px;margin-top:12px}
   .page-hero .btns{display:flex;gap:14px;flex-wrap:wrap}
   .prose{max-width:720px}
@@ -387,7 +387,7 @@
 
   /* Ops dashboard */
   body:has(.ops-root) header.nav, body:has(.ops-root) > footer, body:has(.ops-root) footer:last-of-type{display:none}
-  .ops-root{min-height:100vh;background:var(--paper)}
+  .ops-root{min-height:100vh;background:var(--ivory)}
   .ops-login{max-width:420px;margin:0 auto;padding:90px 22px;display:flex;flex-direction:column;gap:14px}
   .ops-login h1{font-size:40px}
   .ops-form{display:flex;flex-direction:column;gap:10px}
@@ -515,3 +515,35 @@
 
   /* Two-line aphorism headline */
   .hero h1.h1-aphorism{font-size:clamp(44px,5.4vw,72px);line-height:1.06}
+
+  /* ---------- Mobile fixes ---------- */
+  /* Grid and flex children may shrink below their content width (prevents sideways scrolling) */
+  .hero-inner > *, .letter > *, .feature > *, .season-feature > *, .tarka-inner > *, .about-inner > *,
+  [class*="-grid"] > *, .pricing > *, .ss-plans > *, .pathways > *, .benefits > *, .faculty > * { min-width: 0; }
+  input, select, textarea { min-width: 0; max-width: 100%; }
+  img, iframe, video { max-width: 100%; }
+  .btn { overflow-wrap: anywhere; }
+  /* Menu button + panel */
+  .menu-btn { display: none; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 3px; background: transparent; cursor: pointer; flex-direction: column; justify-content: center; align-items: center; gap: 5px; margin-left: 8px; }
+  .menu-btn span { width: 20px; height: 2px; background: var(--ink); display: block; }
+  .mobile-menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ivory); overflow-y: auto; padding: 18px 22px 40px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 22px; }
+  .mobile-menu nav { display: flex; flex-direction: column; }
+  .mobile-menu nav a { font-family: var(--font-serif), serif; font-size: 26px; font-weight: 600; color: var(--ink); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .mobile-menu-foot { display: flex; flex-direction: column; gap: 10px; }
+  .mobile-menu-foot .btn { justify-content: center; }
+  @media (max-width: 900px) { .menu-btn { display: inline-flex; } .nav { position: sticky; top: 0; } }
+  @media (max-width: 520px) {
+    .nav-cta .btn-primary { display: none; }
+    .btn { white-space: normal; text-align: center; justify-content: center; }
+    .btns { flex-direction: column; align-items: stretch; }
+    .lead-tag { white-space: normal; line-height: 1.45; font-size: 11px; letter-spacing: 1px; }
+    .letter form, .capture form, .final form, .reading-cta .reading-form form { flex-direction: column; align-items: stretch; padding: 10px; }
+    .letter form button, .capture form button, .final form button, .reading-cta .reading-form form button { width: 100%; justify-content: center; }
+    .hero h1.h1-aphorism { font-size: 40px; }
+    .hero-inner { padding-top: 28px; }
+    .sec-head h2, .page-hero h1 { overflow-wrap: break-word; }
+    .contact-grid .btn { font-size: 14px; }
+    .pricing .plan, .ss-plans .plan { padding: 26px 20px; }
+    .season-title { font-size: 36px; }
+    .season-facts li { flex-direction: column; gap: 2px; }
+  }

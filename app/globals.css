@@ -663,3 +663,11 @@
     .themes-dots.bottom{display:none}
     .themes{padding-top:52px}
   }
+
+  .fac-group{font-size:15px;font-family:var(--font-sans),sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft);margin:6px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .faculty + .fac-group{margin-top:40px}
+  .fac-focus{font-style:italic;color:var(--ink)!important;margin-bottom:6px}
+  .faculty{grid-template-columns:repeat(3,1fr)}
+  .faculty.guests .fac h3{font-size:20px}
+  @media(max-width:980px){.faculty{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){.faculty{grid-template-columns:1fr}}

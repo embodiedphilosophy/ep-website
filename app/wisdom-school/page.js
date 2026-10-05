@@ -45,7 +45,8 @@ export default async function WisdomSchool() {
   const mm = events.filter(isMM).slice(0, 4);
   const lectures = events.filter(e => isLecture(e) && !isWorkshop(e)).slice(0, 2);
   const workshops = events.filter(isWorkshop).slice(0, 2);
-  const faculty = teachers.filter(t => !/^jacob kyle$/i.test(t.name)).slice(0, 4);
+  const core = teachers.filter(t => String(t.wisdom_school).toLowerCase() === 'core');
+  const guests = teachers.filter(t => String(t.wisdom_school).toLowerCase() === 'guest');
 
   return (
     <>
@@ -112,12 +113,19 @@ export default async function WisdomSchool() {
         <p style={{ marginTop: 18 }}>Upgrade from Wisdom School to Plus at any time; the remaining value of your plan is credited.</p>
       </div></section>
 
-      {faculty.length > 0 && (
+      {core.length > 0 && (
         <section className="sec path"><div className="wrap">
           <div className="sec-head"><span className="eyebrow">Faculty</span><h2>Who you’ll learn with</h2></div>
+          <h3 className="fac-group">Core Faculty</h3>
           <div className="faculty">
-            {faculty.map(t => <div key={t.name} className="fac"><h3>{t.name}</h3><div className="r">{t.role}</div><p>{t.bio}</p></div>)}
+            {core.map(t => <div key={t.name} className="fac"><h3>{t.name}</h3><div className="r">{t.role}</div>{t.focus && <p className="fac-focus">{t.focus}</p>}<p>{t.bio}</p></div>)}
           </div>
+          {guests.length > 0 && (<>
+            <h3 className="fac-group">Guest Faculty</h3>
+            <div className="faculty guests">
+              {guests.map(t => <div key={t.name} className="fac"><h3>{t.name}</h3><div className="r">{t.role}</div>{t.focus && <p className="fac-focus">{t.focus}</p>}</div>)}
+            </div>
+          </>)}
           <p style={{ marginTop: 22 }}><a href="/teachers">Meet all our teachers →</a></p>
         </div></section>
       )}

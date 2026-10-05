@@ -38,11 +38,14 @@ export default function AnnualThemes({ themes, current, plusHref, joinHref }) {
   return (
     <section className="themes" aria-label="Wisdom School annual themes">
       <div className="wrap themes-head">
-        <div><span className="eyebrow">The year’s theme</span><h2>One question, explored all year</h2></div>
+        <div><span className="eyebrow">The year’s theme</span><h2>One idea explored from many perspectives.</h2></div>
         <div className="themes-nav">
           <button type="button" aria-label="Previous year" disabled={idx <= 0} onClick={() => go(years[idx - 1])}>←</button>
           <button type="button" aria-label="Next year" disabled={idx >= years.length - 1} onClick={() => go(years[idx + 1])}>→</button>
         </div>
+      </div>
+      <div className="themes-dots top" aria-hidden="false">
+        {themes.map(t => <button key={t.year} type="button" role="tab" aria-selected={t.year === active} aria-label={`${t.year}`} onClick={() => go(t.year)}>{t.year}</button>)}
       </div>
       <div className="themes-track" ref={track} onScroll={onScroll}>
         {themes.map(t => {
@@ -76,7 +79,7 @@ export default function AnnualThemes({ themes, current, plusHref, joinHref }) {
           );
         })}
       </div>
-      <div className="themes-dots" role="tablist">
+      <div className="themes-dots bottom" role="tablist">
         {themes.map(t => <button key={t.year} type="button" role="tab" aria-selected={t.year === active} aria-label={`${t.year}`} onClick={() => go(t.year)}>{t.year}</button>)}
       </div>
     </section>

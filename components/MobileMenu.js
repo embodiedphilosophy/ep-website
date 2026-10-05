@@ -19,7 +19,7 @@ export default function MobileMenu({ signIn }) {
   const links = [
     ['/wisdom-school', 'Wisdom School'], ['/sadhana-school', 'Sādhana School'], ['/meditation-pass', 'Meditation Pass'],
     ['/living-room-lectures', 'Living Room Lectures'], ['/events', 'Events'], ['/podcast', 'Listen'],
-    ['/#tarka', 'Tarka'], ['/about', 'About'], ['/teachers', 'Teachers'], ['/continuing-education', 'CE for Yoga Teachers'], ['/contact', 'Contact'],
+    ['/#tarka', 'Tarka'], ['/about', 'About'], ['/teachers', 'Teachers'], ['/contact', 'Contact'],
   ];
   return (
     <>

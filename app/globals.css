@@ -547,3 +547,60 @@
     .season-title { font-size: 36px; }
     .season-facts li { flex-direction: column; gap: 2px; }
   }
+
+  /* ---------- Mobile spacing pass (from phone screenshots) ---------- */
+  .mobile-menu { border-top: none; }
+  .next-live .dot { margin-left: 4px; }
+  @media (max-width: 900px) {
+    /* solid header: content no longer smudges through the frosted glass while scrolling */
+    header.nav { background: var(--ivory); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .sec { padding: 60px 0; }
+    .final { padding: 64px 0; }
+  }
+  @media (max-width: 520px) {
+    .sec { padding: 48px 0; }
+    .sec-head { margin-bottom: 28px; }
+    .final { padding: 52px 0 60px; }
+    .final h2 { font-size: 34px; }
+    .final p { font-size: 16px; }
+    .btns { display: flex; width: 100%; gap: 12px; }
+    .btns .btn { width: 100%; }
+    /* stats: tidy two-column grid; an odd last stat spans the full width */
+    .trust-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 12px; padding-top: 30px; padding-bottom: 30px; }
+    .trust-inner .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .stat { min-width: 0; }
+    .stat .n { font-size: 28px; }
+    .stat .l { font-size: 11px; letter-spacing: 1.2px; }
+    .hero-inner { padding-bottom: 36px; }
+    .next-live { margin-top: 22px; font-size: 14px; }
+    .letter { padding: 34px 24px; }
+  }
+  @media (max-width: 520px) {
+    .about blockquote { font-size: 23px; line-height: 1.35; }
+    .tarka-inner .btn, .about-inner .btn { width: 100%; justify-content: center; margin: 6px 0 0; }
+  }
+
+  /* For schools */
+  .modules{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:18px 34px}
+  .modules li{display:flex;gap:18px;padding:18px 0;border-top:1px solid var(--line)}
+  .modules .mn{font-family:var(--font-serif),serif;font-size:30px;color:var(--terra);line-height:1}
+  .modules h3{font-size:23px}
+  .modules p{font-size:15px;color:var(--ink-soft);margin-top:4px}
+  .steps{max-width:760px;margin-left:20px;display:flex;flex-direction:column;gap:12px;font-size:17px}
+  .inq-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:start}
+  .inq-wrap > *{min-width:0}
+  .inq{display:flex;flex-direction:column;gap:14px;background:var(--ivory);border:1px solid var(--line);padding:26px}
+  .inq-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .inq label{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink)}
+  .inq input,.inq select,.inq textarea{font:inherit;font-weight:400;font-size:15px;padding:11px 12px;border:1px solid var(--line);border-radius:3px;background:#fff;min-width:0}
+  .inq .btn{align-self:flex-start}
+  .inq .hp{position:absolute;left:-9999px;width:1px;height:1px}
+  .inq-err{color:var(--terra);font-size:14px}
+  .inq-done{background:var(--ivory);border:1px solid var(--line);padding:30px}
+  @media(max-width:860px){.modules,.inq-wrap,.inq-row{grid-template-columns:1fr}.inq .btn{align-self:stretch}}
+  section[id]{scroll-margin-top:84px}
+
+  /* Continuing education */
+  .ce-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+  .ce-hours{font-size:11.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;background:var(--pine);color:#fff;padding:3px 9px;border-radius:20px}
+  .ce-cat{font-size:11.5px;font-weight:600;border:1px solid var(--line);color:var(--ink-soft);padding:2px 9px;border-radius:20px;background:#fff}

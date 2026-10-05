@@ -72,6 +72,7 @@ export default async function WisdomSchool() {
         <div className="pathways">
           {pathways.map(p => (
             <article key={p.title} className="pathway">
+              {Number(p.ce_hours) > 0 && <div className="ce-badges"><span className="ce-hours">{p.ce_hours} CE hours</span></div>}
               <div className="pq">{p.question}</div>
               <h3>{p.title}</h3>
               <p>{p.description}</p>
@@ -81,6 +82,7 @@ export default async function WisdomSchool() {
           ))}
         </div>
         <p style={{ marginTop: 26 }}><a className="btn btn-ghost" href={site.links.wisdomCatalog}>Browse the full library</a></p>
+        <p style={{ marginTop: 14 }}><b>Yoga teachers:</b> pathways earn continuing education hours. <a href="/continuing-education">How CE works →</a></p>
       </div></section>
 
       <section className="sec"><div className="wrap">

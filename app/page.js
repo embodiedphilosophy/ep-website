@@ -77,6 +77,7 @@ export default async function Home() {
               <h3>Wisdom School</h3>
               <div className="price">{site.prices.wisdomYear} / year · Rolling enrollment</div>
               <p>Weekly meditations, monthly lectures and seasonal workshops, with a library of learning pathways in Wisdom School Plus. Become fluent in the foundational concepts of the traditions.</p>
+              <p className="tier-note">Yoga teachers: Plus includes continuing-education hours.</p>
               <a className="go" href="/wisdom-school">Become a member <span className="arw">→</span></a>
             </div>
             <div className="tier" style={{ borderTopColor: 'var(--pine)' }}>
@@ -87,8 +88,12 @@ export default async function Home() {
               <a className="go" href="/sadhana-school">Explore the year <span className="arw">→</span></a>
             </div>
           </div>
+          <a className="ce-band" href="/continuing-education">
+            <span><b>Yoga teachers:</b> earn your Yoga Alliance continuing-education hours studying the sources, with a certificate for every pathway.</span>
+            <span className="ce-band-go">How CE works <span className="arw">→</span></span>
+          </a>
           <div className="quiz-cta reading-cta" id="join">
-            <div><b>Prefer to start with books?</b><span>Get the free Yoga Philosophy Reading List. Join 85,000 seekers. Unsubscribe anytime.</span></div>
+            <div><b>Prefer to start expanding your library?</b><span>Get the free Yoga Philosophy Reading List.</span></div>
             <div className="reading-form"><KitForm formId={KIT.reading} button="Send my reading list" success="Your reading list is on its way. Check your inbox to confirm." /></div>
           </div>
         </div>

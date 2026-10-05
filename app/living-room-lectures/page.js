@@ -34,7 +34,7 @@ export default async function LivingRoomLectures() {
 
       <section className="sec"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">Upcoming</span><h2>Join us live</h2></div>
-        <Events events={upcoming} limit={12} hideFilters links={site.links} />
+        <Events events={upcoming} limit={12} hideFilters links={site.links} photos={site.photos} />
       </div></section>
 
       <section className="sec path" id="past"><div className="wrap">

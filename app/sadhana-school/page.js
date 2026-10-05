@@ -105,7 +105,7 @@ export default async function SadhanaSchool() {
 
       <section className="sec path"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">Coming up</span><h2>Sessions and workshops</h2></div>
-        <Events events={events} limit={8} links={site.links} hideFilters allSessions />
+        <Events events={events} limit={8} links={site.links} photos={site.photos} hideFilters allSessions />
       </div></section>
 
       {quotes.length > 0 && (

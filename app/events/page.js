@@ -13,7 +13,7 @@ export default async function EventsPage() {
         <p>Free lectures, seasonal immersions, and live sessions inside Wisdom School and Sādhana School.</p>
       </div></section>
       <section className="sec" style={{ paddingTop: 56 }}><div className="wrap">
-        <Events events={events} limit={100} links={site.links} />
+        <Events events={events} limit={100} links={site.links} photos={site.photos} />
       </div></section>
     </>
   );

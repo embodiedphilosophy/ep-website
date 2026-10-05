@@ -47,7 +47,7 @@ export default async function MeditationPass() {
       <section className="sec"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">Upcoming</span><h2>Sit with us this Monday</h2>
           <p>Drop in for a single session, or join the Meditation Pass for every week.</p></div>
-        <Events events={upcoming} limit={4} hideFilters links={site.links} allSessions />
+        <Events events={upcoming} limit={4} hideFilters links={site.links} photos={site.photos} allSessions />
       </div></section>
 
       <section className="sec path"><div className="wrap">

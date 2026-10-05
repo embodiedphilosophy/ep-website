@@ -14,7 +14,9 @@ export const metadata = {
 };
 
 const isMM = e => e.series === 'meditation-mondays';
-const isLecture = e => e.track === 'WSML' || (!isMM(e) && /lecture/i.test(e.title));
+// Any Wisdom School event that isn't a Meditation Monday or a workshop counts as the monthly lecture,
+// whatever its title (e.g. "The Return with Wisdom")
+const isLecture = e => e.track === 'WSML' || (!isMM(e) && !isWorkshop(e));
 const isWorkshop = e => e.track === 'WSQ' || /workshop|seminar|book club|quarterly/i.test(e.title);
 const withNames = t => String(t || '').split(',').map(s => s.trim()).filter(n => n && !/^\[/.test(n)).join(' & ');
 
@@ -118,12 +120,12 @@ export default async function WisdomSchool() {
           <div className="sec-head"><span className="eyebrow">Faculty</span><h2>Who you’ll learn with</h2></div>
           <h3 className="fac-group">Core Faculty</h3>
           <div className="faculty">
-            {core.map(t => <div key={t.name} className="fac"><h3>{t.name}</h3><div className="r">{t.role}</div>{t.focus && <p className="fac-focus">{t.focus}</p>}<p>{t.bio}</p></div>)}
+            {core.map(t => <div key={t.name} className="fac">{t.photo_url && <img className="fac-photo" src={t.photo_url} alt={t.name} width="88" height="88" loading="lazy" />}<h3>{t.name}</h3><div className="r">{t.role}</div>{t.focus && <p className="fac-focus">{t.focus}</p>}<p>{t.bio}</p></div>)}
           </div>
           {guests.length > 0 && (<>
             <h3 className="fac-group">Guest Faculty</h3>
             <div className="faculty guests">
-              {guests.map(t => <div key={t.name} className="fac"><h3>{t.name}</h3><div className="r">{t.role}</div>{t.focus && <p className="fac-focus">{t.focus}</p>}</div>)}
+              {guests.map(t => <div key={t.name} className="fac">{t.photo_url && <img className="fac-photo sm" src={t.photo_url} alt={t.name} width="64" height="64" loading="lazy" />}<h3>{t.name}</h3><div className="r">{t.role}</div>{t.focus && <p className="fac-focus">{t.focus}</p>}</div>)}
             </div>
           </>)}
           <p style={{ marginTop: 22 }}><a href="/teachers">Meet all our teachers →</a></p>

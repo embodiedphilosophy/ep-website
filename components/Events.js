@@ -25,12 +25,13 @@ function Pill({ price }) {
 const initials = n => { const w = n.replace(/[\[\]]/g, '').split(' ').filter(Boolean); return ((w[0]?.[0] || '') + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase(); };
 const hasDropIn = e => e.series === 'meditation-mondays' || !!e.dropin_url;
 
-function Teachers({ list }) {
+const pkey = n => String(n || '').toLowerCase().replace(/^dr\.?\s+/, '').replace(/[^a-z]+/g, ' ').trim();
+function Teachers({ list, photos = {} }) {
   const names = String(list || '').split(',').map(t => t.trim()).filter(Boolean);
   if (!names.length) return null;
   return (
     <div className="teachers">
-      <span className="faces" aria-hidden="true">{names.map(n => <span className="face" key={n}>{initials(n)}</span>)}</span>
+      <span className="faces" aria-hidden="true">{names.map(n => photos[pkey(n)] ? <img className="face" key={n} src={photos[pkey(n)]} alt="" /> : <span className="face" key={n}>{initials(n)}</span>)}</span>
       <span>With {names.length > 1 ? names.slice(0, -1).join(', ') + ' & ' + names[names.length - 1] : names[0]}</span>
     </div>
   );
@@ -54,7 +55,7 @@ function Action({ e, links }) {
   return <a className="reg" href="/#join">Get updates →</a>;
 }
 
-export default function Events({ events, limit = 6, hideFilters = false, links = site.links, allSessions = false }) {
+export default function Events({ events, limit = 6, hideFilters = false, links = site.links, allSessions = false, photos = {} }) {
   const [filter, setFilter] = useState('all');
   const seen = new Set();
   const list = events
@@ -78,7 +79,7 @@ export default function Events({ events, limit = 6, hideFilters = false, links =
               <div className="ttl">{e.title}</div>
               {e.host && <div className="host">{e.host}</div>}
               <div className="meta"><Pill price={e.price} />{hasDropIn(e) && <span className="pill dropin">Drop-In</span>} {[e.time, e.note].filter(Boolean).join(', ')}</div>
-              <Teachers list={e.teachers} />
+              <Teachers list={e.teachers} photos={photos} />
             </div>
             <Action e={e} links={links} />
           </div>

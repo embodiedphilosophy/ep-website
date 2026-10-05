@@ -107,7 +107,7 @@ export default async function Home() {
             <h2>Somewhere to practice every week.</h2>
             <p>Weekly meditations, workshops, semesters of study, and annual celebrations of study and practice.</p>
           </div>
-          <Events events={events} limit={6} links={site.links} />
+          <Events events={events} limit={6} links={site.links} photos={site.photos} />
           <div className="events-foot"><a className="btn btn-ghost" href="/events">See the full calendar</a></div>
         </div>
       </section>

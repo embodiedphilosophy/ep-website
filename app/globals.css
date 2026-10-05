@@ -671,3 +671,8 @@
   .faculty.guests .fac h3{font-size:20px}
   @media(max-width:980px){.faculty{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:600px){.faculty{grid-template-columns:1fr}}
+
+  /* Teacher photos */
+  .fac-photo{width:88px;height:88px;border-radius:50%;object-fit:cover;display:block;margin-bottom:12px;background:var(--sand)}
+  .fac-photo.sm{width:64px;height:64px}
+  img.face{object-fit:cover;padding:0}

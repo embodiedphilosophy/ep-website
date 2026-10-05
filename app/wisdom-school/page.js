@@ -1,5 +1,7 @@
 import PageHero from '@/components/PageHero';
 import PricingCards from '@/components/PricingCards';
+import AnnualThemes from '@/components/AnnualThemes';
+import { getThemes } from '@/lib/themes';
 import { getEvents } from '@/lib/events';
 import { getSeasons } from '@/lib/seasons';
 import { getSite, getPathways, getTeachers } from '@/lib/content';
@@ -39,7 +41,7 @@ function Rhythm({ title, cadence, items, empty, cta }) {
 export default async function WisdomSchool() {
   const site = await getSite();
   const events = (await getEvents()).filter(e => e.program === 'wisdom');
-  const [pathways, teachers, ss] = await Promise.all([getPathways(), getTeachers(), getSeasons('sadhana')]);
+  const [pathways, teachers, ss, th] = await Promise.all([getPathways(), getTeachers(), getSeasons('sadhana'), getThemes()]);
   const mm = events.filter(isMM).slice(0, 4);
   const lectures = events.filter(e => isLecture(e) && !isWorkshop(e)).slice(0, 2);
   const workshops = events.filter(isWorkshop).slice(0, 2);
@@ -54,6 +56,8 @@ export default async function WisdomSchool() {
           <a className="btn btn-ghost" href="/meditation-pass">Just the meditations — {site.prices.meditationMonthly}/mo</a>
         </div>
       </PageHero>
+
+      {th.themes.length > 0 && <AnnualThemes themes={th.themes} current={th.current} joinHref="#pricing" plusHref="#pricing" />}
 
       <section className="sec"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">The live rhythm</span><h2>What’s happening in Wisdom School</h2>

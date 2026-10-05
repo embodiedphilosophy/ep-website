@@ -36,7 +36,7 @@ export default async function Home() {
             <p className="sub">Yoga philosophy, meditation, and contemplative teachings from the world’s wisdom and esoteric traditions, for serious students who want to refine their knowledge and deepen their practice.</p>
             <div className="hero-cta">
               <a className="btn btn-primary" href={site.links.quiz}>Get your free Practice Report →</a>
-              <div className="hint">◇&nbsp; Answer a few questions about your practice and get a <b>personalized path</b> through the teachings. Free, and takes a few minutes.</div>
+              <div className="hint">◇&nbsp; Answer a few questions about your practice and get a <b>customized practice report</b> grounded in ancient wisdom. Free, and takes a few minutes.</div>
             </div>
             <div className="next-live">
               <span className="dot" />

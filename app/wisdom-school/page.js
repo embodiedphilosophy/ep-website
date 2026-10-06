@@ -10,7 +10,7 @@ import { longDate } from '@/lib/dates';
 export const revalidate = 300;
 export const metadata = {
   title: 'Wisdom School — Embodied Philosophy',
-  description: 'A weekly live meditation, a monthly lecture, seasonal workshops and, with Wisdom School Plus, a library of learning pathways and certificate programs.',
+  description: 'A weekly live meditation, a monthly lecture, seasonal workshops and, with Wisdom School Plus, the archive of every learning pathway and our certificate programs.',
 };
 
 const isMM = e => e.series === 'meditation-mondays';
@@ -75,7 +75,7 @@ export default async function WisdomSchool() {
 
       <section className="sec path"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">Learning pathways</span><h2>Start with your question</h2>
-          <p>With Wisdom School Plus, the library holds {site.libraryHours} hours of teaching gathered over a decade. Pathways turn it into a guided route: pick the question you’re living with, and follow a sequence of courses chosen to answer it.</p></div>
+          <p>Wisdom School Plus opens the archive of every learning pathway we’ve developed: {site.libraryHours} hours of teaching gathered over a decade. Pathways turn it into a guided route: pick the question you’re living with, and follow a sequence of courses chosen to answer it.</p></div>
         <div className="pathways">
           {pathways.map(p => (
             <article key={p.title} className="pathway">
@@ -112,7 +112,7 @@ export default async function WisdomSchool() {
               <li>Continuing-education certificates for yoga teachers</li>
             </ul></div>
         </div>
-        <p style={{ marginTop: 18 }}>Upgrade from Wisdom School to Plus at any time; the remaining value of your plan is credited.</p>
+        <p style={{ marginTop: 18 }}>You can upgrade from Wisdom School to Plus at any time.</p>
       </div></section>
 
       {core.length > 0 && (

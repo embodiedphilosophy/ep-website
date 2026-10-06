@@ -74,7 +74,7 @@ export default async function ContinuingEducation() {
               <li className="on"><span aria-hidden="true">✓</span>{total > 0 ? `${total}+ hours of CE-eligible study` : 'CE-eligible study across every pathway'}</li>
               <li className="on"><span aria-hidden="true">✓</span>Meditation Mondays, live every week</li>
               <li className="on"><span aria-hidden="true">✓</span>Monthly lectures and seasonal workshops</li>
-              <li className="on"><span aria-hidden="true">✓</span>Certificate programs and past programming</li>
+              <li className="on"><span aria-hidden="true">✓</span>Certificate programs</li>
             </ul>
             <a className="btn btn-primary" href={joinHref}>Start earning hours</a>
           </article>

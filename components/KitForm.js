@@ -11,16 +11,28 @@ export default function KitForm({ formId, onSuccess, button, buttonClass = 'btn 
     setState('sending');
     if (!formId) { setState('ok'); track('Lead', { content_name: 'signup' }); onSuccess?.(email); return; }
     try {
-      const res = await fetch(`https://app.kit.com/forms/${formId}/subscriptions`, {
+      const id = String(formId).trim();
+      const res = await fetch(`https://app.kit.com/forms/${id}/subscriptions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
         body: new URLSearchParams({ email_address: email }),
       });
-      setState(res.ok ? 'ok' : 'error');
-      if (res.ok) { track('Lead', { content_name: String(formId) }); onSuccess?.(email); }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.status === 'failed') { setState('error'); return; }
+      track('Lead', { content_name: id });
+      onSuccess?.(email);
+      // Kit asks visitors in GDPR regions (UK/EU) to give consent on its own page before the
+      // subscription is created. Without this step those signups are silently dropped.
+      if (data.consent?.enabled && data.consent?.url) {
+        const w = window.open(data.consent.url, '_blank');
+        if (!w) { window.location.href = data.consent.url; return; }
+        setState('consent'); return;
+      }
+      setState('ok');
     } catch { setState('error'); }
   }
   if (state === 'ok') return <p className={hintClass} role="status">{success}</p>;
+  if (state === 'consent') return <p className={hintClass} role="status">One more step: confirm your subscription in the tab that just opened.</p>;
   return (
     <form onSubmit={onSubmit}>
       <input type="email" name="email_address" required placeholder="Your email address" aria-label="Email address" />

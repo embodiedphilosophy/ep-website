@@ -68,7 +68,7 @@ export default async function Home() {
             <div className="tier">
               <div className="step">Start here — Free</div>
               <h3>Living Room Lectures</h3>
-              <div className="price">Free · Live &amp; online</div>
+              <div className="price">Free · Returns January 2027</div>
               <p>A monthly live series where we explore the meeting point of the contemplative traditions and contemporary life. No commitment — just come, think, and practice with us.</p>
               <a className="go" href="/living-room-lectures">See what’s coming <span className="arw">→</span></a>
             </div>
@@ -76,7 +76,7 @@ export default async function Home() {
               <div className="step">Build fluency</div>
               <h3>Wisdom School</h3>
               <div className="price">{site.prices.wisdomYear} / year · Rolling enrollment</div>
-              <p>Weekly meditations, monthly lectures and seasonal workshops, with a library of learning pathways in Wisdom School Plus. Become fluent in the foundational concepts of the traditions.</p>
+              <p>Weekly meditations, monthly lectures and seasonal workshops, with the archive of every learning pathway in Wisdom School Plus. Become fluent in the foundational concepts of the traditions.</p>
               <p className="tier-note">Yoga teachers: Plus includes continuing-education hours.</p>
               <a className="go" href="/wisdom-school">Become a member <span className="arw">→</span></a>
             </div>
@@ -84,7 +84,7 @@ export default async function Home() {
               <div className="step">Go all the way</div>
               <h3>Sādhana School</h3>
               <div className="price">From {site.prices.sadhanaSemesterFrom} / semester · 2026–2027</div>
-              <p>Our flagship year of guided study and practice. Four immersive semesters, monthly workshops, and a community of serious practitioners walking the path together.</p>
+              <p>Our flagship year of guided study and practice. Three 8-week semesters and a summer immersion, weekend workshops, and a community of serious practitioners walking the path together.</p>
               <a className="go" href="/sadhana-school">Explore the year <span className="arw">→</span></a>
             </div>
           </div>
@@ -121,8 +121,8 @@ export default async function Home() {
             <h2>Sādhana School</h2>
             <div className="theme">“{site.sadhanaTheme}”</div>
             <ul>
-              <li>Four 8-week semesters — Pratyabhijñā philosophy, Rasa theory &amp; meditation</li>
-              <li>Eight weekend workshops across the year, included in tuition</li>
+              <li>Three 8-week semesters and a 7-day summer immersion — Pratyabhijñā philosophy, Rasa theory &amp; meditation</li>
+              <li>Weekend workshops across the year, included in tuition</li>
               <li>Guided by Jacob Kyle &amp; distinguished guest teachers</li>
               <li>A community of 100+ committed practitioners — live and recorded</li>
             </ul>

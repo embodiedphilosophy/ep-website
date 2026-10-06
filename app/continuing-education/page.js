@@ -13,7 +13,7 @@ const FAQ = [
   ['Can I study entirely online, at my own pace?', 'Yes. Yoga Alliance currently allows all continuing-education training hours to be earned through online learning, and every pathway is self-paced. Live sessions are a bonus, not a requirement.'],
   ['How do I get my certificate?', 'When you complete a pathway, you receive a certificate of completion with your name, the pathway, the hours, the educational category and the date, ready to keep for your records.'],
   ['I’m not registered with Yoga Alliance. Is this still useful?', 'Yes. Many teachers study with us simply to deepen their teaching, and other credentialing bodies may accept the hours. Check with yours.'],
-  ['What if I’m already a Wisdom School member?', 'Wisdom School Plus members already have every pathway and CE certificates. If you’re on Wisdom School, you can upgrade to Plus at any time and the remaining value of your plan is credited.'],
+  ['What if I’m already a Wisdom School member?', 'Wisdom School Plus members already have every pathway and CE certificates. If you’re on Wisdom School, you can upgrade to Plus at any time.'],
 ];
 
 export default async function ContinuingEducation() {
@@ -40,7 +40,7 @@ export default async function ContinuingEducation() {
       <section className="sec"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">How it works</span><h2>Your hours, without the busywork</h2></div>
         <div className="path-grid">
-          <div className="tier"><h3>What you need</h3><p>Yoga Alliance currently asks registered teachers for 75 hours of continuing education every three years: 45 teaching and 30 training hours in its educational categories. <a href={YA_URL}>Check the current rules</a>.</p></div>
+          <div className="tier"><h3>What you need</h3><p>Yoga Alliance currently asks registered teachers to complete 30 hours of continuing education every three years, alongside 45 hours of teaching. <a href={YA_URL}>Check the current rules</a>.</p></div>
           <div className="tier" style={{ borderTopColor: 'var(--ochre)' }}><h3>Study what matters</h3><p>Choose a pathway, study at your own pace, and bring what you learn straight into your classes. Every pathway lists its hours and category up front.</p></div>
           <div className="tier" style={{ borderTopColor: 'var(--pine)' }}><h3>Get your certificate</h3><p>Complete a pathway and receive a certificate of completion with your hours and category, ready to log with Yoga Alliance and keep for your records.</p></div>
         </div>

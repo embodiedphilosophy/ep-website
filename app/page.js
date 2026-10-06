@@ -180,7 +180,7 @@ export default async function Home() {
             </div>
             <div>
               <KitForm formId={KIT.letter} button="Subscribe" buttonClass="btn btn-light" hintClass="hint" success="You’re in. Check your inbox to confirm." />
-              <div className="hint">Join 85,000 practitioners. One email a week. Unsubscribe anytime.</div>
+              <div className="hint">Join 100,000 practitioners. One email a week. Unsubscribe anytime.</div>
             </div>
           </div>
         </div>

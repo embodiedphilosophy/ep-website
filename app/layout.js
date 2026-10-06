@@ -2,6 +2,7 @@ import './globals.css';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Tracking from '@/components/Tracking';
+import Script from 'next/script';
 
 export const metadata = {
   title: 'Embodied Philosophy — An online school for the contemplative life',
@@ -30,6 +31,8 @@ export default function RootLayout({ children }) {
         <main>{children}</main>
         <Footer />
         <Tracking />
+        {/* Ether, the EP support chat (separate Vercel project: ep-support-agent) */}
+        <Script src="https://ep-support-agent.vercel.app/widget.js" strategy="lazyOnload" />
       </body>
     </html>
   );

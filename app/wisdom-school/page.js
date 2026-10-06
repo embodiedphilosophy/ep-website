@@ -88,13 +88,13 @@ export default async function WisdomSchool() {
             </article>
           ))}
         </div>
-        <p style={{ marginTop: 26 }}><a className="btn btn-ghost" href={site.links.wisdomCatalog}>Browse the full library</a></p>
+        <p style={{ marginTop: 26 }}><a className="btn btn-ghost" href={site.links.wisdomCatalog}>Browse the catalog</a></p>
         <p style={{ marginTop: 14 }}><b>Yoga teachers:</b> pathways earn continuing education hours. <a href="/continuing-education">How CE works →</a></p>
       </div></section>
 
       <section className="sec"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">Two ways to join</span><h2>Wisdom School and Wisdom School Plus</h2>
-          <p>Both include the full live rhythm of the year. Plus adds the library: every pathway, our certificate programs and past programming.</p></div>
+          <p>Both include the full live rhythm of the year. Plus adds the archive: every learning pathway we’ve developed, plus our certificate programs.</p></div>
         <div className="tier-compare">
           <div className="tier"><h3>Wisdom School</h3><div className="tc-price">{site.prices.wisdomYear}/year{site.prices.wisdomMonthly ? ` · or ${site.prices.wisdomMonthly}/month` : ''}</div>
             <ul className="plain">

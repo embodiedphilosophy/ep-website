@@ -12,10 +12,10 @@ const features = hours => [
   'This year’s programming, on demand',
   'A starter learning pathway',
   `All learning pathways (${hours} hours)`,
-  'Past programming and certificate programs',
+  'Certificate programs',
   'CE certificates for yoga teachers',
 ];
-const INCLUDES = { dropin: [0], pass: [0, 1, 2, 3], ws: [0, 1, 2, 3, 4, 5, 6], plus: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] };
+const INCLUDES = { dropin: [0], pass: [0, 1, 2, 3], ws: [0, 1, 2, 4, 5, 6], plus: [0, 1, 2, 4, 5, 6, 7, 8, 9] };
 const num = p => Number(String(p || '').replace(/[^0-9.]/g, '')) || 0;
 
 function Toggle({ value, onChange, options, label }) {
@@ -66,7 +66,7 @@ export function WisdomCard({ prices, links, hours, defaultTier = 'ws', featured 
         : <div className="amt">{yearP}<span> / year</span></div>}
       {p === 'annual' ? <Savings monthly={monthP} annual={yearP} /> : <div className="save">Switch to annual any time</div>}
       <p className="plan-sub">{plus
-        ? 'Everything in Wisdom School, plus every learning pathway, the certificate programs, past programming and CE certificates.'
+        ? 'Everything in Wisdom School, plus the archive of every learning pathway, our certificate programs and CE certificates.'
         : 'The live rhythm of the year: weekly meditations, monthly lectures, workshops and this year’s recordings.'}</p>
       <a className="btn btn-primary" href={href}>Join Wisdom School{plus ? ' Plus' : ''}</a>
       <Features plan={plus ? 'plus' : 'ws'} hours={hours} />

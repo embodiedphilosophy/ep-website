@@ -8,6 +8,7 @@ import { planMeetings, ensureMeeting } from '@/lib/zoomplan';
 //   series  → one meeting for every row / Recurring rule sharing the same series name
 //   blank   → nothing (hand-made meetings such as Meditation Mondays; paste the link in zoom_link)
 // Runs daily via Vercel Cron (vercel.json), or open /api/zoom/sync?key=CRON_SECRET to run it now.
+// Add &dry=1 to see what it would create or update without touching Zoom.
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
@@ -20,8 +21,12 @@ export async function GET(req) {
   }
   const report = [];
   try {
-    const [rows, rules, upcoming] = await Promise.all([eventRows(), recurringRules(), listUpcoming()]);
+    const dry = new URL(req.url).searchParams.get('dry');
+    const [rows, rules] = await Promise.all([eventRows(), recurringRules()]);
     const { plans, skipped } = planMeetings(rows, rules, todayET());
+    if (dry) return NextResponse.json({ mode: 'dry run: Zoom was not touched',
+      meetings: plans.map(p => ({ zoom_key: p.key, kind: p.kind, title: p.title, time: p.time, minutes: p.duration, sessions: p.dates.length, dates: p.dates, ...(p.warning ? { warning: p.warning } : {}) })), skipped });
+    const upcoming = await listUpcoming();
     skipped.forEach(s => report.push({ ...s, action: 'skipped' }));
     for (const p of plans) {
       try { report.push(await ensureMeeting(p, upcoming)); }

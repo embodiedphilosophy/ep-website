@@ -3,9 +3,8 @@ import { loadTeam } from '@/lib/calendar';
 import { syncToMotion, addDays, eventIdFromTag } from '@/lib/ops/tasks';
 import { listTasks } from '@/lib/ops/motion';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
-import { findTagged, getMeeting } from '@/lib/zoom';
-import { todayET, reminderRows, zoomLinkOf, emailsOf } from '@/lib/events';
-import { meetingKey, zoomMode } from '@/lib/zoomplan';
+import { joinUrlFor, seriesLinksOf } from '@/lib/ops/joinurl';
+import { todayET, reminderRows, emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 
 // Daily (vercel.json cron): fill Motion from the calendar and send teaching reminders.
@@ -14,19 +13,7 @@ import { longDate } from '@/lib/dates';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-// Zoom link, in order: this row's zoom_link; a zoom_link on any row of the same series;
-// Meditation Mondays' hand-made meeting; the meeting the Zoom sync made (one-off or series).
-async function joinUrl(ev, seriesLinks) {
-  if (zoomLinkOf(ev)) return zoomLinkOf(ev);
-  if (ev.series && seriesLinks[ev.series]) return seriesLinks[ev.series];
-  try {
-    if (ev.series === 'meditation-mondays' && process.env.MEDITATION_MONDAYS_MEETING_ID) return (await getMeeting(process.env.MEDITATION_MONDAYS_MEETING_ID)).join_url;
-    const key = meetingKey(ev) || ev.series || '';
-    if (!key) return '';
-    const m = await findTagged(key);
-    return m ? (m.join_url || (await getMeeting(m.id)).join_url) : '';
-  } catch { return ''; }
-}
+const joinUrl = (ev, seriesLinks) => joinUrlFor(ev, seriesLinks);
 
 // Who gets a session's reminders: ONLY the addresses typed in that row's Teacher/Host Emails column.
 // Nothing else sends a reminder: not the Team tab, not names in Teachers, not other rows of the series.
@@ -78,8 +65,7 @@ export async function GET(req) {
   const load = async () => {
     const [cal, team] = await Promise.all([reminderRows(), loadTeam({ fresh: true })]);
     const byEmail = Object.fromEntries(team.filter(t => t.email).map(t => [t.email.trim(), t]));
-    const seriesLinks = {};
-    for (const ev of cal) if (ev.series && zoomLinkOf(ev) && !seriesLinks[ev.series]) seriesLinks[ev.series] = zoomLinkOf(ev);
+    const seriesLinks = seriesLinksOf(cal);
     return { cal, team, byEmail, seriesLinks };
   };
 

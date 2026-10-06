@@ -64,7 +64,9 @@ export default async function Ops({ searchParams }) {
                   <div className="d">{longDate(m.date)}{m.time ? ` · ${m.time}` : ''}</div>
                   <div className="t">{m.title}</div>
                   <div className="w">{[m.teachers && `Teaching: ${m.teachers}`, m.course_host && `Host: ${m.course_host}`].filter(Boolean).join(' · ') || m.owner}</div>
-                  {String(m.zoom).toUpperCase() === 'TRUE' && <div className="z">Zoom link arrives by email a week before.</div>}
+                  {m.join_url
+                    ? <div className="z">Zoom: <a href={m.join_url} target="_blank" rel="noopener">{m.join_url}</a></div>
+                    : <div className="z">No Zoom link yet{user.director ? ' (add it in the Master Schedule’s Zoom Link column, or set Zoom to one-off or series)' : ''}.</div>}
                 </li>
               ))}
             </ul>

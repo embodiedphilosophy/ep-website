@@ -7,7 +7,7 @@ const features = hours => [
   'A live Meditation Monday session',
   'Every Meditation Monday, every week',
   'Replays of Meditation Mondays',
-  'Free first week',
+  'Free first week (monthly plan)',
   'Monthly lectures and seasonal workshops',
   'This year’s programming, on demand',
   'A starter learning pathway',
@@ -15,7 +15,7 @@ const features = hours => [
   'Certificate programs',
   'CE certificates for yoga teachers',
 ];
-const INCLUDES = { dropin: [0], pass: [0, 1, 2, 3], ws: [0, 1, 2, 4, 5, 6], plus: [0, 1, 2, 4, 5, 6, 7, 8, 9] };
+const INCLUDES = { dropin: [0], pass: [0, 1, 2, 3], passYear: [0, 1, 2], ws: [0, 1, 2, 4, 5, 6], plus: [0, 1, 2, 4, 5, 6, 7, 8, 9] };
 const num = p => Number(String(p || '').replace(/[^0-9.]/g, '')) || 0;
 
 function Toggle({ value, onChange, options, label }) {
@@ -96,7 +96,7 @@ export default function PricingCards({ prices, links, hours = '650+' }) {
         {pass === 'annual' ? <Savings monthly={prices.meditationMonthly} annual={prices.meditationYearly} /> : <div className="save">Start with a free week</div>}
         <p className="plan-sub">Every Meditation Monday, live, plus replays of every session.</p>
         <a className="btn btn-primary" href={pass === 'monthly' ? links.meditationMonthly : links.meditationYearly}>{pass === 'monthly' ? 'Start your free week' : 'Join for the year'}</a>
-        <Features plan="pass" hours={hours} />
+        <Features plan={pass === 'monthly' ? 'pass' : 'passYear'} hours={hours} />
       </article>
 
       <WisdomCard prices={prices} links={links} hours={hours} />

@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
 
 // Phone/tablet menu: the main links are hidden in the header below 900px, so this button opens them.
-export default function MobileMenu({ signIn }) {
+export default function MobileMenu({ signIn, signInWisdom, signInSadhana }) {
   const [open, setOpen] = useState(false);
   const [top, setTop] = useState(72);
   const pathname = usePathname();
@@ -33,7 +33,9 @@ export default function MobileMenu({ signIn }) {
           </nav>
           <div className="mobile-menu-foot">
             <a className="btn btn-primary" href="/#join" onClick={() => setOpen(false)}>Join Free</a>
-            <a className="btn btn-ghost" href={signIn}>Sign in</a>
+            <p className="mobile-signin-label">Sign in</p>
+            <a className="btn btn-ghost" href={signInWisdom || signIn}>Wisdom School</a>
+            <a className="btn btn-ghost" href={signInSadhana || signIn}>Sādhana School</a>
           </div>
         </div>, document.body
       )}

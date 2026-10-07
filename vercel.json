@@ -1,6 +1,16 @@
 {
   "crons": [
-    { "path": "/api/zoom/sync", "schedule": "0 12 * * *" },
-    { "path": "/api/ops/daily", "schedule": "0 13 * * *" }
+    {
+      "path": "/api/zoom/sync",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/ops/daily",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/scaffolding",
+      "schedule": "0 14 * * 4"
+    }
   ]
 }

@@ -89,3 +89,19 @@ Every Thursday (vercel.json cron) `/api/scaffolding` builds a **Kit draft** for 
   Look first: `&preview=1` (web page) or `&dry=1` (JSON). Nothing is created in either.
 - Settings: `KIT_API_KEY` (Kit API v4 key). Optional `SCAFFOLDING_SEGMENT_ID` or `SCAFFOLDING_TAG_ID` (default: all subscribers),
   `SCAFFOLDING_TEMPLATE_ID` (default 5578308, "Text only"). Uses the existing Google, Resend and CRON_SECRET settings.
+
+## Member sync (Uscreen / SamCart → Kit tags → Circle)
+- **Uscreen** (Settings > Webhooks: Subscription Assigned, Ownership Lifecycle Changed, Access Canceled) →
+  `/api/members/uscreen?key=MEMBERS_WEBHOOK_SECRET`. Assigned adds tags; access ending removes them;
+  a cancellation request only emails the directors (access runs to the end date).
+- **SamCart** (Apps > Webhooks, marketplace rule) → `/api/members/samcart?key=MEMBERS_WEBHOOK_SECRET`.
+  Orders add tags; refunds and subscription cancellations remove them and email the directors.
+- **Kit → Circle**: Kit webhooks for each mapped tag (added + removed) and for the Hold tag (removed) →
+  `/api/members/kit?key=MEMBERS_WEBHOOK_SECRET&tag=<id>&action=add|remove`.
+  `GET /api/members/kit?key=…` checks that every mapped Circle group exists.
+- Rules: `lib/membership.js` (plan → tag, product → tag, tag → Circle group).
+- **Hold tag** ("Hold: Not yet welcomed"): until `MEMBERS_GO_LIVE=1`, new buyers added to Kit also get it.
+  Held people are kept out of Circle (so Circle sends nothing) and out of the Weekly Scaffolding.
+  Removing the Hold tag releases them: Circle invites them and opens their groups.
+- Vercel: `KIT_API_KEY`, `MEMBERS_WEBHOOK_SECRET`, `CIRCLE_API_TOKEN` (Admin V2), optional `MEMBERS_GO_LIVE`,
+  `CIRCLE_GROUPS_JSON`, `HOLD_TAG_ID`.

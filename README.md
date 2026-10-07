@@ -126,3 +126,19 @@ their slides as a PDF (tracks with a Teacher "slides" row); EP staff on the Team
 Settings for onboarding (Vercel → ep-website): `CIRCLE_API_TOKEN` (Admin API v2), `CIRCLE_TEACHER_ACCESS_GROUP_ID`,
 optional `CIRCLE_SPACE_<TRACK>` (default Circle space per track, e.g. `CIRCLE_SPACE_SS`), `CIRCLE_TRACKS`
 (default `SS,SSWW,EVENT`; `ALL` after the full move to Circle), `BLOB_READ_WRITE_TOKEN` (ep-media store).
+
+## Member sync (Uscreen / SamCart → Kit tags → Circle)
+- **Uscreen** (Settings > Webhooks: Subscription Assigned, Ownership Lifecycle Changed, Access Canceled) →
+  `/api/members/uscreen?key=MEMBERS_WEBHOOK_SECRET`. Assigned adds tags; access ending removes them;
+  a cancellation request only emails the directors (access runs to the end date).
+- **SamCart** (Apps > Webhooks, marketplace rule) → `/api/members/samcart?key=MEMBERS_WEBHOOK_SECRET`.
+  Orders add tags; refunds and subscription cancellations remove them and email the directors.
+- **Kit → Circle**: Kit webhooks for each mapped tag (added + removed) and for the Hold tag (removed) →
+  `/api/members/kit?key=MEMBERS_WEBHOOK_SECRET&tag=<id>&action=add|remove`.
+  `GET /api/members/kit?key=…` checks that every mapped Circle group exists.
+- Rules: `lib/membership.js` (plan → tag, product → tag, tag → Circle group).
+- **Hold tag** ("Hold: Not yet welcomed"): until `MEMBERS_GO_LIVE=1`, new buyers added to Kit also get it.
+  Held people are kept out of Circle (so Circle sends nothing) and out of the Weekly Scaffolding.
+  Removing the Hold tag releases them: Circle invites them and opens their groups.
+- Vercel: `KIT_API_KEY`, `MEMBERS_WEBHOOK_SECRET`, `CIRCLE_API_TOKEN` (Admin V2), optional `MEMBERS_GO_LIVE`,
+  `CIRCLE_GROUPS_JSON`, `HOLD_TAG_ID`.

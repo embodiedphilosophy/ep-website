@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Analytics } from '@vercel/analytics/next';
+import { captureUtm, persistUtm, withUtm } from '@/lib/utm';
 
 // Vercel Analytics: cookieless, always on.
 // Meta Pixel: loads only after consent in the EU/EEA, UK and Switzerland; elsewhere it loads unless the visitor opts out.
 const PIXEL = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const KEY = 'ep-consent'; // 'granted' | 'denied'
 const CONSENT_REGIONS = new Set('AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE IS LI NO GB CH'.split(' '));
-const CHECKOUT = /embodiedphilosophy\.org\/offers|kit\.com\/products|enroll\.embodiedphilosophy\.com|school\.embodiedphilosophy\.com\/offers/;
+const CHECKOUT = /embodiedphilosophy\.org\/offers|kit\.com\/products|enroll\.embodiedphilosophy\.com|ss\.embodiedphilosophy\.com\/checkout|school\.embodiedphilosophy\.com\/offers/;
 
 function loadPixel() {
   if (!PIXEL || window.fbq) return;
@@ -25,6 +26,10 @@ export default function Tracking() {
   const pathname = usePathname();
   const [banner, setBanner] = useState(false);
   const [ready, setReady] = useState(false);
+
+  // Remember where this visit came from (UTM / Meta click / referrer); keep first touch after consent
+  useEffect(() => { captureUtm(); }, []);
+  useEffect(() => { if (ready) persistUtm(); }, [ready]);
 
   // Decide: stored choice → use it; otherwise ask only where consent is required
   useEffect(() => {
@@ -50,7 +55,7 @@ export default function Tracking() {
   useEffect(() => {
     const onClick = e => {
       const a = e.target.closest?.('a[href]');
-      if (a && CHECKOUT.test(a.href) && window.fbq) window.fbq('track', 'InitiateCheckout', { content_name: (a.textContent || '').trim().slice(0, 80) });
+      if (a && CHECKOUT.test(a.href) && (a.href = withUtm(a.href)) && window.fbq) window.fbq('track', 'InitiateCheckout', { content_name: (a.textContent || '').trim().slice(0, 80) });
     };
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);

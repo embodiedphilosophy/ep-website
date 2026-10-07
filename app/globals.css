@@ -707,3 +707,18 @@ button.signin[aria-expanded="true"] .signin-caret{transform:rotate(180deg)}
 @media (max-width: 900px) and (max-height: 600px) {
   .mobile-menu nav a { font-size: 17px; padding: 8px 0; }
 }
+
+  /* ---------- Course pages (/courses/[slug], written by teachers in the ops app) ---------- */
+  .course-page .t-lp-hero{padding:80px max(32px,calc((100vw - 1180px)/2 + 32px)) 60px;background:radial-gradient(120% 90% at 80% 10%,rgba(165,67,42,.12),transparent 60%),var(--cream)}
+  .course-page .t-lp-hero h1{font-size:56px;margin:12px 0}
+  .course-page .t-lp-hero .sub{font-family:var(--font-serif),serif;font-style:italic;font-size:23px;color:var(--ink-soft);max-width:52ch}
+  .course-page .t-lp-meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin:22px 0;font-size:14.5px}
+  .course-page .t-lp-body{max-width:1180px;margin:0 auto;padding:56px 32px 90px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:48px}
+  .course-page .t-stack{display:flex;flex-direction:column;gap:26px;min-width:0}
+  .course-page .t-lp-body h2{font-size:30px;margin-bottom:8px}
+  .course-page .t-lp-body ul{padding-left:18px}
+  .course-page .t-lp-teacher{border:1px solid var(--line);border-top:3px solid var(--terra);padding:24px;background:var(--ivory)}
+  .course-page .t-lp-teacher h3{font-size:26px;margin-top:12px}
+  .course-page .t-lp-teacher .role{font-size:13.5px;color:var(--terra);font-weight:600;margin:4px 0 10px}
+  .course-page .t-lp-teacher p{font-size:15px;color:var(--ink-soft)}
+  @media(max-width:860px){.course-page .t-lp-body{grid-template-columns:1fr}.course-page .t-lp-hero h1{font-size:40px}}

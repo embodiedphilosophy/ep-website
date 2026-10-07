@@ -75,3 +75,14 @@ the site falls back to the EP Website sheet.
 - Daily job (/api/ops/daily): creates calendar tasks in Motion from **Task Templates** (next 30 days),
   welcomes newly assigned teachers, and emails teachers and course hosts a week before, the day before and
   the day of, with the Zoom link.
+
+## Course pages (/courses/[slug])
+Teachers write their course page during onboarding in the **ep-ops** app (ops.embodiedphilosophy.com/teach). It's
+saved to the **Course Pages** tab of EP-Programming-Calendar; set its `status` to `published` and it appears here
+(dates, time, price and the Enroll link come from the Master Schedule). Approved bios and headshots from the
+**Teacher Profiles** tab (`status` = `approved`) replace the ones on the Teachers page.
+
+## Moving the dashboard to ep-ops
+The team dashboard, teacher onboarding and the daily reminder job now live in the ep-ops repo. When
+ops.embodiedphilosophy.com is live, set `OPS_ORIGIN=https://ops.embodiedphilosophy.com` here: /ops then redirects
+there and this site's daily job stands down (so nobody gets reminders twice). The /ops code here can be deleted after.

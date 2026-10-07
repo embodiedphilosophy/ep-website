@@ -66,7 +66,7 @@ async function DirectorView() {
     <main className="ops">
       <header className="ops-top"><a href="/ops" className="t-brand">Embodied <span>Philosophy</span></a><div className="ops-who"><a href="/ops">Dashboard</a> · <a href="/api/ops/logout">Sign out</a></div></header>
       <div className="ops-head"><h1>Teacher onboarding</h1></div>
-      <p className="ops-empty" style={{ maxWidth: 640 }}>Everyone in a Teacher/Host Emails cell on an upcoming Master Schedule row. “Try it as” opens onboarding as that teacher; nothing is saved to the sheet, Motion, Circle or anyone’s inbox while you’re trying it out.</p>
+      <p className="ops-empty" style={{ maxWidth: 640 }}>Everyone with an email on an upcoming event (Event Details → Teacher/Host Emails, or named in Schedule → Teachers & Hosts and on the Team tab). “Try it as” opens onboarding as that teacher; nothing is saved to the sheet, Motion, Circle or anyone’s inbox while you’re trying it out.</p>
       <ul className="ops-tasks" style={{ marginTop: 18 }}>
         {rows.map(r => (
           <li key={r.email}>
@@ -75,7 +75,7 @@ async function DirectorView() {
           </li>
         ))}
       </ul>
-      {rows.length === 0 && <p className="ops-empty">No one is assigned yet. Add teacher emails to the Master Schedule’s Teacher/Host Emails column.</p>}
+      {rows.length === 0 && <p className="ops-empty">No one is assigned yet. Add teacher emails in Event Details → Teacher/Host Emails.</p>}
     </main>
   );
 }

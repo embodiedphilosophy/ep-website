@@ -57,6 +57,8 @@ export async function GET(req) {
   if (!secret || (req.headers.get('authorization') !== `Bearer ${secret}` && url.searchParams.get('key') !== secret)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
+  // Moved to the ep-ops app: once OPS_ORIGIN is set, this copy does nothing, so nobody gets two reminders
+  if (process.env.OPS_ORIGIN) return NextResponse.json({ skipped: `Runs in the ops app now (${process.env.OPS_ORIGIN})` });
   const base = process.env.OPS_URL || url.origin;
   const only = url.searchParams.get('only');
   const preview = Number(url.searchParams.get('preview') || 0);

@@ -82,6 +82,20 @@ EP-Programming-Calendar; set its `status` to `published` and it appears at /cour
 Enroll link come from the Master Schedule). Drafts: /teach/preview/[slug] (directors and that course's teachers).
 Approved bios and headshots from the **Teacher Profiles** tab (`status` = `approved`) replace the ones on the Teachers page.
 
+## The Weekly Scaffolding (Kit newsletter draft)
+Every Thursday (vercel.json cron) `/api/scaffolding` builds a **Kit draft** for the coming Sunday. It never schedules or sends.
+- Words come from the **Weekly Scaffolding** tab of EP-Programming-Calendar (one row per Sunday). Blank required
+  fields show as yellow `[FILL IN]` and the subject starts `[NEEDS CONTENT]`.
+- Events come from the **Master Schedule**: the Sunday through the following Saturday, plus multi-day events still running.
+- Buttons per Track come from the **Track Defaults** newsletter columns: `newsletter` (show / enrolled_only / hide),
+  `enrolled_tags` (Kit tag names, comma-separated), `enrolled_label`, `enrolled_url`, `open_label`, `open_url`, `button_color`.
+  A subscriber with any enrolled tag sees the enrolled button; everyone else sees the open one. The Master Schedule's
+  `Enrolled Tag` column adds tags for a single row. A row's Registration URL replaces `open_url`.
+- Re-run after editing the sheet: `/api/scaffolding?key=CRON_SECRET&date=YYYY-MM-DD` (overwrites the unsent draft, including edits made in Kit).
+  Look first: `&preview=1` (web page) or `&dry=1` (JSON). Nothing is created in either.
+- Settings: `KIT_API_KEY` (Kit API v4 key). Optional `SCAFFOLDING_SEGMENT_ID` or `SCAFFOLDING_TAG_ID` (default: all subscribers),
+  `SCAFFOLDING_TEMPLATE_ID` (default 5578308, "Text only"). Uses the existing Google, Resend and CRON_SECRET settings.
+
 ## Teacher onboarding
 1. **Bio & headshot** (60–100 words, square photo, uploaded to the ep-media Blob store). Returning teachers confirm
    what's on file (Teacher Profiles tab, or the website's Teachers tab) or update it.

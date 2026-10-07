@@ -77,26 +77,37 @@ the site falls back to the EP Website sheet.
   the day of, with the Zoom link.
 
 ## Course pages (/courses/[slug])
-Teachers write their course page during onboarding in the **ep-ops** app (ops.embodiedphilosophy.com/teach). It's
-saved to the **Course Pages** tab of EP-Programming-Calendar; set its `status` to `published` and it appears here
-(dates, time, price and the Enroll link come from the Master Schedule). Approved bios and headshots from the
-**Teacher Profiles** tab (`status` = `approved`) replace the ones on the Teachers page.
+Teachers write their course page during onboarding (/teach). It's saved to the **Course Pages** tab of
+EP-Programming-Calendar; set its `status` to `published` and it appears at /courses/[slug] (dates, time, price and the
+Enroll link come from the Master Schedule). Drafts: /teach/preview/[slug] (directors and that course's teachers).
+Approved bios and headshots from the **Teacher Profiles** tab (`status` = `approved`) replace the ones on the Teachers page.
 
-## Moving the dashboard to ep-ops
-The team dashboard, teacher onboarding and the daily reminder job now live in the ep-ops repo. When
-ops.embodiedphilosophy.com is live, set `OPS_ORIGIN=https://ops.embodiedphilosophy.com` here: /ops then redirects
-there and this site's daily job stands down (so nobody gets reminders twice). The /ops code here can be deleted after.
+## Teacher onboarding
+1. **Bio & headshot** (60–100 words, square photo, uploaded to the ep-media Blob store). Returning teachers confirm
+   what's on file (Teacher Profiles tab, or the website's Teachers tab) or update it.
+2. **Their offering**, once per upcoming offering (a Series, or a single event): title, subtitle, description,
+   what students will explore, who it's for, plus, when that track's **Task Templates** have a Teacher row for it:
+   - readings: share them all now (links or uploads) or send them a week before each session;
+   - three promotional email blurbs (rows mentioning "blurbs"/"promotional": EVENT, i.e. courses a teacher leads
+     on their own; Wisdom School and Sādhana School don't ask, since EP writes those);
+   - a promo clip link (rows mentioning a "clip", e.g. LRL).
+3. **Course page preview**; "This looks right" sends it to directors for review.
+4. **Circle** (tracks in `CIRCLE_TRACKS`, default `SS,SSWW,EVENT`; `ALL` after the full move to Circle): invite,
+   Teachers access group, course space; then how to teach there.
+5. **Dashboard tour**, **emails to expect**, a welcome email, and a row on the **Team** tab.
 
-## The Weekly Scaffolding (Kit newsletter draft)
-Every Thursday (vercel.json cron) `/api/scaffolding` builds a **Kit draft** for the coming Sunday. It never schedules or sends.
-- Words come from the **Weekly Scaffolding** tab of EP-Programming-Calendar (one row per Sunday). Blank required
-  fields show as yellow `[FILL IN]` and the subject starts `[NEEDS CONTENT]`.
-- Events come from the **Master Schedule**: the Sunday through the following Saturday, plus multi-day events still running.
-- Buttons per Track come from the **Track Defaults** newsletter columns: `newsletter` (show / enrolled_only / hide),
-  `enrolled_tags` (Kit tag names, comma-separated), `enrolled_label`, `enrolled_url`, `open_label`, `open_url`, `button_color`.
-  A subscriber with any enrolled tag sees the enrolled button; everyone else sees the open one. The Master Schedule's
-  `Enrolled Tag` column adds tags for a single row. A row's Registration URL replaces `open_url`.
-- Re-run after editing the sheet: `/api/scaffolding?key=CRON_SECRET&date=YYYY-MM-DD` (overwrites the unsent draft, including edits made in Kit).
-  Look first: `&preview=1` (web page) or `&dry=1` (JSON). Nothing is created in either.
-- Settings: `KIT_API_KEY` (Kit API v4 key). Optional `SCAFFOLDING_SEGMENT_ID` or `SCAFFOLDING_TAG_ID` (default: all subscribers),
-  `SCAFFOLDING_TEMPLATE_ID` (default 5578308, "Text only"). Uses the existing Google, Resend and CRON_SECRET settings.
+What onboarding closes in Motion (and the daily job then stops creating): bio/headshot, title/description, promo
+blurbs, and readings if shared up front. The day after each session, the daily job asks that session's teachers for
+their slides as a PDF (tracks with a Teacher "slides" row); EP staff on the Team tab are left out.
+
+### Data: EP-Programming-Calendar (the service account needs edit access)
+| Tab | One row per | Set by hand |
+|---|---|---|
+| Master Schedule, Track Defaults, Task Templates, Team | (existing) | |
+| Teacher Profiles | teacher (email) | `status` = `approved` puts their bio/photo on the website's Teachers page |
+| Course Pages | offering (Series or event ID) | `status` = `published` puts embodiedphilosophy.com/courses/[slug] live; `circle_space_id` = their Circle space |
+
+
+Settings for onboarding (Vercel → ep-website): `CIRCLE_API_TOKEN` (Admin API v2), `CIRCLE_TEACHER_ACCESS_GROUP_ID`,
+optional `CIRCLE_SPACE_<TRACK>` (default Circle space per track, e.g. `CIRCLE_SPACE_SS`), `CIRCLE_TRACKS`
+(default `SS,SSWW,EVENT`; `ALL` after the full move to Circle), `BLOB_READ_WRITE_TOKEN` (ep-media store).

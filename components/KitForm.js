@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { track } from '@/lib/track';
+import { kitUtmFields } from '@/lib/utm';
 
 // Posts directly to a Kit form. Without a form ID (local preview) it just shows the success state.
 export default function KitForm({ formId, onSuccess, button, buttonClass = 'btn btn-primary', success = 'Check your inbox to confirm.', hintClass = 'form-ok' }) {
@@ -15,7 +16,7 @@ export default function KitForm({ formId, onSuccess, button, buttonClass = 'btn 
       const res = await fetch(`https://app.kit.com/forms/${id}/subscriptions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-        body: new URLSearchParams({ email_address: email }),
+        body: new URLSearchParams({ email_address: email, ...kitUtmFields() }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data.status === 'failed') { setState('error'); return; }

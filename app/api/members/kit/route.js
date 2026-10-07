@@ -4,9 +4,9 @@ import { subscriberTagIds, findSubscriber } from '@/lib/kit';
 import { ensureMember, grantGroup, revokeGroup, circleConfigured, groupIndex, norm } from '@/lib/circle';
 import { authorized, clean } from '@/lib/membersync';
 
-// Kit → Circle. Kit webhooks (one per tag and direction) call:
-//   https://<site>/api/members/kit?key=MEMBERS_WEBHOOK_SECRET&tag=<tag id>&action=add|remove
-// for every tag in lib/membership.js circleMap(), plus the Hold tag with action=remove.
+// Kit → Circle. One Kit webhook (events subscriber.tag_added + subscriber.tag_removed) calls:
+//   https://<site>/api/members/kit?key=MEMBERS_WEBHOOK_SECRET
+// Tags not mapped in lib/membership.js circleMap() (other than the Hold tag) are ignored.
 //
 //  - member tag added   → put them in that tag's Circle group(s), unless they have the Hold tag
 //  - member tag removed → take them out of any group no other tag of theirs still opens
@@ -25,44 +25,62 @@ export async function GET(req) {
   return NextResponse.json({ mapping: check, circle_groups: Object.values(idx).map(g => `${g.kind}: ${g.name} (${g.id})`) });
 }
 
+// One change: a tag added to / removed from one subscriber
+async function handle({ sub, tag, action }) {
+  const email = clean(sub.email_address);
+  if (!email || !tag) return { error: 'need subscriber email and tag' };
+  if (!sub.id) sub = (await findSubscriber(email)) || sub;
+  const tags = await subscriberTagIds(sub.id);
+  const held = tags.includes(TAG.hold);
+  const name = sub.first_name || '';
+  const done = { email, tag, action, granted: [], revoked: [] };
+
+  if (tag === TAG.hold) {
+    if (action !== 'remove') return { skipped: 'hold added: nothing to do', email };
+    const groups = circleGroupsFor(tags);
+    if (!groups.length) return { skipped: 'released, but no tags that open Circle', email };
+    done.member = (await ensureMember(email, name, { skipInvite: false })).created ? 'invited' : 'existing';
+    for (const g of groups) { await grantGroup(g, email); done.granted.push(g); }
+  } else if (!circleMap()[String(tag)]) {
+    return { skipped: 'tag opens no Circle group', email, tag };
+  } else if (action === 'add') {
+    if (held) return { skipped: 'on hold: Circle waits until the Hold tag is removed', email };
+    done.member = (await ensureMember(email, name, { skipInvite: false })).created ? 'invited' : 'existing';
+    for (const g of circleMap()[String(tag)]) { await grantGroup(g, email); done.granted.push(g); }
+  } else {
+    const still = new Set(circleGroupsFor(tags.filter(t => t !== tag)));
+    for (const g of circleMap()[String(tag)].filter(g => !still.has(g))) { await revokeGroup(g, email); done.revoked.push(g); }
+  }
+  console.log('Circle sync', JSON.stringify(done));
+  return done;
+}
+
+// Accepts Kit's current webhooks (envelope { delivery_id, events: [{ type: 'subscriber.tag_added' |
+// 'subscriber.tag_removed', data: { subscriber, tag } }] }) and the older one-tag style (?tag=&action=, body { subscriber }).
 export async function POST(req) {
   if (!authorized(req)) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   if (!circleConfigured()) return NextResponse.json({ skipped: 'CIRCLE_API_TOKEN not set' });
   const url = new URL(req.url);
   const b = await req.json().catch(() => ({}));
-  const tag = Number(url.searchParams.get('tag') || b.tag?.id || 0);
-  const action = url.searchParams.get('action') === 'remove' ? 'remove' : 'add';
-  let sub = b.subscriber || {};
-  const email = clean(sub.email_address);
-  if (!email || !tag) return NextResponse.json({ error: 'need subscriber email and tag' }, { status: 400 });
-  if (!sub.id) sub = (await findSubscriber(email)) || sub;
 
-  try {
-    const tags = await subscriberTagIds(sub.id);
-    const held = tags.includes(TAG.hold);
-    const name = sub.first_name || '';
-    const done = { email, tag, action, granted: [], revoked: [] };
-
-    if (tag === TAG.hold) {
-      if (action !== 'remove') return NextResponse.json({ skipped: 'hold added: nothing to do' });
-      const groups = circleGroupsFor(tags);
-      if (!groups.length) return NextResponse.json({ skipped: 'released, but no tags that open Circle' });
-      done.member = (await ensureMember(email, name, { skipInvite: false })).created ? 'invited' : 'existing';
-      for (const g of groups) { await grantGroup(g, email); done.granted.push(g); }
-    } else if (action === 'add') {
-      if (held) return NextResponse.json({ skipped: 'on hold: Circle waits until the Hold tag is removed' });
-      const groups = circleMap()[String(tag)] || [];
-      if (!groups.length) return NextResponse.json({ skipped: 'tag opens no Circle group' });
-      done.member = (await ensureMember(email, name, { skipInvite: false })).created ? 'invited' : 'existing';
-      for (const g of groups) { await grantGroup(g, email); done.granted.push(g); }
-    } else {
-      const still = new Set(circleGroupsFor(tags.filter(t => t !== tag)));
-      for (const g of (circleMap()[String(tag)] || []).filter(g => !still.has(g))) { await revokeGroup(g, email); done.revoked.push(g); }
-    }
-    console.log('Circle sync', JSON.stringify(done));
-    return NextResponse.json(done);
-  } catch (e) {
-    console.error('Circle sync failed', email, e.message);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  let changes;
+  if (Array.isArray(b.events)) {
+    changes = b.events.map(ev => {
+      const type = String(ev.type || b.type || '');
+      const d = ev.data || ev;
+      const action = /tag_removed$/.test(type) ? 'remove' : /tag_added$/.test(type) ? 'add' : null;
+      return { sub: d.subscriber || {}, tag: Number(d.tag?.id || d.tag_id || 0), action };
+    }).filter(c => c.action);
+  } else {
+    changes = [{ sub: b.subscriber || {}, tag: Number(url.searchParams.get('tag') || b.tag?.id || 0), action: url.searchParams.get('action') === 'remove' ? 'remove' : 'add' }];
   }
+
+  const results = [];
+  let failed = 0;
+  for (const c of changes) {
+    try { results.push(await handle(c)); }
+    catch (e) { failed++; console.error('Circle sync failed', c.sub?.email_address, c.tag, e.message); results.push({ error: e.message, email: c.sub?.email_address, tag: c.tag }); }
+  }
+  // 500 makes Kit retry the delivery if anything failed (adding/removing again is harmless)
+  return NextResponse.json({ delivery: b.delivery_id || null, processed: results.length, results }, { status: failed ? 500 : 200 });
 }

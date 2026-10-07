@@ -702,6 +702,7 @@ button.signin[aria-expanded="true"] .signin-caret{transform:rotate(180deg)}
   .mobile-menu-foot .btn { padding-top: 11px; padding-bottom: 11px; }
   .mobile-signin-label { margin-top: 2px; }
   .mobile-signin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mobile-signin-row .btn { padding-left: 8px; padding-right: 8px; font-size: 13px; white-space: nowrap; }
 }
 @media (max-width: 900px) and (max-height: 600px) {
   .mobile-menu nav a { font-size: 17px; padding: 8px 0; }

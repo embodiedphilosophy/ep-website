@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { loadTeam } from '@/lib/calendar';
+import { loadTeam, loadTemplates } from '@/lib/calendar';
 import { syncToMotion, addDays, eventIdFromTag } from '@/lib/ops/tasks';
 import { listTasks } from '@/lib/ops/motion';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
@@ -8,7 +8,9 @@ import { todayET, reminderRows, emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 
 // Daily (vercel.json cron): fill Motion from the calendar and send teaching reminders.
-// The ONLY emails this sends are reminders to addresses in each session's Teacher/Host Emails column.
+// Emails it sends: reminders to the addresses in each session’s Teacher/Host Emails column, a slides request
+// to that session’s teachers the day after, and a one-time
+// "your course page is live" note to a course page’s teachers when its status becomes published.
 // Run by hand: /api/ops/daily?key=CRON_SECRET  (add &only=sync to just fill Motion)
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -45,6 +47,28 @@ function reminderEmail({ ev, when, p, link, tasks, base }) {
   };
 }
 
+// The day after a session: ask its teachers for their slides as a PDF (only for tracks whose Task Templates
+// have a Teacher "slides" row). EP staff on the Team tab (anyone whose type isn't teacher) are left out.
+function slidesDue(cal, tpls, byEmail, day) {
+  const tracks = new Set(tpls.filter(t => /^teacher$/i.test(String(t.assign_to).trim()) && /slide/i.test(t.task)).map(t => t.track.toUpperCase()));
+  const out = [];
+  for (const ev of cal) {
+    if (!tracks.has(ev.track) || addDays(ev.end_date && ev.end_date > ev.date ? ev.end_date : ev.date, 1) !== day) continue;
+    for (const email of emailsOf(ev)) {
+      const t = byEmail[email];
+      if (t && String(t.type).toLowerCase() !== 'teacher') continue;
+      out.push({ ev, email, name: t?.name || '' });
+    }
+  }
+  return out;
+}
+const slidesEmail = ({ ev, name }) => ({
+  subject: `Your slides from ${ev.title}`,
+  html: layout(`Thank you for teaching ${ev.title}`, `<p>${name ? `Hi ${esc(name.split(' ')[0])}` : 'Hello'}, thank you for teaching yesterday.</p>
+    <p>If you used slides, please reply to this email with them attached as a <b>PDF</b>. We’ll share them with students alongside the recording.</p>
+    <p>No slides? No need to reply.</p>`),
+});
+
 // Modes (all need ?key=CRON_SECRET):
 //   (none)                       the real daily run: Motion sync and reminders (no other emails)
 //   &only=sync                   just fill Motion
@@ -80,7 +104,8 @@ export async function GET(req) {
         const people = recipientsFor(ev, byEmail); if (!people.size) continue;
         items.push({ event: ev.title, event_id: ev.id, session_date: ev.date, when, to: [...people].map(([e, p]) => `${e} (${p.role})`), zoom_link: (await joinUrl(ev, seriesLinks)) || 'NONE: email will say the link will follow' });
       }
-      if (items.length) days.push({ send_on: day, reminders: items });
+      const slides = slidesDue(cal, await loadTemplates(), byEmail, day).map(x => ({ event: x.ev.title, event_id: x.ev.id, to: x.email, kind: 'slides request' }));
+      if (items.length || slides.length) days.push({ send_on: day, reminders: items, slide_requests: slides });
     }
     return NextResponse.json({ mode: 'preview: nothing was sent', days });
   }
@@ -124,5 +149,25 @@ export async function GET(req) {
       } catch (e) { out.errors.push(`Reminder ${email}: ${e.message}`); }
     }
   }
+  // 3) Slides requests, the day after each session
+  try {
+    for (const x of slidesDue(cal, await loadTemplates({ fresh: true }), byEmail, today)) {
+      try { await sendEmail({ to: x.email, ...slidesEmail(x) }); out.reminders.push(`${x.email}: slides request for ${x.ev.title}`); }
+      catch (e) { out.errors.push(`Slides ${x.email}: ${e.message}`); }
+    }
+  } catch (e) { out.errors.push('Slides requests: ' + e.message); }
+
+  // 4) Course pages that have just gone live: tell their teachers (once)
+  try {
+    const { loadPages, savePage } = await import('@/lib/teach');
+    for (const p of await loadPages()) {
+      if (String(p.status).toLowerCase() !== 'published' || p.live_notified_on || !p.slug) continue;
+      const to = String(p.teacher_emails || '').split(/[\s,]+/).filter(Boolean);
+      for (const email of to) await sendEmail({ to: email, subject: `Your course page is live: ${p.title}`,
+        html: layout(`${p.title} is live`, `<p>Your course page is now on the Embodied Philosophy website. Share it freely.</p>${button(`${process.env.SITE_URL || 'https://www.embodiedphilosophy.com'}/courses/${p.slug}`, 'See your page')}`) });
+      await savePage(p.offering, { live_notified_on: today });
+      out.pagesLive = [...(out.pagesLive || []), p.title];
+    }
+  } catch (e) { out.errors.push('Course pages: ' + e.message); }
   return NextResponse.json(out);
 }

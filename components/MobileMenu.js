@@ -34,8 +34,10 @@ export default function MobileMenu({ signIn, signInWisdom, signInSadhana }) {
           <div className="mobile-menu-foot">
             <a className="btn btn-primary" href="/#join" onClick={() => setOpen(false)}>Join Free</a>
             <p className="mobile-signin-label">Sign in</p>
-            <a className="btn btn-ghost" href={signInWisdom || signIn}>Wisdom School</a>
-            <a className="btn btn-ghost" href={signInSadhana || signIn}>Sādhana School</a>
+            <div className="mobile-signin-row">
+              <a className="btn btn-ghost" href={signInWisdom || signIn}>Wisdom School</a>
+              <a className="btn btn-ghost" href={signInSadhana || signIn}>Sādhana School</a>
+            </div>
           </div>
         </div>, document.body
       )}

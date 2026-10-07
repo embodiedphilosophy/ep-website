@@ -4,12 +4,19 @@ import { listTasks } from '@/lib/ops/motion';
 import { visibleTo, bucket, meetingsFor, loadTeam } from '@/lib/ops/tasks';
 import { longDate } from '@/lib/dates';
 import TaskList from './TaskList';
+import { onboardingState } from '@/lib/teach';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Ops({ searchParams }) {
   const user = await currentUser();
+  const sp0 = await searchParams;
   if (!user) redirect('/ops/login');
+  // Teachers finish onboarding first (bio, headshot, course page, Circle, dashboard tour)
+  if (!user.director && (user.newTeacher || String(user.type).toLowerCase() === 'teacher') && !sp0?.skip) {
+    const st = await onboardingState(user.email).catch(() => null);
+    if (st?.needed) redirect('/teach');
+  }
   const sp = await searchParams;
   const team = user.director ? await loadTeam() : [];
   // Directors can look at the dashboard as any one person
@@ -20,12 +27,12 @@ export default async function Ops({ searchParams }) {
   try { tasks = visibleTo(asUser, await listTasks()); } catch (e) { error = e.message; }
   const b = bucket(tasks);
   const meetings = await meetingsFor(asUser).catch(() => []);
-  const first = user.name.split(' ')[0];
+  const first = (user.name || 'there').split(' ')[0];
 
   return (
     <main className="ops">
       <header className="ops-top">
-        <img src="/brand/ep-wordmark-black.png" alt="Embodied Philosophy" width="150" />
+        <a href="/ops" className="t-brand">Embodied <span>Philosophy</span></a>
         <div className="ops-who">{user.name}{user.director && ' · Director'} · <a href="/api/ops/logout">Sign out</a></div>
       </header>
 

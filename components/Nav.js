@@ -1,5 +1,6 @@
 import { getSite } from '@/lib/content';
 import MobileMenu from './MobileMenu';
+import SignInMenu from './SignInMenu';
 export default async function Nav() {
   const site = await getSite();
   return (
@@ -17,9 +18,9 @@ export default async function Nav() {
           <a href="/about">About</a>
         </nav>
         <div className="nav-cta">
-          <a className="signin" href={site.links.signIn}>Sign in</a>
+          <SignInMenu wisdom={site.links.signInWisdom} sadhana={site.links.signInSadhana} />
           <a className="btn btn-primary" href="/#join">Join Free</a>
-          <MobileMenu signIn={site.links.signIn} />
+          <MobileMenu signIn={site.links.signIn} signInWisdom={site.links.signInWisdom} signInSadhana={site.links.signInSadhana} />
         </div>
       </div>
     </header>

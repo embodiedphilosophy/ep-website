@@ -105,7 +105,8 @@ their slides as a PDF (tracks with a Teacher "slides" row); EP staff on the Team
 |---|---|---|
 | Master Schedule, Track Defaults, Task Templates, Team | (existing) | |
 | Teacher Profiles | teacher (email) | `status` = `approved` puts their bio/photo on the website's Teachers page |
-| Course Pages | offering (Series or event ID) | `status` = `published` puts embodiedphilosophy.com/courses/[slug] live; `circle_space_id` = their Circle space |
+| Course Pages | offering (Series or event ID) | `status` = `published` puts embodiedphilosophy.com/courses/[slug] live |
+| Circle Groups | offering (Series or event ID) | `circle_access_group_ids`: the Circle access group(s) that offering's teachers join (comma-separated) |
 
 
 Settings for onboarding (Vercel → ep-website): `CIRCLE_API_TOKEN` (Admin API v2), `CIRCLE_TEACHER_ACCESS_GROUP_ID`,

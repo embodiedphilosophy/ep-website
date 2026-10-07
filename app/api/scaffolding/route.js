@@ -20,14 +20,19 @@ import { sendEmail, layout, button, esc } from '@/lib/ops/email';
 //
 // Vercel: KIT_API_KEY, CALENDAR_SHEET_ID (+ Google service account), RESEND_API_KEY,
 // optional SCAFFOLDING_TEMPLATE_ID (default 5578308 "Text only"), SCAFFOLDING_SEGMENT_ID or SCAFFOLDING_TAG_ID
-// (default: all subscribers, same as the master draft).
+// (default: all subscribers except the Hold tag, HOLD_TAG_ID, default 24363585).
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
+// Default: everyone except people tagged "Hold: Not yet welcomed" (imported members not yet released).
+// Kit's API takes only one filter group (all / any / none), so a segment or tag setting replaces the exclusion.
+// HOLD_TAG_ID=0 turns the exclusion off (then: all subscribers).
 function audience() {
   const seg = Number(process.env.SCAFFOLDING_SEGMENT_ID || 0), tag = Number(process.env.SCAFFOLDING_TAG_ID || 0);
+  const hold = Number(process.env.HOLD_TAG_ID ?? 24363585);
   if (seg) return [{ all: [{ type: 'segment', ids: [seg] }] }];
   if (tag) return [{ all: [{ type: 'tag', ids: [tag] }] }];
+  if (hold) return [{ none: [{ type: 'tag', ids: [hold] }] }];
   return [{ all: [{ type: 'all_subscribers' }] }];
 }
 

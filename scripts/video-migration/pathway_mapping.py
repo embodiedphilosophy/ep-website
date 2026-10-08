@@ -47,7 +47,7 @@ PROGRAMS = [
         ('talk', '4. Breath Mechanics', 1, r'^the anatomy of breathwork', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Leslie Kaminoff; strong match'),
         ('talk', '5. Are the Chakras Real or Imaginary?', 1, r'^beyond wheels', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Hareesh Wallis, How to Talk about the Chakras; strong match'),
         ('course', 'Prāṇa & the Energy Body with Mary Reilly Nichols', 3, r'^prana [234]( \(video\))?$', NF, 'titled "prana 2–4"; same length as Art of Breathing modules 2–4'),
-        ('course', 'Haṭha Yoga Texts with Zoë Slatoff', 2, r'^hatha yoga texts module [12]$', 'Yoga Phil. Cert', '2021 recordings; a 2022 cohort version also exists'),
+        ('course', 'Haṭha Yoga Texts with Zoë Slatoff', 2, r'^module [12]: hatha yoga texts$', 'YP CERT 2021/22', '2021/22 cohort recording (Jacob: use the more recent)'),
     ]),
     ('Sound, Mantra & Sacred Speech', 2897813, 'pathway', [
         ('talk', '1. The Science of Mantras', 1, None, None, ''),
@@ -72,7 +72,7 @@ PROGRAMS = [
         ('talk', '2. Emptiness and Luminosity', 1, r'^our pristine mind', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Orgyen Chowang Rinpoche; weak match'),
         ('talk', '3. Dream Yoga', 1, r'^dream yoga$', 'Sadhana School', 'from Fall 2025 Sādhana School'),
         ('course', 'Tibetan Buddhism: A Path of Becoming Fully Human', 4, r'^tibetan buddhism: a path of becoming fully human - module', 'EP_Courses', ''),
-        ('course', 'Yoga & Buddhism with Tias Little', 2, r'^yoga & buddhism module [12]', NF, '2021 recordings; a 2022 cohort version also exists'),
+        ('course', 'Yoga & Buddhism with Tias Little', 2, r'^module [12]: yoga & buddhism$', 'YP CERT 2021/22', '2021/22 cohort recording (Jacob: use the more recent)'),
     ]),
     ('Myth, Shadow & the Inner Journey', 2897815, 'pathway', [
         ('talk', '1. The Call to Depth', 1, r'^the call to depth', 'Wisdom School 2026', 'Pilgrimage 2026 lecture'),
@@ -93,11 +93,11 @@ PROGRAMS = [
         ('course', 'The Bhagavad Gītā', 8, r'^the bhagavad gita - module', 'EP_Courses', ''),
         ('course', 'Bhakti Yoga', 9, r'^bhakti yoga - module', 'EP_Courses', ''),
         ('course', 'Bhakti Poetry', 4, None, None, ''),
-        ('course', 'Vaiṣṇava Bhakti with Robert Lindsey', 2, r'^vaishnava bhakti - module', NF, '2021 recordings; a 2022 cohort version also exists'),
+        ('course', 'Vaiṣṇava Bhakti with Robert Lindsey', 2, r'^module [12]: vaisnava bhakti$', 'YP CERT 2021/22', '2021/22 cohort recording (Jacob: use the more recent)'),
     ]),
     ('The Goddess & Śākta Tantra', 2900096, 'pathway', [
         ('course', 'Foundations of Tantra', 4, r'^foundations of tantra - module', 'EP_Courses', ''),
-        ('course', 'Śākta Tantra with Laura Amazzone', 2, r'^(sakta-tantra-module-1|shakta tantra 2)', NF, '2021 recordings; a 2022 cohort version also exists'),
+        ('course', 'Śākta Tantra with Laura Amazzone', 2, r'^module [12]: shakta tantra$', 'YP CERT 2021/22', '2021/22 cohort recording (Jacob: use the more recent)'),
         ('course', 'The 10 Goddesses of Transcendent Wisdom', 5, r'^the 10 goddesses - module', 'EP_Courses', ''),
         ('course', 'Navarātri: the Devī Māhātmya', 4, r"^navarathri: an inner path to shakti's realm", 'EP_Courses', ''),
         ('course', 'Yogini Mandalas', 4, r'^yogini mandalas - module', 'EP_Courses', ''),
@@ -113,7 +113,7 @@ PROGRAMS = [
         ('course', 'Starting Points with Jacob Kyle & Stephanie Corigliano', 2, r'^yp-intro-to-(yoga-)?philosophy', NF, 'Sept 2020 "Intro to (Yoga) Philosophy"; confirm'),
         ('course', 'Indian Philosophy: Paths & Worldviews', 8, r'^indian philosophy - module', 'EP_Courses', ''),
         ('course', 'The Upaniṣads with Daniel Simpson', 2, r'^upanishads module 2 video$', 'EP_Courses', 'only module 2 found'),
-        ('course', 'Ethical Questions with Daniel Simpson', 2, r'^ethical questions module [12]', NF, ''),
+        ('course', 'Ethical Questions with Daniel Simpson', 2, r'^module [12]: ethical questions$', 'YP CERT 2021/22', '2021/22 cohort recording (Jacob: use the more recent)'),
     ]),
     ('Sanskrit for Yogis', 2900099, 'pathway', [
         ('course', 'Introduction to Sanskrit', 4, r'^module [1-4]: intro to sanskrit$', 'YP CERT 2021/22', 'the 2020 version only has modules 3–4 in Vimeo'),

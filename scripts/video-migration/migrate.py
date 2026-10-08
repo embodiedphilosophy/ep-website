@@ -123,7 +123,8 @@ def migrate_one(row, sections, dry):
     local = WORK / f'{vid}.mp4'
     try:
         print(f"  downloading {f.get('rendition')} ({f['size'] / 1e9:.2f} GB)…", flush=True)
-        r = subprocess.run(['curl', '-sS', '-L', '--fail', '--retry', '3', '-o', str(local), f['link']],
+        # --retry-all-errors with -C - resumes a download that gets cut off part-way
+        r = subprocess.run(['curl', '-sS', '-L', '--fail', '--retry', '5', '--retry-all-errors', '-C', '-', '-o', str(local), f['link']],
                            capture_output=True, text=True)
         if r.returncode != 0:
             raise RuntimeError(f'download failed: {r.stderr.strip()[:200]}')

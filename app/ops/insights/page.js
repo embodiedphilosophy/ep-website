@@ -10,7 +10,6 @@ export const metadata = { title: 'Insights — Embodied Philosophy', robots: { i
 const usd = n => `${n < 0 ? '−' : ''}$${Math.round(Math.abs(n)).toLocaleString('en-US')}`;
 const monthName = m => new Date(`${m}-15T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const short = m => new Date(`${m}-15T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
-const addMonths = (m, n) => { const d = new Date(`${m}-15T12:00:00Z`); d.setUTCMonth(d.getUTCMonth() + n); return d.toISOString().slice(0, 7); };
 // Budget lines that are enrollments, and the price (Links & Prices key) one enrollment brings in
 const ENROLL = [['Sādhana School – Full Year', 'sadhana_year_price'], ['Sādhana School – Semester', 'sadhana_semester_price'], ['Wisdom School – Annual', 'wisdom_price']];
 const TIER = { GOLDEN: 'good', WINNER: 'good', HOLD: 'warning', LOSING: 'critical' };
@@ -25,11 +24,27 @@ export default async function Insights({ searchParams }) {
   if (error) return <Shell user={user} current="insights" title="Insights"><p className="ops-note">{error}</p></Shell>;
 
   const now = todayET().slice(0, 7);
-  const first = m.monthly.find(x => x.gross)?.month || now;
-  const choices = m.months.filter(x => x >= first && x <= addMonths(now, 2));
-  const month = choices.includes(sp?.m) ? sp.m : choices.includes(now) ? now : choices[choices.length - 1];
+  // Every month of this year so far (none in the future)
+  const year = now.slice(0, 4);
+  const choices = m.months.filter(x => x.startsWith(year) && x <= now);
+  if (!choices.length) choices.push(now);
+  const month = choices.includes(sp?.m) ? sp.m : choices[choices.length - 1];
   const cur = m.monthly.find(x => x.month === month) || {};
-  const live = month === now, future = month > now;
+  const live = month === now, missing = !cur.imported;
+
+  // Year to date, through the month being viewed, against the year's Budget
+  const ytdRows = m.monthly.filter(x => x.month.startsWith(year) && x.month <= month);
+  const yearRows = m.monthly.filter(x => x.month.startsWith(year));
+  const sum = (rows, k) => rows.reduce((s, x) => s + (x[k] || 0), 0);
+  const ytd = {
+    gross: sum(ytdRows, 'gross'), plan: sum(ytdRows, 'plan'), ads: sum(ytdRows, 'ads'), planAds: sum(ytdRows, 'planAds'),
+    afterAds: sum(ytdRows, 'afterAds'), annual: sum(yearRows, 'plan'), annualAds: sum(yearRows, 'planAds'),
+  };
+  ytd.roas = ytd.ads ? ytd.gross / ytd.ads : 0;
+  ytd.planAfterAds = ytd.plan - ytd.planAds;
+  const gap = ytd.gross - ytd.plan;
+  const notImported = ytdRows.filter(x => !x.imported).map(x => short(x.month));
+  const span = list => list.length > 2 ? `${list[0]}–${list[list.length - 1]}` : list.join(' and ');
   const prices = Object.fromEntries(((await readTab('links').catch(() => null)) || []).map(r => [r.key, Number(String(r.value).replace(/[^0-9.]/g, '')) || 0]));
   const vsPlan = (a, p) => p ? `${Math.round((a / p) * 100)}% of the ${usd(p)} plan` : 'No plan this month';
   const adShare = cur.gross ? (cur.ads / cur.gross) * 100 : 0;
@@ -37,12 +52,13 @@ export default async function Insights({ searchParams }) {
   const progress = Math.min(1, m.afterAdsTotal / m.goal);
   const programs = m.programs.filter(p => (p.actual[month] || 0) || (p.plan[month] || 0));
   const scale = Math.max(1, ...programs.map(p => Math.max(p.actual[month] || 0, p.plan[month] || 0)));
-  const trend = m.monthly.filter(x => x.month >= first && x.month <= addMonths(now, 3));
+  const trend = m.monthly.filter(x => x.month.startsWith(year) && x.month <= now);
 
   return (
     <Shell user={user} current="insights" title="Insights"
       head={<nav className="ops-filters" aria-label="Month">{choices.map(c => <a key={c} href={`/ops/insights?m=${c}`} aria-current={c === month ? 'page' : undefined}>{short(c)}{c === now ? ' (now)' : ''}</a>)}</nav>}>
-      <p className="ops-empty">{monthName(month)}{live ? ', so far this month' : future ? ': the plan' : ''}. From the Revenue & Metrics sheet: Stripe and PayPal sales, Meta ad spend and your Budget.</p>
+      <p className="ops-empty">{monthName(month)}{live ? ', so far this month' : ''}. From the Revenue & Metrics sheet: Stripe and PayPal sales, Meta ad spend and your Budget.</p>
+      {missing && <p className="ops-note">No sales or ad spend have been imported for {monthName(month)} yet, so its figures read $0. The plan for the month was {usd(cur.plan || 0)}.</p>}
 
       <ul className="ops-kpis">
         <li><span className="l">Revenue</span><span className="v">{usd(cur.gross || 0)}</span><span className="d">{vsPlan(cur.gross || 0, cur.plan || 0)}</span></li>
@@ -54,6 +70,27 @@ export default async function Insights({ searchParams }) {
         <li><span className="l">Operating profit</span><span className="v">{cur.opex ? usd(cur.profit) : '—'}</span><span className="d">{cur.opex ? `After ${usd(cur.opex)} of expenses` : 'Bank expenses are imported monthly'}</span></li>
         <li><span className="l">Cash</span><span className="v">{usd(m.cash)}</span><span className={`d${m.runway < 2 ? ' bad' : ''}`}>{m.runway ? `${m.runway} months of runway` : ''}{m.cashAsOf ? ` · as of ${m.cashAsOf}` : ''}</span></li>
       </ul>
+
+      <section className="ops-ytd">
+        <h2 className="ops-sub">Year to date <span>Jan–{short(month)} {year}</span></h2>
+        <div className="meter" role="meter" aria-valuemin={0} aria-valuemax={ytd.annual || 1} aria-valuenow={ytd.gross} aria-label={`Revenue so far against the ${year} budget`}>
+          <span className="fill" style={{ width: `${Math.min(100, Math.max((ytd.gross / (ytd.annual || 1)) * 100, 0.6))}%` }} />
+          {ytd.annual > 0 && <span className="tick" title={`Plan through ${short(month)}: ${usd(ytd.plan)}`} style={{ left: `${Math.min(100, (ytd.plan / ytd.annual) * 100)}%` }} />}
+        </div>
+        <p className="ops-empty">
+          {usd(ytd.gross)} of the {usd(ytd.annual)} {year} revenue budget ({ytd.annual ? ((ytd.gross / ytd.annual) * 100).toFixed(1) : 0}%).
+          {' '}The plan through {short(month)} was {usd(ytd.plan)}: <b className={gap < 0 ? 'behind' : 'ahead'}>{usd(Math.abs(gap))} {gap < 0 ? 'behind' : 'ahead'}</b>.
+        </p>
+        <ul className="ops-kpis">
+          <li><span className="l">Revenue, year to date</span><span className="v">{usd(ytd.gross)}</span><span className="d">{vsPlan(ytd.gross, ytd.plan).replace('plan', 'plan to date')}</span></li>
+          <li><span className="l">Meta ad spend, year to date</span><span className="v">{usd(ytd.ads)}</span>
+            <span className={`d${ytd.ads > ytd.planAds ? ' bad' : ''}`}>{ytd.planAds ? `${Math.round((ytd.ads / ytd.planAds) * 100)}% of the ${usd(ytd.planAds)} budgeted` : 'No ad budget'}</span></li>
+          <li><span className="l">Return on ad spend, year to date</span><span className="v">{ytd.ads ? `${ytd.roas.toFixed(2)}×` : '—'}</span>
+            {ytd.ads > 0 && <span className={`d status ${ytd.roas >= m.roasTarget ? 'good' : 'critical'}`}><b aria-hidden="true">{ytd.roas >= m.roasTarget ? '▲' : '▼'}</b> Target {m.roasTarget}×</span>}</li>
+          <li><span className="l">Revenue after ads, year to date</span><span className="v">{usd(ytd.afterAds)}</span><span className="d">Plan to date {usd(ytd.planAfterAds)} (revenue minus ad budget)</span></li>
+        </ul>
+        {notImported.length > 0 && <p className="ops-empty">{span(notImported)} {notImported.length === 1 ? 'has' : 'have'} no sales imported yet and count as $0 here. Add their Stripe and PayPal transactions to the sheet to make the year-to-date figures complete.</p>}
+      </section>
 
       <section className="ops-goal">
         <h2 className="ops-sub">$1M after ads</h2>

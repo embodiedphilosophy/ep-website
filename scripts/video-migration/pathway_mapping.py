@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Map Vimeo videos to the 13 Learning Pathways and 4 Certificate Programs. Offline, changes nothing.
 
-Scope (Jacob, 8 Oct 2026): only what belongs to the Learning Pathways (website "Site Pathways" tab:
+Scope (Jacob, 8 Oct 2026): whole courses, never single modules, and only what belongs to the Learning Pathways (website "Site Pathways" tab:
 its `courses` column = the short talks that are the Circle course sections, its `kajabi_contents`
-column = the full Kajabi courses) and the certificate programs. Everything else stays out of Circle.
+column = the full Kajabi courses) and the certificate programs. Everything else stays out of Circle. The 2021/22 Yoga Philosophy
+cohort (longer programme) is held back for the planned Yoga Studio library.
 
 Reads vimeo-inventory.csv; writes
   pathway-mapping.csv   one row per video (or per missing course), for review
@@ -29,7 +30,7 @@ NF = '(no folder)'
 PROGRAMS = [
     ('Classical Yoga & the Yoga Sūtras', 2897811, 'pathway', [
         ('talk', '1. Origins and Hidden History', 1, None, None, ''),
-        ('talk', '2. Classical Yoga', 1, r'^week 2 - classical yoga philosophy - samkhya and yoga darsana$', 'PUBLIC 200-Hour YTT', 'guess: a 2½-hour YTT session, not a short talk'),
+        ('talk', '2. Classical Yoga', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
         ('talk', '3. The Five Vṛttis', 1, None, None, ''),
         ('talk', '4. The Eight Limbs', 1, None, None, ''),
         ('talk', '5. The Cause of Suffering', 1, None, None, ''),
@@ -40,12 +41,11 @@ PROGRAMS = [
         ('course', 'Yoga Sūtra Meditation with Ramesh Bjonnes & Mary Reilly Nichols', 4, r'.', 'Meditation and the Yoga Sutras', ''),
     ]),
     ('The Subtle Body: Chakras, Prāṇa & Breath', 2897812, 'pathway', [
-        ('talk', '1. Subtle Body Anatomy', 1, r'^week 4 - subtle body anatomy$', 'PUBLIC 200-Hour YTT', 'guess: YTT session'),
+        ('talk', '1. Subtle Body Anatomy', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
         ('talk', '2. Neuroecopsychology of the Subtle Body', 1, r'^neuroecopsychology of the subtle body$', None, ''),
-        ('talk', '3. Chakras Illuminated', 0, None, None, 'same name as the Kajabi course below'),
-        ('talk', '4. Breath Mechanics', 1, r'^17\. breath mechanics', 'PUBLIC 200-Hour YTT', 'guess: YTT weekend, 4 hours'),
+        ('talk', '3. Chakras Illuminated', 5, r'^chakras illuminated - module', 'EP_Courses', 'the full Kajabi course with Hareesh Wallis; Q&A video not found'),
+        ('talk', '4. Breath Mechanics', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
         ('talk', '5. Are the Chakras Real or Imaginary?', 1, None, None, ''),
-        ('course', 'Chakras Illuminated with Hareesh Wallis', 5, r'^chakras illuminated - module', 'EP_Courses', 'Q&A video not found'),
         ('course', 'Prāṇa & the Energy Body with Mary Reilly Nichols', 3, None, None, ''),
         ('course', 'Haṭha Yoga Texts with Zoë Slatoff', 2, r'^hatha yoga texts module [12]$', 'Yoga Phil. Cert', '2021 recordings; a 2022 cohort version also exists'),
     ]),
@@ -83,59 +83,60 @@ PROGRAMS = [
         ('course', 'The Universal Mystic', 4, r'^universal mystic - module', 'EP_Courses', ''),
         ('course', 'The Purāṇas with Stephanie Corigliano', 1, r'^puranas - module 1', NF, ''),
     ]),
-    ('Roots & Branches: A History of Yoga', None, 'pathway', [
+    ('Roots & Branches: A History of Yoga', 2900094, 'pathway', [
         ('course', 'A Brief History of Yoga with Daniel Simpson', 4, r'^history of yoga[ _]module ?\d', NF, 'module 2 is audio only, module 3 missing'),
         ('course', 'Roots & Branches I with Marcy Braverman Goldstein', 4, r'^roots and branches of yoga ?- ?course 1', 'EP_Courses', ''),
         ('course', 'Roots & Branches II', 4, r'^roots and branches of yoga ?- ?course 2', 'EP_Courses', ''),
         ('course', 'Roots & Branches III', 4, r'^roots and branches of yoga ?- ?course 3', 'EP_Courses', ''),
     ]),
-    ('The Gītā & the Path of Devotion', None, 'pathway', [
+    ('The Gītā & the Path of Devotion', 2900095, 'pathway', [
         ('course', 'The Bhagavad Gītā', 8, r'^the bhagavad gita - module', 'EP_Courses', ''),
         ('course', 'Bhakti Yoga', 9, r'^bhakti yoga - module', 'EP_Courses', ''),
         ('course', 'Bhakti Poetry', 4, None, None, ''),
         ('course', 'Vaiṣṇava Bhakti with Robert Lindsey', 2, r'^vaishnava bhakti - module', NF, '2021 recordings; a 2022 cohort version also exists'),
     ]),
-    ('The Goddess & Śākta Tantra', None, 'pathway', [
+    ('The Goddess & Śākta Tantra', 2900096, 'pathway', [
         ('course', 'Foundations of Tantra', 4, r'^foundations of tantra - module', 'EP_Courses', ''),
         ('course', 'Śākta Tantra with Laura Amazzone', 2, r'^(sakta-tantra-module-1|shakta tantra 2)', NF, '2021 recordings; a 2022 cohort version also exists'),
         ('course', 'The 10 Goddesses of Transcendent Wisdom', 5, r'^the 10 goddesses - module', 'EP_Courses', ''),
         ('course', 'Navarātri: the Devī Māhātmya', 4, r"^navarathri: an inner path to shakti's realm", 'EP_Courses', ''),
         ('course', 'Yogini Mandalas', 4, r'^yogini mandalas - module', 'EP_Courses', ''),
     ]),
-    ('Non-Duality: Vedānta & Kashmir Śaivism', None, 'pathway', [
+    ('Non-Duality: Vedānta & Kashmir Śaivism', 2900097, 'pathway', [
         ('course', 'Upaniṣads & Vedānta Sūtras', 8, r'^upanisads( -)? module \d', NF, 'guess: 2021 Upaniṣads course, 8 × 3 hours'),
         ('course', 'Nonduality: Advaita Vedānta', 4, r'^nonduality: discovering wholeness - module', 'EP_Courses', 'guess'),
         ('course', 'I Am That', 4, r'^i am that - +module', 'EP_Courses', ''),
         ('course', 'Advaita Vedānta', 2, r'^module [12]: advaita vedanta$', 'YP CERT 2021/22', ''),
         ('course', 'Śiva Sūtras', 3, r'.', 'Śiva Sūtras', 'the 2024 Śiva Sūtras course (16 videos) is another option'),
     ]),
-    ('Indian Philosophy: Paths & Worldviews', None, 'pathway', [
+    ('Indian Philosophy: Paths & Worldviews', 2900098, 'pathway', [
         ('course', 'Starting Points with Jacob Kyle & Stephanie Corigliano', 2, None, None, ''),
         ('course', 'Indian Philosophy: Paths & Worldviews', 8, r'^indian philosophy - module', 'EP_Courses', ''),
         ('course', 'The Upaniṣads with Daniel Simpson', 2, r'^upanishads module 2 video$', 'EP_Courses', 'only module 2 found'),
         ('course', 'Ethical Questions with Daniel Simpson', 2, r'^ethical questions module [12]', NF, ''),
     ]),
-    ('Sanskrit for Yogis', None, 'pathway', [
+    ('Sanskrit for Yogis', 2900099, 'pathway', [
         ('course', 'Introduction to Sanskrit', 4, r'^module [1-4]: intro to sanskrit$', 'YP CERT 2021/22', 'the 2020 version only has modules 3–4 in Vimeo'),
         ('course', 'Sanskrit Level 2', 8, r'^sanskrit (level )?2[ _]', NF, 'Vimeo has 9 modules, Kajabi lists 8'),
         ('course', 'The Sanskrit Seminar', 9, r'^the sanskrit seminar - module', 'EP_Courses', ''),
     ]),
-    ('Esoteric Wisdom: Mystics, Siddhas & Sacred Arts', None, 'pathway', [
+    ('Esoteric Wisdom: Mystics, Siddhas & Sacred Arts', 2900100, 'pathway', [
         ('course', 'Shamans & Siddhas', 5, r'^shamans & siddhas - (module|q&a)', NF, ''),
         ('course', 'The Universal Mystic', 0, None, None, 'same course as in Myth, Shadow: upload once, link from both'),
         ('course', 'Deity: The Path to Liberation', 4, r'.', 'Deity: A Path to Liberation', 'an older version is in "OLD Deity"'),
     ]),
-    ('Embodied Yoga Therapy Certificate', None, 'certificate', [
+    ('Embodied Yoga Therapy Certificate', 2900102, 'certificate', [
         ('cohort', 'Embodied Yoga Therapy (2023)', 0, r'.', 'Embodied Yoga Therapy', 'faculty bio clips left out'),
     ]),
-    ('Buddhist Psychology Certificate', None, 'certificate', [
+    ('Buddhist Psychology Certificate', 2900103, 'certificate', [
         ('cohort', 'Buddhist Psychology Cert (2023)', 0, r'.', 'Buddhist Psychology Cert', 'a 2017 Kajabi course "Buddhist Psychology & Contemplative Psychotherapy" (4) also exists'),
     ]),
-    ('Yoga Philosophy Certificate', None, 'certificate', [
-        ('cohort', 'YP Certificate 2021/22 cohort', 0, r'.', 'YP CERT 2021/22', 'many modules overlap pathways 7–13'),
+    ('Yoga Philosophy Certificate', 2900101, 'certificate', [
+        ('cohort', 'Yoga Philosophy (Fall 2024, 8 weeks)', 8, r'.', 'PUBLIC 200-Hour YTT / 3. Fall 2024 Weekly Sessions',
+         'the recent course, also the YTT plug-in; TO CONFIRM with Jacob (he said 30 hours, this is ~20)'),
     ]),
-    ('Awakened Body Certificate', None, 'certificate', [
-        ('cohort', 'Awakened Body Cert On Demand', 0, r'.', 'Awakened Body Cert On Demand', 'the LIVE 2023 cohort (20 videos) is the alternative'),
+    ('Awakened Body Certificate', 2900104, 'certificate', [
+        ('cohort', 'Awakened Body Cert On Demand', 0, r'.', 'Awakened Body Cert On Demand', 'the more recent version (Jun 2023), per Jacob'),
     ]),
 ]
 SKIP_IN_COHORT = re.compile(r'faculty bios|meet the faculty', re.I)

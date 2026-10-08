@@ -48,35 +48,41 @@ Vimeo running, which defeats the point.
 
 ## Pathway & certificate mapping (8 Oct 2026)
 
-- **323 Vimeo videos, about 238 GB** cover the 13 pathways and 4 certificates.
-- **Circle has course spaces only for pathways 1–6.** These sit in the "Learning Pathways" group.
-  Their sections are the short talks. The "Certificate Programs" group exists but is empty.
-  Pathways 7–13 and the four certificates need course spaces created first.
-- **Missing from Vimeo (10 sources).** Most are the Uscreen short talks. Two Kajabi courses are
-  missing entirely: Prāṇa & the Energy Body, and Bhakti Poetry. Starting Points is missing too.
-  Six courses are only partly there, e.g. 1 of 6 Four Noble Truths videos. These have to come
-  from Uscreen or Kajabi.
-- **Two versions of some courses.** Several Yoga Philosophy courses exist twice: the 2020–21
-  recording and the 2021/22 certificate cohort re-recording. The mapping picks one and says so
-  in `notes`.
+**Decided with Jacob (8 Oct):**
+- **Scope.** Only the 13 Learning Pathways and the 4 certificates go into Circle.
+- **Whole courses only.** A pathway holds whole courses (e.g. all 4 modules), never one module
+  lifted out of a longer course.
+- **Yoga Philosophy Certificate** uses the recent course, which doubles as the plug-in for yoga
+  teacher trainings. The longer Yoga Philosophy programmes (the 2021/22 cohort) are held back
+  for the planned Yoga Studio library.
+- **Awakened Body** uses the more recent On Demand version.
+- **Uscreen** may be used.
 
-## Decisions needed from Jacob
+**Circle:**
+- All 13 pathways and 4 certificates now have course spaces. `circle-spaces.csv` lists the 11
+  created on 8 Oct.
+- The new ones are **hidden** until filled. They're private, self-paced, and send non-members to
+  "Join Wisdom School Plus", like the first six.
 
-1. **Create the missing Circle courses?** That means 7 pathways and 4 certificates, made as course
-   spaces in the "Learning Pathways" and "Certificate Programs" groups. Should they be visible
-   now, or hidden until filled?
-2. **Where the Kajabi courses go in pathways 1–6.** Proposal: the short-talk sections stay as they
-   are, then one new section per Kajabi course follows (e.g. "7. Sāṃkhya with Jacob Kyle").
-3. **Uscreen and Kajabi access** for the missing material. A Uscreen API key now appears in this
-   environment: OK to use it, read-only? Kajabi: is there an export or API key?
-4. **Which version** where a course exists twice, and for the certificates: Awakened Body On
-   Demand (19 videos) or the LIVE 2023 cohort (20)? The whole Yoga Philosophy 2021/22 cohort
-   (85), or only the courses already in pathways?
-5. **Circle plan and storage free.** About 240 GB is needed.
+**Vimeo covers 254 videos, about 190 GB.** Still missing (13 sources, 6 more partial):
+- most Uscreen short talks;
+- Prāṇa & the Energy Body, Bhakti Poetry, Starting Points;
+- parts of Four Noble Truths, Brief History of Yoga, Intro to Sanskrit and others.
+
+These come from Uscreen (blocked until `www.uscreen.io` is allowed in the environment's network
+settings), or else from Kajabi.
+
+## Still open
+
+1. **Yoga Philosophy Certificate.** Jacob said a 30-hour course. The best match in Vimeo is the
+   8-week Yoga Philosophy series from the Fall 2024 teacher training (8 × ~2½ h ≈ 20 h). Is that
+   the one?
+2. **Courses recorded twice.** Should the more recent recording win there too (the 2021/22
+   cohort versions of Haṭha Yoga Texts, Yoga & Buddhism, Vaiṣṇava Bhakti, Śākta Tantra)?
 
 ## Step 2 (only after approval)
 
 Videos move one at a time: download from Vimeo → upload to Circle → check → delete the local copy →
 log the result in `progress.csv`, so a stopped run picks up where it left off. We start with 2–3
 videos and show Jacob the results in Circle before running the rest. Nothing in Vimeo or Uscreen is
-ever deleted or changed. Uscreen is left out until its files or an API key arrive.
+ever deleted or changed.

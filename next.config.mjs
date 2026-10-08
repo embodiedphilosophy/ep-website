@@ -18,11 +18,7 @@ const nextConfig = {
   },
   async redirects() {
     const r = (source, destination) => ({ source, destination, permanent: true });
-    // The team dashboard and teacher onboarding live in their own app (ep-ops). Once OPS_ORIGIN is set
-    // (e.g. https://ops.embodiedphilosophy.com), old /ops links go there.
-    const ops = process.env.OPS_ORIGIN ? [r('/ops', `${process.env.OPS_ORIGIN}/ops`), r('/ops/:path*', `${process.env.OPS_ORIGIN}/ops/:path*`)] : [];
     return [
-      ...ops,
       // Podcast
       r('/chitheads', '/podcast'),
       r('/chitheads/:path*', '/podcast'),

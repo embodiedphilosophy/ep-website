@@ -56,13 +56,7 @@ export async function POST(req) {
   }
 }
 
-// The website and the dashboard read the sheet through a 5-minute cache: clear it so edits show now.
-// If the public site runs as a separate deployment, tell it too (SITE_REVALIDATE_URL + REVALIDATE_SECRET).
+// The website and the dashboard (one app) read the sheet through a 5-minute cache: clear it so edits show now
 async function refreshSite() {
   revalidatePath('/', 'layout');
-  const url = process.env.SITE_REVALIDATE_URL;
-  if (url && process.env.REVALIDATE_SECRET) {
-    await fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${process.env.REVALIDATE_SECRET}` }, cache: 'no-store' })
-      .catch(e => console.error('Site refresh failed', e.message));
-  }
 }

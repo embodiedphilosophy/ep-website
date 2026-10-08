@@ -4,7 +4,7 @@ import { syncToMotion, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NU
 import { listTasks } from '@/lib/ops/motion';
 import { runAutoComplete } from '@/lib/ops/autocomplete';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
-import { joinUrlFor, seriesLinksOf } from '@/lib/ops/joinurl';
+import { joinUrlFor, seriesLinksOf, inCircle } from '@/lib/ops/joinurl';
 import { todayET, reminderRows, emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 
@@ -16,7 +16,7 @@ import { longDate } from '@/lib/dates';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const joinUrl = (ev, seriesLinks) => joinUrlFor(ev, seriesLinks);
+const joinUrl = (ev, seriesLinks, day) => joinUrlFor(ev, seriesLinks, undefined, day);
 
 // Who gets a session's reminders: ONLY the addresses typed in that row's Teacher/Host Emails column.
 // Nothing else sends a reminder: not the Team tab, not names in Teachers, not other rows of the series.
@@ -43,7 +43,8 @@ function reminderEmail({ ev, when, p, link, tasks, base }) {
   return {
     subject: `Reminder: you’re ${p.role} ${ev.title} ${when}`,
     html: layout(`${ev.title}: ${when}`, `<p>${hi}, a reminder that you’re ${p.role} <b>${esc(ev.title)}</b> ${when === 'today' ? 'today' : 'on <b>' + longDate(ev.date) + '</b>'}${ev.time ? ' at <b>' + esc(ev.time) + '</b>' : ''}.</p>
-      ${link ? `<p><b>Zoom:</b> <a href="${esc(link)}">${esc(link)}</a></p>` : '<p>The Zoom link will follow from the team.</p>'}
+      ${inCircle(ev) ? (link ? `<p><b>Join in Circle:</b> <a href="${esc(link)}">${esc(link)}</a></p>` : '<p>The Circle event link will follow from the team.</p>')
+        : link ? `<p><b>Zoom:</b> <a href="${esc(link)}">${esc(link)}</a></p>` : '<p>The Zoom link will follow from the team.</p>'}
       ${todo}${p.name ? button(`${base}/ops`, 'Open your dashboard') : ''}`),
   };
 }
@@ -103,7 +104,7 @@ export async function GET(req) {
       for (const ev of cal) {
         const when = whenFor(ev, day); if (!when) continue;
         const people = recipientsFor(ev, byEmail); if (!people.size) continue;
-        items.push({ event: ev.title, event_id: ev.id, session_date: ev.date, when, to: [...people].map(([e, p]) => `${e} (${p.role})`), zoom_link: (await joinUrl(ev, seriesLinks)) || 'NONE: email will say the link will follow' });
+        items.push({ event: ev.title, event_id: ev.id, session_date: ev.date, when, to: [...people].map(([e, p]) => `${e} (${p.role})`), zoom_link: (await joinUrl(ev, seriesLinks, day)) || 'NONE: email will say the link will follow' });
       }
       const slides = slidesDue(cal, await loadTemplates(), byEmail, day).map(x => ({ event: x.ev.title, event_id: x.ev.id, to: x.email, kind: 'slides request' }));
       if (items.length || slides.length) days.push({ send_on: day, reminders: items, slide_requests: slides });
@@ -142,7 +143,7 @@ export async function GET(req) {
   for (const ev of cal) {
     const when = whenFor(ev, today); if (!when) continue;
     const people = recipientsFor(ev, byEmail); if (!people.size) continue;
-    const link = await joinUrl(ev, seriesLinks);
+    const link = await joinUrl(ev, seriesLinks, today);
     for (const [email, p] of people) {
       try {
         const msg = reminderEmail({ ev, when, p, link, tasks, base });

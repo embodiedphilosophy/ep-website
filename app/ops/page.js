@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { currentUser } from '@/lib/ops/auth';
 import { listTasks } from '@/lib/ops/motion';
-import { visibleTo, bucket, meetingsFor, loadTeam } from '@/lib/ops/tasks';
+import { visibleTo, bucket, meetingsFor, loadTeam, dedupe, needsOwner } from '@/lib/ops/tasks';
 import { longDate } from '@/lib/dates';
 import TaskList from './TaskList';
 import { onboardingState } from '@/lib/teach';
@@ -32,14 +32,23 @@ export default async function Ops({ searchParams }) {
     if (st?.needed) redirect('/teach');
   }
   const sp = await searchParams;
-  const team = user.director ? await loadTeam() : [];
+  const allTeam = await loadTeam().catch(() => []);
+  const team = user.director ? allTeam : [];
   // Directors can look at the dashboard as any one person
   const viewing = user.director && sp?.person ? team.find(t => t.name === sp.person) || user : user;
   const asUser = viewing === user ? user : { ...viewing, director: false };
 
   let tasks = [], error = '';
-  try { tasks = visibleTo(asUser, await listTasks()); } catch (e) { error = e.message; }
-  const b = bucket(tasks);
+  try { tasks = dedupe(visibleTo(asUser, await listTasks())); } catch (e) { error = e.message; }
+  // Director's own view: tasks nobody owns go to a triage list instead of the main lists
+  const triageView = user.director && viewing === user;
+  const triage = triageView ? tasks.filter(needsOwner).sort((a, b) => (a.due || '9').localeCompare(b.due || '9')) : [];
+  const b = bucket(triageView ? tasks.filter(t => !needsOwner(t)) : tasks);
+  // Who's behind a role label (Marketing → Jacob, Rebecka), and who you can hand a task to
+  const roleNames = {};
+  for (const m of allTeam) for (const r of m.roles) (roleNames[r] ||= []).push(m.name);
+  const teamNames = allTeam.filter(m => String(m.type).toLowerCase() !== 'teacher').map(m => m.name);
+  const listProps = { showWho: user.director && viewing === user, team: teamNames, roleNames };
   // Programming this week: staff see everything on the Master Schedule, teachers see their own events
   const programming = await meetingsFor(asUser, 6, { all: isStaff(asUser) }).catch(() => []);
   // Team meetings: Google Calendar events this person is a guest on (next two weeks)
@@ -51,7 +60,7 @@ export default async function Ops({ searchParams }) {
   return (
     <main className="ops">
       <header className="ops-top">
-        <a href="/ops" className="t-brand">Embodied <span>Philosophy</span></a>
+        <a href="/ops" className="ops-logo"><img src="/brand/ep-mark-black.png" alt="Embodied Philosophy" width="34" height="36" /></a>
         {isStaff(user) && (
           <nav className="ops-nav" aria-label="Staff tools">
             <a href="/ops" aria-current="page">Tasks</a>
@@ -79,13 +88,20 @@ export default async function Ops({ searchParams }) {
 
       <div className="ops-grid">
         <section className="ops-col">
+          {triage.length > 0 && (
+            <details className="ops-triage">
+              <summary><h2>Needs an owner <span>{triage.length}</span></h2></summary>
+              <p className="ops-empty">Tasks with no one named yet. Assign them here, or name the teacher or host on the Master Schedule.</p>
+              <TaskList tasks={triage} {...listProps} assign empty="" />
+            </details>
+          )}
           <h2 className="late">Past due <span>{b.pastDue.length}</span></h2>
-          <TaskList tasks={b.pastDue} showWho={user.director && viewing === user} empty="Nothing past due." />
+          <TaskList tasks={b.pastDue} {...listProps} empty="Nothing past due." />
           <h2>This week <span>{b.thisWeek.length}</span></h2>
-          <TaskList tasks={b.thisWeek} showWho={user.director && viewing === user} empty="Nothing due this week." />
+          <TaskList tasks={b.thisWeek} {...listProps} empty="Nothing due this week." />
           <h2>Coming up</h2>
-          <TaskList tasks={b.upcoming} showWho={user.director && viewing === user} empty="Nothing scheduled yet." />
-          {b.done.length > 0 && (<><h2>Recently done</h2><TaskList tasks={b.done} showWho={user.director && viewing === user} done /></>)}
+          <TaskList tasks={b.upcoming} {...listProps} empty="Nothing scheduled yet." />
+          {b.done.length > 0 && (<><h2>Recently done</h2><TaskList tasks={b.done} {...listProps} done /></>)}
         </section>
         <aside className="ops-col">
           <h2>Programming this week <span>{programming.length || ''}</span></h2>

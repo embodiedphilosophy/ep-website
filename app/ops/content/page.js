@@ -8,6 +8,8 @@ import Shell, { opsUser } from '../Shell';
 import SiteEditor from './SiteEditor';
 import { tableOf } from '@/lib/ops/sitetables';
 import SocialEngine from './SocialEngine';
+import { kitConfigured, kitSignals, draftUrl } from '@/lib/kit';
+import { ruleOf } from '@/lib/ops/autocomplete';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Content — Embodied Philosophy', robots: { index: false, follow: false } };
@@ -32,11 +34,57 @@ export default async function Content({ searchParams }) {
 }
 
 
-function Email() {
+// Promo emails per event: the Marketing "kit_email" tasks in Task Templates say how many each track needs and
+// when; Kit broadcasts count for an event when their subject (or internal description) carries its ID, e.g.
+// "[E047] Promo #2". Read only: nothing is created or scheduled in Kit from here.
+async function promoRows() {
+  const [cal, tpls, kit] = await Promise.all([loadCalendar(), loadTemplates(), kitConfigured() ? kitSignals() : null]);
+  const slots = {};
+  for (const t of tpls) if (ruleOf(t) === 'kit_email' && /^marketing$/i.test(String(t.assign_to).trim()))
+    (slots[String(t.track).toUpperCase()] ||= []).push({ task: t.task, offset: Number(t.offset_days) || 0 });
+  const today = todayET(), until = addDays(today, 70);
+  const rows = cal.filter(e => slots[e.track] && e.date >= today && e.date <= until && !/cancel/i.test(e.status))
+    .map(e => {
+      const want = slots[e.track].map(s => ({ ...s, due: addDays(e.date, s.offset) })).sort((x, y) => x.due.localeCompare(y.due));
+      const got = kit ? kit.broadcasts.filter(b => b.ids.includes(e.sched_id)).sort((x, y) => (x.at || '9').localeCompare(y.at || '9')) : [];
+      return { e, want, got, ready: got.filter(b => b.at).length };
+    });
+  const untagged = kit ? kit.broadcasts.filter(b => !b.sent && b.at && !b.ids.length && b.at.slice(0, 10) >= today && b.at.slice(0, 10) <= addDays(today, 30)) : [];
+  return { rows, untagged, kit: !!kit };
+}
+
+async function Email() {
+  const { rows, untagged, kit } = await promoRows().catch(() => ({ rows: [], untagged: [], kit: false, failed: true }));
+  const short = iso => iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' }) : '';
   return (
     <section>
-      <h2 className="ops-sub">The Weekly Scaffolding</h2>
-      <p className="ops-empty" style={{ maxWidth: 640 }}>Promo emails per event come next: Kit broadcasts scheduled or missing for each event, checked against the Promo Engine. This needs every broadcast to carry its event ID in the subject or name, e.g. “[E047] Promo #2”.</p>
+      <h2 className="ops-sub">Promo emails <span>{rows.filter(r => r.ready < r.want.length).length || ''}</span></h2>
+      <p className="ops-empty" style={{ maxWidth: 680 }}>Each upcoming event’s promo emails, as Task Templates plan them, against what’s in Kit. A Kit email counts for an event when its subject (or internal description) carries the event ID, e.g. “[E047] Promo #2”.</p>
+      {!kit ? <p className="ops-empty">Kit isn’t connected (KIT_API_KEY), so emails can’t be checked yet.</p>
+        : rows.length === 0 ? <p className="ops-empty">No events in the next 10 weeks need promo emails.</p> : (
+        <ul className="ops-promo">
+          {rows.map(({ e, want, got, ready }) => (
+            <li key={e.id} className={ready >= want.length ? 'ok' : want[0].due < todayET() ? 'late' : ''}>
+              <div className="h"><b>{e.title}</b> <span className="id">[{e.sched_id}]</span> <span className="d">{longDate(e.date)}</span>
+                <span className="n">{ready} of {want.length} scheduled</span></div>
+              <ol>{want.map((w, i) => { const b = got[i]; return (
+                <li key={i} className={b?.at ? (b.sent ? 'sent' : 'sched') : 'miss'}>
+                  <span className="w">{w.task}</span><span className="due">due {short(w.due + 'T12:00:00Z')}</span>
+                  {b ? <a href={draftUrl(b.id)} target="_blank" rel="noopener">{b.subject || 'Untitled'}</a> : <span className="none">Not in Kit yet</span>}
+                  <span className="st">{!b ? '' : b.sent ? `Sent ${short(b.at)}` : b.at ? `Scheduled ${short(b.at)}` : 'Draft'}</span>
+                </li>); })}
+                {got.slice(want.length).map(b => <li key={b.id} className="extra"><span className="w">Extra</span><span className="due" /><a href={draftUrl(b.id)} target="_blank" rel="noopener">{b.subject}</a><span className="st">{b.sent ? `Sent ${short(b.at)}` : b.at ? `Scheduled ${short(b.at)}` : 'Draft'}</span></li>)}
+              </ol>
+            </li>
+          ))}
+        </ul>
+      )}
+      {untagged.length > 0 && (<>
+        <h3 className="ops-se-h">Scheduled without an event ID</h3>
+        <p className="ops-empty">Add the event ID to the subject or internal description in Kit if these promote an event.</p>
+        <ul className="ops-promo-un">{untagged.map(b => <li key={b.id}><a href={draftUrl(b.id)} target="_blank" rel="noopener">{b.subject || 'Untitled'}</a> <span>{short(b.at)}</span></li>)}</ul>
+      </>)}
+      <h2 className="ops-sub" style={{ marginTop: 28 }}>The Weekly Scaffolding</h2>
     </section>
   );
 }

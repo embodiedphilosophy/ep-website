@@ -88,35 +88,6 @@ export default async function Ops({ searchParams }) {
           {b.done.length > 0 && (<><h2>Recently done</h2><TaskList tasks={b.done} showWho={user.director && viewing === user} done /></>)}
         </section>
         <aside className="ops-col">
-          {social && (
-            <section className="ops-social" aria-labelledby="ops-social-h">
-              <div className="ops-social-head">
-                <h2 id="ops-social-h">Social: next {social.posts.length || 9} posts</h2>
-                <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener">Open social dashboard ↗</a>
-              </div>
-              {social.error ? <p className="ops-empty">Couldn’t load the social plan: {social.error}</p>
-                : social.posts.length === 0 ? <p className="ops-empty">No posts scheduled yet.</p> : (
-                <ul className="ops-social-grid">
-                  {social.posts.map(p => {
-                    const story = /story/i.test(p.platforms) && !/feed/i.test(p.platforms);
-                    const flag = !p.thumb ? 'No image yet' : p.review !== 'Kept' ? 'Image not reviewed' : '';
-                    return (
-                      <li key={p.id}>
-                        <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener" title={(p.caption || p.event || '').slice(0, 220)}>
-                          <span className="img">
-                            {p.thumb ? <img src={p.thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}
-                            <span className="tag">{story ? 'Story' : 'Feed'}</span>
-                          </span>
-                          <span className="when">{shortDate(p.date)} · {shortTime(p.time)}</span>
-                          <span className={`meta${flag ? ' flag' : ''}`}>{[p.status, flag].filter(Boolean).join(' · ')}</span>
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </section>
-          )}
           <h2>Programming this week <span>{programming.length || ''}</span></h2>
           {programming.length === 0 ? <p className="ops-empty">No programming in the next seven days.</p> : (
             <ul className="ops-meet">
@@ -145,6 +116,35 @@ export default async function Ops({ searchParams }) {
                 </li>
               ))}
             </ul>
+          )}
+          {social && (
+            <section className="ops-social" aria-labelledby="ops-social-h">
+              <div className="ops-social-head">
+                <h2 id="ops-social-h">Social: next {social.posts.length || 9} posts</h2>
+                <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener">Open social dashboard ↗</a>
+              </div>
+              {social.error ? <p className="ops-empty">Couldn’t load the social plan: {social.error}</p>
+                : social.posts.length === 0 ? <p className="ops-empty">No posts scheduled yet.</p> : (
+                <ul className="ops-social-grid">
+                  {social.posts.map(p => {
+                    const story = /story/i.test(p.platforms) && !/feed/i.test(p.platforms);
+                    const flag = !p.thumb ? 'No image yet' : p.review !== 'Kept' ? 'Image not reviewed' : '';
+                    return (
+                      <li key={p.id}>
+                        <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener" title={(p.caption || p.event || '').slice(0, 220)}>
+                          <span className="img">
+                            {p.thumb ? <img src={p.thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}
+                            <span className="tag">{story ? 'Story' : 'Feed'}</span>
+                          </span>
+                          <span className="when">{shortDate(p.date)} · {shortTime(p.time)}</span>
+                          <span className={`meta${flag ? ' flag' : ''}`}>{[p.status, flag].filter(Boolean).join(' · ')}</span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
           )}
         </aside>
       </div>

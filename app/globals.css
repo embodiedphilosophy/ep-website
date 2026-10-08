@@ -472,6 +472,7 @@
   .ops-sub{font-size:24px;margin:30px 0 8px;display:flex;gap:10px;align-items:baseline}
   .ops-sub span{font-family:var(--font-sans),sans-serif;font-size:13px;font-weight:700;color:var(--ink-soft)}
   .ops-week{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  .ops-week.stacked{grid-template-columns:1fr;gap:8px}
   .ops-week h2{font-size:19px;margin:8px 0 8px;display:flex;gap:10px;align-items:baseline}
   .ops-week h2 span{font-family:var(--font-sans),sans-serif;font-size:13px;font-weight:700;color:var(--ink-soft)}
   .ops-filters{display:flex;gap:6px;flex-wrap:wrap}
@@ -558,6 +559,11 @@
   .ops-kpis .d.bad{color:var(--terra);font-weight:600}
   .status{font-size:12px;font-weight:700;white-space:nowrap}
   .status.good{color:#2E6B41}.status.warning{color:#8A5A00}.status.critical{color:#A5432A}.status.neutral{color:var(--ink-soft)}
+  .ops-ytd .meter{position:relative;height:12px;background:#e9e3d8;border-radius:6px;max-width:640px;margin-top:6px}
+  .ops-ytd .meter .fill{position:absolute;left:0;top:0;bottom:0;background:#2a78d6;border-radius:6px}
+  .ops-ytd .meter .tick{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;background:var(--ink)}
+  .ops-ytd b.behind{color:var(--terra)}
+  .ops-ytd b.ahead{color:#2f7d4f}
   .ops-goal .meter{height:12px;background:#e9e3d8;border-radius:6px;overflow:hidden;max-width:640px}
   .ops-goal .meter span{display:block;height:100%;background:#2a78d6;border-radius:6px}
   .ops-bullets{list-style:none;padding:0;margin:8px 0 4px}

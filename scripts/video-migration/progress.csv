@@ -56,3 +56,7 @@ vimeo_id,programme,section,lesson_title,status,lesson_id,lesson_url,rendition,by
 516301793,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 1,done,4680325,,540p,2201334771,,2026-10-08 23:35
 519158290,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 2,done,4680336,,540p,1989490942,,2026-10-08 23:38
 521981909,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 3,failed,,,,,download failed: curl: (18) Transferred a partial file,2026-10-08 23:44
+524994043,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 4,done,4680414,,540p,2469873758,,2026-10-08 23:47
+528348882,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 5,done,4680416,,540p,1717139124,,2026-10-08 23:48
+531382161,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 6,done,4680419,,360p,1397689118,,2026-10-08 23:49
+533976365,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 7,failed,,,,,upload to s3.amazonaws.com failed: 100 curl: (56) Recv failure: Connection reset by peer,2026-10-08 23:52

@@ -94,7 +94,19 @@ def overview_lesson(section_id):
     return None
 
 
-def upload(path, md5_b64, size, filename):
+def upload(path, md5_b64, size, filename, tries=3):
+    """Retries with a fresh upload address: long uploads sometimes get cut off by the network."""
+    for attempt in range(1, tries + 1):
+        try:
+            return upload_once(path, md5_b64, size, filename)
+        except RuntimeError as e:
+            if attempt == tries:
+                raise
+            print(f'  upload cut off ({str(e)[:80]}), retrying ({attempt + 1}/{tries})…', flush=True)
+            time.sleep(20 * attempt)
+
+
+def upload_once(path, md5_b64, size, filename):
     blob = circle('/direct_uploads', 'POST', {'blob': {
         'filename': filename, 'content_type': 'video/mp4', 'byte_size': size, 'checksum': md5_b64}})
     du = blob['direct_upload']

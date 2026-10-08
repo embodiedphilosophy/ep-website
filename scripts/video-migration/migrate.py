@@ -64,7 +64,7 @@ def pick_file(vid):
 def load_progress():
     if not PROGRESS.exists():
         return {}
-    return {r['vimeo_id']: r for r in csv.DictReader(open(PROGRESS, encoding='utf-8'))}
+    return {(r['vimeo_id'], r['programme']): r for r in csv.DictReader(open(PROGRESS, encoding='utf-8'))}
 
 
 def save_progress(prog):
@@ -183,8 +183,9 @@ def main():
         sys.exit('Some chosen rows have no Circle course yet')
 
     prog = load_progress()
-    todo = [r for r in chosen if prog.get(r['vimeo_id'], {}).get('status') != 'done'
-            and (a.retry_failed or prog.get(r['vimeo_id'], {}).get('status') != 'failed')]
+    key = lambda r: (r['vimeo_id'], r['programme'])  # a video can belong to two courses
+    todo = [r for r in chosen if prog.get(key(r), {}).get('status') != 'done'
+            and (a.retry_failed or prog.get(key(r), {}).get('status') != 'failed')]
     done_before = len(chosen) - len(todo)
     if a.limit:
         todo = todo[:a.limit]
@@ -222,7 +223,7 @@ def main():
             entry |= {'status': 'failed', 'error': str(e)[:300]}
             print(f'  ✗ failed: {e}')
         entry['finished_at'] = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')
-        prog[r['vimeo_id']] = entry
+        prog[key(r)] = entry
         save_progress(prog)
 
 

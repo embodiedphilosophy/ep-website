@@ -520,6 +520,17 @@
   .ops-news a.chip[aria-disabled=true]{opacity:.5;pointer-events:none}
   .ops-news-out{font-size:13.5px;background:var(--ivory);padding:8px 12px;border:1px solid var(--line)}
   .ops-news-out p{margin:4px 0}
+  .ops-review-item{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ops-review-item img{border-radius:50%;object-fit:cover;flex:none}
+  .ops-review-item .t{font-weight:600;margin:0 0 4px}
+  .ops-review-item .t span{font-weight:400;font-size:12.5px;color:var(--ink-soft)}
+  .ops-review-item .b{font-size:13.5px;color:var(--ink-soft);margin:0 0 6px}
+  .ops-review-item .small{font-size:12.5px}
+  .ops-review-item .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .ops-review .chip{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--ivory);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+  .ops-review .chip.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ops-review .chip:disabled{opacity:.5}
+  .ops-review-live{margin-top:10px;font-size:13.5px}
   .ops-edit{margin:16px 0 6px;padding:14px;background:#fff;border:1px solid var(--line);font-size:14px}
   .ops-edit fieldset{border:0;padding:0;margin:0 0 14px}
   .ops-edit legend{font-family:var(--font-serif),serif;font-size:17px;font-weight:600;margin-bottom:6px}

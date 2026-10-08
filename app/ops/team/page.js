@@ -1,6 +1,7 @@
 import { loadTeam } from '@/lib/ops/tasks';
 import { loadResources } from '@/lib/ops/resources';
-import { isTeacher } from '@/lib/ops/nav';
+import { isTeacher, canEditSite } from '@/lib/ops/nav';
+import Review from './Review';
 import Shell, { opsUser } from '../Shell';
 
 export const dynamic = 'force-dynamic';
@@ -43,13 +44,18 @@ export default async function Team() {
           {teacher ? (<>
             <h2>Your guide</h2>
             <p className="ops-empty">Your bio, course pages, readings and slides all live in <a href="/teach">teacher onboarding</a>.</p>
-          </>) : user.director ? (<>
+          </>) : null}
+          {!teacher && canEditSite(user) && (<>
+            <h2>Waiting for review</h2>
+            <Review />
+          </>)}
+          {user.director && (<>
             <h2>Teacher onboarding</h2>
             <p className="ops-empty">Where each teacher on the schedule is in onboarding, and “try it as” them: <a href="/teach">open the pipeline →</a></p>
-          </>) : null}
+          </>)}
           <h2>Resources</h2>
           {resources === null || links.length === 0 ? (
-            <p className="ops-empty">{user.director ? 'Add a “Resources” tab to the calendar sheet with the columns group, title, url, teachers (TRUE to show a link to teachers too). SOPs, brand assets, Drive, Circle, Kajabi and Kit links will show here.' : 'No links yet.'}</p>
+            <p className="ops-empty">{user.director ? <>No links yet. Add them in <a href="/ops/admin?t=resources#settings">Admin → Settings → Resources</a>: SOPs, brand assets, Drive, Circle, Kajabi and Kit.</> : 'No links yet.'}</p>
           ) : groups.map(g => (
             <div key={g} className="ops-res">
               <h3>{g}</h3>

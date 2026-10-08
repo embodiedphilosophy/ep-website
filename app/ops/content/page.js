@@ -25,6 +25,7 @@ export default async function Content({ searchParams }) {
       head={<nav className="ops-filters" aria-label="Content">{TABS.map(([k, l]) => <a key={k} href={k === 'social' ? '/ops/content' : `/ops/content?tab=${k}`} aria-current={k === tab ? 'page' : undefined}>{l}</a>)}</nav>}>
       {tab === 'social' && <Social />}
       {tab === 'email' && <Email />}
+      {tab === 'email' && <SiteEditor scope="email" initial="scaffolding" base="/ops/content?tab=email&" />}
       {tab === 'media' && <Media />}
       {tab === 'website' && <SiteEditor initial={tableOf(sp?.t) ? sp.t : 'links'} />}
     </Shell>
@@ -48,8 +49,8 @@ async function Social() {
 function Email() {
   return (
     <section>
-      <h2 className="ops-sub">Email</h2>
-      <p className="ops-empty" style={{ maxWidth: 640 }}>Coming next: Kit broadcasts scheduled or missing for each event, checked against the Promo Engine. This needs every broadcast to carry its event ID in the subject or name, e.g. “[E047] Promo #2”.</p>
+      <h2 className="ops-sub">The Weekly Scaffolding</h2>
+      <p className="ops-empty" style={{ maxWidth: 640 }}>Promo emails per event come next: Kit broadcasts scheduled or missing for each event, checked against the Promo Engine. This needs every broadcast to carry its event ID in the subject or name, e.g. “[E047] Promo #2”.</p>
     </section>
   );
 }

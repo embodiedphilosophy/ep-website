@@ -513,6 +513,13 @@
   .ops-site-row .s{display:block;font-size:13px;color:var(--ink-soft);margin-top:2px;overflow-wrap:anywhere}
   .ops-edit-title{font-family:var(--font-serif),serif;font-size:19px;font-weight:600;margin:0 0 12px}
   .ops-site .ops-edit{max-width:760px}
+  .ops-site .ops-edit fieldset{border-top:1px solid var(--line);padding-top:10px}
+  .ops-news{border-top:1px solid var(--line);padding-top:10px;margin-bottom:10px}
+  .ops-news .bar{position:static;border:0;padding:6px 0}
+  .ops-news a.chip{text-decoration:none;display:inline-block}
+  .ops-news a.chip[aria-disabled=true]{opacity:.5;pointer-events:none}
+  .ops-news-out{font-size:13.5px;background:var(--ivory);padding:8px 12px;border:1px solid var(--line)}
+  .ops-news-out p{margin:4px 0}
   .ops-edit{margin:16px 0 6px;padding:14px;background:#fff;border:1px solid var(--line);font-size:14px}
   .ops-edit fieldset{border:0;padding:0;margin:0 0 14px}
   .ops-edit legend{font-family:var(--font-serif),serif;font-size:17px;font-weight:600;margin-bottom:6px}

@@ -6,7 +6,7 @@ import { viewOf, isLocked, checkSocial, thumbOf } from '@/lib/ops/socialengine';
 import { todayET } from '@/lib/events';
 
 export const dynamic = 'force-dynamic';
-const SHEET = { sheet: 'social' };
+const SHEET = { sheet: 'social' }, SHOW = { sheet: 'social', light: true };
 const addDays = (d, n) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 
 // GET ?view=plan | history | quotes | images | captions | rules | categories | sources  (&q=search &offset=)
@@ -18,12 +18,12 @@ export async function GET(req) {
   if (v.director && !user.director) return NextResponse.json({ error: 'Directors only' }, { status: 403 });
   const q = String(url.searchParams.get('q') || '').trim().toLowerCase(), offset = Math.max(0, Number(url.searchParams.get('offset')) || 0);
   try {
-    const data = await readPlain(v.tab, SHEET);
+    const data = await readPlain(v.tab, SHOW);
     let rows = data.rows;
     if (v.key === 'plan') {
       // Last week and everything ahead, soonest first; each with its thumbnail
       const from = addDays(todayET(), -7);
-      const lib = await readPlain('Image Library', SHEET).catch(() => ({ rows: [] }));
+      const lib = await readPlain('Image Library', SHOW).catch(() => ({ rows: [] }));
       const byImage = Object.fromEntries(lib.rows.map(r => [r.values.image_id, r.values]));
       rows = rows.filter(r => (r.values.publish_date || '9') >= from)
         .sort((a, b) => (a.values.publish_date || '9').localeCompare(b.values.publish_date || '9') || String(a.values.publish_time_ET).localeCompare(String(b.values.publish_time_ET)))
@@ -37,7 +37,8 @@ export async function GET(req) {
     return NextResponse.json({ head: data.head, rows: page, total, offset, canEdit: canEditSocial(user) && (!v.director || user.director),
       locked: data.head.filter(h => isLocked(v.tab, h)) });
   } catch (e) {
-    return NextResponse.json({ error: /403/.test(e.message) ? 'The Social Engine sheet isn’t shared with the website yet.' : 'Couldn’t read the Social Engine. Try again shortly.' }, { status: 502 });
+    console.error('Social read failed', v.tab, e.message);
+    return NextResponse.json({ error: /429/.test(e.message) ? 'Google is busy for a moment. Try again in a minute.' : /403/.test(e.message) ? 'The Social Engine sheet isn’t shared with the website yet.' : 'Couldn’t read the Social Engine. Try again shortly.' }, { status: 502 });
   }
 }
 
@@ -81,7 +82,7 @@ export async function POST(req) {
     if (Object.keys(errors).length) return NextResponse.json({ error: 'Some fields need fixing', errors }, { status: 400 });
     // A new image: the picture link comes from the Image Library, so the plan and Make agree
     if ('image_id' in out && out.image_id) {
-      const img = (await readPlain('Image Library', SHEET)).rows.find(r => r.values.image_id === out.image_id);
+      const img = (await readPlain('Image Library', SHOW)).rows.find(r => r.values.image_id === out.image_id);
       if (!img) return NextResponse.json({ error: 'Not an image in the Image Library', errors: { image_id: 'Unknown image' } }, { status: 400 });
       out.image_url = img.values.public_url;
     }

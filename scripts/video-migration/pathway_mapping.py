@@ -132,7 +132,7 @@ PROGRAMS = [
         ('cohort', 'Buddhist Psychology Cert (2023)', 0, r'.', 'Buddhist Psychology Cert', 'a 2017 Kajabi course "Buddhist Psychology & Contemplative Psychotherapy" (4) also exists'),
     ]),
     ('Yoga Philosophy Certificate', 2900101, 'certificate', [
-        ('cohort', 'Yoga Philosophy certificate course (30 h)', 0, None, None,
+        ('cohort', 'Yoga Philosophy certificate course (30 h)', 1, None, None,  # 1 = listed as missing until read from Uscreen
          'source: Uscreen collection 2193472 (Jacob, 8 Oct); also the YTT plug-in'),
     ]),
     ('Awakened Body Certificate', 2900104, 'certificate', [

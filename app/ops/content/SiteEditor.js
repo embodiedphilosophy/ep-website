@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { SITE_TABLES, ADMIN_TABLES, SCAFFOLDING, SCAFFOLDING_STATUSES, tableOf, typeOf, RULE_OPTIONS, TYPE_OPTIONS, NEWSLETTER_OPTIONS } from '@/lib/ops/sitetables';
 
 const SELECTS = { rule: RULE_OPTIONS, teamtype: TYPE_OPTIONS, newsletter: NEWSLETTER_OPTIONS, scaffstatus: SCAFFOLDING_STATUSES };
-const RULE_LABEL = { '': 'Worked out from the wording', bio: 'Bio and headshot are in', title: 'Public title and summary are in', blurbs: 'Promo blurbs are in', readings: 'Readings shared up front', video_id: 'Video ID is in', manual: 'Only by hand' };
+const RULE_LABEL = { '': 'Worked out from the wording', bio: 'Bio and headshot are in', title: 'Public title and summary are in', blurbs: 'Promo blurbs are in', readings: 'Readings shared up front', video_id: 'Replay link (or Vimeo ID) is in', manual: 'Only by hand' };
 
 const label = h => h.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
 const yes = v => String(v).toUpperCase() !== 'FALSE';

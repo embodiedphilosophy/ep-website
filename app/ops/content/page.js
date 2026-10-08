@@ -92,9 +92,9 @@ async function Email() {
 // Sessions from the last 30 days whose track has a replay task, still without a Video ID
 async function waitingReplays() {
   const [cal, tpls] = await Promise.all([loadCalendar(), loadTemplates()]);
-  const tracks = new Set(tpls.filter(t => /vimeo|replay/i.test(t.task)).map(t => t.track.toUpperCase()));
+  const tracks = new Set(tpls.filter(t => /vimeo|replay|video id/i.test(t.task)).map(t => t.track.toUpperCase()));
   const today = todayET(), from = addDays(today, -30);
-  return cal.filter(e => tracks.has(e.track) && e.date >= from && e.date < today && !e.video_id && !/cancel/i.test(e.status))
+  return cal.filter(e => tracks.has(e.track) && e.date >= from && e.date < today && !e.replay_link && !e.video_id && !/cancel/i.test(e.status))
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
@@ -102,11 +102,11 @@ async function Media() {
   const [episodes, replays] = await Promise.all([getEpisodes(5).then(eps => eps.filter(e => !placeholder.includes(e))).catch(() => []), waitingReplays().catch(() => null)]);
   return (
     <section>
-      <h2 className="ops-sub">Replays waiting for Vimeo <span>{replays?.length || ''}</span></h2>
+      <h2 className="ops-sub">Replays waiting to be posted <span>{replays?.length || ''}</span></h2>
       {replays === null ? <p className="ops-empty">Couldn’t read the calendar.</p>
-        : replays.length === 0 ? <p className="ops-empty">Every session from the last 30 days has its Video ID.</p> : (
+        : replays.length === 0 ? <p className="ops-empty">Every session from the last 30 days has its replay.</p> : (
         <ul className="ops-meet">
-          {replays.map(e => <li key={e.id}><div className="d">{longDate(e.date)}</div><div className="t">{e.title}</div><div className="w">Add the Video ID in Event Details once the replay is on Vimeo.</div></li>)}
+          {replays.map(e => <li key={e.id}><div className="d">{longDate(e.date)}</div><div className="t">{e.title}</div><div className="w">Post the recording in Circle, then add its link as “Replay in Circle” in the event.</div></li>)}
         </ul>
       )}
       <h2 className="ops-sub">CHITHEADS: latest episodes</h2>

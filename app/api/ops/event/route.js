@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { refreshSite } from '@/lib/ops/refresh';
 import { currentUser } from '@/lib/ops/auth';
 import { canEditEvents } from '@/lib/ops/nav';
-import { getRow, updateRow, nextId, ConflictError } from '@/lib/ops/store';
+import { getRow, updateRow, nextId, ensureColumns, TABLES, ConflictError } from '@/lib/ops/store';
 import { loadCalendar } from '@/lib/calendar';
 import { readRange, toObjects } from '@/lib/google';
 import { moveEventTasks, closeEventTasks } from '@/lib/ops/eventtasks';
@@ -64,6 +64,8 @@ export async function POST(req) {
   if (Object.keys(errors).length) return NextResponse.json({ error: 'Some fields need fixing', errors }, { status: 400 });
   const pick = keys => Object.fromEntries(keys.filter(k => k in before).map(k => [k, before[k]]));
   try {
+    const fresh = FIELDS.filter(f => f.ensure && f.key in byTable[f.table]);
+    if (fresh.length) await ensureColumns(TABLES.details.title, fresh.map(f => f.key), { headerRow: TABLES.details.headerRow });
     const written = [
       ...(await updateRow('schedule', id, byTable.schedule, { before: pick(Object.keys(byTable.schedule)), who })),
       // Older events may not have an Event Details row yet: add it

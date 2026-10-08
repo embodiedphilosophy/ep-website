@@ -421,6 +421,20 @@
   .ops-meet .t{font-family:var(--font-serif),serif;font-size:20px;font-weight:600}
   .ops-meet .w,.ops-meet .z{font-size:13.5px;color:var(--ink-soft)}
   @media(max-width:860px){.ops-grid{grid-template-columns:1fr}.ops-tasks li{flex-direction:column;gap:4px}}
+  .ops-social{margin-bottom:6px}
+  .ops-social-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .ops-social-head a{font-size:13.5px;font-weight:700;color:var(--terra);text-decoration:none;white-space:nowrap}
+  .ops-social-head a:hover{text-decoration:underline}
+  .ops-social-grid{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 0;padding:0}
+  .ops-social-grid a{display:block;text-decoration:none;color:inherit}
+  .ops-social-grid .img{position:relative;display:block;aspect-ratio:4/5;background:#e9e3d8;overflow:hidden;border-radius:4px}
+  .ops-social-grid img{width:100%;height:100%;object-fit:cover;display:block}
+  .ops-social-grid a:hover img{opacity:.88}
+  .ops-social-grid .none{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:var(--ink-soft)}
+  .ops-social-grid .tag{position:absolute;top:5px;left:5px;font-size:10.5px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;padding:2px 6px;border-radius:999px}
+  .ops-social-grid .when{display:block;font-size:12px;font-weight:700;margin-top:5px;line-height:1.3}
+  .ops-social-grid .meta{display:block;font-size:11.5px;color:var(--ink-soft);line-height:1.3}
+  .ops-social-grid .meta.flag{color:var(--terra)}
 
   /* Replay gate: fit inside small players (e.g. the 3-across Meditation Pass replays) */
   .replay-frame{container-type:inline-size}

@@ -132,8 +132,8 @@ PROGRAMS = [
         ('cohort', 'Buddhist Psychology Cert (2023)', 0, r'.', 'Buddhist Psychology Cert', 'a 2017 Kajabi course "Buddhist Psychology & Contemplative Psychotherapy" (4) also exists'),
     ]),
     ('Yoga Philosophy Certificate', 2900101, 'certificate', [
-        ('cohort', 'Yoga Philosophy (Fall 2024, 8 weeks)', 8, r'.', 'PUBLIC 200-Hour YTT / 3. Fall 2024 Weekly Sessions',
-         'the recent course, also the YTT plug-in; TO CONFIRM with Jacob (he said 30 hours, this is ~20)'),
+        ('cohort', 'Yoga Philosophy certificate course (30 h)', 0, None, None,
+         'source: Uscreen collection 2193472 (Jacob, 8 Oct); also the YTT plug-in'),
     ]),
     ('Awakened Body Certificate', 2900104, 'certificate', [
         ('cohort', 'Awakened Body Cert On Demand', 0, r'.', 'Awakened Body Cert On Demand', 'the more recent version (Jun 2023), per Jacob'),

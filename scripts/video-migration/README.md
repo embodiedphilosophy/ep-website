@@ -74,9 +74,8 @@ settings), or else from Kajabi.
 
 ## Still open
 
-1. **Yoga Philosophy Certificate.** Jacob said a 30-hour course. The best match in Vimeo is the
-   8-week Yoga Philosophy series from the Fall 2024 teacher training (8 × ~2½ h ≈ 20 h). Is that
-   the one?
+1. ~~Yoga Philosophy Certificate~~ **Answered:** it's Uscreen collection 2193472. It is read from
+   Uscreen once the key works.
 2. **Courses recorded twice.** Should the more recent recording win there too (the 2021/22
    cohort versions of Haṭha Yoga Texts, Yoga & Buddhism, Vaiṣṇava Bhakti, Śākta Tantra)?
 

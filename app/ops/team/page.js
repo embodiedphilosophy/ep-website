@@ -55,7 +55,7 @@ export default async function Team() {
           </>)}
           <h2>Resources</h2>
           {resources === null || links.length === 0 ? (
-            <p className="ops-empty">{user.director ? <>No links yet. Add them in <a href="/ops/admin?t=resources#settings">Admin → Settings → Resources</a>: SOPs, brand assets, Drive, Circle, Kajabi and Kit.</> : 'No links yet.'}</p>
+            <p className="ops-empty">{user.director ? <>No links yet. Add them in <a href="/ops/admin?t=resources#settings">Admin → Settings → Resources</a>: SOPs, brand assets, Drive, Circle and Kit.</> : 'No links yet.'}</p>
           ) : groups.map(g => (
             <div key={g} className="ops-res">
               <h3>{g}</h3>

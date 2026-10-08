@@ -1,20 +1,20 @@
 programme,type,in_circle,source,kind,expected,found_in_vimeo,status,gb,note
-Classical Yoga & the Yoga Sūtras,pathway,yes,1. Origins and Hidden History,talk,1,0,not in Vimeo,0,
+Classical Yoga & the Yoga Sūtras,pathway,yes,1. Origins and Hidden History,talk,1,1,candidate,0.9,"CANDIDATE (topic match, confirm): Hareesh Wallis; weak match"
 Classical Yoga & the Yoga Sūtras,pathway,yes,2. Classical Yoga,talk,1,0,not in Vimeo,0,"part of a longer course: Jacob wants whole courses, not single modules (8 Oct)"
-Classical Yoga & the Yoga Sūtras,pathway,yes,3. The Five Vṛttis,talk,1,0,not in Vimeo,0,
-Classical Yoga & the Yoga Sūtras,pathway,yes,4. The Eight Limbs,talk,1,0,not in Vimeo,0,
-Classical Yoga & the Yoga Sūtras,pathway,yes,5. The Cause of Suffering,talk,1,0,not in Vimeo,0,
+Classical Yoga & the Yoga Sūtras,pathway,yes,3. The Five Vṛttis,talk,1,1,candidate,0.9,"CANDIDATE (topic match, confirm): Nikki Costello on YS 1.2; weak match"
+Classical Yoga & the Yoga Sūtras,pathway,yes,4. The Eight Limbs,talk,1,1,candidate,1.6,"CANDIDATE (topic match, confirm): Edwin Bryant; strong match"
+Classical Yoga & the Yoga Sūtras,pathway,yes,5. The Cause of Suffering,talk,1,1,candidate,1.1,"CANDIDATE (topic match, confirm): Jaganath Carrera; weak match"
 Classical Yoga & the Yoga Sūtras,pathway,yes,6. The Yoga Canon,talk,1,1,found,0.7,
 Classical Yoga & the Yoga Sūtras,pathway,yes,Sāṃkhya with Jacob Kyle,course,4,4,found,2.0,
-Classical Yoga & the Yoga Sūtras,pathway,yes,The Yoga Sūtras with Edwin Bryant,course,8,7,partial,16.5,2020 recordings
+Classical Yoga & the Yoga Sūtras,pathway,yes,The Yoga Sūtras with Edwin Bryant,course,8,8,found,17.8,2020 recordings
 Classical Yoga & the Yoga Sūtras,pathway,yes,Hidden Teachings of the Yoga Sūtra with Graham Schweig,course,8,8,found,3.7,
 Classical Yoga & the Yoga Sūtras,pathway,yes,Yoga Sūtra Meditation with Ramesh Bjonnes & Mary Reilly Nichols,course,4,4,found,3.7,
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,1. Subtle Body Anatomy,talk,1,0,not in Vimeo,0,"part of a longer course: Jacob wants whole courses, not single modules (8 Oct)"
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,2. Neuroecopsychology of the Subtle Body,talk,1,1,found,0.9,
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,3. Chakras Illuminated,talk,5,4,partial,5.6,the full Kajabi course with Hareesh Wallis; Q&A video not found
-"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,4. Breath Mechanics,talk,1,0,not in Vimeo,0,"part of a longer course: Jacob wants whole courses, not single modules (8 Oct)"
-"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,5. Are the Chakras Real or Imaginary?,talk,1,0,not in Vimeo,0,
-"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,Prāṇa & the Energy Body with Mary Reilly Nichols,course,3,0,not in Vimeo,0,
+"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,4. Breath Mechanics,talk,1,1,candidate,0.4,"CANDIDATE (topic match, confirm): Leslie Kaminoff; strong match"
+"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,5. Are the Chakras Real or Imaginary?,talk,1,1,candidate,1.0,"CANDIDATE (topic match, confirm): Hareesh Wallis, How to Talk about the Chakras; strong match"
+"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,Prāṇa & the Energy Body with Mary Reilly Nichols,course,3,3,found,1.5,"titled ""prana 2–4""; same length as Art of Breathing modules 2–4"
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,Haṭha Yoga Texts with Zoë Slatoff,course,2,2,found,1.0,2021 recordings; a 2022 cohort version also exists
 "Sound, Mantra & Sacred Speech",pathway,yes,1. The Science of Mantras,talk,1,0,not in Vimeo,0,
 "Sound, Mantra & Sacred Speech",pathway,yes,2. The Sound Bath Experience,talk,1,1,found,0.9,guess: one of three sound baths
@@ -31,7 +31,7 @@ Meditation for Real Life,pathway,yes,4. Healing Stress,talk,8,8,found,2.3,"Pilar
 Meditation for Real Life,pathway,yes,Contemplative Psychology: the Four Noble Truths,course,6,1,partial,1.0,only 1 of 6 found; guided meditations not found
 Meditation for Real Life,pathway,yes,Yoga & Contemplative Science,course,2,2,found,0.7,
 "Death, Dreams & the Luminous Mind",pathway,yes,1. Study the Tibetan Book of the Dead: Stages of Dissolution,talk,1,1,found,1.1,
-"Death, Dreams & the Luminous Mind",pathway,yes,2. Emptiness and Luminosity,talk,1,0,not in Vimeo,0,
+"Death, Dreams & the Luminous Mind",pathway,yes,2. Emptiness and Luminosity,talk,1,1,candidate,0.9,"CANDIDATE (topic match, confirm): Orgyen Chowang Rinpoche; weak match"
 "Death, Dreams & the Luminous Mind",pathway,yes,3. Dream Yoga,talk,1,1,found,2.7,from Fall 2025 Sādhana School
 "Death, Dreams & the Luminous Mind",pathway,yes,Tibetan Buddhism: A Path of Becoming Fully Human,course,4,4,found,3.7,
 "Death, Dreams & the Luminous Mind",pathway,yes,Yoga & Buddhism with Tias Little,course,2,2,found,1.7,2021 recordings; a 2022 cohort version also exists
@@ -42,7 +42,7 @@ Meditation for Real Life,pathway,yes,Yoga & Contemplative Science,course,2,2,fou
 "Myth, Shadow & the Inner Journey",pathway,yes,5. The Alchemy of Longing,talk,1,1,found,1.2,
 "Myth, Shadow & the Inner Journey",pathway,yes,The Universal Mystic,course,4,4,found,2.5,
 "Myth, Shadow & the Inner Journey",pathway,yes,The Purāṇas with Stephanie Corigliano,course,1,1,found,0.7,
-Roots & Branches: A History of Yoga,pathway,yes,A Brief History of Yoga with Daniel Simpson,course,4,2,partial,0.7,"module 2 is audio only, module 3 missing"
+Roots & Branches: A History of Yoga,pathway,yes,A Brief History of Yoga with Daniel Simpson,course,4,4,found,1.6,
 Roots & Branches: A History of Yoga,pathway,yes,Roots & Branches I with Marcy Braverman Goldstein,course,4,4,found,1.9,
 Roots & Branches: A History of Yoga,pathway,yes,Roots & Branches II,course,4,4,found,1.8,
 Roots & Branches: A History of Yoga,pathway,yes,Roots & Branches III,course,4,4,found,1.8,
@@ -60,7 +60,7 @@ Non-Duality: Vedānta & Kashmir Śaivism,pathway,yes,Nonduality: Advaita Vedānt
 Non-Duality: Vedānta & Kashmir Śaivism,pathway,yes,I Am That,course,4,4,found,2.1,
 Non-Duality: Vedānta & Kashmir Śaivism,pathway,yes,Advaita Vedānta,course,2,2,found,1.5,
 Non-Duality: Vedānta & Kashmir Śaivism,pathway,yes,Śiva Sūtras,course,3,3,found,1.9,the 2024 Śiva Sūtras course (16 videos) is another option
-Indian Philosophy: Paths & Worldviews,pathway,yes,Starting Points with Jacob Kyle & Stephanie Corigliano,course,2,0,not in Vimeo,0,
+Indian Philosophy: Paths & Worldviews,pathway,yes,Starting Points with Jacob Kyle & Stephanie Corigliano,course,2,2,found,1.5,"Sept 2020 ""Intro to (Yoga) Philosophy""; confirm"
 Indian Philosophy: Paths & Worldviews,pathway,yes,Indian Philosophy: Paths & Worldviews,course,8,8,found,8.2,
 Indian Philosophy: Paths & Worldviews,pathway,yes,The Upaniṣads with Daniel Simpson,course,2,1,partial,0.5,only module 2 found
 Indian Philosophy: Paths & Worldviews,pathway,yes,Ethical Questions with Daniel Simpson,course,2,2,found,1.0,

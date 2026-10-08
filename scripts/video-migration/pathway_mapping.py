@@ -29,14 +29,14 @@ def norm(s):
 NF = '(no folder)'
 PROGRAMS = [
     ('Classical Yoga & the Yoga Sūtras', 2897811, 'pathway', [
-        ('talk', '1. Origins and Hidden History', 1, None, None, ''),
+        ('talk', '1. Origins and Hidden History', 1, r'^changing our understanding of the yoga sutra', 'EPTV', 'CANDIDATE (topic match, confirm): Hareesh Wallis; weak match'),
         ('talk', '2. Classical Yoga', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
-        ('talk', '3. The Five Vṛttis', 1, None, None, ''),
-        ('talk', '4. The Eight Limbs', 1, None, None, ''),
-        ('talk', '5. The Cause of Suffering', 1, None, None, ''),
+        ('talk', '3. The Five Vṛttis', 1, r'^one sutra for a lifetime', 'EPTV', 'CANDIDATE (topic match, confirm): Nikki Costello on YS 1.2; weak match'),
+        ('talk', '4. The Eight Limbs', 1, r'^astanga yoga in patanjali and the gita', 'EPTV', 'CANDIDATE (topic match, confirm): Edwin Bryant; strong match'),
+        ('talk', '5. The Cause of Suffering', 1, r'^yoga sutras_ mastering the game of life', 'EPTV', 'CANDIDATE (topic match, confirm): Jaganath Carrera; weak match'),
         ('talk', '6. The Yoga Canon', 1, r'^the yoga canon seminar$', NF, ''),
         ('course', 'Sāṃkhya with Jacob Kyle', 4, r'^samkhya philosophy - module', 'EP_Courses', ''),
-        ('course', 'The Yoga Sūtras with Edwin Bryant', 8, r'^yoga sutras( of patanjali)?( -)? module', NF, '2020 recordings'),
+        ('course', 'The Yoga Sūtras with Edwin Bryant', 8, r'^(the )?yoga sutras( of patanjali)?( -)? module', NF, '2020 recordings'),
         ('course', 'Hidden Teachings of the Yoga Sūtra with Graham Schweig', 8, r'^hidden teachings of the yoga sutras - module', 'EP_Courses', ''),
         ('course', 'Yoga Sūtra Meditation with Ramesh Bjonnes & Mary Reilly Nichols', 4, r'.', 'Meditation and the Yoga Sutras', ''),
     ]),
@@ -44,9 +44,9 @@ PROGRAMS = [
         ('talk', '1. Subtle Body Anatomy', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
         ('talk', '2. Neuroecopsychology of the Subtle Body', 1, r'^neuroecopsychology of the subtle body$', None, ''),
         ('talk', '3. Chakras Illuminated', 5, r'^chakras illuminated - module', 'EP_Courses', 'the full Kajabi course with Hareesh Wallis; Q&A video not found'),
-        ('talk', '4. Breath Mechanics', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
-        ('talk', '5. Are the Chakras Real or Imaginary?', 1, None, None, ''),
-        ('course', 'Prāṇa & the Energy Body with Mary Reilly Nichols', 3, None, None, ''),
+        ('talk', '4. Breath Mechanics', 1, r'^the anatomy of breathwork', 'EPTV', 'CANDIDATE (topic match, confirm): Leslie Kaminoff; strong match'),
+        ('talk', '5. Are the Chakras Real or Imaginary?', 1, r'^beyond wheels', 'EPTV', 'CANDIDATE (topic match, confirm): Hareesh Wallis, How to Talk about the Chakras; strong match'),
+        ('course', 'Prāṇa & the Energy Body with Mary Reilly Nichols', 3, r'^prana [234]( \(video\))?$', NF, 'titled "prana 2–4"; same length as Art of Breathing modules 2–4'),
         ('course', 'Haṭha Yoga Texts with Zoë Slatoff', 2, r'^hatha yoga texts module [12]$', 'Yoga Phil. Cert', '2021 recordings; a 2022 cohort version also exists'),
     ]),
     ('Sound, Mantra & Sacred Speech', 2897813, 'pathway', [
@@ -69,7 +69,7 @@ PROGRAMS = [
     ]),
     ('Death, Dreams & the Luminous Mind', 2897814, 'pathway', [
         ('talk', '1. Study the Tibetan Book of the Dead: Stages of Dissolution', 1, r'^seminar: tibetan book of the dead$', NF, ''),
-        ('talk', '2. Emptiness and Luminosity', 1, None, None, ''),
+        ('talk', '2. Emptiness and Luminosity', 1, r'^our pristine mind', 'EPTV', 'CANDIDATE (topic match, confirm): Orgyen Chowang Rinpoche; weak match'),
         ('talk', '3. Dream Yoga', 1, r'^dream yoga$', 'Sadhana School', 'from Fall 2025 Sādhana School'),
         ('course', 'Tibetan Buddhism: A Path of Becoming Fully Human', 4, r'^tibetan buddhism: a path of becoming fully human - module', 'EP_Courses', ''),
         ('course', 'Yoga & Buddhism with Tias Little', 2, r'^yoga & buddhism module [12]', NF, '2021 recordings; a 2022 cohort version also exists'),
@@ -84,7 +84,7 @@ PROGRAMS = [
         ('course', 'The Purāṇas with Stephanie Corigliano', 1, r'^puranas - module 1', NF, ''),
     ]),
     ('Roots & Branches: A History of Yoga', 2900094, 'pathway', [
-        ('course', 'A Brief History of Yoga with Daniel Simpson', 4, r'^history of yoga[ _]module ?\d', NF, 'module 2 is audio only, module 3 missing'),
+        ('course', 'A Brief History of Yoga with Daniel Simpson', 4, r'^history ?of ?yoga[ _]?module ?\d', NF, ''),
         ('course', 'Roots & Branches I with Marcy Braverman Goldstein', 4, r'^roots and branches of yoga ?- ?course 1', 'EP_Courses', ''),
         ('course', 'Roots & Branches II', 4, r'^roots and branches of yoga ?- ?course 2', 'EP_Courses', ''),
         ('course', 'Roots & Branches III', 4, r'^roots and branches of yoga ?- ?course 3', 'EP_Courses', ''),
@@ -110,7 +110,7 @@ PROGRAMS = [
         ('course', 'Śiva Sūtras', 3, r'.', 'Śiva Sūtras', 'the 2024 Śiva Sūtras course (16 videos) is another option'),
     ]),
     ('Indian Philosophy: Paths & Worldviews', 2900098, 'pathway', [
-        ('course', 'Starting Points with Jacob Kyle & Stephanie Corigliano', 2, None, None, ''),
+        ('course', 'Starting Points with Jacob Kyle & Stephanie Corigliano', 2, r'^yp-intro-to-(yoga-)?philosophy', NF, 'Sept 2020 "Intro to (Yoga) Philosophy"; confirm'),
         ('course', 'Indian Philosophy: Paths & Worldviews', 8, r'^indian philosophy - module', 'EP_Courses', ''),
         ('course', 'The Upaniṣads with Daniel Simpson', 2, r'^upanishads module 2 video$', 'EP_Courses', 'only module 2 found'),
         ('course', 'Ethical Questions with Daniel Simpson', 2, r'^ethical questions module [12]', NF, ''),
@@ -144,7 +144,7 @@ SKIP_IN_COHORT = re.compile(r'faculty bios|meet the faculty', re.I)
 
 def lesson_order(v):
     """Module/session/week/day number when the title has one (titles are inconsistent), then upload date."""
-    t = norm(v['title'])
+    t = re.sub(r'module (one|two|three|four)\b', lambda m: 'module ' + str(['one', 'two', 'three', 'four'].index(m.group(1)) + 1), norm(v['title']))
     m = re.search(r'module\s*#?[_ ]?(\d+)(?:\.(\d+))?', t) or re.search(r'(?:session|week|day|class)\s*[_ ]?(\d+)(?:\.(\d+))?', t)
     m = m or re.search(r'^(?:m)?(\d+)(?:\.(\d+))?[.: ]', t)
     return (int(m.group(1)), int(m.group(2) or 0), v['created']) if m else (999, 0, v['created'])
@@ -183,7 +183,8 @@ def main():
                 section = label
             else:
                 section = label
-            status = ('not in Vimeo' if not uniq else 'partial' if expected and len(uniq) < expected else 'found')
+            status = ('not in Vimeo' if not uniq else 'candidate' if note.startswith('CANDIDATE') else
+                      'partial' if expected and len(uniq) < expected else 'found')
             if expected == 0 and not uniq:
                 status = 'n/a'
             summary.append({'programme': prog, 'type': kind, 'in_circle': 'yes' if space_id else 'NO SPACE YET',

@@ -501,6 +501,13 @@
   .ops-drawer .pill.red{background:var(--terra);color:#fff}.ops-drawer .pill.amber{background:#D99A22;color:#fff}.ops-drawer .pill.green{background:#4F7B5C;color:#fff}
   .ops-drawer .ops-act{margin-left:0}
   .ops-edit-open{margin:14px 0 0}
+  .ops-checks{list-style:none;font-size:14px;margin:4px 0 0}
+  .ops-checks li{display:flex;gap:8px;padding:3px 0}
+  .ops-checks .mk{width:16px;flex:none;font-weight:700}
+  .ops-checks li.ok .mk{color:#4F7B5C}
+  .ops-checks li.todo .mk{color:#D99A22}
+  .ops-checks li.late .mk,.ops-checks li.late{color:var(--terra)}
+  .ops-checks .sub{color:var(--ink-soft);font-size:12.5px}
   .ops-site-tabs{flex-wrap:wrap;margin-bottom:6px}
   .ops-site .chip{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--ivory);color:var(--ink);cursor:pointer}
   .ops-site-rows{list-style:none;border-top:1px solid var(--line);margin-top:10px}

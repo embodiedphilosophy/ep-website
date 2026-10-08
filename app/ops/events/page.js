@@ -1,7 +1,7 @@
 import { listTasks } from '@/lib/ops/motion';
 import { loadTeam, dedupe, bucket, visibleTo } from '@/lib/ops/tasks';
 import { loadCalendar } from '@/lib/calendar';
-import { emailsOf } from '@/lib/events';
+import { emailsOf, todayET } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 import { joinUrlFor, seriesLinksOf, upcomingMeetings } from '@/lib/ops/joinurl';
 import { readinessRows, WEEKS } from '@/lib/ops/readiness';
@@ -36,6 +36,7 @@ export default async function Events({ searchParams }) {
   const shown = showAll ? rows : rows.filter(r => r.status !== 'grey');
   const hidden = rows.length - shown.length;
   const open = rows.find(r => r.key === sp?.event);
+  const today = todayET();
   const allTeam = await loadTeam().catch(() => []);
   const roleNames = {};
   for (const m of allTeam) for (const r of m.roles) (roleNames[r] ||= []).push(m.name);
@@ -63,7 +64,7 @@ export default async function Events({ searchParams }) {
   return (
     <Shell user={user} current="events" title="Events" head={<Filters sp={sp} hidden={hidden} />}>
       {error && <p className="ops-note">Couldn’t load everything right now ({error}).</p>}
-      <p className="ops-empty">The next {WEEKS} weeks{teacherView ? ', your events only' : ''}. For now, readiness comes from each event’s tasks; checks read from the calendar sheet come next.</p>
+      <p className="ops-empty">The next {WEEKS} weeks{teacherView ? ', your events only' : ''}. Readiness comes from each event’s details and its tasks: open one to see what’s missing{canEditEvents(user) ? ' and fix it' : ''}.</p>
       {shown.length === 0 ? <p className="ops-empty" style={{ marginTop: 16 }}>No events in the next {WEEKS} weeks.</p> : (
         <ul className="ops-events">
           {shown.map(r => (
@@ -73,8 +74,9 @@ export default async function Events({ searchParams }) {
                 <span className="date">{short(r.date)}</span>
                 <span className="ttl">{r.title}<span className="trk">{r.track}</span></span>
                 <span className="ppl">{r.teachers || <i>No teacher yet</i>}</span>
-                <span className="cnt">{r.total ? `${r.done} of ${r.total} done` : '—'}</span>
-                <span className="nxt">{r.next ? `Next: ${r.next.name.split(' — ')[0]}${r.next.due ? ` (${short(r.next.due)})` : ''}` : ''}</span>
+                <span className="cnt">{r.checks.length ? `${r.ready} of ${r.checks.length} ready` : '—'}{r.total ? <><br />{r.done} of {r.total} tasks</> : null}</span>
+                <span className="nxt">{r.nextCheck ? `Missing: ${r.nextCheck.label}${r.nextCheck.detail ? ` (${r.nextCheck.detail})` : ''}, due ${short(r.nextCheck.due)}`
+                  : r.next ? `Next: ${r.next.name.split(' — ')[0]}${r.next.due ? ` (${short(r.next.due)})` : ''}` : ''}</span>
               </a>
             </li>
           ))}
@@ -87,6 +89,18 @@ export default async function Events({ searchParams }) {
           <span className={`pill ${open.status}`}>{LABEL[open.status]}</span>
           <h2>{open.title}</h2>
           <p className="when">{open.events.length > 1 ? open.events.map(e => short(e.date)).join(' · ') : `${longDate(open.date)}${open.end_date && open.end_date !== open.date ? ` – ${longDate(open.end_date)}` : ''}${open.events[0].time ? ` · ${open.events[0].time}` : ''}`}</p>
+          {open.checks.length > 0 && (<>
+            <h3>Ready <span>{open.ready} of {open.checks.length}</span></h3>
+            <ul className="ops-checks">
+              {open.checks.map((c, i) => (
+                <li key={i} className={c.ready ? 'ok' : c.due < today ? 'late' : 'todo'}>
+                  <span className="mk" aria-hidden="true">{c.ready ? '✓' : '○'}</span>
+                  <span>{c.label}{open.events.length > 1 && <span className="sub"> · {short(c.event.date)}</span>}
+                    {!c.ready && <span className="sub"> · {c.detail ? `${c.detail}, ` : ''}due {short(c.due)}{c.field && canEditEvents(user) ? ` · fix in Edit details` : ''}</span>}</span>
+                </li>
+              ))}
+            </ul>
+          </>)}
           {canEditEvents(user) && (
             <EventEditor key={open.key} sessions={open.events.filter(e => e.sched_id).map(e => ({ id: e.sched_id, date: e.date, track: e.track, label: `${short(e.date)} · ${e.title}` }))} />
           )}

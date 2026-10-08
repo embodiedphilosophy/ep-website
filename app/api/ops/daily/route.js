@@ -3,6 +3,9 @@ import { loadTeam, loadTemplates } from '@/lib/calendar';
 import { syncToMotion, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NUDGE_DAYS } from '@/lib/ops/tasks';
 import { listTasks } from '@/lib/ops/motion';
 import { runAutoComplete } from '@/lib/ops/autocomplete';
+import { runCircleSync, liveAllowed } from '@/lib/ops/circlesync';
+import { circleConfigured } from '@/lib/circle';
+import { refreshSite } from '@/lib/ops/refresh';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
 import { joinUrlFor, seriesLinksOf, inCircle } from '@/lib/ops/joinurl';
 import { todayET, reminderRows, emailsOf } from '@/lib/events';
@@ -72,7 +75,8 @@ const slidesEmail = ({ ev, name }) => ({
 });
 
 // Modes (all need ?key=CRON_SECRET):
-//   (none)                       the real daily run: Motion sync, auto-complete and reminders (no other emails)
+//   (none)                       the real daily run: Motion sync, auto-complete, Circle events (dry run unless
+//                                CIRCLE_EVENT_SYNC=live) and reminders (no other emails)
 //   &only=sync                   just fill Motion
 //   &preview=21                  SENDS NOTHING. Lists every reminder due in the next 21 days, who gets it, and its Zoom link
 //   &test_to=EMAIL&event=ID      sends ONE reminder for that event to EMAIL only (subject starts [TEST]); nobody else
@@ -133,6 +137,16 @@ export async function GET(req) {
   try { out.motion = await syncToMotion(); } catch (e) { out.errors.push('Motion: ' + e.message); }
   try { out.auto = (await runAutoComplete()).closed.map(c => `${c.task}: ${c.why}`); } catch (e) { out.errors.push('Auto-complete: ' + e.message); }
   if (only === 'sync') return NextResponse.json(out);
+  // Circle events for Circle sessions, before reminders so they carry the links. A dry run (report only)
+  // until CIRCLE_EVENT_SYNC=live is set in Vercel.
+  if (circleConfigured()) {
+    try {
+      const c = await runCircleSync({ dry: !liveAllowed() });
+      out.circle = { mode: c.mode, changes: c.changes, done: c.done, flags: c.flags, not_on_sheet: c.not_on_sheet };
+      if (c.done.length) refreshSite(); // the reminders below read the new links
+      out.errors.push(...c.errors.map(e => 'Circle: ' + e));
+    } catch (e) { out.errors.push('Circle: ' + e.message); }
+  }
 
   const { cal, byEmail, seriesLinks } = await load();
   const today = todayET();

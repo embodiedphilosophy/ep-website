@@ -396,6 +396,11 @@
   .ops{max-width:1180px;margin:0 auto;padding:22px 22px 80px}
   .ops-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--line)}
   .ops-who{font-size:14px;color:var(--ink-soft)}
+  .ops-nav{display:flex;gap:6px;margin-right:auto;margin-left:28px;flex-wrap:wrap}
+  .ops-nav a{font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink-soft);text-decoration:none}
+  .ops-nav a:hover{color:var(--ink);border-color:var(--ink-soft)}
+  .ops-nav a[aria-current=page]{color:var(--ink);border-color:var(--ink)}
+  @media (max-width:640px){.ops-top{flex-wrap:wrap;gap:12px}.ops-nav{order:3;width:100%;margin:0}}
   .ops-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:28px 0 18px}
   .ops-head h1{font-size:44px}
   .ops-view{display:flex;gap:8px;align-items:center;font-size:14px}

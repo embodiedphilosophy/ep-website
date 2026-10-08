@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { refreshSite } from '@/lib/ops/refresh';
 import { currentUser } from '@/lib/ops/auth';
 import { isStaff, canEditSite } from '@/lib/ops/nav';
 import { ensureColumns, createTab } from '@/lib/ops/store';
@@ -54,7 +54,7 @@ export async function POST(req) {
   try {
     if (t.columns) await ensureColumns(t.title, Object.keys(clean).filter(c => t.columns.includes(c)));
     const result = row == null ? { added: await addPlain(t.title, clean, { who }) } : { written: await updatePlain(t.title, Number(row), clean, { before, who }) };
-    revalidatePath('/', 'layout'); // the site and dashboard show it now, not in 5 minutes
+    refreshSite(); // the site and dashboard show it now, not in 5 minutes
     return NextResponse.json({ ok: true, ...result });
   } catch (e) {
     if (e instanceof ConflictError) return NextResponse.json({ error: e.message, conflict: e.current }, { status: 409 });

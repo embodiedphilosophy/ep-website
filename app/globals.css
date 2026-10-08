@@ -501,6 +501,18 @@
   .ops-drawer .pill.red{background:var(--terra);color:#fff}.ops-drawer .pill.amber{background:#D99A22;color:#fff}.ops-drawer .pill.green{background:#4F7B5C;color:#fff}
   .ops-drawer .ops-act{margin-left:0}
   .ops-edit-open{margin:14px 0 0}
+  .ops-add-wrap{width:100%;display:flex;justify-content:flex-end;margin-top:8px}
+  .ops-add-wrap > .chip{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer}
+  .ops-add{width:100%;max-width:560px;text-align:left}
+  .ops-sess-acts{border-top:1px solid var(--line);padding-top:10px}
+  .ops-sess-acts .inline{display:flex;gap:8px}
+  .ops-sess-acts .inline input{flex:1}
+  .ops-edit .chip.danger{border-color:var(--terra);color:var(--terra);background:#fff}
+  .ops-sess-acts .hint{font-size:13px;color:var(--ink-soft)}
+  .ops-cancelled{list-style:none;border-top:1px solid var(--line)}
+  .ops-cancelled li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .ops-cancelled .trk{font-size:11px;font-weight:700;color:var(--ink-soft);margin-left:6px}
+  .ops-cancelled .chip{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--ivory);cursor:pointer}
   .ops-checks{list-style:none;font-size:14px;margin:4px 0 0}
   .ops-checks li{display:flex;gap:8px;padding:3px 0}
   .ops-checks .mk{width:16px;flex:none;font-weight:700}

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FIELDS, WHERE, STATUSES, whereOf } from '@/lib/ops/eventfields';
+import { SessionActions } from './EventActions';
 
 const GROUPS = ['Session', 'People', 'Website', 'After', 'Planning'];
 
@@ -86,6 +87,7 @@ export default function EventEditor({ sessions }) {
           ))}
         </fieldset>
       ))}
+      {orig && <SessionActions id={sid} date={sessions.find(s => s.id === sid)?.date} />}
       {orig && (
         <div className="bar">
           <button type="submit" className="chip primary" disabled={busy || !changed.length}>{busy ? 'Saving…' : changed.length ? `Save ${changed.length} change${changed.length === 1 ? '' : 's'}` : 'No changes'}</button>

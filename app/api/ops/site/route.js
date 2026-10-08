@@ -2,31 +2,46 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { currentUser } from '@/lib/ops/auth';
 import { isStaff, canEditSite } from '@/lib/ops/nav';
+import { ensureColumns, createTab } from '@/lib/ops/store';
 import { readPlain, updatePlain, addPlain, ConflictError } from '@/lib/ops/store';
 import { tableOf, typeOf, checkCell } from '@/lib/ops/sitetables';
 
 export const dynamic = 'force-dynamic';
 
-// GET ?tab=links → the tab's rows (staff can look; only editors can save)
+// Website tabs: staff can look, the three editors can save. Settings tabs: directors only.
+const canSee = (t, u) => t.scope === 'admin' ? !!u?.director : isStaff(u);
+const canSave = (t, u) => t.scope === 'admin' ? !!u?.director : canEditSite(u);
+
+// GET ?tab=links → the tab's rows (columns the dashboard needs are listed even before the tab has them)
 export async function GET(req) {
   const user = await currentUser();
-  if (!isStaff(user)) return NextResponse.json({ error: 'Please sign in again' }, { status: 401 });
   const t = tableOf(new URL(req.url).searchParams.get('tab'));
   if (!t) return NextResponse.json({ error: 'Unknown tab' }, { status: 400 });
-  try { return NextResponse.json({ ...(await readPlain(t.title)), canEdit: canEditSite(user) }); }
+  if (!canSee(t, user)) return NextResponse.json({ error: 'Please sign in again' }, { status: 401 });
+  try {
+    const data = await readPlain(t.title);
+    const head = [...data.head, ...(t.columns || []).filter(c => !data.head.some(h => h.toLowerCase() === c))];
+    return NextResponse.json({ ...data, head, canEdit: canSave(t, user) });
+  }
   catch (e) {
     const missing = /\(400\)|: 400/.test(e.message);
-    return NextResponse.json({ error: missing ? `The "${t.title}" tab isn’t in the calendar sheet yet.` : 'Couldn’t read the sheet. Try again shortly.', missing }, { status: missing ? 404 : 502 });
+    return NextResponse.json({ error: missing ? `The "${t.title}" tab isn’t in the calendar sheet yet.` : 'Couldn’t read the sheet. Try again shortly.', missing, canCreate: missing && !!t.create && canSave(t, user) }, { status: missing ? 404 : 502 });
   }
 }
 
 // POST { tab, row (omit to add a row), changes: { column: value }, before: { column: value } (the whole row as shown) }
+//      { tab, create: true } makes a missing settings tab with its headers
 export async function POST(req) {
   const user = await currentUser();
-  if (!canEditSite(user)) return NextResponse.json({ error: 'Only Jacob, Irene and Floss can edit the website' }, { status: 403 });
-  const { tab, row, changes = {}, before = {} } = await req.json().catch(() => ({}));
+  const { tab, row, changes = {}, before = {}, create } = await req.json().catch(() => ({}));
   const t = tableOf(tab);
   if (!t) return NextResponse.json({ error: 'Unknown tab' }, { status: 400 });
+  if (!canSave(t, user)) return NextResponse.json({ error: t.scope === 'admin' ? 'Only directors can change settings' : 'Only Jacob, Irene and Floss can edit the website' }, { status: 403 });
+  if (create) {
+    if (!t.create) return NextResponse.json({ error: 'This tab can’t be created here' }, { status: 400 });
+    try { await createTab(t.title, t.columns); return NextResponse.json({ ok: true }); }
+    catch (e) { return NextResponse.json({ error: e.message }, { status: 502 }); }
+  }
   if (row == null && !t.add) return NextResponse.json({ error: 'Rows can’t be added to this tab' }, { status: 400 });
   const clean = {}, errors = {}, ctx = { ...before, ...changes };
   for (const [col, raw] of Object.entries(changes)) {
@@ -37,6 +52,7 @@ export async function POST(req) {
   if (Object.keys(errors).length) return NextResponse.json({ error: 'Some fields need fixing', errors }, { status: 400 });
   const who = user.name || user.email;
   try {
+    if (t.columns) await ensureColumns(t.title, Object.keys(clean).filter(c => t.columns.includes(c)));
     const result = row == null ? { added: await addPlain(t.title, clean, { who }) } : { written: await updatePlain(t.title, Number(row), clean, { before, who }) };
     revalidatePath('/', 'layout'); // the site and dashboard show it now, not in 5 minutes
     return NextResponse.json({ ok: true, ...result });

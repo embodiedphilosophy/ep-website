@@ -3,13 +3,17 @@ import { loadTeam, dedupe, needsOwner, ESCALATE_DAYS, addDays } from '@/lib/ops/
 import { todayET } from '@/lib/events';
 import Shell, { opsUser } from '../Shell';
 import TaskList from '../TaskList';
+import SiteEditor from '../content/SiteEditor';
+import { tableOf } from '@/lib/ops/sitetables';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Admin — Embodied Philosophy', robots: { index: false, follow: false } };
 
 // What is broken or unowned? Director only.
-export default async function Admin() {
+export default async function Admin({ searchParams }) {
   const user = await opsUser(u => u.director);
+  const sp = await searchParams;
+  const settings = tableOf(sp?.t)?.scope === 'admin' ? sp.t : 'templates';
   let tasks = [], error = '';
   try { tasks = dedupe(await listTasks()); } catch (e) { error = e.message; }
   const allTeam = await loadTeam().catch(() => []);
@@ -37,10 +41,12 @@ export default async function Admin() {
         <aside className="ops-col">
           <h2>Automation health</h2>
           <p className="ops-empty">Coming later: Make runs, reminder sends and social posts. For now, run the daily job’s preview by hand: <code>/api/ops/daily?preview=7&amp;key=…</code></p>
-          <h2>Task templates</h2>
-          <p className="ops-empty">Edit them in the calendar sheet’s Task Templates tab. Changes apply on the next daily sync.</p>
+          <h2>Settings</h2>
+          <p className="ops-empty">Task templates, track defaults, the team and resources are edited below. Changes to templates apply on the next daily sync.</p>
         </aside>
       </div>
+      <h2 className="ops-sub" id="settings">Settings</h2>
+      <SiteEditor scope="admin" initial={settings} base="/ops/admin?" />
     </Shell>
   );
 }

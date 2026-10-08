@@ -1,12 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { SITE_TABLES, tableOf, typeOf } from '@/lib/ops/sitetables';
+import { SITE_TABLES, ADMIN_TABLES, tableOf, typeOf, RULE_OPTIONS, TYPE_OPTIONS, NEWSLETTER_OPTIONS } from '@/lib/ops/sitetables';
+
+const SELECTS = { rule: RULE_OPTIONS, teamtype: TYPE_OPTIONS, newsletter: NEWSLETTER_OPTIONS };
+const RULE_LABEL = { '': 'Worked out from the wording', bio: 'Bio and headshot are in', title: 'Public title and summary are in', blurbs: 'Promo blurbs are in', readings: 'Readings shared up front', video_id: 'Video ID is in', manual: 'Only by hand' };
 
 const label = h => h.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
 const yes = v => String(v).toUpperCase() !== 'FALSE';
 
-// Content → Website: the site's content tabs as lists, each row edited as a short form.
-export default function SiteEditor({ initial = 'links' }) {
+// Content → Website (scope 'site') and Admin → Settings (scope 'admin'): sheet tabs as lists, each row
+// edited as a short form. base: the page's own address, for the tab links.
+export default function SiteEditor({ initial = 'links', scope = 'site', base = '/ops/content?tab=website&' }) {
+  const TABLES = scope === 'admin' ? ADMIN_TABLES : SITE_TABLES;
   const [tab, setTab] = useState(initial);
   const [data, setData] = useState(null);     // { head, rows, locked, canEdit } | { error }
   const [sel, setSel] = useState(null);       // row number, 'new', or null
@@ -16,18 +21,23 @@ export default function SiteEditor({ initial = 'links' }) {
     setData(null);
     const res = await fetch(`/api/ops/site?tab=${k}`).catch(() => null);
     const j = await res?.json().catch(() => ({}));
-    setData(res?.ok ? j : { error: j?.error || 'Couldn’t load this tab' });
+    setData(res?.ok ? j : { ...j, error: j?.error || 'Couldn’t load this tab' });
   };
   useEffect(() => { load(tab); }, [tab]);
-  const go = k => { setTab(k); setSel(null); try { history.replaceState(null, '', `/ops/content?tab=website&t=${k}`); } catch {} };
+  const go = k => { setTab(k); setSel(null); try { history.replaceState(null, '', `${base}t=${k}`); } catch {} };
+  const create = async () => {
+    setData(null);
+    const res = await fetch('/api/ops/site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tab, create: true }) }).catch(() => null);
+    if (!res?.ok) setData({ error: 'Couldn’t create the tab. Try again.' }); else load();
+  };
 
   return (
     <section className="ops-site">
       <nav className="ops-filters ops-site-tabs" aria-label="Website content">
-        {SITE_TABLES.map(x => <a key={x.key} href={`/ops/content?tab=website&t=${x.key}`} aria-current={x.key === tab ? 'page' : undefined} onClick={e => { e.preventDefault(); go(x.key); }}>{x.label}</a>)}
+        {TABLES.map(x => <a key={x.key} href={`${base}t=${x.key}`} aria-current={x.key === tab ? 'page' : undefined} onClick={e => { e.preventDefault(); go(x.key); }}>{x.label}</a>)}
       </nav>
       <p className="ops-empty">{t.help}</p>
-      {!data ? <p className="ops-empty">Loading…</p> : data.error ? <p className="ops-empty">{data.error}</p> : (<>
+      {!data ? <p className="ops-empty">Loading…</p> : data.error ? <p className="ops-empty">{data.error} {data.canCreate && <button className="chip" onClick={create}>Create it</button>}</p> : (<>
         {data.canEdit && t.add && sel !== 'new' && <p><button className="chip" onClick={() => setSel('new')}>Add a row</button></p>}
         {sel === 'new' && <RowForm t={t} head={data.head} locked={data.locked} row={null} values={{}} onDone={() => { setSel(null); load(); }} />}
         <ul className="ops-site-rows">
@@ -68,7 +78,9 @@ function RowForm({ t, head, locked = [], row, values, canEdit = true, onDone }) 
   };
   const input = h => {
     const v = vals[h] ?? '', type = typeOf(t.key, h, vals), id = `s-${h.replace(/\W+/g, '-')}`, set = x => setVals(s => ({ ...s, [h]: x }));
-    if (type === 'bool') return <select id={id} value={String(v).toUpperCase()} disabled={ro(h) || busy} onChange={e => set(e.target.value)}><option value="">Yes (default)</option><option value="TRUE">Yes</option><option value="FALSE">No, hide it</option></select>;
+    if (type === 'bool') return <select id={id} value={String(v).toUpperCase()} disabled={ro(h) || busy} onChange={e => set(e.target.value)}><option value="">{['website', 'teachers'].includes(h) ? 'No (blank)' : 'Yes (blank)'}</option><option value="TRUE">Yes</option><option value="FALSE">No</option></select>;
+    if (SELECTS[type]) return <select id={id} value={v} disabled={ro(h) || busy} onChange={e => set(e.target.value)}>{[...new Set([...(type === 'rule' ? [] : ['']), ...SELECTS[type], v])].map(o => <option key={o} value={o}>{type === 'rule' ? RULE_LABEL[o] || o : o || '—'}</option>)}</select>;
+    if (type === 'color') return <input id={id} value={v} disabled={ro(h) || busy} onChange={e => set(e.target.value)} placeholder="#1E4772" style={{ borderLeft: /^#[0-9a-f]{6}$/i.test(v) ? `14px solid ${v}` : undefined }} />;
     if (type === 'long') return <textarea id={id} rows={Math.min(8, Math.max(3, Math.ceil(String(v).length / 70)))} value={v} disabled={ro(h) || busy} onChange={e => set(e.target.value)} />;
     return <input id={id} value={v} disabled={ro(h) || busy} type={type === 'date' ? 'date' : 'text'} inputMode={type === 'number' ? 'decimal' : undefined} onChange={e => set(e.target.value)} />;
   };
@@ -77,7 +89,7 @@ function RowForm({ t, head, locked = [], row, values, canEdit = true, onDone }) 
       <p className="ops-edit-title">{row == null ? `New ${t.label.toLowerCase().replace(/s$/, '')}` : t.name(orig) || `Row ${row}`}</p>
       {head.filter(Boolean).map(h => (
         <div key={h} className={`row${errors[h] ? ' bad' : ''}${changed.includes(h) ? ' changed' : ''}`}>
-          <label htmlFor={`s-${h.replace(/\W+/g, '-')}`}>{h === 'publish' ? 'Show on the website' : label(h)}</label>
+          <label htmlFor={`s-${h.replace(/\W+/g, '-')}`}>{h === 'publish' ? 'Show on the website' : h === 'done_when' ? 'Done when' : label(h)}</label>
           {input(h)}
           {errors[h] && <span className="hint">{errors[h]}</span>}
         </div>

@@ -26,10 +26,11 @@ export default function SiteEditor({ initial = 'links', scope = 'site', base = '
   };
   useEffect(() => { load(tab); }, [tab]);
   const go = k => { setTab(k); setSel(null); try { history.replaceState(null, '', `${base}t=${k}`); } catch {} };
-  const create = async () => {
+  const create = async (how = 'create') => {
     setData(null);
-    const res = await fetch('/api/ops/site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tab, create: true }) }).catch(() => null);
-    if (!res?.ok) setData({ error: 'Couldn’t create the tab. Try again.' }); else load();
+    const res = await fetch('/api/ops/site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tab, [how]: true }) }).catch(() => null);
+    const j = await res?.json().catch(() => ({}));
+    if (!res?.ok) setData({ error: j?.error || 'Couldn’t do that. Try again.' }); else load();
   };
 
   return (
@@ -38,7 +39,8 @@ export default function SiteEditor({ initial = 'links', scope = 'site', base = '
         {TABLES.map(x => <a key={x.key} href={`${base}t=${x.key}`} aria-current={x.key === tab ? 'page' : undefined} onClick={e => { e.preventDefault(); go(x.key); }}>{x.label}</a>)}
       </nav>}
       <p className="ops-empty">{t.help}</p>
-      {!data ? <p className="ops-empty">Loading…</p> : data.error ? <p className="ops-empty">{data.error} {data.canCreate && <button className="chip" onClick={create}>Create it</button>}</p> : (<>
+      {!data ? <p className="ops-empty">Loading…</p> : data.error ? <p className="ops-empty">{data.error} {data.canCreate && <button className="chip" onClick={() => create()}>Create it</button>}
+        {data.canImport && <button className="chip primary" onClick={() => create('import')}>Bring it over from the old EP Website sheet</button>}</p> : (<>
         {data.canEdit && t.add && sel !== 'new' && <p><button className="chip" onClick={() => setSel('new')}>Add a row</button></p>}
         {sel === 'new' && <RowForm t={t} head={data.head} locked={data.locked} row={null} values={{}} onDone={() => { setSel(null); load(); }} />}
         <ul className="ops-site-rows">

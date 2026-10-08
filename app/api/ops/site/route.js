@@ -4,7 +4,8 @@ import { currentUser } from '@/lib/ops/auth';
 import { isStaff, canEditSite } from '@/lib/ops/nav';
 import { ensureColumns, createTab } from '@/lib/ops/store';
 import { readPlain, updatePlain, addPlain, ConflictError } from '@/lib/ops/store';
-import { tableOf, typeOf, checkCell } from '@/lib/ops/sitetables';
+import { tableOf, typeOf, checkCell, OLD_SITE_SHEET } from '@/lib/ops/sitetables';
+import { copyTab } from '@/lib/google';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,18 +26,28 @@ export async function GET(req) {
   }
   catch (e) {
     const missing = /\(400\)|: 400/.test(e.message);
-    return NextResponse.json({ error: missing ? `The "${t.title}" tab isn’t in the calendar sheet yet.` : 'Couldn’t read the sheet. Try again shortly.', missing, canCreate: missing && !!t.create && canSave(t, user) }, { status: missing ? 404 : 502 });
+    return NextResponse.json({ error: missing ? `The "${t.title}" tab isn’t in the calendar sheet yet.` : 'Couldn’t read the sheet. Try again shortly.', missing, canCreate: missing && !!t.create && canSave(t, user), canImport: missing && !!t.importFrom && canSave(t, user) }, { status: missing ? 404 : 502 });
   }
 }
 
 // POST { tab, row (omit to add a row), changes: { column: value }, before: { column: value } (the whole row as shown) }
 //      { tab, create: true } makes a missing settings tab with its headers
+//      { tab, import: true } copies a website tab over from the old EP Website sheet (once)
 export async function POST(req) {
   const user = await currentUser();
-  const { tab, row, changes = {}, before = {}, create } = await req.json().catch(() => ({}));
+  const { tab, row, changes = {}, before = {}, create, import: body_import } = await req.json().catch(() => ({}));
   const t = tableOf(tab);
   if (!t) return NextResponse.json({ error: 'Unknown tab' }, { status: 400 });
   if (!canSave(t, user)) return NextResponse.json({ error: t.scope === 'admin' ? 'Only directors can change settings' : 'Only Jacob, Irene and Floss can edit the website' }, { status: 403 });
+  if (body_import) {
+    if (!t.importFrom) return NextResponse.json({ error: 'Nothing to bring over for this tab' }, { status: 400 });
+    try {
+      await readPlain(t.title).then(() => { throw new Error(`"${t.title}" is already in the calendar sheet`); }, () => {});
+      await copyTab(OLD_SITE_SHEET, t.importFrom, process.env.CALENDAR_SHEET_ID, t.title);
+      refreshSite();
+      return NextResponse.json({ ok: true });
+    } catch (e) { return NextResponse.json({ error: /403/.test(e.message) ? 'The old EP Website sheet isn’t shared with the website.' : e.message }, { status: 502 }); }
+  }
   if (create) {
     if (!t.create) return NextResponse.json({ error: 'This tab can’t be created here' }, { status: 400 });
     try { await createTab(t.title, t.columns); return NextResponse.json({ ok: true }); }

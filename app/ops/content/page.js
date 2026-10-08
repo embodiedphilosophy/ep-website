@@ -1,4 +1,3 @@
-import { upcomingSocial } from '@/lib/social';
 import { getEpisodes, placeholder } from '@/lib/podcast';
 import { isStaff } from '@/lib/ops/nav';
 import { loadCalendar, loadTemplates } from '@/lib/calendar';
@@ -8,7 +7,7 @@ import { longDate } from '@/lib/dates';
 import Shell, { opsUser } from '../Shell';
 import SiteEditor from './SiteEditor';
 import { tableOf } from '@/lib/ops/sitetables';
-import SocialGrid, { SOCIAL_PREVIEW_URL, flagOf } from '../SocialGrid';
+import SocialEngine from './SocialEngine';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Content — Embodied Philosophy', robots: { index: false, follow: false } };
@@ -23,7 +22,7 @@ export default async function Content({ searchParams }) {
   return (
     <Shell user={user} current="content" title="Content"
       head={<nav className="ops-filters" aria-label="Content">{TABS.map(([k, l]) => <a key={k} href={k === 'social' ? '/ops/content' : `/ops/content?tab=${k}`} aria-current={k === tab ? 'page' : undefined}>{l}</a>)}</nav>}>
-      {tab === 'social' && <Social />}
+      {tab === 'social' && <SocialEngine director={!!user.director} initial={['plan', 'history', 'quotes', 'images', 'captions', 'rules', 'categories', 'sources'].includes(sp?.s) ? sp.s : 'plan'} />}
       {tab === 'email' && <Email />}
       {tab === 'email' && <SiteEditor scope="email" initial="scaffolding" base="/ops/content?tab=email&" />}
       {tab === 'media' && <Media />}
@@ -32,19 +31,6 @@ export default async function Content({ searchParams }) {
   );
 }
 
-async function Social() {
-  const social = await upcomingSocial(9).catch(e => ({ posts: [], error: e.message }));
-  const flagged = social.posts.filter(p => flagOf(p)).length;
-  return (
-    <section className="ops-social">
-      <div className="ops-social-head">
-        <h2 className="ops-sub">Next {social.posts.length || 9} posts{flagged ? <span className="late"> · {flagged} need images</span> : null}</h2>
-        <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener">Open EP Social Preview ↗</a>
-      </div>
-      <div className="ops-social-wide"><SocialGrid social={social} /></div>
-    </section>
-  );
-}
 
 function Email() {
   return (

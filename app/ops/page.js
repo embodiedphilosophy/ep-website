@@ -5,6 +5,7 @@ import { visibleTo, bucket, meetingsFor, loadTeam } from '@/lib/ops/tasks';
 import { longDate } from '@/lib/dates';
 import TaskList from './TaskList';
 import { onboardingState } from '@/lib/teach';
+import { upcomingSocial } from '@/lib/social';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,13 @@ export const dynamic = 'force-dynamic';
 const SOCIAL_PREVIEW_URL = process.env.OPS_SOCIAL_PREVIEW_URL
   || 'https://script.google.com/a/macros/embodiedphilosophy.com/s/AKfycbwnxnP24WZq9iLSgh-mi6J8qFaLTszXyzvzusoqX7vXPn7Q6bWdEN3nOiCdClUjY4p-iw/exec';
 const isStaff = u => !!u && (u.director || (!u.newTeacher && String(u.type || '').toLowerCase() !== 'teacher'));
+const shortDate = s => new Date(`${s}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+const shortTime = t => {
+  const m = String(t || '').match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return t;
+  const h = +m[1], ap = h >= 12 ? 'pm' : 'am', h12 = h % 12 || 12;
+  return `${h12}${m[2] === '00' ? '' : ':' + m[2]}${ap} ET`;
+};
 
 export default async function Ops({ searchParams }) {
   const user = await currentUser();
@@ -33,6 +41,8 @@ export default async function Ops({ searchParams }) {
   const b = bucket(tasks);
   const meetings = await meetingsFor(asUser).catch(() => []);
   const first = (user.name || 'there').split(' ')[0];
+  // Staff see the next nine social posts (read-only; edits happen in the social dashboard)
+  const social = isStaff(user) ? await upcomingSocial(9).catch(e => ({ posts: [], error: e.message })) : null;
 
   return (
     <main className="ops">
@@ -74,6 +84,35 @@ export default async function Ops({ searchParams }) {
           {b.done.length > 0 && (<><h2>Recently done</h2><TaskList tasks={b.done} showWho={user.director && viewing === user} done /></>)}
         </section>
         <aside className="ops-col">
+          {social && (
+            <section className="ops-social" aria-labelledby="ops-social-h">
+              <div className="ops-social-head">
+                <h2 id="ops-social-h">Social: next {social.posts.length || 9} posts</h2>
+                <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener">Open social dashboard ↗</a>
+              </div>
+              {social.error ? <p className="ops-empty">Couldn’t load the social plan: {social.error}</p>
+                : social.posts.length === 0 ? <p className="ops-empty">No posts scheduled yet.</p> : (
+                <ul className="ops-social-grid">
+                  {social.posts.map(p => {
+                    const story = /story/i.test(p.platforms) && !/feed/i.test(p.platforms);
+                    const flag = !p.thumb ? 'No image yet' : p.review !== 'Kept' ? 'Image not reviewed' : '';
+                    return (
+                      <li key={p.id}>
+                        <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener" title={(p.caption || p.event || '').slice(0, 220)}>
+                          <span className="img">
+                            {p.thumb ? <img src={p.thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}
+                            <span className="tag">{story ? 'Story' : 'Feed'}</span>
+                          </span>
+                          <span className="when">{shortDate(p.date)} · {shortTime(p.time)}</span>
+                          <span className={`meta${flag ? ' flag' : ''}`}>{[p.status, flag].filter(Boolean).join(' · ')}</span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+          )}
           <h2>Teaching & meetings</h2>
           {meetings.length === 0 ? <p className="ops-empty">No teachings or meetings in the next three weeks.</p> : (
             <ul className="ops-meet">

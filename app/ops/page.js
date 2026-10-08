@@ -15,6 +15,8 @@ import Note from './Note';
 import Meetings from './Meetings';
 import { flagOf } from './SocialGrid';
 
+const shortDate = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+
 export const dynamic = 'force-dynamic';
 
 // Home: only what needs you this week. Everything else is one click away.
@@ -98,7 +100,7 @@ export default async function Home({ searchParams }) {
         <h2 className={b.pastDue.length ? 'late' : ''}>Needs you <span>{needsYou.length}</span></h2>
         {needsYou.length === 0 ? <p className="ops-empty">Nothing overdue or due this week.</p> : groups.map(g => (
           <div className="ops-group" key={g.key || 'other'}>
-            <h3>{g.title} <span>— {g.tasks.length} task{g.tasks.length === 1 ? '' : 's'}</span></h3>
+            <h3>{g.title} <span>{g.date ? `· ${shortDate(g.date)} ` : ''}— {g.tasks.length} task{g.tasks.length === 1 ? '' : 's'}</span></h3>
             <TaskList tasks={g.tasks} {...listProps} short={!!g.key} empty="" />
           </div>
         ))}

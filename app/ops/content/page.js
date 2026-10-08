@@ -1,5 +1,5 @@
 import { upcomingSocial } from '@/lib/social';
-import { getEpisodes } from '@/lib/podcast';
+import { getEpisodes, placeholder } from '@/lib/podcast';
 import { isStaff } from '@/lib/ops/nav';
 import { loadCalendar, loadTemplates } from '@/lib/calendar';
 import { todayET } from '@/lib/events';
@@ -61,7 +61,7 @@ async function waitingReplays() {
 }
 
 async function Media() {
-  const [episodes, replays] = await Promise.all([getEpisodes(5).catch(() => []), waitingReplays().catch(() => null)]);
+  const [episodes, replays] = await Promise.all([getEpisodes(5).then(eps => eps.filter(e => !placeholder.includes(e))).catch(() => []), waitingReplays().catch(() => null)]);
   return (
     <section>
       <h2 className="ops-sub">Replays waiting for Vimeo <span>{replays?.length || ''}</span></h2>

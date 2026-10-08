@@ -2,6 +2,8 @@
 import { useState } from 'react';
 const fmt = d => d ? new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : 'No date';
 const firstNames = list => list.map(n => n.split(' ')[0]).join(', ');
+// "[Marketing] Promo email #1" → role "Marketing", text "Promo email #1"
+const splitRole = name => { const m = String(name).match(/^\[([^\]]+)\]\s*/); return m ? [m[1], name.slice(m[0].length)] : ['', name]; };
 
 async function post(body) {
   const res = await fetch('/api/ops/task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => null);
@@ -102,12 +104,15 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
         const t = { ...t0, ...(patch[t0.id] || {}) };
         const st = done ? 'done' : state[t.id];
         const moved = t.assigned || (t.due !== t0.due && t.due);
+        const [role, rest] = splitRole(short ? t.name.split(' — ')[0] : t.name);
+        // The owner column already names the role when showWho is on
+        const showRole = role && !(showWho && t.labels.includes(role));
         return (
           <li key={t.id} className={[st === 'done' ? 'is-done' : '', t.blockedOn ? 'is-blocked' : '', moved ? 'is-moved' : ''].join(' ')}>
             <div className="main">
               <label>
                 <input type="checkbox" checked={st === 'done'} disabled={done || st === 'saving' || st === 'done'} onChange={() => complete(t.id)} />
-                <span className="n">{short ? t.name.split(' — ')[0] : t.name}{t.escalated && <span className="esc"> · {t.escalated}</span>}</span>
+                <span className="n">{showRole && <span className="role">{role}</span>}{rest}{t.escalated && <span className="esc"> · {t.escalated}</span>}</span>
               </label>
               <span className="meta">
                 {fmt(t.due)}

@@ -413,7 +413,8 @@
   .ops-tasks li{padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
   .ops-tasks .main{display:flex;justify-content:space-between;gap:14px}
   .ops-tasks label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
-  .ops-tasks input{margin-top:4px;width:17px;height:17px;accent-color:var(--pine)}
+  .ops-tasks label input{flex:none;margin-top:4px;width:17px;height:17px;accent-color:var(--pine)}
+  .ops-tasks .role{display:inline-block;margin-right:6px;padding:0 7px;border-radius:999px;background:#ece5d8;color:var(--ink-soft);font-size:12px;font-weight:600;line-height:20px;vertical-align:1px}
   .ops-tasks .meta{font-size:13px;color:var(--ink-soft);white-space:nowrap}
   .ops-tasks li.is-done .n{text-decoration:line-through;color:#a39a8a}
   .ops-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--font-serif),serif;font-size:18px;font-weight:600}
@@ -498,6 +499,8 @@
   .ops-drawer .pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:#e9e3d8}
   .ops-drawer .pill.red{background:var(--terra);color:#fff}.ops-drawer .pill.amber{background:#D99A22;color:#fff}.ops-drawer .pill.green{background:#4F7B5C;color:#fff}
   .ops-drawer .ops-act{margin-left:0}
+  .ops-drawer .ops-tasks .main{flex-direction:column;gap:4px}
+  .ops-drawer .ops-tasks .meta{padding-left:27px;white-space:normal}
   .ops-done summary{cursor:pointer;font-size:14px;color:var(--ink-soft);margin-top:12px}
   .ops-dir{list-style:none;border-top:1px solid var(--line)}
   .ops-dir li{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}

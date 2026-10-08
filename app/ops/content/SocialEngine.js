@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { VIEWS, colType, PLAN_EDITABLE } from '@/lib/ops/socialengine';
 import Cropper, { shrink } from './Cropper';
 
@@ -43,7 +43,7 @@ function useView(view, q = '', offset = 0) {
 const weekOf = p => p.week_of || p.publish_date?.slice(0, 7) || '';
 function Plan() {
   const [data, reload] = useView('plan');
-  const [open, setOpen] = useState(null);
+  const [open, setOpen] = useState(null); // a row number, or 'new'
   const [msg, setMsg] = useState('');
   if (!data) return <p className="ops-empty">Loading the plan…</p>;
   if (data.error) return <p className="ops-empty">{data.error}</p>;
@@ -62,6 +62,7 @@ function Plan() {
       <p className="ops-empty">Tap a post to read and edit it. Approved posts are published by Make at their date and time; rows still Proposed at the Sunday 6pm deadline aren’t posted.</p>
       <div className="ops-se-bar">
         <span className="pills">{['Proposed', 'Approved', 'Needs edit', 'Posted', 'Failed'].filter(count).map(s => <span key={s} className={`pill s-${s.replace(/\s/g, '')}`}>{count(s)} {s}</span>)}</span>
+        {data.canEdit && <button className="chip" onClick={() => setOpen('new')}>New post</button>}
         {data.canEdit && proposed.length > 0 && <button className="chip primary" onClick={approveAll}>Approve all proposed ({proposed.length})</button>}
         {msg && <span className="hint">{msg}</span>}
       </div>
@@ -86,15 +87,20 @@ function Plan() {
           </ul>
         </div>
       ))}
-      {i >= 0 && <Composer key={posts[i]._row} p={posts[i]} canEdit={data.canEdit} onSaved={reload}
+      {open === 'new' && <Composer key="new" p={blankPost()} events={data.events || []} canEdit={data.canEdit} onSaved={reload} close={() => setOpen(null)}
+        onAdded={id => { setOpen(null); setMsg(`Added ${id}.`); }} />}
+      {i >= 0 && <Composer key={posts[i]._row} p={posts[i]} events={data.events || []} canEdit={data.canEdit} onSaved={reload}
         prev={i > 0 ? () => setOpen(posts[i - 1]._row) : null} next={i < posts.length - 1 ? () => setOpen(posts[i + 1]._row) : null} close={() => setOpen(null)} />}
     </div>
   );
 }
 
+const tomorrow = () => { const d = new Date(Date.now() + 864e5); return d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); };
+const blankPost = () => { const v = { publish_date: tomorrow(), publish_time_ET: '11:00', platforms: 'IG Feed, Facebook', format: 'Feed single', pillar: '', status: 'Proposed' }; return { ...v, _row: null, _raw: v, _new: true }; };
+
 // One post, laid out like it will appear: the picture on one side, its words and settings on the other.
 // Everything about the post is edited here; one Save writes all the changes.
-function Composer({ p, canEdit, onSaved, prev, next, close }) {
+function Composer({ p, events = [], canEdit, onSaved, onAdded, prev, next, close }) {
   const [vals, setVals] = useState(p._raw);
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState('');
@@ -102,9 +108,21 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
   const [mode, setMode] = useState(null); // null | 'library' | 'crop'
   const [pic, setPic] = useState(null); // { preview, src } once the picture changes here
   const [picMsg, setPicMsg] = useState('');
+  const isNew = !!p._new;
   const changed = PLAN_EDITABLE.filter(k => k !== 'status' && String(vals[k] ?? '') !== String(p._raw[k] ?? ''));
+  const [inserting, setInserting] = useState(null); // null | 'captions' | 'quotes'
+  const capRef = useRef(null);
+  const insert = text => {
+    const el = capRef.current, cur = String(vals.caption || '');
+    const at = el && document.activeElement === el ? el.selectionStart : (el?.dataset.at ? Number(el.dataset.at) : cur.length);
+    const before = cur.slice(0, at), after = cur.slice(at);
+    const glue = before && !/\n\n$/.test(before) ? (/\n$/.test(before) ? '\n' : '\n\n') : '';
+    if (errors.caption) setErrors(x => ({ ...x, caption: undefined }));
+    setVals(v => ({ ...v, caption: before + glue + text + (after && !/^\n/.test(after) ? '\n\n' : '') + after }));
+    if (el) el.dataset.at = (before + glue + text).length; // the next insert goes after this one
+  };
   const locked = ['Posted', 'Manual'].includes(p.status), dis = !canEdit || locked || busy;
-  const leave = go => () => { if (!changed.length || confirm('Leave without saving your changes?')) go(); };
+  const leave = go => () => { if (!(isNew ? String(vals.caption || '').trim() || vals.image_id : changed.length) || confirm('Leave without saving your changes?')) go(); };
   useEffect(() => {
     const key = e => {
       if (e.key === 'Escape') leave(close)();
@@ -118,13 +136,20 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
   });
   const save = async (extra = {}) => {
     setBusy(true); setErrors({}); setMsg('');
+    if (isNew) {
+      const values = Object.fromEntries(PLAN_EDITABLE.filter(k => String(vals[k] ?? '').trim()).map(k => [k, vals[k]]));
+      const j = await api({ view: 'plan', add: true, values: { ...values, ...extra } });
+      setBusy(false);
+      if (j.ok) { onSaved(); onAdded?.(j.post_id); return true; }
+      setErrors(j.errors || {}); setMsg(j.error || 'Couldn’t add the post'); return false;
+    }
     const j = await api({ view: 'plan', row: p._row, changes: { ...Object.fromEntries(changed.map(k => [k, vals[k]])), ...extra }, before: p._raw });
     setBusy(false);
     if (j.ok) { setMsg('Saved.'); setPicMsg(''); onSaved(); return true; }
     if (j.status === 409) { setMsg(`${j.error}. Showing their version.`); onSaved(); return false; }
     setErrors(j.errors || {}); setMsg(j.error || 'Couldn’t save'); return false;
   };
-  const set = k => e => setVals(s => ({ ...s, [k]: e.target.value }));
+  const set = k => e => { setVals(s => ({ ...s, [k]: e.target.value })); if (errors[k]) setErrors(x => ({ ...x, [k]: undefined })); };
   const field = (k, el, lab = label(k)) => (
     <div className={`row${errors[k] ? ' bad' : ''}${changed.includes(k) ? ' changed' : ''}`}>
       <label htmlFor={`c-${k}`}>{lab}</label>{el}{errors[k] && <span className="hint">{errors[k]}</span>}
@@ -144,9 +169,9 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
     try {
       const s = await shrink(file);
       const j = await sendPic('upload', file.name, s.data); if (!j) return;
-      setVals(v => ({ ...v, image_id: j.image_id, image_url: j.image_url }));
+      setVals(v => ({ ...v, image_id: j.image_id, image_url: j.image_url })); setErrors(x => ({ ...x, image_id: undefined, image_url: undefined }));
       setPic({ preview: s.preview, src: s.preview });
-      setPicMsg(`Uploaded and added to the Image Library as ${j.image_id}. Crop it, or save to use it as it is.`);
+      setPicMsg(`Uploaded and added to the Image Library as ${j.image_id}. Crop it, or ${isNew ? 'use it as it is' : 'save to use it as it is'}.`);
       setMode('crop');
     } catch (e) { setPicMsg(e.message); }
   };
@@ -155,7 +180,7 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
     setVals(v => ({ ...v, image_url: j.image_url }));
     setPic(x => ({ preview: c.preview, src: x?.src || cropSrc }));
     setMode(null);
-    setPicMsg(`Cropped to ${c.shape}.${c.small ? ' It’s a small part of a small picture, so it may look soft.' : ''} Save to use it.`);
+    setPicMsg(`Cropped to ${c.shape}.${c.small ? ' It’s a small part of a small picture, so it may look soft.' : ''}${isNew ? '' : ' Save to use it.'}`);
   };
   const shapeOf = isStory(p) ? '9:16' : '4:5';
   const status = p.status || 'Proposed';
@@ -163,11 +188,11 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
     <div className="ops-se-modal" role="dialog" aria-modal="true" aria-label="Post" onClick={e => { if (e.target === e.currentTarget) leave(close)(); }}>
       <div className="ops-se-comp">
         <div className="top">
-          <span className={`pill s-${status.replace(/\s/g, '')}`}>{status}</span>
-          <span className="when">{day(p.publish_date)} · {time(p.publish_time_ET)} ET · {isStory(p) ? 'Story' : p.platforms || 'Feed'}</span>
+          <span className={`pill s-${status.replace(/\s/g, '')}`}>{isNew ? 'New post' : status}</span>
+          <span className="when">{day(isNew ? vals.publish_date : p.publish_date)} · {time(p.publish_time_ET)} ET · {isStory(p) ? 'Story' : p.platforms || 'Feed'}</span>
           <span className="nav">
-            <button className="chip" disabled={!prev} onClick={leave(prev)} aria-label="Previous post">←</button>
-            <button className="chip" disabled={!next} onClick={leave(next)} aria-label="Next post">→</button>
+            {!isNew && <button className="chip" disabled={!prev} onClick={leave(prev)} aria-label="Previous post">←</button>}
+            {!isNew && <button className="chip" disabled={!next} onClick={leave(next)} aria-label="Next post">→</button>}
             <button className="chip" onClick={leave(close)} aria-label="Close">✕</button>
           </span>
         </div>
@@ -184,16 +209,23 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
             )}
             {picMsg ? <p className="hint">{picMsg}</p> : (vals.image_id !== p._raw.image_id || vals.image_url !== p._raw.image_url) && <p className="hint">New picture chosen. Save to use it.</p>}
             {(errors.image_id || errors.image_url) && <p className="hint">{errors.image_id || errors.image_url}</p>}
-            {mode === 'library' && <ImagePicker onPick={(id, t, drive) => { setVals(s => ({ ...s, image_id: id, image_url: '' })); setPic({ preview: t, src: drive ? `/api/ops/social/image?id=${drive}` : '' }); setPicMsg(''); setMode(null); }} />}
+            {mode === 'library' && <ImagePicker onPick={(id, t, drive) => { setVals(s => ({ ...s, image_id: id, image_url: '' })); setErrors(x => ({ ...x, image_id: undefined, image_url: undefined })); setPic({ preview: t, src: drive ? `/api/ops/social/image?id=${drive}` : '' }); setPicMsg(''); setMode(null); }} />}
             {p.quote_text && <p className="quo">“{p.quote_text}”{p.quote_source ? ` — ${p.quote_source}` : ''} <span className={p.quote_check === 'Verbatim' ? 'ok' : 'warn'}>{p.quote_check || 'not checked'}</span></p>}
-            {p.linked_event && <p className="ev">For: {p.linked_event}</p>}
             {p.error && <p className="err">Make: {p.error}</p>}
             {p.post_links && <p className="ev"><a href={p.post_links.split(/\s|,/)[0]} target="_blank" rel="noopener">View the post ↗</a></p>}
           </div>
           <form className="words ops-edit" onSubmit={async e => { e.preventDefault(); await save(); }}>
             {locked && <p className="hint">Already {status.toLowerCase()}: shown as it went out.</p>}
-            {field('caption', <textarea id="c-caption" className="capbox" rows={10} value={vals.caption || ''} disabled={dis} onChange={set('caption')} placeholder="Write the caption…" />, 'Caption')}
-            <p className="count">{String(vals.caption || '').length} / 2,200</p>
+            {field('caption', <textarea id="c-caption" ref={capRef} className="capbox" rows={10} value={vals.caption || ''} disabled={dis} onChange={set('caption')}
+              onBlur={e => { e.target.dataset.at = e.target.selectionStart; }} placeholder="Write the caption…" />, 'Caption')}
+            <div className="capbar">
+              {!dis && <>
+                <button type="button" className={`chip${inserting === 'captions' ? ' on' : ''}`} onClick={() => setInserting(x => x === 'captions' ? null : 'captions')}>Insert a snippet</button>
+                <button type="button" className={`chip${inserting === 'quotes' ? ' on' : ''}`} onClick={() => setInserting(x => x === 'quotes' ? null : 'quotes')}>Insert a quote</button>
+              </>}
+              <span className="count">{String(vals.caption || '').length} / 2,200</span>
+            </div>
+            {inserting && <Inserter kind={inserting} onPick={t => { insert(t); setInserting(null); }} />}
             {field('hashtags', <textarea id="c-hashtags" rows={2} value={vals.hashtags || ''} disabled={dis} onChange={set('hashtags')} />)}
             <div className="two">
               {field('publish_date', <input id="c-publish_date" type="date" value={vals.publish_date || ''} disabled={dis} onChange={set('publish_date')} />, 'Date')}
@@ -207,8 +239,17 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
               {field('pillar', <input id="c-pillar" value={vals.pillar || ''} disabled={dis} onChange={set('pillar')} />)}
               {field('link', <input id="c-link" value={vals.link || ''} disabled={dis} placeholder="https://" onChange={set('link')} />)}
             </div>
+            {field('linked_event', <><input id="c-linked_event" list="c-events" value={vals.linked_event || ''} disabled={dis} placeholder="None" onChange={set('linked_event')} />
+              <datalist id="c-events">{events.map(e => <option key={e} value={e} />)}</datalist></>, 'For an event')}
             {field('jake_notes', <textarea id="c-jake_notes" rows={2} value={vals.jake_notes || ''} disabled={dis} onChange={set('jake_notes')} placeholder="What should the planner change?" />)}
-            {canEdit && !locked && (
+            {canEdit && isNew && (
+              <div className="bar">
+                <button type="button" className="chip primary" disabled={busy} onClick={() => save({ status: 'Approved' })}>Add and approve</button>
+                <button type="submit" className="chip" disabled={busy}>Add as proposed</button>
+                <button type="button" className="chip" onClick={leave(close)}>Cancel</button>
+              </div>
+            )}
+            {canEdit && !locked && !isNew && (
               <div className="bar">
                 {status !== 'Approved'
                   ? <button type="button" className="chip primary" disabled={busy} onClick={async () => { if (await save({ status: 'Approved' })) next ? next() : close(); }}>{changed.length ? 'Save and approve' : 'Approve'}</button>
@@ -223,6 +264,27 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Approved Caption Bank snippets and verified quotes (copied exactly), to drop into a caption
+function Inserter({ kind, onPick }) {
+  const [q, setQ] = useState('');
+  const [data] = useView(kind, q);
+  const ok = r => kind === 'captions' ? String(r.values.approved).toUpperCase() === 'TRUE' : String(r.values.verified).toUpperCase() === 'TRUE';
+  const text = r => kind === 'captions' ? r.values.text : `“${r.values.quote}”\n— ${[r.values.author, r.values.work].filter(Boolean).join(', ')}`;
+  const rows = data?.rows?.filter(ok) || [];
+  return (
+    <div className="ops-se-ins">
+      <input placeholder={kind === 'captions' ? 'Search snippets…' : 'Search quotes by words, author, work…'} value={q} onChange={e => setQ(e.target.value)} autoFocus />
+      {!data ? <p className="hint">Loading…</p> : data.error ? <p className="hint">{data.error}</p> : !rows.length ? <p className="hint">{kind === 'captions' ? 'No approved snippets match.' : 'No verified quotes match.'}</p> : (
+        <ul>{rows.slice(0, 40).map(r => (
+          <li key={r.row}><button type="button" onClick={() => onPick(text(r))}>
+            <span className="t">{kind === 'captions' ? r.values.text : `“${r.values.quote}”`}</span>
+            <span className="s">{kind === 'captions' ? [r.values.type, r.values.program].filter(Boolean).join(' · ') : [r.values.author, r.values.work].filter(Boolean).join(', ')}</span>
+          </button></li>))}</ul>
+      )}
     </div>
   );
 }

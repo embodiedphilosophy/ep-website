@@ -671,7 +671,15 @@
   .ops-se-comp .ops-edit .row label{padding-top:0;font-size:12.5px;font-weight:600}
   .ops-se-comp .ops-edit .row .hint{grid-column:1}
   .ops-se-comp .capbox{font-size:15px;line-height:1.5;min-height:220px}
-  .ops-se-comp .count{font-size:11.5px;color:var(--ink-soft);text-align:right;margin:-6px 0 4px}
+  .ops-se-comp .capbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:-4px 0 8px}
+  .ops-se-comp .count{font-size:11.5px;color:var(--ink-soft);margin-left:auto}
+  .ops-se-ins{border:1px solid var(--line);background:#fff;padding:8px;margin-bottom:10px}
+  .ops-se-ins input{width:100%;margin-bottom:6px}
+  .ops-se-ins ul{list-style:none;padding:0;margin:0;max-height:260px;overflow-y:auto}
+  .ops-se-ins button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:7px 4px;cursor:pointer;font:inherit;color:inherit}
+  .ops-se-ins button:hover,.ops-se-ins button:focus-visible{background:var(--ivory)}
+  .ops-se-ins .t{display:block;font-size:13.5px;overflow-wrap:anywhere}
+  .ops-se-ins .s{display:block;font-size:12px;color:var(--ink-soft)}
   .ops-se-comp .two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
   .ops-se-comp .bar{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;background:var(--ivory)}
   @media(max-width:720px){.ops-se-modal{padding:0}.ops-se-comp{border-radius:0;min-height:100%;padding:12px 16px 24px}.ops-se-comp .cols{grid-template-columns:1fr}.ops-se-comp .media .pic{max-width:420px;margin:0 auto}.ops-se-feed{grid-template-columns:repeat(2,1fr)}}

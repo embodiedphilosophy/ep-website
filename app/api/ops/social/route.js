@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { currentUser } from '@/lib/ops/auth';
 import { isStaff, canEditSocial } from '@/lib/ops/nav';
 import { readPlain, updatePlain, addPlain, ConflictError } from '@/lib/ops/store';
-import { viewOf, isLocked, checkSocial, thumbOf } from '@/lib/ops/socialengine';
+import { viewOf, isLocked, checkSocial, thumbOf, mondayOf, postIdFor, eventLabel } from '@/lib/ops/socialengine';
+import { loadCalendar } from '@/lib/calendar';
 import { todayET } from '@/lib/events';
 import { refreshSite } from '@/lib/ops/refresh';
 import { driveIdOf } from '@/lib/ops/socialimages';
@@ -36,7 +37,10 @@ export async function GET(req) {
     if (q && v.search) rows = rows.filter(r => v.search.some(c => String(r.values[c] || '').toLowerCase().includes(q)));
     const total = rows.length, page = v.key === 'plan' ? rows : rows.slice(offset, offset + 60);
     if (v.key === 'images') for (const r of page) r.thumb = thumbOf(r.values.public_url, r.values.drive_file_id);
-    return NextResponse.json({ head: data.head, rows: page, total, offset, canEdit: canEditSocial(user) && (!v.director || user.director),
+    const events = v.key !== 'plan' ? undefined : (await loadCalendar().catch(() => []))
+      .filter(e => e.date >= addDays(todayET(), -3) && e.date <= addDays(todayET(), 120) && /public/i.test(e.audience || '') && e.track !== 'MM')
+      .filter((e, i, a) => a.findIndex(x => eventLabel(x) === eventLabel(e)) === i).slice(0, 60).map(eventLabel);
+    return NextResponse.json({ head: data.head, rows: page, total, offset, events, canEdit: canEditSocial(user) && (!v.director || user.director),
       locked: data.head.filter(h => isLocked(v.tab, h)) });
   } catch (e) {
     console.error('Social read failed', v.tab, e.message);
@@ -72,6 +76,26 @@ export async function POST(req) {
       }
       refreshSite();
       return NextResponse.json({ ok: true, approved: n });
+    }
+    if (body.add && v.key === 'plan') {
+      const { out, errors } = clean(body.values);
+      if (!out.publish_date) errors.publish_date = 'Pick a date';
+      if (!out.publish_time_ET) errors.publish_time_ET = 'Pick a time';
+      if (!out.platforms) errors.platforms = 'Where it goes, e.g. IG Feed, Facebook';
+      if (!out.caption) errors.caption = 'Write the caption';
+      if (!out.image_id && !out.image_url) errors.image_id = 'Choose or upload a picture';
+      if (Object.keys(errors).length) return NextResponse.json({ error: 'Some fields need fixing', errors }, { status: 400 });
+      if (out.status && !['Proposed', 'Approved'].includes(out.status)) out.status = 'Proposed';
+      if (out.image_id && !out.image_url) {
+        const img = (await readPlain('Image Library', SHOW)).rows.find(r => r.values.image_id === out.image_id);
+        if (!img) return NextResponse.json({ error: 'Not an image in the Image Library', errors: { image_id: 'Unknown image' } }, { status: 400 });
+        out.image_url = img.values.public_url;
+      }
+      const plan = await readPlain(v.tab, SHEET);
+      const post = { post_id: postIdFor(out.publish_date, plan.rows.map(r => r.values.post_id)), week_of: mondayOf(out.publish_date), status: 'Proposed', ...out };
+      const row = await addPlain(v.tab, post, { who, ...SHEET });
+      refreshSite();
+      return NextResponse.json({ ok: true, row, post_id: post.post_id });
     }
     if (body.add) {
       if (!v.add) return NextResponse.json({ error: 'Rows can’t be added here' }, { status: 400 });

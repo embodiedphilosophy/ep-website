@@ -8,6 +8,11 @@ import { onboardingState } from '@/lib/teach';
 
 export const dynamic = 'force-dynamic';
 
+// Staff tools linked from the dashboard header (teachers don't see these)
+const SOCIAL_PREVIEW_URL = process.env.OPS_SOCIAL_PREVIEW_URL
+  || 'https://script.google.com/a/macros/embodiedphilosophy.com/s/AKfycbwnxnP24WZq9iLSgh-mi6J8qFaLTszXyzvzusoqX7vXPn7Q6bWdEN3nOiCdClUjY4p-iw/exec';
+const isStaff = u => !!u && (u.director || (!u.newTeacher && String(u.type || '').toLowerCase() !== 'teacher'));
+
 export default async function Ops({ searchParams }) {
   const user = await currentUser();
   const sp0 = await searchParams;
@@ -33,6 +38,12 @@ export default async function Ops({ searchParams }) {
     <main className="ops">
       <header className="ops-top">
         <a href="/ops" className="t-brand">Embodied <span>Philosophy</span></a>
+        {isStaff(user) && (
+          <nav className="ops-nav" aria-label="Staff tools">
+            <a href="/ops" aria-current="page">Tasks</a>
+            <a href={SOCIAL_PREVIEW_URL} target="_blank" rel="noopener">Social preview ↗</a>
+          </nav>
+        )}
         <div className="ops-who">{user.name}{user.director && ' · Director'} · <a href="/api/ops/logout">Sign out</a></div>
       </header>
 

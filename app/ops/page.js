@@ -96,6 +96,7 @@ export default async function Home({ searchParams }) {
         </div>
       )}
 
+      <div className="ops-grid">
       <section className="ops-col">
         <h2 className={b.pastDue.length ? 'late' : ''}>Needs you <span>{needsYou.length}</span></h2>
         {needsYou.length === 0 ? <p className="ops-empty">Nothing overdue or due this week.</p> : groups.map(g => (
@@ -108,9 +109,12 @@ export default async function Home({ searchParams }) {
         {socialLine && <p className="ops-more"><a href="/ops/content">{socialLine} →</a></p>}
       </section>
 
-      <h2 className="ops-sub">This week</h2>
-      <Meetings programming={programming} team={meetings} director={user.director} />
-      {isTeacher(user) && <p className="ops-more"><a href="/ops/team">Contacts and your teacher guide →</a></p>}
+      <aside className="ops-col">
+        <h2>This week</h2>
+        <Meetings programming={programming} team={meetings} director={user.director} stacked />
+        {isTeacher(user) && <p className="ops-more"><a href="/ops/team">Contacts and your teacher guide →</a></p>}
+      </aside>
+      </div>
     </Shell>
   );
 }

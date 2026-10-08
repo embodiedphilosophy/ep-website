@@ -1,9 +1,9 @@
 import { longDate } from '@/lib/dates';
 
-// "This week": programming and team meetings, side by side
-export default function Meetings({ programming, team, director }) {
+// "This week": programming and team meetings, side by side (or stacked in Home's right-hand column)
+export default function Meetings({ programming, team, director, stacked = false }) {
   return (
-    <div className="ops-week">
+    <div className={`ops-week${stacked ? ' stacked' : ''}`}>
       <section>
         <h2>Programming <span>{programming.length || ''}</span></h2>
         {programming.length === 0 ? <p className="ops-empty">No programming in the next seven days.</p> : (

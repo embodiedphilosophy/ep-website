@@ -4,6 +4,7 @@ import { isStaff, canEditSocial } from '@/lib/ops/nav';
 import { readPlain, updatePlain, addPlain, ConflictError } from '@/lib/ops/store';
 import { viewOf, isLocked, checkSocial, thumbOf } from '@/lib/ops/socialengine';
 import { todayET } from '@/lib/events';
+import { refreshSite } from '@/lib/ops/refresh';
 
 export const dynamic = 'force-dynamic';
 const SHEET = { sheet: 'social' }, SHOW = { sheet: 'social', light: true };
@@ -68,13 +69,16 @@ export async function POST(req) {
         if (a.before?.status !== 'Proposed') continue;
         n += (await updatePlain(v.tab, Number(a.row), { status: 'Approved' }, { before: a.before, who, ...SHEET })).length;
       }
+      refreshSite();
       return NextResponse.json({ ok: true, approved: n });
     }
     if (body.add) {
       if (!v.add) return NextResponse.json({ error: 'Rows can’t be added here' }, { status: 400 });
       const { out, errors } = clean(body.values);
       if (Object.keys(errors).length) return NextResponse.json({ error: 'Some fields need fixing', errors }, { status: 400 });
-      return NextResponse.json({ ok: true, row: await addPlain(v.tab, out, { who, ...SHEET }) });
+      const row = await addPlain(v.tab, out, { who, ...SHEET });
+      refreshSite();
+      return NextResponse.json({ ok: true, row });
     }
     const { out, errors } = clean(body.changes);
     // Needs edit only makes sense with a note saying what to change
@@ -87,9 +91,10 @@ export async function POST(req) {
       out.image_url = img.values.public_url;
     }
     const written = await updatePlain(v.tab, Number(body.row), out, { before: body.before || {}, who, ...SHEET });
+    refreshSite();
     return NextResponse.json({ ok: true, written });
   } catch (e) {
-    if (e instanceof ConflictError) return NextResponse.json({ error: e.message, conflict: e.current }, { status: 409 });
+    if (e instanceof ConflictError) { refreshSite(); return NextResponse.json({ error: e.message, conflict: e.current }, { status: 409 }); }
     console.error('Social save failed', e.message);
     return NextResponse.json({ error: /403/.test(e.message) ? 'The website can only read the Social Engine. Give its service account Editor access.' : /^Sheets|^Google/.test(e.message) ? 'Couldn’t save. Try again shortly.' : e.message }, { status: 502 });
   }

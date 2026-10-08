@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { VIEWS, SETTABLE, colType, PLAN_EDITABLE } from '@/lib/ops/socialengine';
+import { VIEWS, colType, PLAN_EDITABLE } from '@/lib/ops/socialengine';
 
 const label = h => h === 'publish_time_ET' ? 'Time (ET)' : h === 'jake_notes' ? 'Notes for the planner' : h.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
 const day = s => /^\d{4}-\d{2}-\d{2}$/.test(s || '') ? new Date(`${s}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : s || 'No date';
@@ -38,7 +38,8 @@ function useView(view, q = '', offset = 0) {
   return [data, load];
 }
 
-// ---------- Plan ----------
+// ---------- Plan: the feed, and each post edited where it shows ----------
+const weekOf = p => p.week_of || p.publish_date?.slice(0, 7) || '';
 function Plan() {
   const [data, reload] = useView('plan');
   const [open, setOpen] = useState(null);
@@ -47,113 +48,146 @@ function Plan() {
   if (data.error) return <p className="ops-empty">{data.error}</p>;
   const posts = data.rows.map(r => ({ ...r.values, _row: r.row, _thumb: r.thumb, _raw: r.values }));
   const proposed = posts.filter(p => p.status === 'Proposed');
-  const feed = posts.filter(p => !isStory(p) && !['Skip', 'Failed'].includes(p.status));
-  const weeks = [...new Set(posts.map(p => p.week_of || p.publish_date?.slice(0, 7) || ''))];
+  const weeks = [...new Set(posts.map(weekOf))];
   const approveAll = async () => {
     if (!confirm(`Approve all ${proposed.length} proposed posts? Make publishes each at its date and time.`)) return;
     const j = await api({ view: 'plan', approve: proposed.map(p => ({ row: p._row, before: p._raw })) });
     setMsg(j.ok ? `${j.approved} approved.` : j.error); reload();
   };
   const count = s => posts.filter(p => p.status === s).length;
+  const i = posts.findIndex(p => p._row === open);
   return (
     <div className="ops-se-plan">
-      <p className="ops-empty">Approved posts are published by Make at their date and time. Rows still Proposed at the Sunday 6pm deadline aren’t posted.</p>
+      <p className="ops-empty">Tap a post to read and edit it. Approved posts are published by Make at their date and time; rows still Proposed at the Sunday 6pm deadline aren’t posted.</p>
       <div className="ops-se-bar">
         <span className="pills">{['Proposed', 'Approved', 'Needs edit', 'Posted', 'Failed'].filter(count).map(s => <span key={s} className={`pill s-${s.replace(/\s/g, '')}`}>{count(s)} {s}</span>)}</span>
         {data.canEdit && proposed.length > 0 && <button className="chip primary" onClick={approveAll}>Approve all proposed ({proposed.length})</button>}
         {msg && <span className="hint">{msg}</span>}
       </div>
-      {feed.length > 0 && (<>
-        <h3 className="ops-se-h">Feed preview</h3>
-        <ul className="ops-se-grid">{feed.slice(0, 12).map(p => (
-          <li key={p._row}><button onClick={() => setOpen(p._row)} title={p.caption?.slice(0, 200)}>
-            {p._thumb ? <img src={p._thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}
-            <span className={`st s-${String(p.status).replace(/\s/g, '')}`}>{p.status}</span>
-          </button></li>))}</ul>
-      </>)}
+      {!posts.length && <p className="ops-empty">Nothing planned from last week on.</p>}
       {weeks.map(w => (
         <div key={w}>
           <h3 className="ops-se-h">{/^\d{4}-\d{2}-\d{2}$/.test(w) ? `Week of ${day(w)}` : w || 'Undated'}</h3>
-          <ul className="ops-se-posts">
-            {posts.filter(p => (p.week_of || p.publish_date?.slice(0, 7) || '') === w).map(p => (
-              <Post key={p._row} p={p} canEdit={data.canEdit} open={open === p._row} setOpen={setOpen} onSaved={reload} />
+          <ul className="ops-se-feed">
+            {posts.filter(p => weekOf(p) === w).map(p => (
+              <li key={p._row} className={['Skip', 'Failed'].includes(p.status) ? 'off' : ''}>
+                <button onClick={() => setOpen(p._row)} aria-label={`${day(p.publish_date)} ${time(p.publish_time_ET)}: ${String(p.caption || 'no caption').slice(0, 80)}`}>
+                  <span className="pic">
+                    {p._thumb ? <img src={p._thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}
+                    <span className={`st s-${String(p.status || 'Proposed').replace(/\s/g, '')}`}>{p.status || 'Proposed'}</span>
+                    {isStory(p) && <span className="kind">Story</span>}
+                  </span>
+                  <span className="meta">{day(p.publish_date)} · {time(p.publish_time_ET)}</span>
+                  <span className="cap">{p.caption || <i>No caption yet</i>}</span>
+                </button>
+              </li>
             ))}
           </ul>
         </div>
       ))}
+      {i >= 0 && <Composer key={posts[i]._row} p={posts[i]} canEdit={data.canEdit} onSaved={reload}
+        prev={i > 0 ? () => setOpen(posts[i - 1]._row) : null} next={i < posts.length - 1 ? () => setOpen(posts[i + 1]._row) : null} close={() => setOpen(null)} />}
     </div>
   );
 }
 
-function Post({ p, canEdit, open, setOpen, onSaved }) {
+// One post, laid out like it will appear: the picture on one side, its words and settings on the other.
+// Everything about the post is edited here; one Save writes all the changes.
+function Composer({ p, canEdit, onSaved, prev, next, close }) {
   const [vals, setVals] = useState(p._raw);
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
   const [picking, setPicking] = useState(false);
-  const save = async changes => {
+  const [pickedThumb, setPickedThumb] = useState('');
+  const changed = PLAN_EDITABLE.filter(k => k !== 'status' && String(vals[k] ?? '') !== String(p._raw[k] ?? ''));
+  const locked = ['Posted', 'Manual'].includes(p.status), dis = !canEdit || locked || busy;
+  const leave = go => () => { if (!changed.length || confirm('Leave without saving your changes?')) go(); };
+  useEffect(() => {
+    const key = e => {
+      if (e.key === 'Escape') leave(close)();
+      if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) return;
+      if (e.key === 'ArrowLeft' && prev) leave(prev)();
+      if (e.key === 'ArrowRight' && next) leave(next)();
+    };
+    document.addEventListener('keydown', key);
+    const o = document.body.style.overflow; document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', key); document.body.style.overflow = o; };
+  });
+  const save = async (extra = {}) => {
     setBusy(true); setErrors({}); setMsg('');
-    const j = await api({ view: 'plan', row: p._row, changes, before: p._raw });
+    const j = await api({ view: 'plan', row: p._row, changes: { ...Object.fromEntries(changed.map(k => [k, vals[k]])), ...extra }, before: p._raw });
     setBusy(false);
-    if (j.ok) { onSaved(); return true; }
-    if (j.status === 409) { setMsg(`${j.error}. Reloading their version.`); onSaved(); return false; }
+    if (j.ok) { setMsg('Saved.'); onSaved(); return true; }
+    if (j.status === 409) { setMsg(`${j.error}. Showing their version.`); onSaved(); return false; }
     setErrors(j.errors || {}); setMsg(j.error || 'Couldn’t save'); return false;
   };
-  const changed = PLAN_EDITABLE.filter(k => String(vals[k] ?? '') !== String(p._raw[k] ?? ''));
-  const locked = ['Posted', 'Manual'].includes(p.status);
+  const set = k => e => setVals(s => ({ ...s, [k]: e.target.value }));
+  const field = (k, el, lab = label(k)) => (
+    <div className={`row${errors[k] ? ' bad' : ''}${changed.includes(k) ? ' changed' : ''}`}>
+      <label htmlFor={`c-${k}`}>{lab}</label>{el}{errors[k] && <span className="hint">{errors[k]}</span>}
+    </div>
+  );
+  const thumb = pickedThumb && vals.image_id !== p._raw.image_id ? pickedThumb : p._thumb;
+  const status = p.status || 'Proposed';
   return (
-    <li className={`ops-se-post${open ? ' is-open' : ''}`}>
-      <div className="row1">
-        <button className="th" onClick={() => setOpen(open ? null : p._row)} aria-label="Open">
-          {p._thumb ? <img src={p._thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}
-        </button>
-        <div className="body">
-          <p className="when">{day(p.publish_date)} · {time(p.publish_time_ET)} ET · {isStory(p) ? 'Story' : p.platforms || 'Feed'}{p.pillar ? ` · ${p.pillar}` : ''}
-            <span className={`pill s-${String(p.status).replace(/\s/g, '')}`}>{p.status || 'Proposed'}</span></p>
-          {p.linked_event && <p className="ev">For: {p.linked_event}</p>}
-          <p className={`cap${open ? '' : ' clip'}`}>{p.caption || <i>No caption yet</i>}</p>
-          {p.quote_text && <p className="quo">“{p.quote_text}”{p.quote_source ? ` — ${p.quote_source}` : ''} <span className={p.quote_check === 'Verbatim' ? 'ok' : 'warn'}>{p.quote_check || 'not checked'}</span></p>}
-          {p.error && <p className="err">Make: {p.error}</p>}
-          {p.post_links && <p className="ev"><a href={p.post_links.split(/\s|,/)[0]} target="_blank" rel="noopener">View the post ↗</a></p>}
-          {canEdit && !locked && !open && (
-            <div className="acts">
-              {p.status !== 'Approved' && <button className="chip primary" disabled={busy} onClick={() => save({ status: 'Approved' })}>Approve</button>}
-              <button className="chip" disabled={busy} onClick={() => setOpen(p._row)}>Edit</button>
-              {p.status !== 'Skip' && <button className="chip" disabled={busy} onClick={() => save({ status: 'Skip' })}>Skip</button>}
-              {['Approved', 'Skip', 'Needs edit'].includes(p.status) && <button className="chip" disabled={busy} onClick={() => save({ status: 'Proposed' })}>Back to proposed</button>}
+    <div className="ops-se-modal" role="dialog" aria-modal="true" aria-label="Post" onClick={e => { if (e.target === e.currentTarget) leave(close)(); }}>
+      <div className="ops-se-comp">
+        <div className="top">
+          <span className={`pill s-${status.replace(/\s/g, '')}`}>{status}</span>
+          <span className="when">{day(p.publish_date)} · {time(p.publish_time_ET)} ET · {isStory(p) ? 'Story' : p.platforms || 'Feed'}</span>
+          <span className="nav">
+            <button className="chip" disabled={!prev} onClick={leave(prev)} aria-label="Previous post">←</button>
+            <button className="chip" disabled={!next} onClick={leave(next)} aria-label="Next post">→</button>
+            <button className="chip" onClick={leave(close)} aria-label="Close">✕</button>
+          </span>
+        </div>
+        <div className="cols">
+          <div className="media">
+            <div className={`pic${isStory(p) ? ' story' : ''}`}>{thumb ? <img src={thumb} alt="" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}</div>
+            {!dis && <button type="button" className="chip" onClick={() => setPicking(x => !x)}>{picking ? 'Close the library' : 'Change image'}</button>}
+            {vals.image_id !== p._raw.image_id && <p className="hint">New image chosen. Save to use it.</p>}
+            {errors.image_id && <p className="hint">{errors.image_id}</p>}
+            {picking && <ImagePicker onPick={(id, t) => { setVals(s => ({ ...s, image_id: id })); setPickedThumb(t); setPicking(false); }} />}
+            {p.quote_text && <p className="quo">“{p.quote_text}”{p.quote_source ? ` — ${p.quote_source}` : ''} <span className={p.quote_check === 'Verbatim' ? 'ok' : 'warn'}>{p.quote_check || 'not checked'}</span></p>}
+            {p.linked_event && <p className="ev">For: {p.linked_event}</p>}
+            {p.error && <p className="err">Make: {p.error}</p>}
+            {p.post_links && <p className="ev"><a href={p.post_links.split(/\s|,/)[0]} target="_blank" rel="noopener">View the post ↗</a></p>}
+          </div>
+          <form className="words ops-edit" onSubmit={async e => { e.preventDefault(); await save(); }}>
+            {locked && <p className="hint">Already {status.toLowerCase()}: shown as it went out.</p>}
+            {field('caption', <textarea id="c-caption" className="capbox" rows={10} value={vals.caption || ''} disabled={dis} onChange={set('caption')} placeholder="Write the caption…" />, 'Caption')}
+            <p className="count">{String(vals.caption || '').length} / 2,200</p>
+            {field('hashtags', <textarea id="c-hashtags" rows={2} value={vals.hashtags || ''} disabled={dis} onChange={set('hashtags')} />)}
+            <div className="two">
+              {field('publish_date', <input id="c-publish_date" type="date" value={vals.publish_date || ''} disabled={dis} onChange={set('publish_date')} />, 'Date')}
+              {field('publish_time_ET', <input id="c-publish_time_ET" value={vals.publish_time_ET || ''} disabled={dis} placeholder="11:00" onChange={set('publish_time_ET')} />)}
             </div>
-          )}
-          {msg && !open && <p className="hint">{msg}</p>}
+            <div className="two">
+              {field('platforms', <input id="c-platforms" value={vals.platforms || ''} disabled={dis} onChange={set('platforms')} />)}
+              {field('format', <input id="c-format" value={vals.format || ''} disabled={dis} onChange={set('format')} />)}
+            </div>
+            <div className="two">
+              {field('pillar', <input id="c-pillar" value={vals.pillar || ''} disabled={dis} onChange={set('pillar')} />)}
+              {field('link', <input id="c-link" value={vals.link || ''} disabled={dis} placeholder="https://" onChange={set('link')} />)}
+            </div>
+            {field('jake_notes', <textarea id="c-jake_notes" rows={2} value={vals.jake_notes || ''} disabled={dis} onChange={set('jake_notes')} placeholder="What should the planner change?" />)}
+            {canEdit && !locked && (
+              <div className="bar">
+                {status !== 'Approved'
+                  ? <button type="button" className="chip primary" disabled={busy} onClick={async () => { if (await save({ status: 'Approved' })) next ? next() : close(); }}>{changed.length ? 'Save and approve' : 'Approve'}</button>
+                  : <button type="button" className="chip" disabled={busy} onClick={() => save({ status: 'Proposed' })}>Unapprove</button>}
+                <button type="submit" className={`chip${status === 'Approved' ? ' primary' : ''}`} disabled={busy || !changed.length}>{changed.length ? `Save ${changed.length} change${changed.length === 1 ? '' : 's'}` : 'No changes'}</button>
+                <button type="button" className="chip" disabled={busy || !String(vals.jake_notes || '').trim()} onClick={() => save({ status: 'Needs edit' })}>Send back with my notes</button>
+                {status !== 'Skip' ? <button type="button" className="chip" disabled={busy} onClick={() => save({ status: 'Skip' })}>Skip</button>
+                  : <button type="button" className="chip" disabled={busy} onClick={() => save({ status: 'Proposed' })}>Back to proposed</button>}
+              </div>
+            )}
+            {msg && <p className="hint">{msg}</p>}
+          </form>
         </div>
       </div>
-      {open && (
-        <form className="ops-edit" onSubmit={async e => { e.preventDefault(); if (await save(Object.fromEntries(changed.map(k => [k, vals[k]])))) setOpen(null); }}>
-          {[['publish_date', 'date'], ['publish_time_ET'], ['platforms'], ['pillar'], ['format'], ['caption'], ['hashtags'], ['link'], ['image_id'], ['jake_notes']].map(([k]) => {
-            const type = colType('Weekly Plan', k), dis = !canEdit || locked || busy;
-            return (
-              <div key={k} className={`row${errors[k] ? ' bad' : ''}${changed.includes(k) ? ' changed' : ''}`}>
-                <label htmlFor={`p${p._row}-${k}`}>{k === 'image_id' ? 'Image' : label(k)}</label>
-                {k === 'image_id' ? (
-                  <div className="inline"><input id={`p${p._row}-${k}`} value={vals[k] || ''} disabled={dis} onChange={e => setVals(s => ({ ...s, [k]: e.target.value }))} />
-                    {!dis && <button type="button" className="chip" onClick={() => setPicking(x => !x)}>{picking ? 'Close' : 'Choose…'}</button>}</div>
-                ) : type === 'long' ? <textarea id={`p${p._row}-${k}`} rows={k === 'caption' ? 7 : 2} value={vals[k] || ''} disabled={dis} onChange={e => setVals(s => ({ ...s, [k]: e.target.value }))} />
-                  : <input id={`p${p._row}-${k}`} type={type === 'date' ? 'date' : 'text'} value={vals[k] || ''} disabled={dis} placeholder={k === 'publish_time_ET' ? '11:00' : ''} onChange={e => setVals(s => ({ ...s, [k]: e.target.value }))} />}
-                {errors[k] && <span className="hint">{errors[k]}</span>}
-                {k === 'image_id' && picking && <ImagePicker onPick={id => { setVals(s => ({ ...s, image_id: id })); setPicking(false); }} />}
-              </div>
-            );
-          })}
-          <div className="bar">
-            {canEdit && !locked && <>
-              <button type="submit" className="chip primary" disabled={busy || !changed.length}>{changed.length ? `Save ${changed.length} change${changed.length === 1 ? '' : 's'}` : 'No changes'}</button>
-              <button type="button" className="chip" disabled={busy || !String(vals.jake_notes || '').trim()} onClick={async () => { if (await save({ ...Object.fromEntries(changed.map(k => [k, vals[k]])), status: 'Needs edit' })) setOpen(null); }}>Send back with my notes</button>
-            </>}
-            <button type="button" className="chip" onClick={() => { setVals(p._raw); setOpen(null); }}>Close</button>
-            {msg && <span className="hint">{msg}</span>}
-          </div>
-        </form>
-      )}
-    </li>
+    </div>
   );
 }
 
@@ -165,7 +199,7 @@ function ImagePicker({ onPick }) {
       <input placeholder="Search images by name, tag, category…" value={q} onChange={e => setQ(e.target.value)} autoFocus />
       {!data ? <p className="hint">Loading…</p> : data.error ? <p className="hint">{data.error}</p> : (
         <ul>{data.rows.filter(r => String(r.values.reuse_ok).toUpperCase() === 'TRUE' && String(r.values.hidden).toUpperCase() !== 'TRUE').slice(0, 30).map(r => (
-          <li key={r.row}><button type="button" onClick={() => onPick(r.values.image_id)} title={r.values.file_name}>
+          <li key={r.row}><button type="button" onClick={() => onPick(r.values.image_id, r.thumb)} title={r.values.file_name}>
             {r.thumb ? <img src={r.thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">{r.values.file_name}</span>}
           </button></li>))}</ul>
       )}

@@ -25,6 +25,15 @@ For the next Claude session. Read this, then `README.md`, `pathway-summary.csv` 
 - **11 Circle course spaces created, hidden until filled** (`circle-spaces.csv`). All 13
   pathways (group 1220854) and 4 certificates (group 1221044) now exist.
 
+- **`migrate.py` works** (8 Oct): test batch done. Roots & Branches I, 4 modules, is in Circle
+  space 2900094 (hidden), section "2. Roots & Branches I…". Results are in `progress.csv`.
+  Run it with `--programme`, `--source` or `--vimeo-id`; `--dry-run` previews. A stopped run resumes.
+- **Uscreen:** the API key can't be obtained, and Zapier's Uscreen connection can't read the
+  library. Jacob says most Uscreen content is in Vimeo, so topic-matched talks were found there
+  and approved by Jacob.
+- **Vimeo downloads** work (`player.vimeo.com` and `*.vimeocdn.com` allowed). Uploads to Circle
+  needed no extra host.
+
 ## Circle API notes
 - Python's urllib needs a User-Agent header, or Cloudflare returns 403 / 1010.
 - **Upload flow:**
@@ -37,7 +46,7 @@ For the next Claude session. Read this, then `README.md`, `pathway-summary.csv` 
 - Sections are made via `/course_sections`.
 
 ## Blocked: needs Jacob
-1. **The Uscreen key is empty.** `USCREEN_API_KEY` exists but has length 0. Jacob must paste
+1. ~~The Uscreen key~~ No longer needed (see above). Old note: **the Uscreen key is empty.** `USCREEN_API_KEY` exists but has length 0. Jacob must paste
    the key in the environment settings; it takes effect in a new session.
    - API: `https://www.uscreen.io/publisher_api/v1/`, header `Authorization: Bearer <key>`.
    - `www.uscreen.io` is already allowed.

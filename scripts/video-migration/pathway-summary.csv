@@ -1,9 +1,9 @@
 programme,type,in_circle,source,kind,expected,found_in_vimeo,status,gb,note
-Classical Yoga & the Yoga Sūtras,pathway,yes,1. Origins and Hidden History,talk,1,1,candidate,0.9,"CANDIDATE (topic match, confirm): Hareesh Wallis; weak match"
+Classical Yoga & the Yoga Sūtras,pathway,yes,1. Origins and Hidden History,talk,1,1,found (topic match),0.9,Approved by Jacob 8 Oct (topic match): Hareesh Wallis; weak match
 Classical Yoga & the Yoga Sūtras,pathway,yes,2. Classical Yoga,talk,1,0,not in Vimeo,0,"part of a longer course: Jacob wants whole courses, not single modules (8 Oct)"
-Classical Yoga & the Yoga Sūtras,pathway,yes,3. The Five Vṛttis,talk,1,1,candidate,0.9,"CANDIDATE (topic match, confirm): Nikki Costello on YS 1.2; weak match"
-Classical Yoga & the Yoga Sūtras,pathway,yes,4. The Eight Limbs,talk,1,1,candidate,1.6,"CANDIDATE (topic match, confirm): Edwin Bryant; strong match"
-Classical Yoga & the Yoga Sūtras,pathway,yes,5. The Cause of Suffering,talk,1,1,candidate,1.1,"CANDIDATE (topic match, confirm): Jaganath Carrera; weak match"
+Classical Yoga & the Yoga Sūtras,pathway,yes,3. The Five Vṛttis,talk,1,1,found (topic match),0.9,Approved by Jacob 8 Oct (topic match): Nikki Costello on YS 1.2; weak match
+Classical Yoga & the Yoga Sūtras,pathway,yes,4. The Eight Limbs,talk,1,1,found (topic match),1.6,Approved by Jacob 8 Oct (topic match): Edwin Bryant; strong match
+Classical Yoga & the Yoga Sūtras,pathway,yes,5. The Cause of Suffering,talk,1,1,found (topic match),1.1,Approved by Jacob 8 Oct (topic match): Jaganath Carrera; weak match
 Classical Yoga & the Yoga Sūtras,pathway,yes,6. The Yoga Canon,talk,1,1,found,0.7,
 Classical Yoga & the Yoga Sūtras,pathway,yes,Sāṃkhya with Jacob Kyle,course,4,4,found,2.0,
 Classical Yoga & the Yoga Sūtras,pathway,yes,The Yoga Sūtras with Edwin Bryant,course,8,8,found,17.8,2020 recordings
@@ -12,8 +12,8 @@ Classical Yoga & the Yoga Sūtras,pathway,yes,Yoga Sūtra Meditation with Ramesh
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,1. Subtle Body Anatomy,talk,1,0,not in Vimeo,0,"part of a longer course: Jacob wants whole courses, not single modules (8 Oct)"
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,2. Neuroecopsychology of the Subtle Body,talk,1,1,found,0.9,
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,3. Chakras Illuminated,talk,5,4,partial,5.6,the full Kajabi course with Hareesh Wallis; Q&A video not found
-"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,4. Breath Mechanics,talk,1,1,candidate,0.4,"CANDIDATE (topic match, confirm): Leslie Kaminoff; strong match"
-"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,5. Are the Chakras Real or Imaginary?,talk,1,1,candidate,1.0,"CANDIDATE (topic match, confirm): Hareesh Wallis, How to Talk about the Chakras; strong match"
+"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,4. Breath Mechanics,talk,1,1,found (topic match),0.4,Approved by Jacob 8 Oct (topic match): Leslie Kaminoff; strong match
+"The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,5. Are the Chakras Real or Imaginary?,talk,1,1,found (topic match),1.0,"Approved by Jacob 8 Oct (topic match): Hareesh Wallis, How to Talk about the Chakras; strong match"
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,Prāṇa & the Energy Body with Mary Reilly Nichols,course,3,3,found,1.5,"titled ""prana 2–4""; same length as Art of Breathing modules 2–4"
 "The Subtle Body: Chakras, Prāṇa & Breath",pathway,yes,Haṭha Yoga Texts with Zoë Slatoff,course,2,2,found,1.0,2021 recordings; a 2022 cohort version also exists
 "Sound, Mantra & Sacred Speech",pathway,yes,1. The Science of Mantras,talk,1,0,not in Vimeo,0,
@@ -31,7 +31,7 @@ Meditation for Real Life,pathway,yes,4. Healing Stress,talk,8,8,found,2.3,"Pilar
 Meditation for Real Life,pathway,yes,Contemplative Psychology: the Four Noble Truths,course,6,1,partial,1.0,only 1 of 6 found; guided meditations not found
 Meditation for Real Life,pathway,yes,Yoga & Contemplative Science,course,2,2,found,0.7,
 "Death, Dreams & the Luminous Mind",pathway,yes,1. Study the Tibetan Book of the Dead: Stages of Dissolution,talk,1,1,found,1.1,
-"Death, Dreams & the Luminous Mind",pathway,yes,2. Emptiness and Luminosity,talk,1,1,candidate,0.9,"CANDIDATE (topic match, confirm): Orgyen Chowang Rinpoche; weak match"
+"Death, Dreams & the Luminous Mind",pathway,yes,2. Emptiness and Luminosity,talk,1,1,found (topic match),0.9,Approved by Jacob 8 Oct (topic match): Orgyen Chowang Rinpoche; weak match
 "Death, Dreams & the Luminous Mind",pathway,yes,3. Dream Yoga,talk,1,1,found,2.7,from Fall 2025 Sādhana School
 "Death, Dreams & the Luminous Mind",pathway,yes,Tibetan Buddhism: A Path of Becoming Fully Human,course,4,4,found,3.7,
 "Death, Dreams & the Luminous Mind",pathway,yes,Yoga & Buddhism with Tias Little,course,2,2,found,1.7,2021 recordings; a 2022 cohort version also exists

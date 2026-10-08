@@ -29,11 +29,11 @@ def norm(s):
 NF = '(no folder)'
 PROGRAMS = [
     ('Classical Yoga & the Yoga Sūtras', 2897811, 'pathway', [
-        ('talk', '1. Origins and Hidden History', 1, r'^changing our understanding of the yoga sutra', 'EPTV', 'CANDIDATE (topic match, confirm): Hareesh Wallis; weak match'),
+        ('talk', '1. Origins and Hidden History', 1, r'^changing our understanding of the yoga sutra', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Hareesh Wallis; weak match'),
         ('talk', '2. Classical Yoga', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
-        ('talk', '3. The Five Vṛttis', 1, r'^one sutra for a lifetime', 'EPTV', 'CANDIDATE (topic match, confirm): Nikki Costello on YS 1.2; weak match'),
-        ('talk', '4. The Eight Limbs', 1, r'^astanga yoga in patanjali and the gita', 'EPTV', 'CANDIDATE (topic match, confirm): Edwin Bryant; strong match'),
-        ('talk', '5. The Cause of Suffering', 1, r'^yoga sutras_ mastering the game of life', 'EPTV', 'CANDIDATE (topic match, confirm): Jaganath Carrera; weak match'),
+        ('talk', '3. The Five Vṛttis', 1, r'^one sutra for a lifetime', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Nikki Costello on YS 1.2; weak match'),
+        ('talk', '4. The Eight Limbs', 1, r'^astanga yoga in patanjali and the gita', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Edwin Bryant; strong match'),
+        ('talk', '5. The Cause of Suffering', 1, r'^yoga sutras_ mastering the game of life', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Jaganath Carrera; weak match'),
         ('talk', '6. The Yoga Canon', 1, r'^the yoga canon seminar$', NF, ''),
         ('course', 'Sāṃkhya with Jacob Kyle', 4, r'^samkhya philosophy - module', 'EP_Courses', ''),
         ('course', 'The Yoga Sūtras with Edwin Bryant', 8, r'^(the )?yoga sutras( of patanjali)?( -)? module', NF, '2020 recordings'),
@@ -44,8 +44,8 @@ PROGRAMS = [
         ('talk', '1. Subtle Body Anatomy', 1, None, None, 'part of a longer course: Jacob wants whole courses, not single modules (8 Oct)'),
         ('talk', '2. Neuroecopsychology of the Subtle Body', 1, r'^neuroecopsychology of the subtle body$', None, ''),
         ('talk', '3. Chakras Illuminated', 5, r'^chakras illuminated - module', 'EP_Courses', 'the full Kajabi course with Hareesh Wallis; Q&A video not found'),
-        ('talk', '4. Breath Mechanics', 1, r'^the anatomy of breathwork', 'EPTV', 'CANDIDATE (topic match, confirm): Leslie Kaminoff; strong match'),
-        ('talk', '5. Are the Chakras Real or Imaginary?', 1, r'^beyond wheels', 'EPTV', 'CANDIDATE (topic match, confirm): Hareesh Wallis, How to Talk about the Chakras; strong match'),
+        ('talk', '4. Breath Mechanics', 1, r'^the anatomy of breathwork', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Leslie Kaminoff; strong match'),
+        ('talk', '5. Are the Chakras Real or Imaginary?', 1, r'^beyond wheels', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Hareesh Wallis, How to Talk about the Chakras; strong match'),
         ('course', 'Prāṇa & the Energy Body with Mary Reilly Nichols', 3, r'^prana [234]( \(video\))?$', NF, 'titled "prana 2–4"; same length as Art of Breathing modules 2–4'),
         ('course', 'Haṭha Yoga Texts with Zoë Slatoff', 2, r'^hatha yoga texts module [12]$', 'Yoga Phil. Cert', '2021 recordings; a 2022 cohort version also exists'),
     ]),
@@ -69,7 +69,7 @@ PROGRAMS = [
     ]),
     ('Death, Dreams & the Luminous Mind', 2897814, 'pathway', [
         ('talk', '1. Study the Tibetan Book of the Dead: Stages of Dissolution', 1, r'^seminar: tibetan book of the dead$', NF, ''),
-        ('talk', '2. Emptiness and Luminosity', 1, r'^our pristine mind', 'EPTV', 'CANDIDATE (topic match, confirm): Orgyen Chowang Rinpoche; weak match'),
+        ('talk', '2. Emptiness and Luminosity', 1, r'^our pristine mind', 'EPTV', 'Approved by Jacob 8 Oct (topic match): Orgyen Chowang Rinpoche; weak match'),
         ('talk', '3. Dream Yoga', 1, r'^dream yoga$', 'Sadhana School', 'from Fall 2025 Sādhana School'),
         ('course', 'Tibetan Buddhism: A Path of Becoming Fully Human', 4, r'^tibetan buddhism: a path of becoming fully human - module', 'EP_Courses', ''),
         ('course', 'Yoga & Buddhism with Tias Little', 2, r'^yoga & buddhism module [12]', NF, '2021 recordings; a 2022 cohort version also exists'),
@@ -183,7 +183,7 @@ def main():
                 section = label
             else:
                 section = label
-            status = ('not in Vimeo' if not uniq else 'candidate' if note.startswith('CANDIDATE') else
+            status = ('not in Vimeo' if not uniq else 'found (topic match)' if note.startswith('Approved by Jacob') else
                       'partial' if expected and len(uniq) < expected else 'found')
             if expected == 0 and not uniq:
                 status = 'n/a'
@@ -205,6 +205,11 @@ def main():
                     notes.append('also in ' + ', '.join(used[v['vimeo_id']]))
                 used[v['vimeo_id']].append(prog)
                 title = re.sub(r'\.(mp4|mov)$', '', v['title'], flags=re.I).replace('_', ' ').strip()
+                if src_kind == 'course':  # inside a course's own section, "Module 2" reads better than the raw file name
+                    num = lesson_order(v)[0]
+                    qa = 'q&a' in norm(v['title'])
+                    title = (label if len(uniq) == 1 else 'Q&A' if qa else
+                             f'Module {num}' if num != 999 else f'Part {i}')
                 rows.append({'approve (Y/N/edit)': '', 'programme': prog, 'circle_space_id': space_id or 'to create',
                              'circle_section': section, 'order': i, 'lesson_title': title, 'source': label,
                              'status': status, 'vimeo_id': v['vimeo_id'], 'vimeo_title': v['title'],

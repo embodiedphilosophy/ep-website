@@ -6,6 +6,7 @@ import { longDate } from '@/lib/dates';
 import TaskList from './TaskList';
 import { onboardingState } from '@/lib/teach';
 import { upcomingSocial } from '@/lib/social';
+import { teamMeetingsFor } from '@/lib/ops/teamcal';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +40,10 @@ export default async function Ops({ searchParams }) {
   let tasks = [], error = '';
   try { tasks = visibleTo(asUser, await listTasks()); } catch (e) { error = e.message; }
   const b = bucket(tasks);
-  const meetings = await meetingsFor(asUser).catch(() => []);
+  // Programming this week: staff see everything on the Master Schedule, teachers see their own events
+  const programming = await meetingsFor(asUser, 6, { all: isStaff(asUser) }).catch(() => []);
+  // Team meetings: Google Calendar events this person is a guest on (next two weeks)
+  const team2 = await teamMeetingsFor(asUser, 14).catch(e => ({ meetings: [], error: e.message }));
   const first = (user.name || 'there').split(' ')[0];
   // Staff see the next nine social posts (read-only; edits happen in the social dashboard)
   const social = isStaff(user) ? await upcomingSocial(9).catch(e => ({ posts: [], error: e.message })) : null;
@@ -113,10 +117,10 @@ export default async function Ops({ searchParams }) {
               )}
             </section>
           )}
-          <h2>Teaching & meetings</h2>
-          {meetings.length === 0 ? <p className="ops-empty">No teachings or meetings in the next three weeks.</p> : (
+          <h2>Programming this week <span>{programming.length || ''}</span></h2>
+          {programming.length === 0 ? <p className="ops-empty">No programming in the next seven days.</p> : (
             <ul className="ops-meet">
-              {meetings.map(m => (
+              {programming.map(m => (
                 <li key={m.id}>
                   <div className="d">{longDate(m.date)}{m.time ? ` · ${m.time}` : ''}</div>
                   <div className="t">{m.title}</div>
@@ -124,6 +128,20 @@ export default async function Ops({ searchParams }) {
                   {m.join_url
                     ? <div className="z">Zoom: <a href={m.join_url} target="_blank" rel="noopener">{m.join_url}</a></div>
                     : <div className="z">No Zoom link yet{user.director ? ' (add it in the Event Details Zoom Link column, or set Zoom to one-off or series)' : ''}.</div>}
+                </li>
+              ))}
+            </ul>
+          )}
+          <h2>Team meetings <span>{team2.meetings.length || ''}</span></h2>
+          {team2.error ? <p className="ops-empty">Couldn’t load team meetings: {team2.error}</p>
+            : team2.meetings.length === 0 ? <p className="ops-empty">No team meetings you’re invited to in the next two weeks.</p> : (
+            <ul className="ops-meet">
+              {team2.meetings.map(m => (
+                <li key={m.id}>
+                  <div className="d">{m.day} · {m.time}</div>
+                  <div className="t">{m.title}</div>
+                  {m.who && <div className="w">With {m.who}</div>}
+                  {m.link && <div className="z">Join: <a href={m.link} target="_blank" rel="noopener">{m.link}</a></div>}
                 </li>
               ))}
             </ul>

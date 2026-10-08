@@ -42,6 +42,8 @@ export function AddEvent({ tracks }) {
   );
 }
 
+const nice = d => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' }) : '';
+
 // Drawer (inside Edit details): move one session to a new date, or cancel it
 export function SessionActions({ id, date }) {
   const router = useRouter();
@@ -67,6 +69,7 @@ export function SessionActions({ id, date }) {
           <input id="m-date" type="date" value={to} onChange={e => setTo(e.target.value)} />
           <button type="button" className="chip" disabled={busy || !to || to === date} onClick={() => run({ action: 'move', id, date: to }, `Move this session from ${date} to ${to}? Its open tasks move too.`)}>Move</button>
         </div>
+        <span className="hint">{to && to === date ? `This session is already on ${nice(date)}. Pick a different date to move it.` : `Now on ${nice(date)}.`}</span>
       </div>
       <div className="row"><span />
         <button type="button" className="chip danger" disabled={busy} onClick={() => run({ action: 'cancel', id }, 'Cancel this session? It comes off the website, reminders and the newsletter, and its open tasks are closed. You can restore it from Events → Cancelled.')}>Cancel this session</button>

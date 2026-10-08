@@ -3,10 +3,9 @@ import { loadTeam, dedupe, bucket, visibleTo } from '@/lib/ops/tasks';
 import { loadCalendar } from '@/lib/calendar';
 import { emailsOf, todayET } from '@/lib/events';
 import { longDate } from '@/lib/dates';
-import { joinUrlFor, seriesLinksOf, upcomingMeetings } from '@/lib/ops/joinurl';
+import { joinUrlFor, seriesLinksOf, upcomingMeetings, inCircle } from '@/lib/ops/joinurl';
 import { readinessRows, WEEKS } from '@/lib/ops/readiness';
 import { isTeacher, canEditEvents } from '@/lib/ops/nav';
-import { whereOf } from '@/lib/ops/eventfields';
 import EventEditor from './EventEditor';
 import { AddEvent, Restore } from './EventActions';
 import { readRange, toObjects } from '@/lib/google';
@@ -78,7 +77,7 @@ export default async function Events({ searchParams }) {
     const cal = await loadCalendar().catch(() => []);
     const upcoming = await upcomingMeetings();
     const zoom = await joinUrlFor(open.events[0], seriesLinksOf(cal), upcoming);
-    links = { zoom, registration: open.events[0].registration_url, emails: [...new Set(open.events.flatMap(emailsOf))] };
+    links = { zoom, circle: inCircle(open.events[0]), registration: open.events[0].registration_url, emails: [...new Set(open.events.flatMap(emailsOf))] };
   }
 
   return (
@@ -134,8 +133,8 @@ export default async function Events({ searchParams }) {
 
           <h3>Links</h3>
           <dl>
-            <dt>Join</dt><dd>{links.zoom ? <a href={links.zoom} target="_blank" rel="noopener">{links.zoom}</a>
-              : whereOf(open.events[0].zoom, open.track) === 'circle' ? 'Circle live stream' : 'Zoom link not set yet'}</dd>
+            <dt>Join</dt><dd>{links.zoom ? <>{links.circle ? 'Circle: ' : ''}<a href={links.zoom} target="_blank" rel="noopener">{links.zoom}</a></>
+              : links.circle ? 'Circle live stream: the event isn’t made yet' : 'Zoom link not set yet'}</dd>
             <dt>Registration</dt><dd>{links.registration ? <a href={links.registration} target="_blank" rel="noopener">{links.registration}</a> : '—'}</dd>
             <dt>Website</dt><dd>{open.events[0].website ? <a href="/events" target="_blank" rel="noopener">Listed on /events</a> : 'Not on the website'}</dd>
           </dl>

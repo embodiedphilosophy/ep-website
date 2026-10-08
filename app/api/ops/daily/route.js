@@ -3,8 +3,11 @@ import { loadTeam, loadTemplates } from '@/lib/calendar';
 import { syncToMotion, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NUDGE_DAYS } from '@/lib/ops/tasks';
 import { listTasks } from '@/lib/ops/motion';
 import { runAutoComplete } from '@/lib/ops/autocomplete';
+import { runCircleSync, liveAllowed } from '@/lib/ops/circlesync';
+import { circleConfigured } from '@/lib/circle';
+import { refreshSite } from '@/lib/ops/refresh';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
-import { joinUrlFor, seriesLinksOf } from '@/lib/ops/joinurl';
+import { joinUrlFor, seriesLinksOf, inCircle } from '@/lib/ops/joinurl';
 import { todayET, reminderRows, emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 
@@ -16,7 +19,7 @@ import { longDate } from '@/lib/dates';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const joinUrl = (ev, seriesLinks) => joinUrlFor(ev, seriesLinks);
+const joinUrl = (ev, seriesLinks, day) => joinUrlFor(ev, seriesLinks, undefined, day);
 
 // Who gets a session's reminders: ONLY the addresses typed in that row's Teacher/Host Emails column.
 // Nothing else sends a reminder: not the Team tab, not names in Teachers, not other rows of the series.
@@ -43,7 +46,8 @@ function reminderEmail({ ev, when, p, link, tasks, base }) {
   return {
     subject: `Reminder: you’re ${p.role} ${ev.title} ${when}`,
     html: layout(`${ev.title}: ${when}`, `<p>${hi}, a reminder that you’re ${p.role} <b>${esc(ev.title)}</b> ${when === 'today' ? 'today' : 'on <b>' + longDate(ev.date) + '</b>'}${ev.time ? ' at <b>' + esc(ev.time) + '</b>' : ''}.</p>
-      ${link ? `<p><b>Zoom:</b> <a href="${esc(link)}">${esc(link)}</a></p>` : '<p>The Zoom link will follow from the team.</p>'}
+      ${inCircle(ev) ? (link ? `<p><b>Join in Circle:</b> <a href="${esc(link)}">${esc(link)}</a></p>` : '<p>The Circle event link will follow from the team.</p>')
+        : link ? `<p><b>Zoom:</b> <a href="${esc(link)}">${esc(link)}</a></p>` : '<p>The Zoom link will follow from the team.</p>'}
       ${todo}${p.name ? button(`${base}/ops`, 'Open your dashboard') : ''}`),
   };
 }
@@ -71,7 +75,8 @@ const slidesEmail = ({ ev, name }) => ({
 });
 
 // Modes (all need ?key=CRON_SECRET):
-//   (none)                       the real daily run: Motion sync, auto-complete and reminders (no other emails)
+//   (none)                       the real daily run: Motion sync, auto-complete, Circle events (dry run unless
+//                                CIRCLE_EVENT_SYNC=live) and reminders (no other emails)
 //   &only=sync                   just fill Motion
 //   &preview=21                  SENDS NOTHING. Lists every reminder due in the next 21 days, who gets it, and its Zoom link
 //   &test_to=EMAIL&event=ID      sends ONE reminder for that event to EMAIL only (subject starts [TEST]); nobody else
@@ -103,7 +108,7 @@ export async function GET(req) {
       for (const ev of cal) {
         const when = whenFor(ev, day); if (!when) continue;
         const people = recipientsFor(ev, byEmail); if (!people.size) continue;
-        items.push({ event: ev.title, event_id: ev.id, session_date: ev.date, when, to: [...people].map(([e, p]) => `${e} (${p.role})`), zoom_link: (await joinUrl(ev, seriesLinks)) || 'NONE: email will say the link will follow' });
+        items.push({ event: ev.title, event_id: ev.id, session_date: ev.date, when, to: [...people].map(([e, p]) => `${e} (${p.role})`), zoom_link: (await joinUrl(ev, seriesLinks, day)) || 'NONE: email will say the link will follow' });
       }
       const slides = slidesDue(cal, await loadTemplates(), byEmail, day).map(x => ({ event: x.ev.title, event_id: x.ev.id, to: x.email, kind: 'slides request' }));
       if (items.length || slides.length) days.push({ send_on: day, reminders: items, slide_requests: slides });
@@ -132,6 +137,16 @@ export async function GET(req) {
   try { out.motion = await syncToMotion(); } catch (e) { out.errors.push('Motion: ' + e.message); }
   try { out.auto = (await runAutoComplete()).closed.map(c => `${c.task}: ${c.why}`); } catch (e) { out.errors.push('Auto-complete: ' + e.message); }
   if (only === 'sync') return NextResponse.json(out);
+  // Circle events for Circle sessions, before reminders so they carry the links. A dry run (report only)
+  // until CIRCLE_EVENT_SYNC=live is set in Vercel.
+  if (circleConfigured()) {
+    try {
+      const c = await runCircleSync({ dry: !liveAllowed() });
+      out.circle = { mode: c.mode, changes: c.changes, done: c.done, flags: c.flags, not_on_sheet: c.not_on_sheet };
+      if (c.done.length) refreshSite(); // the reminders below read the new links
+      out.errors.push(...c.errors.map(e => 'Circle: ' + e));
+    } catch (e) { out.errors.push('Circle: ' + e.message); }
+  }
 
   const { cal, byEmail, seriesLinks } = await load();
   const today = todayET();
@@ -142,7 +157,7 @@ export async function GET(req) {
   for (const ev of cal) {
     const when = whenFor(ev, today); if (!when) continue;
     const people = recipientsFor(ev, byEmail); if (!people.size) continue;
-    const link = await joinUrl(ev, seriesLinks);
+    const link = await joinUrl(ev, seriesLinks, today);
     for (const [email, p] of people) {
       try {
         const msg = reminderEmail({ ev, when, p, link, tasks, base });

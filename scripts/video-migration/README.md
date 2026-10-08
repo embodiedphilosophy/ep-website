@@ -3,15 +3,22 @@
 Working folder for moving Embodied Philosophy's video library into Circle (ss.embodiedphilosophy.com).
 Nothing here is deployed with the website. Nothing has been changed in Vimeo or Circle so far: Step 1 was read-only.
 
+## Scope
+
+Only the **13 Learning Pathways** (as listed on the website's Wisdom School page, from the
+"Site Pathways" tab of the EP Programming Calendar sheet) and the **4 Certificate Programs**
+(Embodied Yoga Therapy, Buddhist Psychology, Yoga Philosophy, Awakened Body). Everything else stays
+out of Circle.
+
 ## Files
 
 | File | What it is |
 |---|---|
-| `vimeo-inventory.csv` | Every Vimeo video (2,739): folder, showcases, length, date, privacy, file sizes, description |
-| `mapping-by-folder.csv` | **Start here.** One row per Vimeo folder with the proposed decision. ~140 rows |
-| `mapping-draft.csv` | One row per video: action, Circle space, section, order, lesson title. Fill the `approve` column |
+| `pathway-summary.csv` | **Start here.** One row per pathway/certificate source (short talk or Kajabi course): videos expected, found in Vimeo, missing |
+| `pathway-mapping.csv` | One row per video: Circle course, section, order, lesson title, Vimeo source. Fill the `approve` column |
+| `vimeo-inventory.csv` | Every Vimeo video (2,739): folder, length, date, privacy, file sizes, description |
 | `vimeo_inventory.py` | Rebuilds the inventory from Vimeo (read-only, ~4 min) |
-| `draft_mapping.py` | Rebuilds the two mapping files from the inventory (offline) |
+| `pathway_mapping.py` | Rebuilds the two pathway files from the inventory (offline). Matching rules are at the top |
 
 All CSVs open directly in Google Sheets (File → Import → Upload).
 
@@ -39,33 +46,33 @@ Vimeo running, which defeats the point.
 - **API calls.** Circle allows 5,000 API calls a month on Business and 30,000 on Plus. Each
   video takes about 2 to 3 calls, so this isn't a constraint.
 
-## Draft mapping, in numbers
+## Pathway & certificate mapping (8 Oct 2026)
 
-| Proposed | Videos | Size | Meaning |
-|---|---:|---:|---|
-| MIGRATE | 46 | 57 GB | Clear match to a section that already exists in a Circle course (themed courses, Pilgrimage Project 2026, Healing Stress) |
-| SUGGEST | 92 | 119 GB | Plausible home: last year's Sadhana School seasons → the four "Recordings & Readings" courses; Meditation Mondays 2026 → the Library; Navarātri 2025 → Navarātri Recordings |
-| DECIDE | 2,328 | 1,678 GB | Older programmes and loose videos with no Circle home yet |
-| ARCHIVE | 51 | 84 GB | Older Sadhana School cohorts and raw camera files: keep a copy, not in Circle |
-| SKIP | 222 | 129 GB | Broken uploads, exact duplicates, "no slides" duplicates, trailers/promo clips |
-
-MIGRATE + SUGGEST is about **176 GB**, which fits comfortably on a Business plan.
+- **323 Vimeo videos, about 238 GB** cover the 13 pathways and 4 certificates.
+- **Circle has course spaces only for pathways 1–6.** These sit in the "Learning Pathways" group.
+  Their sections are the short talks. The "Certificate Programs" group exists but is empty.
+  Pathways 7–13 and the four certificates need course spaces created first.
+- **Missing from Vimeo (10 sources).** Most are the Uscreen short talks. Two Kajabi courses are
+  missing entirely: Prāṇa & the Energy Body, and Bhakti Poetry. Starting Points is missing too.
+  Six courses are only partly there, e.g. 1 of 6 Four Noble Truths videos. These have to come
+  from Uscreen or Kajabi.
+- **Two versions of some courses.** Several Yoga Philosophy courses exist twice: the 2020–21
+  recording and the 2021/22 certificate cohort re-recording. The mapping picks one and says so
+  in `notes`.
 
 ## Decisions needed from Jacob
 
-1. **Circle plan and storage.** Which plan is Circle on, and how much storage is free?
-   (Circle admin → Settings → Plans & billing, or the Media manager.)
-2. **What happens to the ~2,300 "DECIDE" videos.** Options:
-   (a) put a curated selection in Circle;
-   (b) keep everything as files in cheap storage (e.g. a Google Drive or Backblaze folder, roughly
-   $10–20 a month for 2 TB) before Vimeo is cancelled;
-   (c) both: the best of it in Circle, everything archived.
-   We'd recommend (c).
-3. **Review the mapping.** In `mapping-by-folder.csv`, mark each folder Y / N or edit it. For the
-   MIGRATE and SUGGEST rows in `mapping-draft.csv`, check the titles and pick one of the three
-   sound baths. The Summer Retreat 2025 videos only have Zoom file names, so they need real titles.
-4. **Duplicates across courses.** Four Pilgrimage lectures also fit the *Myth, Shadow* course.
-   Putting them in both uses double the storage. Is one place enough?
+1. **Create the missing Circle courses?** That means 7 pathways and 4 certificates, made as course
+   spaces in the "Learning Pathways" and "Certificate Programs" groups. Should they be visible
+   now, or hidden until filled?
+2. **Where the Kajabi courses go in pathways 1–6.** Proposal: the short-talk sections stay as they
+   are, then one new section per Kajabi course follows (e.g. "7. Sāṃkhya with Jacob Kyle").
+3. **Uscreen and Kajabi access** for the missing material. A Uscreen API key now appears in this
+   environment: OK to use it, read-only? Kajabi: is there an export or API key?
+4. **Which version** where a course exists twice, and for the certificates: Awakened Body On
+   Demand (19 videos) or the LIVE 2023 cohort (20)? The whole Yoga Philosophy 2021/22 cohort
+   (85), or only the courses already in pathways?
+5. **Circle plan and storage free.** About 240 GB is needed.
 
 ## Step 2 (only after approval)
 

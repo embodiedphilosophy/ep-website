@@ -5,7 +5,9 @@ import { emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 import { joinUrlFor, seriesLinksOf, upcomingMeetings } from '@/lib/ops/joinurl';
 import { readinessRows, WEEKS } from '@/lib/ops/readiness';
-import { isTeacher } from '@/lib/ops/nav';
+import { isTeacher, canEditEvents } from '@/lib/ops/nav';
+import { whereOf } from '@/lib/ops/eventfields';
+import EventEditor from './EventEditor';
 import Shell, { opsUser } from '../Shell';
 import TaskList from '../TaskList';
 
@@ -85,6 +87,9 @@ export default async function Events({ searchParams }) {
           <span className={`pill ${open.status}`}>{LABEL[open.status]}</span>
           <h2>{open.title}</h2>
           <p className="when">{open.events.length > 1 ? open.events.map(e => short(e.date)).join(' · ') : `${longDate(open.date)}${open.end_date && open.end_date !== open.date ? ` – ${longDate(open.end_date)}` : ''}${open.events[0].time ? ` · ${open.events[0].time}` : ''}`}</p>
+          {canEditEvents(user) && (
+            <EventEditor key={open.key} sessions={open.events.filter(e => e.sched_id).map(e => ({ id: e.sched_id, date: e.date, track: e.track, label: `${short(e.date)} · ${e.title}` }))} />
+          )}
 
           <h3>People</h3>
           <dl>
@@ -95,7 +100,8 @@ export default async function Events({ searchParams }) {
 
           <h3>Links</h3>
           <dl>
-            <dt>Zoom</dt><dd>{links.zoom ? <a href={links.zoom} target="_blank" rel="noopener">{links.zoom}</a> : 'Not set yet'}</dd>
+            <dt>Join</dt><dd>{links.zoom ? <a href={links.zoom} target="_blank" rel="noopener">{links.zoom}</a>
+              : whereOf(open.events[0].zoom, open.track) === 'circle' ? 'Circle live stream' : 'Zoom link not set yet'}</dd>
             <dt>Registration</dt><dd>{links.registration ? <a href={links.registration} target="_blank" rel="noopener">{links.registration}</a> : '—'}</dd>
             <dt>Website</dt><dd>{open.events[0].website ? <a href="/events" target="_blank" rel="noopener">Listed on /events</a> : 'Not on the website'}</dd>
           </dl>

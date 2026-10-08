@@ -6,6 +6,7 @@ import { listTasks } from '@/lib/ops/motion';
 import { visibleTo, bucket } from '@/lib/ops/tasks';
 import { todayET, emailsOf } from '@/lib/events';
 import Onboarding from './Onboarding';
+import Shell from '../ops/Shell';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Teacher onboarding — Embodied Philosophy', robots: { index: false, follow: false } };
@@ -16,7 +17,7 @@ export default async function Teach({ searchParams }) {
   const sp = await searchParams;
   const ctx = await teacherContext(sp?.as);
   if (!ctx) redirect('/ops/login');
-  if (ctx.director && !ctx.actingAs) return <DirectorView />;
+  if (ctx.director && !ctx.actingAs) return <DirectorView user={ctx.user} />;
 
   const st = await onboardingState(ctx.email);
   const firstTeachers = st.offerings.flatMap(o => names(o.teachers));
@@ -49,7 +50,7 @@ export default async function Teach({ searchParams }) {
 }
 
 // Directors see who's on the schedule and where each teacher is in onboarding, and can try it as them
-async function DirectorView() {
+async function DirectorView({ user }) {
   const today = todayET();
   const cal = (await loadCalendar()).filter(e => (e.end_date || e.date) >= today);
   const people = new Map();
@@ -63,9 +64,7 @@ async function DirectorView() {
     return { ...p, name: prof?.name || '', status: !st ? 'unknown' : !st.needed ? 'Done' : prof ? `${st.pending.length} course page${st.pending.length === 1 ? '' : 's'} to go` : 'Not started' };
   }));
   return (
-    <main className="ops">
-      <header className="ops-top"><a href="/ops" className="ops-logo"><img src="/brand/ep-mark-black.png" alt="Embodied Philosophy" width="34" height="36" /></a><div className="ops-who"><a href="/ops">Dashboard</a> · <a href="/api/ops/logout">Sign out</a></div></header>
-      <div className="ops-head"><h1>Teacher onboarding</h1></div>
+    <Shell user={user} current="team" title="Teacher onboarding">
       <p className="ops-empty" style={{ maxWidth: 640 }}>Everyone with an email on an upcoming event (Event Details → Teacher/Host Emails, or named in Schedule → Teachers & Hosts and on the Team tab). “Try it as” opens onboarding as that teacher; nothing is saved to the sheet, Motion, Circle or anyone’s inbox while you’re trying it out.</p>
       <ul className="ops-tasks" style={{ marginTop: 18 }}>
         {rows.map(r => (
@@ -76,6 +75,6 @@ async function DirectorView() {
         ))}
       </ul>
       {rows.length === 0 && <p className="ops-empty">No one is assigned yet. Add teacher emails in Event Details → Teacher/Host Emails.</p>}
-    </main>
+    </Shell>
   );
 }

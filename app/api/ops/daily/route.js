@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { loadTeam, loadTemplates } from '@/lib/calendar';
-import { syncToMotion, addDays, eventIdFromTag } from '@/lib/ops/tasks';
+import { syncToMotion, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NUDGE_DAYS } from '@/lib/ops/tasks';
 import { listTasks } from '@/lib/ops/motion';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
 import { joinUrlFor, seriesLinksOf } from '@/lib/ops/joinurl';
@@ -8,7 +8,7 @@ import { todayET, reminderRows, emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 
 // Daily (vercel.json cron): fill Motion from the calendar and send teaching reminders.
-// Emails it sends: reminders to the addresses in each session’s Teacher/Host Emails column, a slides request
+// Emails it sends: one nudge to a task's owners when it is 3 days overdue, reminders to the addresses in each session’s Teacher/Host Emails column, a slides request
 // to that session’s teachers the day after, and a one-time
 // "your course page is live" note to a course page’s teachers when its status becomes published.
 // Run by hand: /api/ops/daily?key=CRON_SECRET  (add &only=sync to just fill Motion)
@@ -157,7 +157,23 @@ export async function GET(req) {
     }
   } catch (e) { out.errors.push('Slides requests: ' + e.message); }
 
-  // 4) Course pages that have just gone live: tell their teachers (once)
+  // 4) Escalation: one reminder to a task's owners on the day it is 3 days overdue (7+ days shows on the director's Home)
+  try {
+    const team = await loadTeam();
+    const late = dedupe(tasks).filter(t => !t.completed && !needsOwner(t) && t.due === addDays(today, -NUDGE_DAYS));
+    for (const t of late) {
+      for (const p of ownersOf(t, team)) {
+        const what = t.name.replace(/^\[[^\]]+\]\s*/, '');
+        try {
+          await sendEmail({ to: p.email, subject: `Overdue: ${what.split(' — ')[0]}`,
+            html: layout('A task is 3 days overdue', `<p>Hi ${esc(p.name.split(' ')[0])}, <b>${esc(what)}</b> was due ${longDate(t.due)}.</p><p>Tick it off, snooze it, or mark it blocked if you’re waiting on someone.</p>${button(`${base}/ops`, 'Open your dashboard')}`) });
+          out.reminders.push(`${p.email}: overdue nudge for ${what}`);
+        } catch (e) { out.errors.push(`Nudge ${p.email}: ${e.message}`); }
+      }
+    }
+  } catch (e) { out.errors.push('Overdue nudges: ' + e.message); }
+
+  // 5) Course pages that have just gone live: tell their teachers (once)
   try {
     const { loadPages, savePage } = await import('@/lib/teach');
     for (const p of await loadPages()) {

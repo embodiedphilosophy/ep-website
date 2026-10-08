@@ -35,11 +35,11 @@ export async function GET(req) {
   catch (e) { return NextResponse.json({ error: 'Could not load comments from Motion.' }, { status: 502 }); }
 }
 
-// POST { id, action: snooze|block|unblock|comment|assign, days?, who?, text? }
+// POST { id, action: snooze|block|unblock|comment|assign, days? | date?, who?, text? }
 export async function POST(req) {
   const user = await currentUser();
   if (!user) return NextResponse.json({ error: 'Please sign in again' }, { status: 401 });
-  const { id, action, days, who, text } = await req.json().catch(() => ({}));
+  const { id, action, days, date, who, text } = await req.json().catch(() => ({}));
   const task = await findTask(user, id);
   if (!task) return NextResponse.json({ error: 'Task not found' }, { status: 404 });
   const team = await loadTeam();
@@ -48,8 +48,10 @@ export async function POST(req) {
   const title = esc(bare(task.name));
   try {
     if (action === 'snooze') {
-      const n = Math.min(Math.max(Number(days) || 1, 1), 30);
-      const due = addDays(todayET(), n);
+      const today = todayET();
+      // A picked date (up to 90 days out), or 1–30 days from today
+      const due = /^\d{4}-\d{2}-\d{2}$/.test(String(date || '')) && date > today && date <= addDays(today, 90)
+        ? date : addDays(today, Math.min(Math.max(Number(days) || 1, 1), 30));
       await updateTask(id, { due });
       await addComment(id, `**${me}** snoozed this to ${due}.`).catch(() => {});
       return NextResponse.json({ ok: true, due });

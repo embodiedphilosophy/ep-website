@@ -19,6 +19,8 @@ function Actions({ t, team, assign, onChange }) {
   const [note, setNote] = useState('');
   const [comments, setComments] = useState(null);
   const [text, setText] = useState('');
+  const [until, setUntil] = useState('');
+  const today = new Date().toISOString().slice(0, 10);
   const run = async (label, body, after) => {
     setBusy(label); setErr('');
     try { const j = await post({ id: t.id, ...body }); after?.(j); } catch (e) { setErr(e.message); }
@@ -48,6 +50,8 @@ function Actions({ t, team, assign, onChange }) {
         {[[1, '1 day'], [3, '3 days'], [7, '1 week']].map(([d, l]) => (
           <button key={d} className="chip" disabled={!!busy} onClick={() => run('snooze', { action: 'snooze', days: d }, j => onChange({ due: j.due }))}>{l}</button>
         ))}
+        <input type="date" value={until} min={today} onChange={e => setUntil(e.target.value)} aria-label="Snooze until" style={{ flex: '0 0 auto' }} />
+        <button className="chip" disabled={!until || !!busy} onClick={() => run('snooze', { action: 'snooze', date: until }, j => onChange({ due: j.due }))}>Snooze to date</button>
       </div>
       <div className="row">
         <span className="lbl">Blocked</span>
@@ -80,7 +84,8 @@ function Actions({ t, team, assign, onChange }) {
   );
 }
 
-export default function TaskList({ tasks, empty, showWho, done, team = [], roleNames = {}, assign = false }) {
+// short: the list sits under its event's heading, so drop the " — Event (date)" part of each name
+export default function TaskList({ tasks, empty, showWho, done, team = [], roleNames = {}, assign = false, short = false }) {
   const [state, setState] = useState({});
   const [open, setOpen] = useState('');
   const [patch, setPatch] = useState({});
@@ -102,7 +107,7 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
             <div className="main">
               <label>
                 <input type="checkbox" checked={st === 'done'} disabled={done || st === 'saving' || st === 'done'} onChange={() => complete(t.id)} />
-                <span className="n">{t.name}</span>
+                <span className="n">{short ? t.name.split(' — ')[0] : t.name}{t.escalated && <span className="esc"> · {t.escalated}</span>}</span>
               </label>
               <span className="meta">
                 {fmt(t.due)}

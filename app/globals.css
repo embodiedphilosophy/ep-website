@@ -423,6 +423,7 @@
   .ops-tasks .more[aria-expanded=true]{border-color:var(--ink);color:var(--ink)}
   .ops-tasks li.is-blocked{box-shadow:inset 3px 0 0 #C98A1E;padding-left:10px}
   .ops-tasks .blk{color:#9A6510;font-weight:600}
+  .ops-tasks .auto{color:var(--pine);font-weight:600}
   .ops-tasks li.is-moved .n{color:var(--ink-soft)}
   .ops-act{margin:10px 0 2px 27px;padding:12px;background:#fff;border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;font-size:13.5px}
   .ops-act .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@/lib/ops/auth';
-import { listTasks, updateTask, addComment, listComments } from '@/lib/ops/motion';
+import { listTasks, updateTask, addComment, listComments, reopenTask } from '@/lib/ops/motion';
+import { UNDO_DAYS } from '@/lib/ops/autocomplete';
 import { visibleTo, ownersOf, parseTag, loadTeam, addDays } from '@/lib/ops/tasks';
 import { todayET } from '@/lib/events';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
@@ -35,7 +36,7 @@ export async function GET(req) {
   catch (e) { return NextResponse.json({ error: 'Could not load comments from Motion.' }, { status: 502 }); }
 }
 
-// POST { id, action: snooze|block|unblock|comment|assign, days? | date?, who?, text? }
+// POST { id, action: snooze|block|unblock|comment|assign|undo, days? | date?, who?, text? }
 export async function POST(req) {
   const user = await currentUser();
   if (!user) return NextResponse.json({ error: 'Please sign in again' }, { status: 401 });
@@ -79,6 +80,14 @@ export async function POST(req) {
       const others = [...ownersOf(task, team), ...(blocked ? [blocked] : [])]
         .filter((m, i, a) => m.email !== user.email && a.findIndex(x => x.email === m.email) === i);
       await notify(others, `New comment: ${bare(task.name).split(' — ')[0]}`, `<p><b>${esc(me)}</b> commented on <b>${title}</b>:</p><p>“${esc(body)}”</p>`, base);
+      return NextResponse.json({ ok: true });
+    }
+    if (action === 'undo') {
+      if (!task.auto || task.auto < addDays(todayET(), -UNDO_DAYS)) return NextResponse.json({ error: 'Only automatic ticks from the last week can be undone' }, { status: 400 });
+      // [auto-undone] keeps the job from closing it again
+      await updateTask(id, { description: task.description.replace(/\[auto:[^\]]+\]/, '[auto-undone]') });
+      await reopenTask(id);
+      await addComment(id, `**${me}** reopened this: the automatic tick was wrong.`).catch(() => {});
       return NextResponse.json({ ok: true });
     }
     if (action === 'assign') {

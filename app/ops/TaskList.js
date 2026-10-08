@@ -3,6 +3,8 @@ import { useState } from 'react';
 const fmt = d => d ? new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : 'No date';
 const firstNames = list => list.map(n => n.split(' ')[0]).join(', ');
 // "[Marketing] Promo email #1" → role "Marketing", text "Promo email #1"
+// Automatic ticks can be undone for a week (matches UNDO_DAYS in lib/ops/autocomplete)
+const undoable = auto => !!auto && Date.now() - Date.parse(auto + 'T12:00:00Z') < 7 * 864e5;
 const splitRole = name => { const m = String(name).match(/^\[([^\]]+)\]\s*/); return m ? [m[1], name.slice(m[0].length)] : ['', name]; };
 
 async function post(body) {
@@ -97,12 +99,17 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
     const res = await fetch('/api/ops/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).catch(() => null);
     setState(s => ({ ...s, [id]: res?.ok ? 'done' : 'error' }));
   };
+  const undo = async id => {
+    setState(s => ({ ...s, [id]: 'saving' }));
+    try { await post({ id, action: 'undo' }); setState(s => ({ ...s, [id]: 'undone' })); }
+    catch { setState(s => ({ ...s, [id]: 'error' })); }
+  };
   const who = labels => labels.map(l => roleNames[l]?.length ? `${l} (${firstNames(roleNames[l])})` : l).join(', ');
   return (
     <ul className="ops-tasks">
       {tasks.map(t0 => {
         const t = { ...t0, ...(patch[t0.id] || {}) };
-        const st = done ? 'done' : state[t.id];
+        const st = done ? (['undone', 'saving', 'error'].includes(state[t.id]) ? state[t.id] : 'done') : state[t.id];
         const moved = t.assigned || (t.due !== t0.due && t.due);
         const [role, rest] = splitRole(short ? t.name.split(' — ')[0] : t.name);
         // The owner column already names the role when showWho is on
@@ -111,7 +118,7 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
           <li key={t.id} className={[st === 'done' ? 'is-done' : '', t.blockedOn ? 'is-blocked' : '', moved ? 'is-moved' : ''].join(' ')}>
             <div className="main">
               <label>
-                <input type="checkbox" checked={st === 'done'} disabled={done || st === 'saving' || st === 'done'} onChange={() => complete(t.id)} />
+                <input type="checkbox" checked={st === 'done' || (done && st !== 'undone')} disabled={done || st === 'saving' || st === 'done'} onChange={() => complete(t.id)} />
                 <span className="n">{showRole && <span className="role">{role}</span>}{rest}{t.escalated && <span className="esc"> · {t.escalated}</span>}</span>
               </label>
               <span className="meta">
@@ -119,6 +126,11 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
                 {t.assigned ? ` · now with ${t.assigned}` : showWho && t.labels.length ? ` · ${who(t.labels)}` : ''}
                 {t.blockedOn && <span className="blk"> · Waiting on {t.blockedOn.split(' ')[0]}</span>}
                 {st === 'error' ? ' · couldn’t save, try again' : ''}
+                {done && t.auto && st !== 'undone' && <span className="auto"> · Done · auto</span>}
+                {done && st === 'undone' && ' · reopened'}
+                {done && undoable(t.auto) && st !== 'undone' && (
+                  <button className="more" disabled={st === 'saving'} onClick={() => undo(t.id)}>Undo</button>
+                )}
                 {!done && st !== 'done' && (
                   <button className="more" aria-expanded={open === t.id} aria-label="Task actions" onClick={() => setOpen(o => o === t.id ? '' : t.id)}>⋯</button>
                 )}

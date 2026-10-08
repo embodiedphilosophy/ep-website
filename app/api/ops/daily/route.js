@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { loadTeam, loadTemplates } from '@/lib/calendar';
 import { syncToMotion, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NUDGE_DAYS } from '@/lib/ops/tasks';
 import { listTasks } from '@/lib/ops/motion';
+import { runAutoComplete } from '@/lib/ops/autocomplete';
 import { sendEmail, layout, button, esc } from '@/lib/ops/email';
 import { joinUrlFor, seriesLinksOf } from '@/lib/ops/joinurl';
 import { todayET, reminderRows, emailsOf } from '@/lib/events';
@@ -70,7 +71,7 @@ const slidesEmail = ({ ev, name }) => ({
 });
 
 // Modes (all need ?key=CRON_SECRET):
-//   (none)                       the real daily run: Motion sync and reminders (no other emails)
+//   (none)                       the real daily run: Motion sync, auto-complete and reminders (no other emails)
 //   &only=sync                   just fill Motion
 //   &preview=21                  SENDS NOTHING. Lists every reminder due in the next 21 days, who gets it, and its Zoom link
 //   &test_to=EMAIL&event=ID      sends ONE reminder for that event to EMAIL only (subject starts [TEST]); nobody else
@@ -129,6 +130,7 @@ export async function GET(req) {
   // ---- The real daily run ----
   const out = { motion: null, reminders: [], errors: [] };
   try { out.motion = await syncToMotion(); } catch (e) { out.errors.push('Motion: ' + e.message); }
+  try { out.auto = (await runAutoComplete()).closed.map(c => `${c.task}: ${c.why}`); } catch (e) { out.errors.push('Auto-complete: ' + e.message); }
   if (only === 'sync') return NextResponse.json(out);
 
   const { cal, byEmail, seriesLinks } = await load();

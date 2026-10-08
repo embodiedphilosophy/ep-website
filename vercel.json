@@ -9,6 +9,10 @@
       "schedule": "0 13 * * *"
     },
     {
+      "path": "/api/ops/auto",
+      "schedule": "*/15 * * * *"
+    },
+    {
       "path": "/api/scaffolding",
       "schedule": "0 14 * * 4"
     }

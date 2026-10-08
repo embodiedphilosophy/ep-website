@@ -6,14 +6,16 @@ import { todayET } from '@/lib/events';
 import { addDays } from '@/lib/ops/tasks';
 import { longDate } from '@/lib/dates';
 import Shell, { opsUser } from '../Shell';
+import SiteEditor from './SiteEditor';
+import { tableOf } from '@/lib/ops/sitetables';
 import SocialGrid, { SOCIAL_PREVIEW_URL, flagOf } from '../SocialGrid';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Content — Embodied Philosophy', robots: { index: false, follow: false } };
 
-const TABS = [['social', 'Social'], ['email', 'Email'], ['media', 'Media']];
+const TABS = [['social', 'Social'], ['email', 'Email'], ['media', 'Media'], ['website', 'Website']];
 
-// Is everything we publish moving? Social, Email and Media sub-tabs.
+// Is everything we publish moving? Social, Email and Media sub-tabs, and Website: the site's own content.
 export default async function Content({ searchParams }) {
   const user = await opsUser(isStaff);
   const sp = await searchParams;
@@ -24,6 +26,7 @@ export default async function Content({ searchParams }) {
       {tab === 'social' && <Social />}
       {tab === 'email' && <Email />}
       {tab === 'media' && <Media />}
+      {tab === 'website' && <SiteEditor initial={tableOf(sp?.t) ? sp.t : 'links'} />}
     </Shell>
   );
 }

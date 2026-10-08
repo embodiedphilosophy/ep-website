@@ -501,6 +501,18 @@
   .ops-drawer .pill.red{background:var(--terra);color:#fff}.ops-drawer .pill.amber{background:#D99A22;color:#fff}.ops-drawer .pill.green{background:#4F7B5C;color:#fff}
   .ops-drawer .ops-act{margin-left:0}
   .ops-edit-open{margin:14px 0 0}
+  .ops-site-tabs{flex-wrap:wrap;margin-bottom:6px}
+  .ops-site .chip{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--ivory);color:var(--ink);cursor:pointer}
+  .ops-site-rows{list-style:none;border-top:1px solid var(--line);margin-top:10px}
+  .ops-site-rows li{border-bottom:1px solid var(--line)}
+  .ops-site-rows li.is-hidden .n{color:var(--ink-soft)}
+  .ops-site-row{display:block;width:100%;text-align:left;background:none;border:0;padding:12px 0;cursor:pointer;font:inherit;color:inherit}
+  .ops-site-row:hover .n{text-decoration:underline}
+  .ops-site-row .n{display:block;font-size:15px;font-weight:600}
+  .ops-site-row .n .off{font-weight:400;color:var(--terra)}
+  .ops-site-row .s{display:block;font-size:13px;color:var(--ink-soft);margin-top:2px;overflow-wrap:anywhere}
+  .ops-edit-title{font-family:var(--font-serif),serif;font-size:19px;font-weight:600;margin:0 0 12px}
+  .ops-site .ops-edit{max-width:760px}
   .ops-edit{margin:16px 0 6px;padding:14px;background:#fff;border:1px solid var(--line);font-size:14px}
   .ops-edit fieldset{border:0;padding:0;margin:0 0 14px}
   .ops-edit legend{font-family:var(--font-serif),serif;font-size:17px;font-weight:600;margin-bottom:6px}

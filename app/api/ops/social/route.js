@@ -5,6 +5,7 @@ import { readPlain, updatePlain, addPlain, ConflictError } from '@/lib/ops/store
 import { viewOf, isLocked, checkSocial, thumbOf } from '@/lib/ops/socialengine';
 import { todayET } from '@/lib/events';
 import { refreshSite } from '@/lib/ops/refresh';
+import { driveIdOf } from '@/lib/ops/socialimages';
 
 export const dynamic = 'force-dynamic';
 const SHEET = { sheet: 'social' }, SHOW = { sheet: 'social', light: true };
@@ -28,7 +29,7 @@ export async function GET(req) {
       const byImage = Object.fromEntries(lib.rows.map(r => [r.values.image_id, r.values]));
       rows = rows.filter(r => (r.values.publish_date || '9') >= from)
         .sort((a, b) => (a.values.publish_date || '9').localeCompare(b.values.publish_date || '9') || String(a.values.publish_time_ET).localeCompare(String(b.values.publish_time_ET)))
-        .map(r => { const img = byImage[r.values.image_id] || {}; return { ...r, thumb: thumbOf(r.values.image_url || img.public_url, img.drive_file_id) }; });
+        .map(r => { const img = byImage[r.values.image_id] || {}; return { ...r, thumb: thumbOf(r.values.image_url || img.public_url, r.values.image_url ? '' : img.drive_file_id), src: img.drive_file_id || driveIdOf(img.public_url) || driveIdOf(r.values.image_url) }; });
     } else if (v.key === 'history') {
       rows = rows.sort((a, b) => String(b.values.posted_at).localeCompare(String(a.values.posted_at)));
     }
@@ -84,9 +85,11 @@ export async function POST(req) {
     // Needs edit only makes sense with a note saying what to change
     if (out.status === 'Needs edit' && !String(body.changes.jake_notes ?? body.before?.jake_notes ?? '').trim()) errors.jake_notes = 'Say what should change';
     if (Object.keys(errors).length) return NextResponse.json({ error: 'Some fields need fixing', errors }, { status: 400 });
-    // A new image: the picture link comes from the Image Library, so the plan and Make agree
-    if ('image_id' in out && out.image_id) {
-      const img = (await readPlain('Image Library', SHOW)).rows.find(r => r.values.image_id === out.image_id);
+    // A new library image (or a crop undone): the picture link comes from the Image Library, so the plan and
+    // Make agree. A crop sends its own Drive link instead.
+    if ((out.image_id && !out.image_url) || ('image_url' in out && !out.image_url)) {
+      const id = out.image_id || body.before?.image_id;
+      const img = (await readPlain('Image Library', SHOW)).rows.find(r => r.values.image_id === id);
       if (!img) return NextResponse.json({ error: 'Not an image in the Image Library', errors: { image_id: 'Unknown image' } }, { status: 400 });
       out.image_url = img.values.public_url;
     }

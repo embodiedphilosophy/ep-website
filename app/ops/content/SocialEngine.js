@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { VIEWS, colType, PLAN_EDITABLE } from '@/lib/ops/socialengine';
+import Cropper, { shrink } from './Cropper';
 
 const label = h => h === 'publish_time_ET' ? 'Time (ET)' : h === 'jake_notes' ? 'Notes for the planner' : h.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
 const day = s => /^\d{4}-\d{2}-\d{2}$/.test(s || '') ? new Date(`${s}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : s || 'No date';
@@ -46,7 +47,7 @@ function Plan() {
   const [msg, setMsg] = useState('');
   if (!data) return <p className="ops-empty">Loading the plan…</p>;
   if (data.error) return <p className="ops-empty">{data.error}</p>;
-  const posts = data.rows.map(r => ({ ...r.values, _row: r.row, _thumb: r.thumb, _raw: r.values }));
+  const posts = data.rows.map(r => ({ ...r.values, _row: r.row, _thumb: r.thumb, _src: r.src, _raw: r.values }));
   const proposed = posts.filter(p => p.status === 'Proposed');
   const weeks = [...new Set(posts.map(weekOf))];
   const approveAll = async () => {
@@ -98,8 +99,9 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
-  const [picking, setPicking] = useState(false);
-  const [pickedThumb, setPickedThumb] = useState('');
+  const [mode, setMode] = useState(null); // null | 'library' | 'crop'
+  const [pic, setPic] = useState(null); // { preview, src } once the picture changes here
+  const [picMsg, setPicMsg] = useState('');
   const changed = PLAN_EDITABLE.filter(k => k !== 'status' && String(vals[k] ?? '') !== String(p._raw[k] ?? ''));
   const locked = ['Posted', 'Manual'].includes(p.status), dis = !canEdit || locked || busy;
   const leave = go => () => { if (!changed.length || confirm('Leave without saving your changes?')) go(); };
@@ -118,7 +120,7 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
     setBusy(true); setErrors({}); setMsg('');
     const j = await api({ view: 'plan', row: p._row, changes: { ...Object.fromEntries(changed.map(k => [k, vals[k]])), ...extra }, before: p._raw });
     setBusy(false);
-    if (j.ok) { setMsg('Saved.'); onSaved(); return true; }
+    if (j.ok) { setMsg('Saved.'); setPicMsg(''); onSaved(); return true; }
     if (j.status === 409) { setMsg(`${j.error}. Showing their version.`); onSaved(); return false; }
     setErrors(j.errors || {}); setMsg(j.error || 'Couldn’t save'); return false;
   };
@@ -128,7 +130,34 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
       <label htmlFor={`c-${k}`}>{lab}</label>{el}{errors[k] && <span className="hint">{errors[k]}</span>}
     </div>
   );
-  const thumb = pickedThumb && vals.image_id !== p._raw.image_id ? pickedThumb : p._thumb;
+  const thumb = pic?.preview || p._thumb;
+  const cropSrc = pic?.src || (p._src ? `/api/ops/social/image?id=${p._src}` : '');
+  const sendPic = async (kind, name, data) => {
+    setPicMsg(kind === 'upload' ? 'Uploading to Drive…' : 'Saving the crop to Drive…');
+    const res = await fetch('/api/ops/social/image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind, name, data }) }).catch(() => null);
+    const j = await res?.json().catch(() => ({})) || {};
+    if (!res?.ok) { setPicMsg(j.error || 'Couldn’t save the picture. Try again.'); return null; }
+    return j;
+  };
+  const upload = async file => {
+    if (!file) return;
+    try {
+      const s = await shrink(file);
+      const j = await sendPic('upload', file.name, s.data); if (!j) return;
+      setVals(v => ({ ...v, image_id: j.image_id, image_url: j.image_url }));
+      setPic({ preview: s.preview, src: s.preview });
+      setPicMsg(`Uploaded and added to the Image Library as ${j.image_id}. Crop it, or save to use it as it is.`);
+      setMode('crop');
+    } catch (e) { setPicMsg(e.message); }
+  };
+  const cropped = async c => {
+    const j = await sendPic('crop', vals.image_id || 'post', c.data); if (!j) return;
+    setVals(v => ({ ...v, image_url: j.image_url }));
+    setPic(x => ({ preview: c.preview, src: x?.src || cropSrc }));
+    setMode(null);
+    setPicMsg(`Cropped to ${c.shape}.${c.small ? ' It’s a small part of a small picture, so it may look soft.' : ''} Save to use it.`);
+  };
+  const shapeOf = isStory(p) ? '9:16' : '4:5';
   const status = p.status || 'Proposed';
   return (
     <div className="ops-se-modal" role="dialog" aria-modal="true" aria-label="Post" onClick={e => { if (e.target === e.currentTarget) leave(close)(); }}>
@@ -144,11 +173,18 @@ function Composer({ p, canEdit, onSaved, prev, next, close }) {
         </div>
         <div className="cols">
           <div className="media">
-            <div className={`pic${isStory(p) ? ' story' : ''}`}>{thumb ? <img src={thumb} alt="" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}</div>
-            {!dis && <button type="button" className="chip" onClick={() => setPicking(x => !x)}>{picking ? 'Close the library' : 'Change image'}</button>}
-            {vals.image_id !== p._raw.image_id && <p className="hint">New image chosen. Save to use it.</p>}
-            {errors.image_id && <p className="hint">{errors.image_id}</p>}
-            {picking && <ImagePicker onPick={(id, t) => { setVals(s => ({ ...s, image_id: id })); setPickedThumb(t); setPicking(false); }} />}
+            {mode === 'crop' && cropSrc ? <Cropper src={cropSrc} initial={shapeOf} onDone={cropped} onCancel={() => setMode(null)} />
+              : <div className="pic">{thumb ? <img src={thumb} alt="" referrerPolicy="no-referrer" /> : <span className="none">No image</span>}</div>}
+            {!dis && mode !== 'crop' && (
+              <div className="picacts">
+                {cropSrc && <button type="button" className="chip" onClick={() => { setMode('crop'); setPicMsg(''); }}>Crop</button>}
+                <button type="button" className="chip" onClick={() => setMode(m => m === 'library' ? null : 'library')}>{mode === 'library' ? 'Close the library' : 'Choose from library'}</button>
+                <label className="chip upl">Upload a photo<input type="file" accept="image/*" onChange={e => { upload(e.target.files?.[0]); e.target.value = ''; }} /></label>
+              </div>
+            )}
+            {picMsg ? <p className="hint">{picMsg}</p> : (vals.image_id !== p._raw.image_id || vals.image_url !== p._raw.image_url) && <p className="hint">New picture chosen. Save to use it.</p>}
+            {(errors.image_id || errors.image_url) && <p className="hint">{errors.image_id || errors.image_url}</p>}
+            {mode === 'library' && <ImagePicker onPick={(id, t, drive) => { setVals(s => ({ ...s, image_id: id, image_url: '' })); setPic({ preview: t, src: drive ? `/api/ops/social/image?id=${drive}` : '' }); setPicMsg(''); setMode(null); }} />}
             {p.quote_text && <p className="quo">“{p.quote_text}”{p.quote_source ? ` — ${p.quote_source}` : ''} <span className={p.quote_check === 'Verbatim' ? 'ok' : 'warn'}>{p.quote_check || 'not checked'}</span></p>}
             {p.linked_event && <p className="ev">For: {p.linked_event}</p>}
             {p.error && <p className="err">Make: {p.error}</p>}
@@ -199,7 +235,7 @@ function ImagePicker({ onPick }) {
       <input placeholder="Search images by name, tag, category…" value={q} onChange={e => setQ(e.target.value)} autoFocus />
       {!data ? <p className="hint">Loading…</p> : data.error ? <p className="hint">{data.error}</p> : (
         <ul>{data.rows.filter(r => String(r.values.reuse_ok).toUpperCase() === 'TRUE' && String(r.values.hidden).toUpperCase() !== 'TRUE').slice(0, 30).map(r => (
-          <li key={r.row}><button type="button" onClick={() => onPick(r.values.image_id, r.thumb)} title={r.values.file_name}>
+          <li key={r.row}><button type="button" onClick={() => onPick(r.values.image_id, r.thumb, r.values.drive_file_id)} title={r.values.file_name}>
             {r.thumb ? <img src={r.thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">{r.values.file_name}</span>}
           </button></li>))}</ul>
       )}

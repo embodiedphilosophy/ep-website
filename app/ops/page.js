@@ -6,6 +6,7 @@ import { eventOptions, staffNames } from '@/lib/ops/pickers';
 import AddTask from './AddTask';
 import { teamHours, clockAvailable } from '@/lib/ops/hours';
 import { HoursDecide } from './hours/HoursActions';
+import { waitingOnYou } from '@/lib/ops/waiting';
 import { todayET } from '@/lib/events';
 import { onboardingState } from '@/lib/teach';
 import { upcomingSocial } from '@/lib/social';
@@ -82,6 +83,7 @@ export default async function Home({ searchParams }) {
   }
   // Director: everyone's hours this month, with any extra-hours requests to decide
   const hours = triageOn && clockAvailable() ? await teamHours(allTeam).catch(() => null) : null;
+  const waiting = triageOn ? await waitingOnYou().catch(() => []) : [];
   const socialLine = social && !social.error && social.posts.length
     ? (() => { const n = social.posts.filter(p => flagOf(p)).length; return n ? `Social: ${n} of ${social.posts.length} posts still need images` : `Social: the next ${social.posts.length} posts are ready`; })()
     : '';
@@ -115,6 +117,15 @@ export default async function Home({ searchParams }) {
 
       <div className="ops-grid">
       <section className="ops-col">
+        {triageOn && (<div className="ops-waiting">
+          <h2>Waiting on your yes <span>{waiting.length}</span></h2>
+          {waiting.length === 0 ? <p className="ops-empty">Nothing is waiting on you.</p> : (<ul>{waiting.map(w => (
+            <li key={w.key}>
+              <span className="k">{w.kind}</span>
+              <span className="t">{w.title}{w.detail && <span> — {w.detail}</span>}</span>
+              {w.request ? <HoursDecide id={w.request.id} hours={w.request.hours} /> : <a className="chip primary" href={w.href}>{w.kind === 'Ad Agent' ? 'See it' : 'Review'}</a>}
+            </li>))}</ul>)}
+        </div>)}
         <h2 className={b.pastDue.length ? 'late' : ''}>Needs you <span>{needsYou.length}</span></h2>
         {needsYou.length === 0 ? <p className="ops-empty">Nothing overdue or due this week.</p> : groups.map(g => (
           <div className="ops-group" key={g.key || 'other'}>
@@ -141,13 +152,12 @@ export default async function Home({ searchParams }) {
 
       <aside className="ops-col">
         {hours && hours.length > 0 && (<div className="ops-week stacked" style={{ marginBottom: 28 }}><section>
-          <h2>Team hours <span className={hours.some(h => h.request) ? 'risk' : ''}>{hours.filter(h => h.request).length ? `${hours.filter(h => h.request).length} request` : ''}</span></h2>
+          <h2>Team hours</h2>
           <ul className="ops-hours-team compact">{hours.map(r => (
             <li key={r.email} className={r.level}>
               <span className="who"><i className={r.onClock ? 'live' : ''} />{r.name.split(' ')[0]}</span>
               <span className="bar" aria-hidden="true"><span style={{ width: `${r.limit ? Math.min(100, (r.used / r.limit) * 100) : 0}%` }} /></span>
-              {r.request ? <HoursDecide id={r.request.id} hours={r.request.hours} />
-                : <span className="s">{r.limit && r.pace && r.pace > r.limit ? `Pace ${r.pace}/${r.limit} h` : r.limit ? `${r.used}/${r.limit} h` : `${r.used} h`}</span>}
+              <span className="s">{r.limit && r.pace && r.pace > r.limit ? `Pace ${r.pace}/${r.limit} h` : r.limit ? `${r.used}/${r.limit} h` : `${r.used} h`}</span>
             </li>
           ))}</ul>
           <p className="ops-more"><a href="/ops/hours">All hours →</a></p>

@@ -804,6 +804,8 @@
   .season-card{background:var(--ivory);border:1px solid var(--line);border-top:3px solid var(--ochre);padding:24px 22px;display:flex;flex-direction:column;gap:8px}
   .season-card.live{border-top-color:var(--terra)}
   .season-card.done{opacity:.7}
+.season-grid-note{font-size:16px;color:var(--ink-soft);margin:-28px 0 22px;max-width:640px}
+.season-grid-note a{color:var(--terra);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .season-card.is-link{display:block;color:inherit;text-decoration:none;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
 .season-card.is-link:hover,.season-card.is-link:focus-visible{transform:translateY(-3px);box-shadow:0 10px 28px rgba(40,20,10,.10)}
 .season-card .season-cta{display:inline-block;margin-top:14px;font-size:14px;font-weight:600;color:var(--terra)}

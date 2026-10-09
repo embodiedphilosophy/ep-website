@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { loadTeam, loadTemplates } from '@/lib/calendar';
-import { syncToMotion, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NUDGE_DAYS } from '@/lib/ops/tasks';
+import { syncTasks, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NUDGE_DAYS } from '@/lib/ops/tasks';
 import { listTasks } from '@/lib/ops/taskstore';
 import { runAutoComplete } from '@/lib/ops/autocomplete';
 import { sendMotionDigest } from '@/lib/ops/motiondigest';
@@ -135,7 +135,7 @@ export async function GET(req) {
 
   // ---- The real daily run ----
   const out = { tasks: null, reminders: [], errors: [] };
-  try { out.tasks = await syncToMotion(); } catch (e) { out.errors.push('Task sync: ' + e.message); }
+  try { out.tasks = await syncTasks(); } catch (e) { out.errors.push('Task sync: ' + e.message); }
   try { out.auto = (await runAutoComplete()).closed.map(c => `${c.task}: ${c.why}`); } catch (e) { out.errors.push('Auto-complete: ' + e.message); }
   if (only === 'sync') return NextResponse.json(out);
   // Circle events for Circle sessions, before reminders so they carry the links. A dry run (report only)

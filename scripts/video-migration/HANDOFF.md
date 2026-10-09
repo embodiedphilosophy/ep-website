@@ -34,6 +34,15 @@ For the next Claude session. Read this, then `README.md`, `pathway-summary.csv` 
 - **Vimeo downloads** work (`player.vimeo.com` and `*.vimeocdn.com` allowed). Uploads to Circle
   needed no extra host.
 
+- **Migration complete (9 Oct 2026):** all 262 mapped videos (~191 GB) are in Circle, each
+  checked; see `progress.csv`. The 7 new pathways and 3 certificates are still hidden.
+- **Left for Jacob:**
+  - Unhide courses when ready.
+  - Drag Upaniṣads Modules 3 and 7 into place (they were re-uploaded last).
+  - Find the remaining gaps: Classical Yoga, Subtle Body Anatomy, Science of Mantras, Bhakti
+    Poetry, and parts of Four Noble Truths, Mantra Recitation and Upaniṣads (Simpson).
+  - Yoga Philosophy Certificate (Uscreen collection 2193472) is still empty.
+
 ## Circle API notes
 - Python's urllib needs a User-Agent header, or Cloudflare returns 403 / 1010.
 - **Upload flow:**

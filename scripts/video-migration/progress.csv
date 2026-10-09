@@ -55,11 +55,11 @@ vimeo_id,programme,section,lesson_title,status,lesson_id,lesson_url,rendition,by
 406257864,The Goddess & Śākta Tantra,5. Yogini Mandalas,Module 4,done,4680319,,720p,904752861,,2026-10-08 23:33
 516301793,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 1,done,4680325,,540p,2201334771,,2026-10-08 23:35
 519158290,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 2,done,4680336,,540p,1989490942,,2026-10-08 23:38
-521981909,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 3,failed,,,,,download failed: curl: (18) Transferred a partial file,2026-10-08 23:44
+521981909,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 3,done,4683746,,540p,2120634594,,2026-10-09 14:10
 524994043,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 4,done,4680414,,540p,2469873758,,2026-10-08 23:47
 528348882,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 5,done,4680416,,540p,1717139124,,2026-10-08 23:48
 531382161,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 6,done,4680419,,360p,1397689118,,2026-10-08 23:49
-533976365,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 7,failed,,,,,upload to s3.amazonaws.com failed: 100 curl: (56) Recv failure: Connection reset by peer,2026-10-08 23:52
+533976365,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 7,done,4683748,,540p,1989568149,,2026-10-09 14:11
 536780723,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 8,done,4680440,,540p,2164493057,,2026-10-08 23:54
 401559076,Non-Duality: Vedānta & Kashmir Śaivism,2. Nonduality: Advaita Vedānta,Module 1,done,4680441,,540p,459605869,,2026-10-08 23:54
 394502338,Non-Duality: Vedānta & Kashmir Śaivism,2. Nonduality: Advaita Vedānta,Module 2,done,4680442,,360p,234003797,,2026-10-08 23:55
@@ -71,9 +71,9 @@ vimeo_id,programme,section,lesson_title,status,lesson_id,lesson_url,rendition,by
 401155744,Non-Duality: Vedānta & Kashmir Śaivism,3. I Am That,Module 4,done,4680450,,540p,488979696,,2026-10-08 23:58
 506156696,Non-Duality: Vedānta & Kashmir Śaivism,4. Advaita Vedānta,Module 1,done,4680451,,540p,496436463,,2026-10-08 23:58
 508874473,Non-Duality: Vedānta & Kashmir Śaivism,4. Advaita Vedānta,Module 2,done,4680452,,540p,987037753,,2026-10-08 23:59
-1178627567,Non-Duality: Vedānta & Kashmir Śaivism,5. Śiva Sūtras,Module 1,failed,,,,,download incomplete: 641513896 of 644849998 bytes,2026-10-09 00:01
-1178628492,Non-Duality: Vedānta & Kashmir Śaivism,5. Śiva Sūtras,Module 2,failed,,,,,download incomplete: 704401453 of 707815291 bytes,2026-10-09 00:02
-1178628934,Non-Duality: Vedānta & Kashmir Śaivism,5. Śiva Sūtras,Module 3,failed,,,,,download incomplete: 500126720 of 503366690 bytes,2026-10-09 00:04
+1178627567,Non-Duality: Vedānta & Kashmir Śaivism,5. Śiva Sūtras,Module 1,done,4683749,,720p,641513896,,2026-10-09 14:12
+1178628492,Non-Duality: Vedānta & Kashmir Śaivism,5. Śiva Sūtras,Module 2,done,4683750,,720p,704401453,,2026-10-09 14:12
+1178628934,Non-Duality: Vedānta & Kashmir Śaivism,5. Śiva Sūtras,Module 3,done,4683751,,720p,500126720,,2026-10-09 14:13
 458660293,Indian Philosophy: Paths & Worldviews,1. Starting Points with Jacob Kyle & Stephanie Corigliano,Part 1,done,4680454,,720p,725528003,,2026-10-09 00:05
 459494079,Indian Philosophy: Paths & Worldviews,1. Starting Points with Jacob Kyle & Stephanie Corigliano,Part 2,done,4680455,,720p,775217603,,2026-10-09 00:05
 466211081,Indian Philosophy: Paths & Worldviews,2. Indian Philosophy: Paths & Worldviews,Module 1,done,4680457,,540p,1029622595,,2026-10-09 00:06
@@ -135,3 +135,129 @@ vimeo_id,programme,section,lesson_title,status,lesson_id,lesson_url,rendition,by
 881084028,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),Perspectives on Trauma in Yoga Therapy 1,done,4680741,,1080p,367086947,,2026-10-09 00:59
 881226256,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),Perspectives on Trauma in Yoga Therapy Part 2,done,4680743,,1080p,276600244,,2026-10-09 01:00
 881339673,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),Embodied Yoga Therapy Integration Session 1,done,4680748,,1080p,727666436,,2026-10-09 01:01
+882338601,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),Module 8.1: Contemplative Psychotherapy,done,4682757,,1080p,372336457,,2026-10-09 11:37
+882521166,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),Module 8.2: Contemplative Psychotherapy,done,4682759,,1080p,479667695,,2026-10-09 11:38
+883788576,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),M9: Skeletal Uniqueness 2,done,4682761,,1080p,593605081,,2026-10-09 11:39
+883766003,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),M9: Yoga and Skeletal Uniqueness Part 1.1,done,4682762,,1080p,388290668,,2026-10-09 11:40
+885011864,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),Module 10.1: Yoga and Modern Medicine Part 1,done,4682763,,1080p,398689430,,2026-10-09 11:41
+885199776,Embodied Yoga Therapy Certificate,Embodied Yoga Therapy (2023),Module 10.2: Yoga and Modern Medicine Part 2,done,4682768,,1080p,577839075,,2026-10-09 11:42
+826388497,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 3,done,4682769,,1080p,574387786,,2026-10-09 11:44
+827779144,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Neuroecopsychology of the Subtle Body,done,4682771,,1080p,850518024,,2026-10-09 11:45
+828377969,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 1,done,4682776,,720p,521364048,,2026-10-09 11:47
+829240936,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 5,done,4682778,,720p,459429301,,2026-10-09 11:48
+832449815,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 7,done,4682792,,720p,406599030,,2026-10-09 11:50
+836642272,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert Session 11,done,4682793,,1080p,610873576,,2026-10-09 11:51
+836615183,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psycholoy Cert Session 9,done,4682797,,720p,293301379,,2026-10-09 11:52
+836738341,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 13,done,4682798,,1080p,663319674,,2026-10-09 11:53
+836902986,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 2,done,4682809,,1080p,705155019,,2026-10-09 11:55
+836954605,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 4,done,4682810,,1080p,636695270,,2026-10-09 11:57
+837226870,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 8,done,4682811,,1080p,528328701,,2026-10-09 11:58
+837323723,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 10,done,4682820,,1080p,671593676,,2026-10-09 11:59
+837278601,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 6,done,4682898,,1080p,550837897,,2026-10-09 12:01
+837726913,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert. Session 12,done,4682902,,1080p,624909724,,2026-10-09 12:02
+838092762,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert Session 14,done,4682980,,1080p,776072584,,2026-10-09 12:04
+838062963,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddist Psychology Cert- Integration #1,done,4683059,,720p,354407230,,2026-10-09 12:05
+841665106,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert Integration #2,done,4683064,,1080p,1442054169,,2026-10-09 12:08
+847610121,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Cert Integration #3,done,4683067,,1080p,1866475408,,2026-10-09 12:13
+847606424,Buddhist Psychology Certificate,Buddhist Psychology Cert (2023),Buddhist Psychology Certification Closing Ceremony,done,4683069,,1080p,270610727,,2026-10-09 12:13
+832783283,Awakened Body Certificate,Awakened Body Cert On Demand,Awakened Body - Integration Session 1,done,4683071,,720p,285278039,,2026-10-09 12:14
+832776422,Awakened Body Certificate,Awakened Body Cert On Demand,Awakened Body - Integration Session 2,done,4683073,,720p,454214643,,2026-10-09 12:15
+832784366,Awakened Body Certificate,Awakened Body Cert On Demand,Awakened Body - Integration Session 3,done,4683075,,720p,320878391,,2026-10-09 12:16
+832778218,Awakened Body Certificate,Awakened Body Cert On Demand,Between Psyche & Soul: Re-imagining Intuition,done,4683077,,720p,377130936,,2026-10-09 12:17
+832781022,Awakened Body Certificate,Awakened Body Cert On Demand,Beyond Trauma Unbinding The Body Via Posttraumatic Growth,done,4683078,,720p,457857304,,2026-10-09 12:18
+832775633,Awakened Body Certificate,Awakened Body Cert On Demand,Body To Body Intimacy,done,4683080,,720p,674326945,,2026-10-09 12:19
+832779472,Awakened Body Certificate,Awakened Body Cert On Demand,Close Your Eyes to See: Experiential Praxis for Awakening the Body,done,4683081,,720p,324891890,,2026-10-09 12:20
+832780780,Awakened Body Certificate,Awakened Body Cert On Demand,Contemporary Psychoanalysis Playing With Theories Of Embodiment,done,4683083,,720p,298185253,,2026-10-09 12:21
+832777557,Awakened Body Certificate,Awakened Body Cert On Demand,Developmental Somatic Psychology,done,4683086,,720p,701247051,,2026-10-09 12:22
+832781418,Awakened Body Certificate,Awakened Body Cert On Demand,Embodied Movement: Practices Engaging The Whole Self,done,4683090,,720p,814531733,,2026-10-09 12:24
+832778826,Awakened Body Certificate,Awakened Body Cert On Demand,Fractals of Spiritual Development,done,4683091,,720p,707094285,,2026-10-09 12:26
+832776993,Awakened Body Certificate,Awakened Body Cert On Demand,Introduction to Somatics: Beyond the MindBody Problem,done,4683100,,720p,552650999,,2026-10-09 12:27
+832782649,Awakened Body Certificate,Awakened Body Cert On Demand,Just To Be Alive: Somatics And Spirituality,done,4683107,,720p,423346717,,2026-10-09 12:28
+832778554,Awakened Body Certificate,Awakened Body Cert On Demand,Polyvagal Theory and the Awakened Body,done,4683108,,720p,309942595,,2026-10-09 12:29
+832759620,Awakened Body Certificate,Awakened Body Cert On Demand,Queering The Body: Gender And Sexuality,done,4683114,,720p,647171153,,2026-10-09 12:31
+832780053,Awakened Body Certificate,Awakened Body Cert On Demand,Soma Semantics Cultivating Presence Via Embodied Witnessing Praxis,done,4683118,,720p,635509796,,2026-10-09 12:32
+832782194,Awakened Body Certificate,Awakened Body Cert On Demand,The Unknown Unknown: Somatic Encounters With The Other,done,4683122,,720p,655280698,,2026-10-09 12:34
+832779805,Awakened Body Certificate,Awakened Body Cert On Demand,Using Dreams To Awaken The Body,done,4683123,,720p,247793134,,2026-10-09 12:34
+832782918,Awakened Body Certificate,Awakened Body Cert On Demand,Why Study Somatics & Embodied Techniques?,done,4683125,,720p,348849870,,2026-10-09 12:35
+401644118,Classical Yoga & the Yoga Sūtras,1. Origins and Hidden History,Changing our Understanding of the Yoga Sutra (Christopher Hareesh Wallis),done,4669974,,720p,889118525,,2026-10-09 12:36
+401660827,Classical Yoga & the Yoga Sūtras,3. The Five Vṛttis,One Sutra for a Lifetime (Nikki Costello),done,4669977,,720p,873918134,,2026-10-09 12:37
+401638215,Classical Yoga & the Yoga Sūtras,4. The Eight Limbs,Astanga Yoga in Patanjali and the Gita (Edwin Bryant),done,4669978,,720p,1593210538,,2026-10-09 12:38
+401647735,Classical Yoga & the Yoga Sūtras,5. The Cause of Suffering,Yoga Sutras  Mastering the Game of Life (Reverend Jaganath Carrera),done,4669980,,720p,1125095161,,2026-10-09 12:39
+1016554463,Classical Yoga & the Yoga Sūtras,6. The Yoga Canon,The Yoga Canon Seminar,done,4669981,,1080p,707155617,,2026-10-09 12:41
+405914311,Classical Yoga & the Yoga Sūtras,7. Sāṃkhya with Jacob Kyle,Module 1,done,4683139,,540p,398634694,,2026-10-09 12:41
+405917206,Classical Yoga & the Yoga Sūtras,7. Sāṃkhya with Jacob Kyle,Module 2,done,4683142,,540p,479169489,,2026-10-09 12:42
+405921911,Classical Yoga & the Yoga Sūtras,7. Sāṃkhya with Jacob Kyle,Module 3,done,4683143,,540p,487756131,,2026-10-09 12:42
+405926623,Classical Yoga & the Yoga Sūtras,7. Sāṃkhya with Jacob Kyle,Module 4,done,4683145,,540p,642174020,,2026-10-09 12:43
+470424548,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 1,done,4683146,,540p,1361803242,,2026-10-09 12:44
+472881973,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 2,done,4683153,,540p,2381130551,,2026-10-09 12:46
+478042111,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 3,done,4683157,,540p,2282992849,,2026-10-09 12:48
+480660808,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 4,done,4683160,,540p,2456090634,,2026-10-09 12:50
+486387253,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 5,done,4683176,,540p,2370410380,,2026-10-09 12:52
+488953996,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 6,done,4683193,,540p,1972348478,,2026-10-09 12:54
+491595469,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 7,done,4683229,,540p,2549669624,,2026-10-09 12:56
+492483058,Classical Yoga & the Yoga Sūtras,8. The Yoga Sūtras with Edwin Bryant,Module 8,done,4683237,,540p,2448459901,,2026-10-09 12:58
+403552551,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 1,done,4683241,,540p,453216593,,2026-10-09 12:58
+403557299,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 2,done,4683245,,540p,424104353,,2026-10-09 12:59
+403559684,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 3,done,4683251,,540p,427521415,,2026-10-09 12:59
+403562421,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 4,done,4683259,,540p,529883387,,2026-10-09 13:00
+403566016,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 5,done,4683262,,540p,489214647,,2026-10-09 13:00
+403567577,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 6,done,4683265,,540p,455930123,,2026-10-09 13:01
+403568598,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 7,done,4683268,,540p,486416269,,2026-10-09 13:01
+403571189,Classical Yoga & the Yoga Sūtras,9. Hidden Teachings of the Yoga Sūtra with Graham Schweig,Module 8,done,4683269,,540p,434803078,,2026-10-09 13:01
+910583034,Classical Yoga & the Yoga Sūtras,10. Yoga Sūtra Meditation with Ramesh Bjonnes & Mary Reilly Nichols,Module 1,done,4683281,,1080p,863827397,,2026-10-09 13:04
+910584215,Classical Yoga & the Yoga Sūtras,10. Yoga Sūtra Meditation with Ramesh Bjonnes & Mary Reilly Nichols,Module 2,done,4683284,,1080p,1097576846,,2026-10-09 13:06
+910586312,Classical Yoga & the Yoga Sūtras,10. Yoga Sūtra Meditation with Ramesh Bjonnes & Mary Reilly Nichols,Module 3,done,4683363,,1080p,871643870,,2026-10-09 13:08
+910588371,Classical Yoga & the Yoga Sūtras,10. Yoga Sūtra Meditation with Ramesh Bjonnes & Mary Reilly Nichols,Module 4,done,4683440,,1080p,897438214,,2026-10-09 13:10
+827779144,"The Subtle Body: Chakras, Prāṇa & Breath",2. Neuroecopsychology of the Subtle Body,Neuroecopsychology of the Subtle Body,done,4669985,,1080p,850518024,,2026-10-09 13:11
+465504448,"The Subtle Body: Chakras, Prāṇa & Breath",3. Chakras Illuminated,Chakras Illuminated - Module 1,done,4683441,,540p,1367533946,,2026-10-09 13:12
+465508270,"The Subtle Body: Chakras, Prāṇa & Breath",3. Chakras Illuminated,Chakras Illuminated - Module 2,done,4683442,,540p,1093615039,,2026-10-09 13:13
+465512215,"The Subtle Body: Chakras, Prāṇa & Breath",3. Chakras Illuminated,Chakras Illuminated - Module 3,done,4683449,,540p,1486028143,,2026-10-09 13:14
+465516168,"The Subtle Body: Chakras, Prāṇa & Breath",3. Chakras Illuminated,Chakras Illuminated - Module 4,done,4683454,,720p,1637652513,,2026-10-09 13:15
+401948890,"The Subtle Body: Chakras, Prāṇa & Breath",4. Breath Mechanics,The Anatomy of Breathwork – Essential Principles and Pervasive Myths (Leslie Kaminoff),done,4669987,,720p,403941296,,2026-10-09 13:16
+401770113,"The Subtle Body: Chakras, Prāṇa & Breath",5. Are the Chakras Real or Imaginary?,Beyond Wheels  How to Talk about the Chakras (Christopher Hareesh Wallis),done,4669988,,540p,953601169,,2026-10-09 13:16
+410298603,"The Subtle Body: Chakras, Prāṇa & Breath",6. Prāṇa & the Energy Body with Mary Reilly Nichols,Part 1,done,4683464,,540p,500566950,,2026-10-09 13:17
+412832836,"The Subtle Body: Chakras, Prāṇa & Breath",6. Prāṇa & the Energy Body with Mary Reilly Nichols,Part 2,done,4683465,,540p,477482760,,2026-10-09 13:17
+415332873,"The Subtle Body: Chakras, Prāṇa & Breath",6. Prāṇa & the Energy Body with Mary Reilly Nichols,Part 3,done,4683466,,540p,511338616,,2026-10-09 13:18
+701140768,"The Subtle Body: Chakras, Prāṇa & Breath",7. Haṭha Yoga Texts with Zoë Slatoff,Module 1,done,4683467,,540p,391847237,,2026-10-09 13:18
+703601123,"The Subtle Body: Chakras, Prāṇa & Breath",7. Haṭha Yoga Texts with Zoë Slatoff,Module 2,done,4683468,,540p,415561163,,2026-10-09 13:19
+731151720,"Sound, Mantra & Sacred Speech",2. The Sound Bath Experience,Sound Bath for Peace in Uncertain Times,done,4669992,,1080p,931568887,,2026-10-09 13:21
+663053075,"Sound, Mantra & Sacred Speech",3. Yoga of Sound,"Yoga of Sound Seminar - January 5, 2021",done,4669993,,1080p,1828852498,,2026-10-09 13:23
+562574035,"Sound, Mantra & Sacred Speech",4. Sanskrit Chanting,Seminar: Sanskrit Chanting,done,4669994,,540p,356961596,,2026-10-09 13:23
+401656218,"Sound, Mantra & Sacred Speech",5. Om Namah Shivaya: Why Mantra Matters,Om Namah Shivaya - Why mantra matters and how to practice it (Nataraj Chaitanya),done,4669995,,720p,676873434,,2026-10-09 13:24
+617618353,"Sound, Mantra & Sacred Speech",6. Introduction to the Vedas with Katy Jane,Module 1,done,4683548,,540p,471055671,,2026-10-09 13:24
+619660649,"Sound, Mantra & Sacred Speech",6. Introduction to the Vedas with Katy Jane,Module 2,done,4683549,,540p,514185238,,2026-10-09 13:25
+465983407,"Sound, Mantra & Sacred Speech",7. Mantra Recitation with Jacob Kyle,Mantra Recitation with Jacob Kyle,done,4683555,,720p,501335686,,2026-10-09 13:25
+536926861,"Sound, Mantra & Sacred Speech",8. Lalitā Sahasranāma with Kavitha Chinnaiyan,Lalitā Sahasranāma with Kavitha Chinnaiyan,done,4683564,,540p,984973329,,2026-10-09 13:26
+631243254,Meditation for Real Life,1. The Benefits of a Meditation Practice,The Benefits of a Meditation Practice,done,4669967,,1080p,272304232,,2026-10-09 13:27
+1128046946,Meditation for Real Life,2. Spiritual Microdosing,"Spiritual Microdosing- How to Weave Short, Potent Practices into Everyday Life",done,4669968,,1080p,908521112,,2026-10-09 13:29
+1176391516,Meditation for Real Life,"3. Working with Metaphor, Mantra & Meditation","Working with Metaphor, Mantra, and Meditation (Workshop March 22)",done,4669969,,1080p,1756076123,,2026-10-09 13:33
+899959348,Meditation for Real Life,4. Healing Stress,"Class 1  Three components of anxiety  Neurobiological, Psychological & Spiritual Pilar Jennings V1 ACC",done,4683574,,1080p,243297637,,2026-10-09 13:34
+899959719,Meditation for Real Life,4. Healing Stress,Class 2  Mind & its Developmental Formation  Links to early anxiety Pilar Jennings V1  ACC,done,4683575,,1080p,245210911,,2026-10-09 13:34
+899960117,Meditation for Real Life,4. Healing Stress,Class 3  Healing Relational Sources of anxiety Pilar Jennings V1 ACC,done,4683576,,1080p,264405400,,2026-10-09 13:35
+899960552,Meditation for Real Life,4. Healing Stress,Class 4  Why & How a separate self develops  Buddhist origins of anxiety Pilar Jennings V1 ACC,done,4683577,,1080p,305015640,,2026-10-09 13:36
+899961088,Meditation for Real Life,4. Healing Stress,Class 5  Healing Existential & Spiritual sources of anxiety Pilar Jennings V1 ACC,done,4683579,,1080p,277428823,,2026-10-09 13:36
+899961799,Meditation for Real Life,4. Healing Stress,Class 6  Building a Bridge  Contemplative Psychotherapy and its methods for reducing anxiety Pilar Jennings V1 ACC,done,4683580,,1080p,287819935,,2026-10-09 13:37
+899962236,Meditation for Real Life,4. Healing Stress,"Class 7  Linking Self, early development, & Somatic Responses to anxiety Pilar Jennings V1 ACC",done,4683581,,1080p,324131432,,2026-10-09 13:38
+899962574,Meditation for Real Life,4. Healing Stress,Class 8   Healing individual anxiety in an anxious world Pilar Jennings V1 ACC,done,4683585,,1080p,311759718,,2026-10-09 13:38
+434029347,Meditation for Real Life,5. Contemplative Psychology: the Four Noble Truths,Contemplative Psychology: the Four Noble Truths,done,4683590,,720p,998965208,,2026-10-09 13:39
+707977039,Meditation for Real Life,6. Yoga & Contemplative Science,Module 1,done,4683595,,720p,445908027,,2026-10-09 13:40
+421161306,Meditation for Real Life,6. Yoga & Contemplative Science,Module 2,done,4683596,,540p,234272284,,2026-10-09 13:40
+583220238,"Death, Dreams & the Luminous Mind",1. Study the Tibetan Book of the Dead: Stages of Dissolution,Seminar: Tibetan Book of the Dead,done,4669997,,540p,1071838231,,2026-10-09 13:41
+401987684,"Death, Dreams & the Luminous Mind",2. Emptiness and Luminosity,Our Pristine Mind (Orgyen Chowang Rinpoche),done,4669998,,720p,947573901,,2026-10-09 13:42
+1140133013,"Death, Dreams & the Luminous Mind",3. Dream Yoga,Dream Yoga,done,4669999,,1080p,2654982580,,2026-10-09 13:49
+406012855,"Death, Dreams & the Luminous Mind",4. Tibetan Buddhism: A Path of Becoming Fully Human,Module 1,done,4683660,,540p,864428690,,2026-10-09 13:50
+406018424,"Death, Dreams & the Luminous Mind",4. Tibetan Buddhism: A Path of Becoming Fully Human,Module 2,done,4683662,,540p,914729610,,2026-10-09 13:50
+406024135,"Death, Dreams & the Luminous Mind",4. Tibetan Buddhism: A Path of Becoming Fully Human,Module 3,done,4683666,,540p,925362499,,2026-10-09 13:51
+406027302,"Death, Dreams & the Luminous Mind",4. Tibetan Buddhism: A Path of Becoming Fully Human,Module 4,done,4683669,,540p,954042978,,2026-10-09 13:52
+711884854,"Death, Dreams & the Luminous Mind",5. Yoga & Buddhism with Tias Little,Module 1,done,4683671,,480p,374317590,,2026-10-09 13:52
+714314820,"Death, Dreams & the Luminous Mind",5. Yoga & Buddhism with Tias Little,Module 2,done,4683674,,480p,364560034,,2026-10-09 13:53
+1153021115,"Myth, Shadow & the Inner Journey",1. The Call to Depth,"The Call to Depth: ""Something in me has stirred..."" (January Lecture)",done,4670001,,1080p,963438796,,2026-10-09 13:55
+1170964173,"Myth, Shadow & the Inner Journey",2. Crossing the Threshold,Crossing the Threshold - There’s no turning back now... (March Lecture),done,4670002,,1080p,770997056,,2026-10-09 13:57
+1189610636,"Myth, Shadow & the Inner Journey",3. The Descent into the Shadow,The Descent into the Shadow: “To know light is to experience darkness.” (May Lecture),done,4670004,,1080p,726936540,,2026-10-09 13:59
+1213701032,"Myth, Shadow & the Inner Journey",4. Revelation,Revelation: “Everything I thought I knew is dissolving.” (July Lecture),done,4670005,,1080p,1401315937,,2026-10-09 14:02
+1119287925,"Myth, Shadow & the Inner Journey",5. The Alchemy of Longing,The Alchemy of Longing,done,4670006,,1080p,1223120458,,2026-10-09 14:05
+468167816,"Myth, Shadow & the Inner Journey",6. The Universal Mystic,Module 1,done,4683739,,540p,574374382,,2026-10-09 14:05
+468207898,"Myth, Shadow & the Inner Journey",6. The Universal Mystic,Module 2,done,4683740,,540p,704126932,,2026-10-09 14:06
+468211405,"Myth, Shadow & the Inner Journey",6. The Universal Mystic,Module 3,done,4683741,,540p,674857605,,2026-10-09 14:07
+468216701,"Myth, Shadow & the Inner Journey",6. The Universal Mystic,Module 4,done,4683742,,540p,550215605,,2026-10-09 14:07
+534197740,"Myth, Shadow & the Inner Journey",7. The Purāṇas with Stephanie Corigliano,The Purāṇas with Stephanie Corigliano,done,4683743,,720p,651709469,,2026-10-09 14:08

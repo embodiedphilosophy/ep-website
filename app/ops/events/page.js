@@ -5,6 +5,7 @@ import { emailsOf, todayET } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 import { joinUrlFor, seriesLinksOf, upcomingMeetings, inCircle } from '@/lib/ops/joinurl';
 import { readinessRows, WEEKS } from '@/lib/ops/readiness';
+import { kitConfigured, tagCounts } from '@/lib/kit';
 import { isTeacher, canEditEvents } from '@/lib/ops/nav';
 import EventEditor from './EventEditor';
 import { AddEvent, Restore } from './EventActions';
@@ -37,6 +38,10 @@ export default async function Events({ searchParams }) {
   const shown = showAll ? rows : rows.filter(r => r.status !== 'grey');
   const hidden = rows.length - shown.length;
   const open = rows.find(r => r.key === sp?.event);
+  // Enrolled = people carrying the event's Enrolled Tag in Kit (the biggest tag if there are several, so nobody counts twice). Staff only.
+  const tagsOf = r => [...new Set(r.events.flatMap(e => e.enrolled_tags || []))];
+  const counts = !teacherView && kitConfigured() ? await tagCounts(shown.flatMap(tagsOf)).catch(() => ({})) : {};
+  const enrolled = r => { const ns = tagsOf(r).map(t => counts[t.toLowerCase()]).filter(n => n != null); return ns.length ? Math.max(...ns) : null; };
   const today = todayET();
   const allTeam = await loadTeam().catch(() => []);
   const roleNames = {};
@@ -98,7 +103,7 @@ export default async function Events({ searchParams }) {
                 </span>
                 <span className="ready">
                   {r.checks.length > 0 && <span className="segs" aria-hidden="true">{r.checks.map((c, i) => <i key={i} className={c.ready ? 'ok' : c.due < today ? 'late' : ''} />)}</span>}
-                  <small>{r.checks.length ? `${r.ready} of ${r.checks.length} ready` : '—'}{r.total ? ` · ${r.done}/${r.total} tasks` : ''}</small>
+                  <small>{r.checks.length ? `${r.ready} of ${r.checks.length} ready` : '—'}{r.total ? ` · ${r.done}/${r.total} tasks` : ''}{enrolled(r) != null ? ` · ${enrolled(r)} enrolled` : ''}</small>
                 </span>
               </a>
             </li>
@@ -112,6 +117,7 @@ export default async function Events({ searchParams }) {
           <span className={`pill ${open.status}`}>{LABEL[open.status]}</span>
           <h2>{open.title}</h2>
           <p className="when">{open.events.length > 1 ? open.events.map(e => short(e.date)).join(' · ') : `${longDate(open.date)}${open.end_date && open.end_date !== open.date ? ` – ${longDate(open.end_date)}` : ''}${open.events[0].time ? ` · ${open.events[0].time}` : ''}`}</p>
+          {enrolled(open) != null && (<div className="ops-enrolled"><b>{enrolled(open)}</b> enrolled<span> in Kit: {tagsOf(open).map(t => `${t} ${counts[t.toLowerCase()] ?? '—'}`).join(', ')}</span></div>)}
           {open.checks.length > 0 && (<>
             <h3>Ready <span>{open.ready} of {open.checks.length}</span></h3>
             <ul className="ops-checks">

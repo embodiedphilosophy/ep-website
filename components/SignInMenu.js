@@ -24,13 +24,14 @@ export default function SignInMenu({ wisdom, sadhana }) {
       {open && (
         <div className="signin-pop" role="menu">
           <p className="signin-pop-head">Sign in to</p>
+          <p className="signin-pop-note">We’ve rebuilt the site on a new platform. Sādhana School has already moved — Wisdom School is next, so for now it still signs in on the old one.</p>
           <a role="menuitem" href={wisdom}>
-            <strong>Wisdom School</strong>
-            <span>Pathways, lectures &amp; Meditation Mondays</span>
+            <strong>Legacy Platform</strong>
+            <span>Wisdom School — pathways, lectures &amp; Meditation Mondays</span>
           </a>
           <a role="menuitem" href={sadhana}>
-            <strong>Sādhana School</strong>
-            <span>Your cohort, live sessions &amp; recordings</span>
+            <strong>New Platform</strong>
+            <span>Sādhana School — your cohort, live sessions &amp; recordings</span>
           </a>
         </div>
       )}

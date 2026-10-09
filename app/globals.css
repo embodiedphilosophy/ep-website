@@ -1062,8 +1062,9 @@
 .nav-cta button.signin:hover,.nav-cta button.signin[aria-expanded="true"]{color:var(--terra)}
 .signin-caret{font-size:10px;transition:transform .2s}
 button.signin[aria-expanded="true"] .signin-caret{transform:rotate(180deg)}
-.signin-pop{position:absolute;right:0;top:calc(100% + 10px);min-width:270px;background:var(--ivory);border:1px solid var(--line);box-shadow:0 10px 30px rgba(30,26,20,.08);padding:10px;z-index:60}
+.signin-pop{position:absolute;right:0;top:calc(100% + 10px);min-width:310px;background:var(--ivory);border:1px solid var(--line);box-shadow:0 10px 30px rgba(30,26,20,.08);padding:10px;z-index:60}
 .signin-pop-head{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--terra);font-weight:600;padding:6px 10px 8px}
+.signin-pop-note{font-size:12.5px;line-height:1.45;color:var(--ink-soft);padding:0 10px 10px;border-bottom:1px solid var(--line)}
 .signin-pop a{display:block;padding:10px;border-top:1px solid var(--line);color:var(--ink)}
 .signin-pop a:hover{background:var(--cream)}
 .signin-pop a strong{display:block;font-family:var(--font-serif),serif;font-size:19px;font-weight:600;line-height:1.2}

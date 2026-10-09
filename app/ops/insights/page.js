@@ -3,6 +3,7 @@ import { loadMetrics, METRICS_URL } from '@/lib/ops/metrics';
 import { readTab } from '@/lib/sheet';
 import { todayET } from '@/lib/events';
 import Trend from './Trend';
+import { loadFunnel, PERIODS } from '@/lib/ops/funnel';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Insights — Embodied Philosophy', robots: { index: false, follow: false } };
@@ -23,6 +24,8 @@ export default async function Insights({ searchParams }) {
   try { m = await loadMetrics(); } catch (e) { error = /403/.test(e.message) ? 'The Revenue & Metrics sheet isn’t shared with the website.' : 'Couldn’t read the Revenue & Metrics sheet right now.'; }
   if (error) return <Shell user={user} current="insights" title="Business"><p className="ops-note">{error}</p></Shell>;
 
+  const period = PERIODS.some(([k]) => k === sp?.f) ? sp.f : '30';
+  const funnel = await loadFunnel(Number(period)).catch(() => ({ steps: [], hidden: [], error: 'Couldn’t load the funnel.' }));
   const now = todayET().slice(0, 7);
   // Every month of this year so far (none in the future)
   const year = now.slice(0, 4);
@@ -130,6 +133,17 @@ export default async function Insights({ searchParams }) {
       <section>
         <h2 className="ops-sub">Month by month</h2>
         <Trend data={trend.map(x => ({ month: x.month, label: short(x.month), gross: x.gross, ads: x.ads, plan: x.plan, roas: x.roas }))} now={now} />
+      </section>
+
+      <section>
+        <h2 className="ops-sub">Funnel <span>{funnel.steps.length || ''}</span></h2>
+        <nav className="ops-filters" aria-label="Funnel period">{PERIODS.map(([k, l]) => <a key={k} href={`/ops/insights?m=${month}&f=${k}`} aria-current={k === period ? 'page' : undefined}>{l}</a>)}</nav>
+        {funnel.error ? <p className="ops-empty">{funnel.error}</p>
+          : funnel.steps.length === 0 ? <p className="ops-empty">No funnel steps yet. Add them in <a href="/ops/settings?t=funnel">Settings → Funnel</a>: a step name and the Kit tag people get when they reach it.</p> : (
+          <ol className="ops-funnel">{funnel.steps.map(s => (
+            <li key={s.step}><span className="n">{s.step}</span><span className="bar" aria-hidden="true"><span style={{ width: `${Math.max(2, s.ofFirst * 100)}%` }} /></span><span className="v">{s.n.toLocaleString('en-US')}{s.ofPrev != null && <span className="sub"> {Math.round(s.ofPrev * 100)}% of the step before</span>}</span></li>))}</ol>
+        )}
+        {funnel.hidden.length > 0 && <p className="ops-empty">Left out for now: {funnel.hidden.map(h => `${h.step} (${h.why})`).join(', ')}.</p>}
       </section>
 
       <section>

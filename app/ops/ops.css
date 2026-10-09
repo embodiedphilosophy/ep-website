@@ -371,3 +371,13 @@
 .ops-shell .ops-waiting .k { font-size: 12px; color: var(--soft) }
 .ops-shell .ops-waiting .t span { color: var(--soft) }
 @media (max-width: 640px) { .ops-shell .ops-waiting li { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 0 } .ops-shell .ops-waiting .k { grid-column: 1 / -1 } }
+
+/* Business: funnel */
+.ops-shell .ops-funnel { list-style: none; margin: 8px 0 0; padding: 0 }
+.ops-shell .ops-funnel li { display: grid; grid-template-columns: 200px minmax(0, 1fr) 230px; gap: 14px; align-items: center; min-height: 44px; border-bottom: 1px solid var(--hair); font-size: 13.5px }
+.ops-shell .ops-funnel .n { font-weight: 600 }
+.ops-shell .ops-funnel .bar { height: 8px; background: var(--hair); border-radius: 4px; overflow: hidden }
+.ops-shell .ops-funnel .bar span { display: block; height: 100%; background: var(--pine) }
+.ops-shell .ops-funnel .v { text-align: right; font-variant-numeric: tabular-nums }
+.ops-shell .ops-funnel .sub { display: block; font-size: 12px; color: var(--soft) }
+@media (max-width: 640px) { .ops-shell .ops-funnel li { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 0 } .ops-shell .ops-funnel .bar { grid-column: 1 / -1; grid-row: 2 } }

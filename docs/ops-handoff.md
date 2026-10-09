@@ -74,7 +74,9 @@ Each item: build passes (`npm run build`), works at phone width, follows section
 
 ## 6. Verifying without a login
 
-There are no tests. Pages need a signed-in user and live sheets. To check a layout: add a throwaway route (e.g. `app/ops-preview/page.js`) that renders the components with sample props inside `<div className="ops-root">`, run `npx next dev`, screenshot with Playwright, then delete the route before committing. Never commit the preview route.
+Now there is a test kit: `scripts/ops-test/` (see its README) runs the dashboard signed in, against synthetic sheets and a mock of Kit, Make and Motion, with click-through tests and screenshots at desktop and phone width; `site-check.sh` compares every public page with `main` against the live sheet. The notes below still work for a quick look.
+
+There are no unit tests. Pages need a signed-in user and live sheets. To check a layout: add a throwaway route (e.g. `app/ops-preview/page.js`) that renders the components with sample props inside `<div className="ops-root">`, run `npx next dev`, screenshot with Playwright, then delete the route before committing. Never commit the preview route.
 
 ## 7. Open decisions (defaults if nobody answers)
 

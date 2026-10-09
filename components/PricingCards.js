@@ -31,6 +31,7 @@ function Features({ plan, hours }) {
   return (
     <ul className="feat">
       {features(hours).map((f, i) => {
+        if (i === 3 && (plan === 'ws' || plan === 'plus')) return null; // free week only applies to the Meditation Pass
         const on = INCLUDES[plan].includes(i);
         return <li key={f} className={on ? 'on' : 'off'}><span aria-hidden="true">{on ? '✓' : '—'}</span>{on ? f : <s>{f}</s>}<span className="sr">{on ? ' (included)' : ' (not included)'}</span></li>;
       })}
@@ -44,7 +45,7 @@ function Savings({ monthly, annual }) {
   return <div className="save">Save ${save.toFixed(2)} a year ({Math.round((save / (m * 12)) * 100)}% off)</div>;
 }
 
-export function WisdomCard({ prices, links, hours, defaultTier = 'ws', featured = false }) {
+export function WisdomCard({ prices, links, hours, defaultTier = 'ws', featured = false, fixed = false, badge = 'For serious students' }) {
   const [tier, setTier] = useState(defaultTier);
   const [period, setPeriod] = useState('annual');
   const plus = tier === 'plus';
@@ -57,9 +58,9 @@ export function WisdomCard({ prices, links, hours, defaultTier = 'ws', featured 
     : (p === 'monthly' ? links.wisdomMonthly : links.wisdomJoin) || links.wisdomJoin;
   return (
     <article className={`plan${featured ? ' featured' : ''}`}>
-      {featured && <span className="badge-top">For serious students</span>}
-      <h3>Wisdom School</h3>
-      <Toggle value={tier} onChange={setTier} options={[['ws', 'Wisdom School'], ['plus', 'Plus']]} label="Membership level" />
+      {featured && <span className="badge-top">{badge}</span>}
+      <h3>Wisdom School{fixed && plus ? ' Plus' : ''}</h3>
+      {!fixed && <Toggle value={tier} onChange={setTier} options={[['ws', 'Wisdom School'], ['plus', 'Plus']]} label="Membership level" />}
       {hasMonthly && <Toggle value={period} onChange={setPeriod} options={PERIOD} label="Billing period" />}
       {p === 'monthly'
         ? <div className="amt">{monthP}<span> / month</span></div>
@@ -71,6 +72,16 @@ export function WisdomCard({ prices, links, hours, defaultTier = 'ws', featured 
       <a className="btn btn-primary" href={href}>Join Wisdom School{plus ? ' Plus' : ''}</a>
       <Features plan={plus ? 'plus' : 'ws'} hours={hours} />
     </article>
+  );
+}
+
+// Wisdom School page: one card per level, each with its own Monthly/Annual toggle
+export function WisdomPlans({ prices, links, hours = '650+' }) {
+  return (
+    <div className="pricing two">
+      <WisdomCard prices={prices} links={links} hours={hours} defaultTier="ws" fixed />
+      <WisdomCard prices={prices} links={links} hours={hours} defaultTier="plus" fixed featured badge="For serious students" />
+    </div>
   );
 }
 

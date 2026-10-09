@@ -363,6 +363,8 @@
   .benefit h3{font-size:24px}
   .benefit p{font-size:15.5px;color:var(--ink-soft);margin-top:8px}
   .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+  .pricing.two{grid-template-columns:repeat(2,1fr);max-width:860px;margin:0 auto}
+  .pricing-note{text-align:center;margin:-8px auto 28px;max-width:620px;}
   .plan{position:relative;background:var(--ivory);border:1px solid var(--line);border-radius:3px;padding:30px 26px;display:flex;flex-direction:column;gap:12px}
   .plan.featured{border:2px solid var(--ink);box-shadow:0 14px 34px rgba(30,26,20,.10)}
   .plan h3{font-size:30px}
@@ -383,7 +385,7 @@
   .feat li.off{color:#a39a8a}
   .feat s{text-decoration-thickness:1px}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-  @media(max-width:900px){.pricing,.benefits,.past-grid.three{grid-template-columns:1fr}}
+  @media(max-width:900px){.pricing,.pricing.two,.benefits,.past-grid.three{grid-template-columns:1fr}}
 
   /* Ops dashboard */
   body:has(.ops-root) header.nav, body:has(.ops-root) > footer, body:has(.ops-root) footer:last-of-type{display:none}

@@ -1,5 +1,5 @@
 import PageHero from '@/components/PageHero';
-import PricingCards from '@/components/PricingCards';
+import { WisdomPlans } from '@/components/PricingCards';
 import AnnualThemes from '@/components/AnnualThemes';
 import { getThemes } from '@/lib/themes';
 import { getEvents } from '@/lib/events';
@@ -134,7 +134,22 @@ export default async function WisdomSchool() {
 
       <section className="sec" id="pricing"><div className="wrap">
         <div className="sec-head center"><span className="eyebrow">Choose your way in</span><h2>Plans and pricing</h2></div>
-        <PricingCards prices={site.prices} links={site.links} hours={site.libraryHours} />
+        <p className="pricing-note">Just interested in weekly meditations with our faculty? <a href="#meditation-pass">Scroll down to the Meditation Pass ↓</a></p>
+        <WisdomPlans prices={site.prices} links={site.links} hours={site.libraryHours} />
+      </div></section>
+
+      <section className="sec" id="meditation-pass"><div className="wrap">
+        <div className="ascend">
+          <div>
+            <span className="eyebrow">Just the meditations</span>
+            <h2>Meditation Pass</h2>
+            <p>Every Meditation Monday, live with our faculty, plus replays of every session. {site.prices.meditationMonthly}/month with a free first week, or {site.prices.meditationYearly}/year. Prefer a single session? Drop in for {site.prices.dropin}.</p>
+          </div>
+          <div className="btns" style={{ gap: 12 }}>
+            <a className="btn btn-primary" href={site.links.meditationMonthly}>Start your free week</a>
+            <a className="btn btn-ghost" href="/meditation-pass">Meditation Pass details</a>
+          </div>
+        </div>
       </div></section>
 
       <section className="sec path"><div className="wrap">

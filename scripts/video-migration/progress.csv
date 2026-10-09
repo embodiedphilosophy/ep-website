@@ -60,3 +60,15 @@ vimeo_id,programme,section,lesson_title,status,lesson_id,lesson_url,rendition,by
 528348882,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 5,done,4680416,,540p,1717139124,,2026-10-08 23:48
 531382161,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 6,done,4680419,,360p,1397689118,,2026-10-08 23:49
 533976365,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 7,failed,,,,,upload to s3.amazonaws.com failed: 100 curl: (56) Recv failure: Connection reset by peer,2026-10-08 23:52
+536780723,Non-Duality: Vedānta & Kashmir Śaivism,1. Upaniṣads & Vedānta Sūtras,Module 8,done,4680440,,540p,2164493057,,2026-10-08 23:54
+401559076,Non-Duality: Vedānta & Kashmir Śaivism,2. Nonduality: Advaita Vedānta,Module 1,done,4680441,,540p,459605869,,2026-10-08 23:54
+394502338,Non-Duality: Vedānta & Kashmir Śaivism,2. Nonduality: Advaita Vedānta,Module 2,done,4680442,,360p,234003797,,2026-10-08 23:55
+396055489,Non-Duality: Vedānta & Kashmir Śaivism,2. Nonduality: Advaita Vedānta,Module 3,done,4680443,,360p,248509451,,2026-10-08 23:55
+401560772,Non-Duality: Vedānta & Kashmir Śaivism,2. Nonduality: Advaita Vedānta,Module 4,done,4680444,,360p,425894696,,2026-10-08 23:56
+401151438,Non-Duality: Vedānta & Kashmir Śaivism,3. I Am That,Module 1,done,4680446,,540p,423153815,,2026-10-08 23:56
+401152422,Non-Duality: Vedānta & Kashmir Śaivism,3. I Am That,Module 2,done,4680447,,540p,539119550,,2026-10-08 23:57
+401153906,Non-Duality: Vedānta & Kashmir Śaivism,3. I Am That,Module 3,done,4680448,,540p,690131284,,2026-10-08 23:57
+401155744,Non-Duality: Vedānta & Kashmir Śaivism,3. I Am That,Module 4,done,4680450,,540p,488979696,,2026-10-08 23:58
+506156696,Non-Duality: Vedānta & Kashmir Śaivism,4. Advaita Vedānta,Module 1,done,4680451,,540p,496436463,,2026-10-08 23:58
+508874473,Non-Duality: Vedānta & Kashmir Śaivism,4. Advaita Vedānta,Module 2,done,4680452,,540p,987037753,,2026-10-08 23:59
+1178627567,Non-Duality: Vedānta & Kashmir Śaivism,5. Śiva Sūtras,Module 1,failed,,,,,download incomplete: 641513896 of 644849998 bytes,2026-10-09 00:01

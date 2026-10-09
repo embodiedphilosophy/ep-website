@@ -17,7 +17,7 @@ const api = async (body) => {
 export default function SocialEngine({ director, initial = 'plan' }) {
   const [view, setView] = useState(initial);
   const views = VIEWS.filter(v => !v.director || director);
-  const go = k => { setView(k); try { history.replaceState(null, '', k === 'plan' ? '/ops/content' : `/ops/content?s=${k}`); } catch {} };
+  const go = k => { setView(k); try { history.replaceState(null, '', k === 'plan' ? '/ops/content?tab=social' : `/ops/content?tab=social&s=${k}`); } catch {} };
   return (
     <section className="ops-se">
       <nav className="ops-filters ops-site-tabs" aria-label="Social">

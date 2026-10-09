@@ -123,7 +123,7 @@ export default async function Home({ searchParams }) {
           </div>
         ))}
         {later > 0 && <p className="ops-more"><a href={viewing === user ? '/ops/tasks' : `/ops/tasks?who=${encodeURIComponent(viewing.name)}`}>{later} more in the next 4 weeks →</a></p>}
-        {socialLine && <p className="ops-more"><a href="/ops/content">{socialLine} →</a></p>}
+        {socialLine && <p className="ops-more"><a href="/ops/content?tab=social">{socialLine} →</a></p>}
 
         {triageOn && (<div id="triage">
           <h2 className={unowned.length || veryLate.length ? 'late' : ''}>Triage <span>{unowned.length + veryLate.length}</span></h2>

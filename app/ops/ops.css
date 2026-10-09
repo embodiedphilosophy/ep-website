@@ -349,3 +349,18 @@
   .ops-shell .ops-shifts li { grid-template-columns: 1fr auto; gap: 2px 12px; padding: 8px 0 }
   .ops-shell .ops-shifts .note { grid-column: 1 / -1 }
 }
+
+/* Publish → Overview */
+.ops-shell .ops-lanes { list-style: none; margin: 0 0 8px; padding: 0 }
+.ops-shell .ops-lanes a { display: grid; grid-template-columns: 110px 150px minmax(0, 1fr); gap: 14px; align-items: center; min-height: 52px; border-bottom: 1px solid var(--hair); color: var(--ink); text-decoration: none; font-size: 13.5px }
+.ops-shell .ops-lanes a:hover .nx { color: var(--pine) }
+.ops-shell .ops-lanes b { font-family: var(--font-serif), serif; font-size: 18px; font-weight: 600 }
+.ops-shell .ops-lanes .st { display: inline-flex; align-items: center; gap: 8px; font-weight: 600 }
+.ops-shell .ops-lanes .nx { color: var(--soft) }
+.ops-shell .ops-strip { list-style: none; margin: 0; padding: 0 0 4px; display: flex; gap: 12px; overflow-x: auto }
+.ops-shell .ops-strip li { flex: 0 0 120px; display: flex; flex-direction: column; gap: 3px; font-size: 12px }
+.ops-shell .ops-strip img, .ops-shell .ops-strip .none { width: 120px; height: 120px; object-fit: cover; border-radius: var(--r-ctl); background: var(--hair); display: block }
+.ops-shell .ops-strip .d { font-weight: 700; color: var(--pine) }
+.ops-shell .ops-strip .p, .ops-shell .ops-strip .s { color: var(--soft) }
+.ops-shell .ops-meet .z.late { color: var(--risk); font-weight: 600 }
+@media (max-width: 640px) { .ops-shell .ops-lanes a { grid-template-columns: 96px minmax(0, 1fr); padding: 8px 0 } .ops-shell .ops-lanes .nx { grid-column: 1 / -1 } }

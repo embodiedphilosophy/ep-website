@@ -4,6 +4,8 @@ import { loadCalendar } from '@/lib/calendar';
 import { bucket, meetingsFor, loadTeam, dedupe, needsOwner, forHome, groupByEvent, addDays, ESCALATE_DAYS } from '@/lib/ops/tasks';
 import { eventOptions, staffNames } from '@/lib/ops/pickers';
 import AddTask from './AddTask';
+import { teamHours, clockAvailable } from '@/lib/ops/hours';
+import { HoursDecide } from './hours/HoursActions';
 import { todayET } from '@/lib/events';
 import { onboardingState } from '@/lib/teach';
 import { upcomingSocial } from '@/lib/social';
@@ -78,6 +80,8 @@ export default async function Home({ searchParams }) {
       unowned: all.filter(needsOwner).length,
     };
   }
+  // Director: everyone's hours this month, with any extra-hours requests to decide
+  const hours = triageOn && clockAvailable() ? await teamHours(allTeam).catch(() => null) : null;
   const socialLine = social && !social.error && social.posts.length
     ? (() => { const n = social.posts.filter(p => flagOf(p)).length; return n ? `Social: ${n} of ${social.posts.length} posts still need images` : `Social: the next ${social.posts.length} posts are ready`; })()
     : '';
@@ -136,6 +140,18 @@ export default async function Home({ searchParams }) {
       </section>
 
       <aside className="ops-col">
+        {hours && hours.length > 0 && (<div className="ops-week stacked" style={{ marginBottom: 28 }}><section>
+          <h2>Team hours <span className={hours.some(h => h.request) ? 'risk' : ''}>{hours.filter(h => h.request).length ? `${hours.filter(h => h.request).length} request` : ''}</span></h2>
+          <ul className="ops-hours-team compact">{hours.map(r => (
+            <li key={r.email} className={r.level}>
+              <span className="who"><i className={r.onClock ? 'live' : ''} />{r.name.split(' ')[0]}</span>
+              <span className="bar" aria-hidden="true"><span style={{ width: `${r.limit ? Math.min(100, (r.used / r.limit) * 100) : 0}%` }} /></span>
+              {r.request ? <HoursDecide id={r.request.id} hours={r.request.hours} />
+                : <span className="s">{r.limit && r.pace && r.pace > r.limit ? `Pace ${r.pace}/${r.limit} h` : r.limit ? `${r.used}/${r.limit} h` : `${r.used} h`}</span>}
+            </li>
+          ))}</ul>
+          <p className="ops-more"><a href="/ops/hours">All hours →</a></p>
+        </section></div>)}
         <Meetings programming={programming} team={meetings} director={user.director} stacked />
         {isTeacher(user) && <p className="ops-more"><a href="/ops/team">Contacts and your teacher guide →</a></p>}
       </aside>

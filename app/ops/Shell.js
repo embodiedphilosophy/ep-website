@@ -3,7 +3,9 @@ import { currentUser } from '@/lib/ops/auth';
 import { listTasks } from '@/lib/ops/taskstore';
 import { dedupe, needsOwner, addDays, ESCALATE_DAYS } from '@/lib/ops/tasks';
 import { todayET } from '@/lib/events';
-import { navFor, isTeacher } from '@/lib/ops/nav';
+import { navFor, isTeacher, isStaff } from '@/lib/ops/nav';
+import { clockAvailable } from '@/lib/ops/hours';
+import ClockWidget from './ClockWidget';
 
 // The signed-in user for an ops page, or off to sign in. `allow` narrows who may open the page.
 export async function opsUser(allow = () => true) {
@@ -43,6 +45,7 @@ export default async function Shell({ user, current, title, eyebrow, head, child
         <a href="/ops" className="ops-brand"><img src="/brand/ep-mark-black.png" alt="" width="26" height="27" /><span>EP Ops</span></a>
         {items.length > 1 && <nav className="ops-nav" aria-label="Dashboard">{main.map(link)}</nav>}
         {more.length > 0 && <nav className="ops-nav more" aria-label="More">{more.map(link)}</nav>}
+        {isStaff(user) && !user.director && clockAvailable() && <ClockWidget tags={user.roles || []} />}
         <div className="ops-me">
           <span className="av" aria-hidden="true">{initials(user.name)}</span>
           <span><b>{user.name}</b><small>{roleOf(user)} · <a href="/api/ops/logout">Sign out</a></small></span>

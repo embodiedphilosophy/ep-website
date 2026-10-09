@@ -24,7 +24,9 @@ Merged to `main`:
 - PR #5 Phase 1 restyle (design system in `app/ops/ops.css`, sidebar shell)
 - PR #6 Phase 2 regroup (Tasks, Settings, Triage on Today, Review in Publish) + task store
 
-On a branch, awaiting merge: `ops-time-clock` (time clock with monthly caps). Merge it before starting new work.
+- PR #7/#8 time clock with monthly caps
+- PR #9 Waiting on your yes (Today); PR #10 Publish overview tab
+Built, awaiting push/merge (see branches): `ops-recurring-tasks`, `ops-cleanup` + `ops-enrolments`, `ops-funnel`, `ops-waiting-link`.
 
 Production facts:
 - Vercel project `ep-website-beta` (Jacob's account), repo `embodiedphilosophy/ep-website`.
@@ -71,6 +73,15 @@ Each item: build passes (`npm run build`), works at phone width, follows section
 5. **Funnel on Business** (design board "Business"): Practice Report quiz → Meditation Mondays → Wisdom School → Plus → Sādhana School, last 30 days / quarter / year. Investigate the quiz data source (report.embodiedphilosophy.com, likely Kit tags/forms). Placeholders are not acceptable in production: if a step has no source, hide it and say so in the PR.
 6. **Support queue** (Ether → Ichha handoffs). Ether is a separate project, not in this repo. Only if handoffs are reachable (API or shared DB) add a Support section to Today (Ichha first, director count). Otherwise skip and write down what's needed.
 7. **Cleanup.** Delete ops rules in `app/globals.css` now superseded by `ops.css` (check `/teach` still renders); delete root `ops/` if unused; rename `syncToMotion` → `syncTasks`; move Social libraries (quotes, images, captions, rules, categories, sources) from Publish → Social into Settings if it can be done without breaking `SocialEngine.js`.
+
+## 5b. Status of the backlog (Oct 2026)
+
+- 1 done (#9). 2 done: Settings → Recurring tasks; add the seed rows (weekly social approval, Sat, Rebecka; monthly close, 1st, Jacob) in the editor.
+- 3 done (#10).
+- 4 partly: Enrolled count from the Kit Enrolled Tag (list + drawer). Not done: "paid but not in Circle" (needs payments joined to Circle members).
+- 5 done as config: Settings → Funnel lists each step and its Kit tag; steps without a tag are hidden. Fill in the tags (Practice Report quiz, Meditation Mondays, Wisdom School, Plus, Sādhana School) to light it up. Counts use Kit's `tagged_after`, untested against live Kit.
+- 6 not started. Ether is a separate project. Needed: an API or shared table listing Ether → Ichha handoffs (id, person, topic, opened_at, status). Then add a Support section to Today (Ichha first, director count).
+- 7 partly: root `ops/` removed, `syncToMotion` renamed `syncTasks`. Not done (needs a browser to check `/teach`/`SocialEngine.js`): pruning ops rules from `app/globals.css`; moving Social libraries into Settings.
 
 ## 6. Verifying without a login
 

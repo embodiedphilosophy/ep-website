@@ -12,11 +12,14 @@ import { tableOf } from '@/lib/ops/sitetables';
 import SocialEngine from './SocialEngine';
 import { kitConfigured, kitSignals, draftUrl } from '@/lib/kit';
 import { ruleOf } from '@/lib/ops/autocomplete';
+import { upcomingSocial } from '@/lib/social';
+import { readPlain } from '@/lib/ops/store';
+import { flagOf } from '../SocialGrid';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Content — Embodied Philosophy', robots: { index: false, follow: false } };
 
-const TABS = [['social', 'Social'], ['email', 'Email'], ['media', 'Media'], ['review', 'Review']];
+const TABS = [['overview', 'Overview'], ['social', 'Social'], ['email', 'Email'], ['media', 'Media'], ['review', 'Review']];
 
 // Is everything we publish moving? Social, Email and Media, and Review: what teachers sent for the website.
 // The website's own tables live in Settings.
@@ -26,10 +29,11 @@ export default async function Content({ searchParams }) {
   // The website tables moved to Settings
   if (sp?.tab === 'website') redirect(`/ops/settings${sp?.t ? `?t=${encodeURIComponent(sp.t)}` : ''}`);
   const tabs = TABS.filter(([k]) => k !== 'review' || canEditSite(user));
-  const tab = tabs.some(([k]) => k === sp?.tab) ? sp.tab : 'social';
+  const tab = tabs.some(([k]) => k === sp?.tab) ? sp.tab : 'overview';
   return (
     <Shell user={user} current="content" eyebrow="Social · Email · Media · Review" title="Publish"
-      head={<nav className="ops-filters" aria-label="Content">{tabs.map(([k, l]) => <a key={k} href={k === 'social' ? '/ops/content' : `/ops/content?tab=${k}`} aria-current={k === tab ? 'page' : undefined}>{l}</a>)}</nav>}>
+      head={<nav className="ops-filters" aria-label="Content">{tabs.map(([k, l]) => <a key={k} href={k === 'overview' ? '/ops/content' : `/ops/content?tab=${k}`} aria-current={k === tab ? 'page' : undefined}>{l}</a>)}</nav>}>
+      {tab === 'overview' && <Overview canReview={canEditSite(user)} />}
       {tab === 'social' && <SocialEngine director={!!user.director} initial={['plan', 'history', 'quotes', 'images', 'captions', 'rules', 'categories', 'sources'].includes(sp?.s) ? sp.s : 'plan'} />}
       {tab === 'email' && <Email />}
       {tab === 'email' && <SiteEditor scope="email" initial="scaffolding" base="/ops/content?tab=email&" />}
@@ -128,6 +132,57 @@ async function Media() {
         </ul>
       )}
       <p className="ops-empty" style={{ maxWidth: 640, marginTop: 16 }}>Coming next: Tarka milestones.</p>
+    </section>
+  );
+}
+
+const lower = v => String(v || '').trim().toLowerCase();
+const shortDay = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+// One row per lane: where it stands and the one next thing to do. Every number comes from data the tabs already read.
+async function Overview({ canReview }) {
+  const [social, promo, replays, bios, pages] = await Promise.all([
+    upcomingSocial(9).catch(() => null),
+    promoRows().catch(() => null),
+    waitingReplays().catch(() => null),
+    canReview ? readPlain('Teachers', { light: true }).catch(() => null) : null,
+    canReview ? readPlain('Course Pages', { light: true }).catch(() => null) : null,
+  ]);
+  const posts = social && !social.error ? social.posts : null;
+  const needImages = posts ? posts.filter(p => flagOf(p)).length : 0;
+  const behind = promo?.kit ? promo.rows.filter(r => r.ready < r.want.length) : [];
+  const late = behind.filter(r => r.want[r.ready]?.due < todayET()).length;
+  const review = canReview && bios && pages ? [...bios.rows, ...pages.rows].filter(r => lower(r.values.status) === 'submitted').length : null;
+  // [lane, level (green|amber|red|none), status word, next action, link]
+  const lanes = [
+    ['Social', !posts ? 'none' : needImages ? 'amber' : 'green', !posts ? 'Not connected' : needImages ? 'Needs images' : 'On track',
+      !posts ? (social?.error || 'Couldn’t read the Social Engine.') : needImages ? `${needImages} of the next ${posts.length} posts need images` : posts.length ? `The next ${posts.length} posts are ready` : 'No posts scheduled', '/ops/content?tab=social'],
+    ['Email', !promo?.kit ? 'none' : late ? 'red' : behind.length ? 'amber' : 'green', !promo?.kit ? 'Not connected' : late ? 'Late' : behind.length ? 'Behind' : 'On track',
+      !promo?.kit ? 'Kit isn’t connected, so promo emails can’t be checked.' : behind.length ? `${behind.length} event${behind.length === 1 ? '' : 's'} short of promo emails` : 'Every upcoming event has its promo emails', '/ops/content?tab=email'],
+    ['Media', replays === null ? 'none' : replays.length ? 'amber' : 'green', replays === null ? 'Not connected' : replays.length ? 'Waiting' : 'On track',
+      replays === null ? 'Couldn’t read the calendar.' : replays.length ? `${replays.length} replay${replays.length === 1 ? '' : 's'} to post` : 'Every recent session has its replay', '/ops/content?tab=media'],
+    ...(canReview ? [['Site copy', review === null ? 'none' : review ? 'amber' : 'green', review === null ? 'Not connected' : review ? 'Waiting' : 'On track',
+      review === null ? 'Couldn’t read the calendar sheet.' : review ? `${review} bio or course page waiting for review` : 'Nothing waiting for review', '/ops/content?tab=review']] : []),
+  ];
+  return (
+    <section>
+      <ul className="ops-lanes">{lanes.map(([name, level, word, next, href]) => (
+        <li key={name}>
+          <a href={href}><b>{name}</b><span className="st"><i className={`dot ${level === 'none' ? '' : level}`} />{word}</span><span className="nx">{next}</span></a>
+        </li>))}</ul>
+      <h2 className="ops-sub">Next posts <span>{posts?.length || ''}</span></h2>
+      {!posts ? <p className="ops-empty">{social?.error || 'Couldn’t read the Social Engine.'}</p> : posts.length === 0 ? <p className="ops-empty">No posts scheduled.</p> : (
+        <ul className="ops-strip">{posts.map(p => (
+          <li key={p.id}>
+            {p.thumb ? <img src={p.thumb} alt="" loading="lazy" /> : <span className="none" aria-hidden="true" />}
+            <span className="d">{shortDay(p.date)}</span><span className="p">{p.platforms}</span><span className="s">{flagOf(p) || p.status}</span>
+          </li>))}</ul>
+      )}
+      <h2 className="ops-sub">Promo emails by event <span>{behind.length || ''}</span></h2>
+      {!promo?.kit ? <p className="ops-empty">Kit isn’t connected, so emails can’t be checked yet.</p> : promo.rows.length === 0 ? <p className="ops-empty">No events in the next 10 weeks need promo emails.</p> : (
+        <ul className="ops-meet">{promo.rows.map(({ e, want, ready }) => (
+          <li key={e.id}><div className="d">{shortDay(e.date)}</div><div className="t">{e.title}</div><div className={`z ${ready < want.length && want[ready].due < todayET() ? 'late' : ''}`}>{ready} of {want.length} scheduled</div></li>))}</ul>
+      )}
     </section>
   );
 }

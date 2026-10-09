@@ -22,7 +22,7 @@ HERE = Path(__file__).resolve().parent
 WORK = Path(os.environ.get('MIGRATION_WORKDIR', '/tmp/ep-video-migration'))  # one video at a time lives here
 CIRCLE = 'https://app.circle.so/api/admin/v2'
 LIMIT = 4 * 1000**3 - 50 * 1000**2  # stay a little under Circle's 4 GB per file
-PROGRESS = HERE / 'progress.csv'
+PROGRESS = Path(os.environ.get('MIGRATION_PROGRESS', HERE / 'progress.csv'))  # long runs log outside the repo
 FIELDS = ['vimeo_id', 'programme', 'section', 'lesson_title', 'status', 'lesson_id', 'lesson_url',
           'rendition', 'bytes', 'error', 'finished_at']
 UA = 'ep-video-migration/1.0'  # Cloudflare in front of Circle rejects urllib's default

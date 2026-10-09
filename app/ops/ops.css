@@ -381,3 +381,8 @@
 .ops-shell .ops-funnel .v { text-align: right; font-variant-numeric: tabular-nums }
 .ops-shell .ops-funnel .sub { display: block; font-size: 12px; color: var(--soft) }
 @media (max-width: 640px) { .ops-shell .ops-funnel li { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 0 } .ops-shell .ops-funnel .bar { grid-column: 1 / -1; grid-row: 2 } }
+
+/* Events: enrolment block at the top of the drawer */
+.ops-shell .ops-enrolled { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 4px; padding: 12px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); font-size: 13.5px }
+.ops-shell .ops-enrolled b { font-family: var(--font-serif), serif; font-size: 28px; font-weight: 600; line-height: 1 }
+.ops-shell .ops-enrolled span { color: var(--soft); font-size: 12.5px }

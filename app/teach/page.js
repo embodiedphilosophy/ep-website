@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { teacherContext } from '@/lib/ops/auth';
 import { onboardingState, deliverables, siteTeacher, usesCircle, names, profileFor } from '@/lib/teach';
 import { loadCalendar } from '@/lib/calendar';
-import { listTasks } from '@/lib/ops/motion';
+import { listTasks } from '@/lib/ops/taskstore';
 import { visibleTo, bucket } from '@/lib/ops/tasks';
 import { todayET, emailsOf } from '@/lib/events';
 import Onboarding from './Onboarding';

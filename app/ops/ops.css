@@ -271,3 +271,18 @@
 
 /* ---------- Sign-in ---------- */
 .ops-login h1 { font-size: 34px }
+
+/* ---------- Phase 2: Tasks, quick add, Settings ---------- */
+.ops-shell .ops-filters a .n { margin-left: 4px; font-size: 12px; font-weight: 600; color: var(--soft) }
+.ops-shell .ops-head > .ops-filters { order: 5 }
+.ops-shell .ops-head > .ops-addtask { order: 10; flex: 1 1 100%; max-width: 680px; margin: 4px 0 0 }
+.ops-shell .ops-addtask .inline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+.ops-shell .ops-addtask .inline input { flex: 0 0 auto }
+.ops-shell .ops-addtask .err { color: var(--risk) }
+.ops-shell .ops-set-nav { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--edge); padding-bottom: 10px }
+.ops-shell .ops-set-nav nav { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline }
+.ops-shell .ops-set-nav .g { flex: 0 0 96px; font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--soft) }
+.ops-shell .ops-set-nav a { padding: 4px 0; color: var(--soft); font-size: 14px; text-decoration: none }
+.ops-shell .ops-set-nav a:hover { color: var(--ink) }
+.ops-shell .ops-set-nav a[aria-current=page] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--pine) }
+#triage { scroll-margin-top: 20px }

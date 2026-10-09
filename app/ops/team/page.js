@@ -1,7 +1,6 @@
 import { loadTeam } from '@/lib/ops/tasks';
 import { loadResources } from '@/lib/ops/resources';
 import { isTeacher, canEditSite } from '@/lib/ops/nav';
-import Review from './Review';
 import Shell, { opsUser } from '../Shell';
 
 export const dynamic = 'force-dynamic';
@@ -47,7 +46,7 @@ export default async function Team() {
           </>) : null}
           {!teacher && canEditSite(user) && (<>
             <h2>Waiting for review</h2>
-            <Review />
+            <p className="ops-empty">Teacher bios and course pages are reviewed in <a href="/ops/content?tab=review">Publish → Review</a>.</p>
           </>)}
           {user.director && (<>
             <h2>Teacher onboarding</h2>
@@ -55,7 +54,7 @@ export default async function Team() {
           </>)}
           <h2>Resources</h2>
           {resources === null || links.length === 0 ? (
-            <p className="ops-empty">{user.director ? <>No links yet. Add them in <a href="/ops/admin?t=resources#settings">Admin → Settings → Resources</a>: SOPs, brand assets, Drive, Circle and Kit.</> : 'No links yet.'}</p>
+            <p className="ops-empty">{user.director ? <>No links yet. Add them in <a href="/ops/settings?t=resources">Settings → Resources</a>: SOPs, brand assets, Drive, Circle and Kit.</> : 'No links yet.'}</p>
           ) : groups.map(g => (
             <div key={g} className="ops-res">
               <h3>{g}</h3>

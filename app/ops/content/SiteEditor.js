@@ -11,8 +11,10 @@ const yes = v => String(v).toUpperCase() !== 'FALSE';
 // Content → Website (scope 'site'), Content → Email (scope 'email': the Weekly Scaffolding) and
 // Admin → Settings (scope 'admin'): sheet tabs as lists, each row edited as a short form.
 // base: the page's own address, for the tab links.
-export default function SiteEditor({ initial = 'links', scope = 'site', base = '/ops/content?tab=website&' }) {
-  const TABLES = scope === 'admin' ? ADMIN_TABLES : scope === 'email' ? [SCAFFOLDING] : SITE_TABLES;
+// scope 'settings' (Settings): the operations tables (directors) and the website tables, in two groups.
+export default function SiteEditor({ initial = 'links', scope = 'site', base = '/ops/settings?', director = false }) {
+  const GROUPS = scope === 'settings' ? [...(director ? [['Operations', ADMIN_TABLES]] : []), ['Website', SITE_TABLES]] : null;
+  const TABLES = GROUPS ? GROUPS.flatMap(g => g[1]) : scope === 'admin' ? ADMIN_TABLES : scope === 'email' ? [SCAFFOLDING] : SITE_TABLES;
   const [tab, setTab] = useState(initial);
   const [data, setData] = useState(null);     // { head, rows, locked, canEdit } | { error }
   const [sel, setSel] = useState(null);       // row number, 'new', or null
@@ -35,7 +37,16 @@ export default function SiteEditor({ initial = 'links', scope = 'site', base = '
 
   return (
     <section className="ops-site">
-      {TABLES.length > 1 && <nav className="ops-filters ops-site-tabs" aria-label="Website content">
+      {GROUPS ? (
+        <div className="ops-set-nav">
+          {GROUPS.map(([name, list]) => (
+            <nav key={name} aria-label={name}>
+              <span className="g">{name}</span>
+              {list.map(x => <a key={x.key} href={`${base}t=${x.key}`} aria-current={x.key === tab ? 'page' : undefined} onClick={e => { e.preventDefault(); go(x.key); }}>{x.label}</a>)}
+            </nav>
+          ))}
+        </div>
+      ) : TABLES.length > 1 && <nav className="ops-filters ops-site-tabs" aria-label="Website content">
         {TABLES.map(x => <a key={x.key} href={`${base}t=${x.key}`} aria-current={x.key === tab ? 'page' : undefined} onClick={e => { e.preventDefault(); go(x.key); }}>{x.label}</a>)}
       </nav>}
       <p className="ops-empty">{t.help}</p>

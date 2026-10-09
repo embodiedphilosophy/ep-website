@@ -15,6 +15,7 @@ import Note from './Note';
 import Meetings from './Meetings';
 import { flagOf } from './SocialGrid';
 
+const dayLong = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).replace(',', '');
 const shortDate = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
 
 export const dynamic = 'force-dynamic';
@@ -79,12 +80,12 @@ export default async function Home({ searchParams }) {
           {allTeam.filter(t => t.email !== user.email).map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
         </select>
       </label>
-      <button className="btn btn-ghost">Show</button>
+      <button className="chip">Show</button>
     </form>
   );
 
   return (
-    <Shell user={user} current="home" title={viewing === user ? `Hello, ${first}` : viewing.name} head={head}>
+    <Shell user={user} current="home" eyebrow={viewing === user ? dayLong(todayET()) : 'Viewing as'} title={viewing === user ? `Hello, ${first}` : viewing.name} head={head}>
       <Note note={note} editable={user.director && viewing === user} author={(director?.name || 'Jacob').split(' ')[0]} />
       {error && <p className="ops-note">Couldn’t load tasks from Motion right now ({error}).</p>}
 
@@ -110,7 +111,6 @@ export default async function Home({ searchParams }) {
       </section>
 
       <aside className="ops-col">
-        <h2>This week</h2>
         <Meetings programming={programming} team={meetings} director={user.director} stacked />
         {isTeacher(user) && <p className="ops-more"><a href="/ops/team">Contacts and your teacher guide →</a></p>}
       </aside>

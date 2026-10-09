@@ -1,6 +1,9 @@
 'use client';
 import { useState } from 'react';
 const fmt = d => d ? new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : 'No date';
+// Days a due date is behind today in New York (the dashboard's day, as todayET), 0 when not late
+const todayNY = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+const daysLate = d => { if (!d) return 0; const n = Math.round((Date.parse(todayNY()) - Date.parse(d)) / 864e5); return n > 0 ? n : 0; };
 const firstNames = list => list.map(n => n.split(' ')[0]).join(', ');
 // "[Marketing] Promo email #1" → role "Marketing", text "Promo email #1"
 // Automatic ticks can be undone for a week (matches UNDO_DAYS in lib/ops/autocomplete)
@@ -104,6 +107,12 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
     try { await post({ id, action: 'undo' }); setState(s => ({ ...s, [id]: 'undone' })); }
     catch { setState(s => ({ ...s, [id]: 'error' })); }
   };
+  // The most common move after Done, one click from the row (the rest stay behind ⋯)
+  const bump = async t => {
+    setState(s => ({ ...s, [t.id]: 'saving' }));
+    try { const j = await post({ id: t.id, action: 'snooze', days: 1 }); setPatch(s => ({ ...s, [t.id]: { ...(s[t.id] || {}), due: j.due } })); setState(s => ({ ...s, [t.id]: '' })); }
+    catch { setState(s => ({ ...s, [t.id]: 'error' })); }
+  };
   const who = labels => labels.map(l => roleNames[l]?.length ? `${l} (${firstNames(roleNames[l])})` : l).join(', ');
   return (
     <ul className="ops-tasks">
@@ -122,7 +131,7 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
                 <span className="n">{showRole && <span className="role">{role}</span>}{rest}{t.escalated && <span className="esc"> · {t.escalated}</span>}</span>
               </label>
               <span className="meta">
-                {fmt(t.due)}
+                {!done && st !== 'done' && daysLate(t.due) ? <span className="late">{daysLate(t.due) === 1 ? '1 day late' : `${daysLate(t.due)} days late`}</span> : fmt(t.due)}
                 {t.assigned ? ` · now with ${t.assigned}` : showWho && t.labels.length ? ` · ${who(t.labels)}` : ''}
                 {t.blockedOn && <span className="blk"> · Waiting on {t.blockedOn.split(' ')[0]}</span>}
                 {st === 'error' ? ' · couldn’t save, try again' : ''}
@@ -130,6 +139,9 @@ export default function TaskList({ tasks, empty, showWho, done, team = [], roleN
                 {done && st === 'undone' && ' · reopened'}
                 {done && undoable(t.auto) && st !== 'undone' && (
                   <button className="more" disabled={st === 'saving'} onClick={() => undo(t.id)}>Undo</button>
+                )}
+                {!done && st !== 'done' && !t.blockedOn && (
+                  <span className="quick"><button className="more" disabled={st === 'saving'} onClick={() => bump(t)}>+1 day</button></span>
                 )}
                 {!done && st !== 'done' && (
                   <button className="more" aria-expanded={open === t.id} aria-label="Task actions" onClick={() => setOpen(o => o === t.id ? '' : t.id)}>⋯</button>

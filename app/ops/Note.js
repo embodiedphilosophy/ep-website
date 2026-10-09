@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-// "A note from Jacob": one pinned line. Directors edit it inline; everyone else just reads it.
+// "From Jacob": one pinned line, the one dark element on Today. Directors edit it inline; everyone else just reads it.
 export default function Note({ note, editable, author }) {
   const [text, setText] = useState(note.text);
   const [draft, setDraft] = useState(note.text);
@@ -28,7 +28,7 @@ export default function Note({ note, editable, author }) {
   );
   return (
     <div className={`ops-pin${text ? '' : ' is-empty'}`}>
-      <span className="who">A note from {author}</span>
+      <span className="who">From {author}</span>
       <span className="txt">{text || 'No note this week. Add one line of priorities for the team.'}</span>
       {editable && <button className="chip" onClick={() => { setDraft(text); setEditing(true); }}>{text ? 'Edit' : 'Add'}</button>}
     </div>

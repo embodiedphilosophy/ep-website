@@ -22,7 +22,7 @@ export default async function Content({ searchParams }) {
   const sp = await searchParams;
   const tab = TABS.some(([k]) => k === sp?.tab) ? sp.tab : 'social';
   return (
-    <Shell user={user} current="content" title="Content"
+    <Shell user={user} current="content" eyebrow="Social · Email · Media · Website" title="Publish"
       head={<nav className="ops-filters" aria-label="Content">{TABS.map(([k, l]) => <a key={k} href={k === 'social' ? '/ops/content' : `/ops/content?tab=${k}`} aria-current={k === tab ? 'page' : undefined}>{l}</a>)}</nav>}>
       {tab === 'social' && <SocialEngine director={!!user.director} initial={['plan', 'history', 'quotes', 'images', 'captions', 'rules', 'categories', 'sources'].includes(sp?.s) ? sp.s : 'plan'} />}
       {tab === 'email' && <Email />}

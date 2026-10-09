@@ -20,7 +20,7 @@ export default async function Team() {
   const groups = [...new Set(links.map(r => r.group))];
 
   return (
-    <Shell user={user} current="team" title="Team">
+    <Shell user={user} current="team" eyebrow={teacher ? 'Contacts and your guide' : 'Who does what, and where it lives'} title="People">
       <div className="ops-grid">
         <section className="ops-col">
           <h2>{teacher ? 'Your contacts at EP' : 'Staff'} <span>{staff.length}</span></h2>

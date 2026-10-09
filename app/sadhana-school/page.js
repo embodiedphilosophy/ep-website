@@ -72,6 +72,7 @@ export default async function SadhanaSchool() {
       <section className="sec path"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">The year at a glance</span><h2>{year ? `${year}: ` : ''}{site.sadhanaTheme}</h2>
           <p>Take the whole arc, or step in wherever you’re called. Every season stands on its own, and past seasons stay available on demand.</p></div>
+        <p className="season-grid-note">Enroll in any single season by choosing its card below, or <a href="#enroll">enroll for the full year</a> with the tuition options further down the page.</p>
         <div className="season-grid">
           {seasons.map(s => {
             const href = s.status !== 'done' ? s.registration_url : null;

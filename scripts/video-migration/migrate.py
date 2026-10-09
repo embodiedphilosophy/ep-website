@@ -61,6 +61,13 @@ def pick_file(vid):
     return hd[0] if hd else max(ok, key=lambda f: f['size'])
 
 
+def server_length(url):
+    """File size as Vimeo's file server reports it (Content-Length after redirects), or None."""
+    r = subprocess.run(['curl', '-sS', '-L', '-I', url], capture_output=True, text=True)
+    sizes = [l.split(':', 1)[1].strip() for l in r.stdout.splitlines() if l.lower().startswith('content-length:')]
+    return int(sizes[-1]) if sizes and sizes[-1].isdigit() else None
+
+
 def load_progress():
     if not PROGRESS.exists():
         return {}
@@ -141,8 +148,9 @@ def migrate_one(row, sections, dry):
         if r.returncode != 0:
             raise RuntimeError(f'download failed: {r.stderr.strip()[:200]}')
         size = local.stat().st_size
-        if size != f['size']:
-            raise RuntimeError(f'download incomplete: {size} of {f["size"]} bytes')
+        expected = server_length(f['link']) or f['size']  # Vimeo's API size is sometimes a few MB off
+        if size != expected:
+            raise RuntimeError(f'download incomplete: {size} of {expected} bytes')
         md5 = hashlib.md5()
         with open(local, 'rb') as fh:
             for chunk in iter(lambda: fh.read(8 << 20), b''):

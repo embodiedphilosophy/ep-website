@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 import { currentUser } from '@/lib/ops/auth';
-import { listTasks } from '@/lib/ops/motion';
-import { dedupe, needsOwner } from '@/lib/ops/tasks';
+import { listTasks } from '@/lib/ops/taskstore';
+import { dedupe, needsOwner, addDays, ESCALATE_DAYS } from '@/lib/ops/tasks';
+import { todayET } from '@/lib/events';
 import { navFor, isTeacher } from '@/lib/ops/nav';
 
 // The signed-in user for an ops page, or off to sign in. `allow` narrows who may open the page.
@@ -12,9 +13,13 @@ export async function opsUser(allow = () => true) {
   return user;
 }
 
-// Director's Admin count: open tasks nobody owns
-async function adminCount() {
-  try { return dedupe(await listTasks()).filter(needsOwner).length; } catch { return 0; }
+// Director's Today count: Triage (open tasks nobody owns, and owned tasks 7+ days late)
+async function triageCount() {
+  try {
+    const all = dedupe(await listTasks());
+    const cutoff = addDays(todayET(), -ESCALATE_DAYS);
+    return all.filter(t => needsOwner(t) || (!t.completed && t.due && t.due <= cutoff)).length;
+  } catch { return 0; }
 }
 
 const initials = name => String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
@@ -24,7 +29,7 @@ const roleOf = u => u.director ? 'Director' : isTeacher(u) ? 'Teacher' : (String
 // eyebrow: the small line over the page title (a date, a range, what the page covers).
 export default async function Shell({ user, current, title, eyebrow, head, children }) {
   const items = navFor(user);
-  const badges = user.director ? { admin: await adminCount() } : {};
+  const badges = user.director ? { home: await triageCount() } : {};
   const link = i => (
     <a key={i.key} href={i.href} aria-current={i.key === current ? 'page' : undefined}>
       {i.label}

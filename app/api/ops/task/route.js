@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@/lib/ops/auth';
-import { listTasks, updateTask, addComment, listComments, reopenTask } from '@/lib/ops/motion';
+import { listTasks, createTask, updateTask, addComment, listComments, reopenTask } from '@/lib/ops/taskstore';
+import { isStaff } from '@/lib/ops/nav';
+import { loadCalendar } from '@/lib/calendar';
 import { UNDO_DAYS } from '@/lib/ops/autocomplete';
 import { visibleTo, ownersOf, parseTag, loadTeam, addDays } from '@/lib/ops/tasks';
 import { todayET } from '@/lib/events';
@@ -33,14 +35,17 @@ export async function GET(req) {
   const id = new URL(req.url).searchParams.get('id');
   if (!(await findTask(user, id))) return NextResponse.json({ error: 'Task not found' }, { status: 404 });
   try { return NextResponse.json({ comments: await listComments(id) }); }
-  catch (e) { return NextResponse.json({ error: 'Could not load comments from Motion.' }, { status: 502 }); }
+  catch (e) { return NextResponse.json({ error: 'Couldn’t load comments. Try again.' }, { status: 502 }); }
 }
 
+// POST { action: 'create', name, due, who, event? }  → a new task (staff only)
 // POST { id, action: snooze|block|unblock|comment|assign|undo, days? | date?, who?, text? }
 export async function POST(req) {
   const user = await currentUser();
   if (!user) return NextResponse.json({ error: 'Please sign in again' }, { status: 401 });
-  const { id, action, days, date, who, text } = await req.json().catch(() => ({}));
+  const body = await req.json().catch(() => ({}));
+  if (body.action === 'create') return create(user, body, process.env.OPS_URL || new URL(req.url).origin);
+  const { id, action, days, date, who, text } = body;
   const task = await findTask(user, id);
   if (!task) return NextResponse.json({ error: 'Task not found' }, { status: 404 });
   const team = await loadTeam();
@@ -105,6 +110,37 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (e) {
     console.error('Task action failed', action, e.message);
-    return NextResponse.json({ error: e.rateLimited ? 'Motion is busy. Try again in a minute.' : 'Could not update Motion. Try again shortly.' }, { status: 502 });
+    return NextResponse.json({ error: e.rateLimited ? 'The task list is busy. Try again in a minute.' : 'Couldn’t save the task. Try again shortly.' }, { status: 502 });
+  }
+}
+
+// Quick add: a task for anyone on the team, optionally tied to an event (it then counts on that event's
+// readiness drawer and groups under it on Today). Owners are labels, as for every other task.
+async function create(user, { name, due, who, event, note }, base) {
+  if (!isStaff(user)) return NextResponse.json({ error: 'Only staff can add tasks' }, { status: 403 });
+  const title = String(name || '').trim().slice(0, 200);
+  if (!title) return NextResponse.json({ error: 'Name the task first' }, { status: 400 });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(due || ''))) return NextResponse.json({ error: 'Pick a due date' }, { status: 400 });
+  const team = await loadTeam();
+  const person = team.find(m => m.name === who) || team.find(m => m.email === user.email);
+  if (!person) return NextResponse.json({ error: 'Pick someone from the team' }, { status: 400 });
+  let description = String(note || '').trim().slice(0, 2000);
+  let full = title;
+  if (event) {
+    const ev = (await loadCalendar().catch(() => [])).find(e => e.id === event);
+    if (ev) {
+      full = `${title} — ${ev.title} (${ev.date})`;
+      description = `${description ? description + '\n\n' : ''}Event: ${ev.title}, ${ev.date}\n[ep:${ev.id}:${slug(title)}:${slug(person.name)}]`;
+    }
+  }
+  const me = user.name || user.email;
+  try {
+    const t = await createTask({ name: full, due, labels: [person.name], description, createdBy: me });
+    if (t?.id) await addComment(t.id, `**${me}** added this.`).catch(() => {});
+    if (person.email !== user.email) await notify([person], `New task: ${title}`, `<p>${esc(me)} added a task for you: <b>${esc(title)}</b>, due ${esc(due)}.</p>`, base);
+    return NextResponse.json({ ok: true, id: t?.id || null });
+  } catch (e) {
+    console.error('Task create failed', e.message);
+    return NextResponse.json({ error: 'Couldn’t add the task. Try again shortly.' }, { status: 502 });
   }
 }

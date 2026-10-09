@@ -1,4 +1,4 @@
-import { listTasks } from '@/lib/ops/motion';
+import { listTasks } from '@/lib/ops/taskstore';
 import { loadTeam, dedupe, bucket, visibleTo } from '@/lib/ops/tasks';
 import { loadCalendar } from '@/lib/calendar';
 import { emailsOf, todayET } from '@/lib/events';

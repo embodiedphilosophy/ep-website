@@ -1,5 +1,7 @@
 import { getEpisodes, placeholder } from '@/lib/podcast';
-import { isStaff } from '@/lib/ops/nav';
+import { isStaff, canEditSite } from '@/lib/ops/nav';
+import { redirect } from 'next/navigation';
+import Review from '../team/Review';
 import { loadCalendar, loadTemplates } from '@/lib/calendar';
 import { todayET } from '@/lib/events';
 import { addDays } from '@/lib/ops/tasks';
@@ -14,21 +16,25 @@ import { ruleOf } from '@/lib/ops/autocomplete';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Content — Embodied Philosophy', robots: { index: false, follow: false } };
 
-const TABS = [['social', 'Social'], ['email', 'Email'], ['media', 'Media'], ['website', 'Website']];
+const TABS = [['social', 'Social'], ['email', 'Email'], ['media', 'Media'], ['review', 'Review']];
 
-// Is everything we publish moving? Social, Email and Media sub-tabs, and Website: the site's own content.
+// Is everything we publish moving? Social, Email and Media, and Review: what teachers sent for the website.
+// The website's own tables live in Settings.
 export default async function Content({ searchParams }) {
   const user = await opsUser(isStaff);
   const sp = await searchParams;
-  const tab = TABS.some(([k]) => k === sp?.tab) ? sp.tab : 'social';
+  // The website tables moved to Settings
+  if (sp?.tab === 'website') redirect(`/ops/settings${sp?.t ? `?t=${encodeURIComponent(sp.t)}` : ''}`);
+  const tabs = TABS.filter(([k]) => k !== 'review' || canEditSite(user));
+  const tab = tabs.some(([k]) => k === sp?.tab) ? sp.tab : 'social';
   return (
-    <Shell user={user} current="content" eyebrow="Social · Email · Media · Website" title="Publish"
-      head={<nav className="ops-filters" aria-label="Content">{TABS.map(([k, l]) => <a key={k} href={k === 'social' ? '/ops/content' : `/ops/content?tab=${k}`} aria-current={k === tab ? 'page' : undefined}>{l}</a>)}</nav>}>
+    <Shell user={user} current="content" eyebrow="Social · Email · Media · Review" title="Publish"
+      head={<nav className="ops-filters" aria-label="Content">{tabs.map(([k, l]) => <a key={k} href={k === 'social' ? '/ops/content' : `/ops/content?tab=${k}`} aria-current={k === tab ? 'page' : undefined}>{l}</a>)}</nav>}>
       {tab === 'social' && <SocialEngine director={!!user.director} initial={['plan', 'history', 'quotes', 'images', 'captions', 'rules', 'categories', 'sources'].includes(sp?.s) ? sp.s : 'plan'} />}
       {tab === 'email' && <Email />}
       {tab === 'email' && <SiteEditor scope="email" initial="scaffolding" base="/ops/content?tab=email&" />}
       {tab === 'media' && <Media />}
-      {tab === 'website' && <SiteEditor initial={tableOf(sp?.t) ? sp.t : 'links'} />}
+      {tab === 'review' && (<section><h2 className="ops-sub">Waiting for review</h2><p className="ops-empty">Bios and course pages teachers sent through onboarding. Approving or publishing puts them on the website.</p><Review /></section>)}
     </Shell>
   );
 }

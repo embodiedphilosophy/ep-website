@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { loadTeam, loadTemplates } from '@/lib/calendar';
 import { syncToMotion, addDays, eventIdFromTag, dedupe, needsOwner, ownersOf, NUDGE_DAYS } from '@/lib/ops/tasks';
-import { listTasks } from '@/lib/ops/motion';
+import { listTasks } from '@/lib/ops/taskstore';
 import { runAutoComplete } from '@/lib/ops/autocomplete';
+import { sendMotionDigest } from '@/lib/ops/motiondigest';
 import { runCircleSync, liveAllowed } from '@/lib/ops/circlesync';
 import { circleConfigured } from '@/lib/circle';
 import { refreshSite } from '@/lib/ops/refresh';
@@ -133,8 +134,8 @@ export async function GET(req) {
   }
 
   // ---- The real daily run ----
-  const out = { motion: null, reminders: [], errors: [] };
-  try { out.motion = await syncToMotion(); } catch (e) { out.errors.push('Motion: ' + e.message); }
+  const out = { tasks: null, reminders: [], errors: [] };
+  try { out.tasks = await syncToMotion(); } catch (e) { out.errors.push('Task sync: ' + e.message); }
   try { out.auto = (await runAutoComplete()).closed.map(c => `${c.task}: ${c.why}`); } catch (e) { out.errors.push('Auto-complete: ' + e.message); }
   if (only === 'sync') return NextResponse.json(out);
   // Circle events for Circle sessions, before reminders so they carry the links. A dry run (report only)
@@ -202,5 +203,9 @@ export async function GET(req) {
       out.pagesLive = [...(out.pagesLive || []), p.title];
     }
   } catch (e) { out.errors.push('Course pages: ' + e.message); }
+
+  // 6) Jacob's overview in Motion (only once tasks live in the dashboard's database)
+  try { out.motionDigest = await sendMotionDigest({ tasks, team: await loadTeam(), base }); }
+  catch (e) { out.errors.push('Motion digest: ' + e.message); }
   return NextResponse.json(out);
 }

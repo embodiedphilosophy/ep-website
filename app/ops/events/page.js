@@ -81,21 +81,25 @@ export default async function Events({ searchParams }) {
   }
 
   return (
-    <Shell user={user} current="events" title="Events" head={head}>
+    <Shell user={user} current="events" eyebrow={`Next ${WEEKS} weeks${teacherView ? ', your events' : ''}`} title="Events" head={head}>
       {error && <p className="ops-note">Couldn’t load everything right now ({error}).</p>}
-      <p className="ops-empty">The next {WEEKS} weeks{teacherView ? ', your events only' : ''}. Readiness comes from each event’s details and its tasks: open one to see what’s missing{canEditEvents(user) ? ' and fix it' : ''}.</p>
       {shown.length === 0 ? <p className="ops-empty" style={{ marginTop: 16 }}>No events in the next {WEEKS} weeks.</p> : (
         <ul className="ops-events">
           {shown.map(r => (
             <li key={r.key} className={r.key === open?.key ? 'is-open' : ''}>
               <a href={qs(sp, { event: r.key })}>
-                <span className={`dot ${r.status}`} title={LABEL[r.status]} aria-label={LABEL[r.status]} />
+                <span className={`st ${r.status}`}><span className={`dot ${r.status}`} aria-hidden="true" />{LABEL[r.status]}</span>
                 <span className="date">{short(r.date)}</span>
-                <span className="ttl">{r.title}<span className="trk">{r.track}</span></span>
-                <span className="ppl">{r.teachers || <i>No teacher yet</i>}</span>
-                <span className="cnt">{r.checks.length ? `${r.ready} of ${r.checks.length} ready` : '—'}{r.total ? <><br />{r.done} of {r.total} tasks</> : null}</span>
-                <span className="nxt">{r.nextCheck ? `Missing: ${r.nextCheck.label}${r.nextCheck.detail ? ` (${r.nextCheck.detail})` : ''}, due ${short(r.nextCheck.due)}`
-                  : r.next ? `Next: ${r.next.name.split(' — ')[0]}${r.next.due ? ` (${short(r.next.due)})` : ''}` : ''}</span>
+                <span className="what">
+                  <span><span className="ttl">{r.title}</span><span className="trk">{r.track}</span></span>
+                  <span className="sub">{r.teachers || 'No teacher yet'}{(r.nextCheck || r.next) ? ' · ' : ''}
+                    {r.nextCheck ? <span className={r.nextCheck.due < today ? 'miss' : ''}>Missing {r.nextCheck.label}{r.nextCheck.detail ? ` (${r.nextCheck.detail})` : ''}, {r.nextCheck.due < today ? 'was due' : 'due'} {short(r.nextCheck.due)}</span>
+                      : r.next ? `Next: ${r.next.name.split(' — ')[0]}${r.next.due ? ` (${short(r.next.due)})` : ''}` : ''}</span>
+                </span>
+                <span className="ready">
+                  {r.checks.length > 0 && <span className="segs" aria-hidden="true">{r.checks.map((c, i) => <i key={i} className={c.ready ? 'ok' : c.due < today ? 'late' : ''} />)}</span>}
+                  <small>{r.checks.length ? `${r.ready} of ${r.checks.length} ready` : '—'}{r.total ? ` · ${r.done}/${r.total} tasks` : ''}</small>
+                </span>
               </a>
             </li>
           ))}
@@ -113,7 +117,7 @@ export default async function Events({ searchParams }) {
             <ul className="ops-checks">
               {open.checks.map((c, i) => (
                 <li key={i} className={c.ready ? 'ok' : c.due < today ? 'late' : 'todo'}>
-                  <span className="mk" aria-hidden="true">{c.ready ? '✓' : '○'}</span>
+                  <span className="mk" aria-hidden="true">{c.ready ? '✓' : ''}</span>
                   <span>{c.label}{open.events.length > 1 && <span className="sub"> · {short(c.event.date)}</span>}
                     {!c.ready && <span className="sub"> · {c.detail ? `${c.detail}, ` : ''}due {short(c.due)}{c.field && canEditEvents(user) ? ` · fix in Edit details` : ''}</span>}</span>
                 </li>

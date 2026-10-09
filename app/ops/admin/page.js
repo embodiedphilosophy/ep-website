@@ -27,7 +27,7 @@ export default async function Admin({ searchParams }) {
   const listProps = { showWho: true, team: teamNames, roleNames };
 
   return (
-    <Shell user={user} current="admin" title="Admin">
+    <Shell user={user} current="admin" eyebrow="Triage and settings · director only" title="Admin">
       {error && <p className="ops-note">Couldn’t load tasks from Motion right now ({error}).</p>}
       <div className="ops-grid">
         <section className="ops-col">

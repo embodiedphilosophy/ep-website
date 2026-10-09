@@ -286,3 +286,66 @@
 .ops-shell .ops-set-nav a:hover { color: var(--ink) }
 .ops-shell .ops-set-nav a[aria-current=page] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--pine) }
 #triage { scroll-margin-top: 20px }
+
+/* ---------- Time clock ---------- */
+.ops-clock { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--hair); border-radius: var(--r-panel); background: var(--paper) }
+.ops-clock .row { display: flex; justify-content: space-between; align-items: center }
+.ops-clock .on { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--ok-text) }
+.ops-clock .on i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok) }
+.ops-clock .t { font-family: var(--font-serif), serif; font-size: 22px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums }
+.ops-clock .btn-clock { height: 38px; border: 0; border-radius: var(--r-ctl); background: var(--pine); color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer }
+.ops-clock .btn-clock:hover:not(:disabled) { background: var(--pine-hover) }
+.ops-clock .btn-clock.out { background: var(--paper); color: var(--pine); border: 1px solid var(--pine) }
+.ops-clock .btn-clock.ask { background: var(--paper); color: var(--risk); border: 1px solid var(--risk) }
+.ops-clock .btn-clock:disabled { opacity: .6 }
+.ops-clock .bar { height: 6px; border-radius: 3px; background: var(--hair); overflow: hidden }
+.ops-clock .bar span { display: block; height: 100%; background: var(--pine); border-radius: 3px }
+.ops-clock.near .bar span { background: var(--soon) } .ops-clock.at .bar span { background: var(--risk) }
+.ops-clock .sum { font-size: 12px; color: var(--soft); text-decoration: none; font-variant-numeric: tabular-nums }
+.ops-clock.near .sum { color: var(--soon-text); font-weight: 600 } .ops-clock.at .sum { color: var(--risk); font-weight: 600 }
+.ops-clock .form { display: flex; flex-direction: column; gap: 6px }
+.ops-clock .form input { min-height: 32px; font-size: 13px }
+.ops-clock .form label { font-size: 12px; color: var(--soft) }
+.ops-clock .tags { display: flex; flex-wrap: wrap; gap: 4px }
+.ops-clock .tags button { height: 26px; padding: 0 9px; border: 1px solid var(--edge); border-radius: 13px; background: var(--paper); font: inherit; font-size: 12px; cursor: pointer }
+.ops-clock .tags button[aria-pressed=true] { border-color: var(--pine); background: var(--sel) }
+.ops-clock .acts { display: flex; align-items: center; gap: 10px }
+.ops-clock .acts .btn-clock { flex: 1 }
+.ops-clock .linkish { border: 0; background: none; padding: 0; font: inherit; font-size: 12.5px; color: var(--soft); text-decoration: underline; cursor: pointer }
+.ops-clock .msg { font-size: 12.5px; color: var(--soft); margin: 0 } .ops-clock .msg.err { color: var(--risk) }
+.ops-clock .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0) }
+@media (max-width: 860px) { .ops-clock { grid-column: 1 / -1; order: 9 } }
+
+.ops-shell .ops-hours-team { list-style: none; margin: 0; padding: 0 }
+.ops-shell .ops-hours-team li { display: grid; grid-template-columns: 160px minmax(0, 1fr) 110px 170px; gap: 14px; align-items: center; min-height: 48px; border-bottom: 1px solid var(--hair); font-size: 13.5px }
+.ops-shell .ops-hours-team.compact li { grid-template-columns: 76px minmax(0, 1fr) auto; min-height: 42px }
+.ops-shell .ops-hours-team .who { display: flex; align-items: center; gap: 8px; font-weight: 600 }
+.ops-shell .ops-hours-team .who i { width: 7px; height: 7px; border-radius: 50%; background: transparent; flex: none }
+.ops-shell .ops-hours-team .who i.live { background: var(--ok) }
+.ops-shell .ops-hours-team .bar { position: relative; height: 8px; border-radius: 4px; background: var(--hair) }
+.ops-shell .ops-hours-team .bar > span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--pine) }
+.ops-shell .ops-hours-team li.near .bar > span { background: var(--soon) } .ops-shell .ops-hours-team li.at .bar > span { background: var(--risk) }
+.ops-shell .ops-hours-team .bar i { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--soft) }
+.ops-shell .ops-hours-team .n { font-variant-numeric: tabular-nums }
+.ops-shell .ops-hours-team .s { font-size: 12.5px; color: var(--soft); white-space: nowrap }
+.ops-shell .ops-hours-team li.at .s, .ops-shell .ops-hours-team li.near .s { font-weight: 600 }
+.ops-shell .ops-hours-team li.at .s { color: var(--risk) } .ops-shell .ops-hours-team li.near .s { color: var(--soon-text) }
+.ops-shell .ops-hours-team .acts { display: flex; gap: 4px; flex-wrap: wrap }
+.ops-shell .ops-hours-req { list-style: none; margin: 0; padding: 0 }
+.ops-shell .ops-hours-req li { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 48px; border-bottom: 1px solid var(--hair) }
+.ops-shell .ops-hours-req .acts { display: flex; gap: 6px }
+.ops-shell .ops-shifts { list-style: none; margin: 0; padding: 0 }
+.ops-shell .ops-shifts li { display: grid; grid-template-columns: 110px 150px 56px minmax(0, 1fr) auto; gap: 14px; align-items: center; min-height: 44px; border-bottom: 1px solid var(--hair); font-size: 13.5px }
+.ops-shell .ops-shifts .d { font-weight: 600; color: var(--soft); font-size: 12.5px }
+.ops-shell .ops-shifts .h { font-weight: 600; font-variant-numeric: tabular-nums }
+.ops-shell .ops-shifts .note { color: var(--soft); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.ops-shell .ops-shifts li.flag .note { color: var(--risk); font-weight: 600 }
+.ops-shell .ops-shifts .more { height: 28px; padding: 0 10px; border: 1px solid var(--edge); border-radius: var(--r-ctl); background: var(--paper); font: inherit; font-size: 12px; cursor: pointer }
+.ops-shell .ops-shifts .fix { display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
+.ops-shell .ops-week h2 span.risk { color: var(--risk) }
+@media (max-width: 860px) {
+  .ops-shell .ops-hours-team li { grid-template-columns: 1fr auto; gap: 4px 12px; padding: 8px 0 }
+  .ops-shell .ops-hours-team .bar { grid-column: 1 / -1; order: 3 }
+  .ops-shell .ops-shifts li { grid-template-columns: 1fr auto; gap: 2px 12px; padding: 8px 0 }
+  .ops-shell .ops-shifts .note { grid-column: 1 / -1 }
+}

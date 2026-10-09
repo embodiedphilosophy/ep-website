@@ -73,16 +73,22 @@ export default async function SadhanaSchool() {
         <div className="sec-head"><span className="eyebrow">The year at a glance</span><h2>{year ? `${year}: ` : ''}{site.sadhanaTheme}</h2>
           <p>Take the whole arc, or step in wherever you’re called. Every season stands on its own, and past seasons stay available on demand.</p></div>
         <div className="season-grid">
-          {seasons.map(s => (
-            <article key={s.key} className={`season-card ${s.status}`}>
-              <div className="season-when">{s.key}</div>
-              {statusLabel(s) ? <span className={`season-badge ${s.status}`}>{statusLabel(s)}</span>
-                : s === next ? <span className="season-badge next">Enrolling now</span> : <span className="season-badge">Begins {longDate(s.start)}</span>}
-              <h3>{s.title}</h3>
-              <p className="season-texts">{s.texts}</p>
-              <p className="season-meta">{longDate(s.start)} – {longDate(s.end)}{s.meeting ? ` · ${s.meeting}` : ''}</p>
-            </article>
-          ))}
+          {seasons.map(s => {
+            const href = s.status !== 'done' ? s.registration_url : null;
+            const Card = href ? 'a' : 'article';
+            return (
+              <Card key={s.key} href={href || undefined} className={`season-card ${s.status}${href ? ' is-link' : ''}`}
+                aria-label={href ? `Enroll in ${s.key}: ${s.title}` : undefined}>
+                <div className="season-when">{s.key}</div>
+                {statusLabel(s) ? <span className={`season-badge ${s.status}`}>{statusLabel(s)}</span>
+                  : s === next ? <span className="season-badge next">Enrolling now</span> : <span className="season-badge">Begins {longDate(s.start)}</span>}
+                <h3>{s.title}</h3>
+                <p className="season-texts">{s.texts}</p>
+                <p className="season-meta">{longDate(s.start)} – {longDate(s.end)}{s.meeting ? ` · ${s.meeting}` : ''}</p>
+                {href && <span className="season-cta">Enroll{s.price ? ` — ${s.price}` : ''} →</span>}
+              </Card>
+            );
+          })}
         </div>
       </div></section>
 

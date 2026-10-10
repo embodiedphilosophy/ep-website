@@ -8,7 +8,7 @@ const cookie = require('fs').readFileSync(__dirname + '/out/cookie.txt', 'utf8')
     const p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('dialog', d => d.accept());
     await p.route('https://lh3.googleusercontent.com/**', r => r.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="400" height="500" fill="#8a6d4a"/></svg>' }));
     await p.route('https://picsum.photos/**', r => r.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="400" height="500" fill="#4a6d8a"/></svg>' }));
-    await p.goto('http://localhost:3100/ops/content', { waitUntil: 'networkidle' }); await p.waitForTimeout(1200);
+    await p.goto('http://localhost:3100/ops/content?tab=social', { waitUntil: 'networkidle' }); await p.waitForTimeout(1200);
     const tiles = await p.locator('.ops-se-feed li').count();
     await p.locator('.ops-se-bar button:text-is("New post")').click(); await p.waitForTimeout(300);
     if (vw === 'phone') { await p.screenshot({ path: `${__dirname}/out/newpost-phone.png` }); await c.close(); continue; }

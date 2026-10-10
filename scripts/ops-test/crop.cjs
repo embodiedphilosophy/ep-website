@@ -9,7 +9,7 @@ const cookie = require('fs').readFileSync(__dirname + '/out/cookie.txt', 'utf8')
     p.on('response', r => { if (r.status() >= 400 && !/\/_vercel\/insights|\/kalighat\//.test(r.url())) errs.push(`${r.status()} ${r.url().slice(0, 120)}`); });
     await p.route('https://lh3.googleusercontent.com/**', r => r.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="400" height="500" fill="#8a6d4a"/><circle cx="200" cy="230" r="90" fill="#d9c6a4"/></svg>' }));
     await p.route('https://picsum.photos/**', r => r.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="400" height="500" fill="#4a6d8a"/></svg>' }));
-    await p.goto('http://localhost:3100/ops/content', { waitUntil: 'networkidle' }); await p.waitForTimeout(1200);
+    await p.goto('http://localhost:3100/ops/content?tab=social', { waitUntil: 'networkidle' }); await p.waitForTimeout(1200);
     await p.locator('.ops-se-feed li').filter({ hasText: 'Proposed' }).nth(vw === 'desktop' ? 0 : 1).locator('button').click(); await p.waitForTimeout(400);
     await p.locator('.ops-se-comp button:text-is("Crop")').click();
     await p.locator('.ops-crop .frame').waitFor({ timeout: 15000 });

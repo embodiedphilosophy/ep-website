@@ -93,7 +93,8 @@ const weekly = [WP, ...Array.from({ length: 10 }, (_, i) => { const o = { post_i
   hashtags: '#tantra #yoga', link: 'https://embodiedphilosophy.com/events', status: ST[i], jake_notes: ST[i] === 'Needs edit' ? 'Shorter please' : '', quote_check: i % 2 ? 'Verbatim' : '', error: ST[i] === 'Failed' ? 'Instagram rejected the image size' : '', image_review: i % 3 ? 'Kept' : '' };
   return WP.map(h => o[h] ?? ''); })];
 const imgLib = [['image_id', 'file_name', 'drive_file_id', 'public_url', 'preview', 'folder', 'program', 'tags', 'type', 'drive_link', 'year', 'reuse_ok', 'times_used', 'last_used', 'source_file_id', 'has_text', 'category', 'hidden'],
-  ...Array.from({ length: 8 }, (_, i) => [`IMG${i}`, `kali-${i}.jpg`, `DRIVEFILE${i}abcdefghijklmnopq`, `https://picsum.photos/seed/ep${i}/400/500`, '', 'Archive', 'Sadhana', 'deity, kali', 'Archive', '', '2024', i === 5 ? 'FALSE' : 'TRUE', '2', '2026-09-01', '', 'FALSE', 'Deity art', i === 6 ? 'TRUE' : 'FALSE'])];
+  // 150 pictures so the picker's paging (60 at a time) is exercised; 5 can't be reused, 6 is hidden
+  ...Array.from({ length: 150 }, (_, i) => [`IMG${i}`, `kali-${i}.jpg`, `DRIVEFILE${i}abcdefghijklmnopq`, `https://picsum.photos/seed/ep${i}/400/500`, '', 'Archive', 'Sadhana', 'deity, kali', 'Archive', '', '2024', i === 5 ? 'FALSE' : 'TRUE', '2', '2026-09-01', '', 'FALSE', 'Deity art', i === 6 ? 'TRUE' : 'FALSE'])];
 const siteTabs = {
   'Site Links & Prices': [['key', 'value', "where it's used"], ['wisdom_join', 'https://school.example.com/checkout?o=1', '"Become a member" buttons (Wisdom School annual offer)'], ['wisdom_price', '$297', 'Wisdom School yearly price'], ['tarka', 'https://tarka.example.com', 'Tarka links'], ['events_source', 'calendar', 'Where events come from']],
   'Site Stats': [['number', 'label', 'order', 'notes'], ['100,000+', 'In the community', '1'], ['2015', 'Teaching since', '2', 'Founded']],

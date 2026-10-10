@@ -28,10 +28,10 @@ export default function SocialEngine({ director, initial = 'plan' }) {
   );
 }
 
-function useView(view, q = '', offset = 0) {
+function useView(view, q = '', offset = 0, extra = '') {
   const [data, setData] = useState(null);
   const load = async () => {
-    const res = await fetch(`/api/ops/social?view=${view}&q=${encodeURIComponent(q)}&offset=${offset}`).catch(() => null);
+    const res = await fetch(`/api/ops/social?view=${view}&q=${encodeURIComponent(q)}&offset=${offset}${extra}`).catch(() => null);
     const j = await res?.json().catch(() => ({}));
     setData(res?.ok ? j : { error: j?.error || 'Couldn’t load the Social Engine' });
   };
@@ -289,18 +289,27 @@ function Inserter({ kind, onPick }) {
   );
 }
 
+// Every picture that may be reused, newest first, 60 at a time; the grid scrolls inside the editor
 function ImagePicker({ onPick }) {
   const [q, setQ] = useState('');
-  const [data] = useView('images', q);
+  const [offset, setOffset] = useState(0);
+  const [rows, setRows] = useState([]);
+  const [data] = useView('images', q, offset, '&pick=1');
+  useEffect(() => { setOffset(0); setRows([]); }, [q]);
+  useEffect(() => { if (data?.rows) setRows(r => offset === 0 ? data.rows : [...r, ...data.rows.filter(x => !r.some(y => y.row === x.row))]); }, [data]);
+  const more = data && !data.error && rows.length < data.total;
   return (
     <div className="ops-se-picker">
       <input placeholder="Search images by name, tag, category…" value={q} onChange={e => setQ(e.target.value)} autoFocus />
-      {!data ? <p className="hint">Loading…</p> : data.error ? <p className="hint">{data.error}</p> : (
-        <ul>{data.rows.filter(r => String(r.values.reuse_ok).toUpperCase() === 'TRUE' && String(r.values.hidden).toUpperCase() !== 'TRUE').slice(0, 30).map(r => (
+      {data?.error ? <p className="hint">{data.error}</p> : !rows.length && !data ? <p className="hint">Loading…</p> : !rows.length ? <p className="hint">No pictures match.</p> : (<>
+        <ul className="grid">{rows.map(r => (
           <li key={r.row}><button type="button" onClick={() => onPick(r.values.image_id, r.thumb, r.values.drive_file_id)} title={r.values.file_name}>
             {r.thumb ? <img src={r.thumb} alt="" loading="lazy" referrerPolicy="no-referrer" /> : <span className="none">{r.values.file_name}</span>}
-          </button></li>))}</ul>
-      )}
+          </button></li>))}
+          {more && <li className="morecell"><button type="button" disabled={!data} onClick={() => setOffset(rows.length)}>{data ? 'Show more' : 'Loading…'}</button></li>}
+        </ul>
+        <p className="hint">{data?.total != null ? `${rows.length} of ${data.total} pictures` : ''}</p>
+      </>)}
     </div>
   );
 }

@@ -9,7 +9,7 @@ const cookie = require('fs').readFileSync(__dirname + '/out/cookie.txt', 'utf8')
     await p.route('**/api/**', r => r.request().method() === 'GET' || r.request().url().includes('/api/ops/social') ? r.continue() : r.abort());
     await p.route('https://lh3.googleusercontent.com/**', r => r.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="400" height="500" fill="#8a6d4a"/><circle cx="200" cy="230" r="90" fill="#d9c6a4"/></svg>' }));
     await p.route('https://picsum.photos/**', r => r.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="400" height="500" fill="#4a6d8a"/></svg>' }));
-    await p.goto('http://localhost:3100/ops/content', { waitUntil: 'networkidle' }); await p.waitForTimeout(1500);
+    await p.goto('http://localhost:3100/ops/content?tab=social', { waitUntil: 'networkidle' }); await p.waitForTimeout(1500);
     await p.screenshot({ path: `${__dirname}/out/feed-${vw}.png`, fullPage: true });
     console.log(vw, 'overflow:', await p.evaluate(() => document.documentElement.scrollWidth - innerWidth), '| tiles:', await p.locator('.ops-se-feed li').count());
     await p.locator('.ops-se-feed li').filter({ hasText: 'Proposed' }).nth(1).locator('button').click(); await p.waitForTimeout(500);

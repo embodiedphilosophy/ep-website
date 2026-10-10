@@ -19,7 +19,7 @@ export default async function Nav() {
         </nav>
         <div className="nav-cta">
           <SignInMenu wisdom={site.links.signInWisdom} sadhana={site.links.signInSadhana} />
-          <a className="btn btn-primary" href="/#join">Join Free</a>
+          <a className="btn btn-primary" href="https://go.embodiedphilosophy.com/">Join Free</a>
           <MobileMenu signIn={site.links.signIn} signInWisdom={site.links.signInWisdom} signInSadhana={site.links.signInSadhana} />
         </div>
       </div>

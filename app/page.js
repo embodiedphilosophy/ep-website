@@ -94,7 +94,7 @@ export default async function Home() {
           </a>
           <div className="quiz-cta reading-cta" id="join">
             <div><b>Prefer to start expanding your library?</b><span>Get the free Yoga Philosophy Reading List.</span></div>
-            <div className="reading-form"><KitForm formId={KIT.reading} button="Send my reading list" success="Your reading list is on its way. Check your inbox to confirm." /></div>
+            <div className="reading-form"><a className="btn btn-primary" href="https://go.embodiedphilosophy.com/yp-reading-list">Send my reading list →</a></div>
           </div>
         </div>
       </section>
@@ -279,7 +279,7 @@ export default async function Home() {
           <span className="eyebrow">Begin today — it’s free</span>
           <h2>Where ancient wisdom meets modern life.</h2>
           <p>Get the free Yoga Philosophy Reading List and the Weekly Scaffolding e-zine. Start from where you are.</p>
-          <KitForm formId={KIT.join} button="Join free →" success="Welcome. Check your inbox to confirm." />
+          <a className="btn btn-primary" href="https://go.embodiedphilosophy.com/scaffolding">Join free →</a>
         </div>
       </section>
     </>

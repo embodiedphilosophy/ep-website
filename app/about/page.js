@@ -20,7 +20,7 @@ export default function About() {
           <li><b>Chitheads</b>: long-form conversations with teachers and scholars.</li>
         </ul>
         <h2>Our founder</h2>
-        <p><b>Jacob Kyle</b> founded Embodied Philosophy in 2015. He is a doctoral candidate at the University of Oxford, where he researches the Pratyabhijñā philosophers Utpaladeva and Abhinavagupta, and holds degrees from Oxford, the New School for Social Research, and the London School of Economics. He has studied and practiced in the lineage of Paul Muller-Ortega since 2015.</p>
+        <p><b>Jacob Kyle</b> founded Embodied Philosophy in 2015. He is a doctoral candidate at the University of Oxford, where he researches the Pratyabhijñā philosophers Utpaladeva and Abhinavagupta, and holds degrees from Oxford, the New School for Social Research, and the London School of Economics. He has studied and practiced in the lineage of Non-dual Tantra since 2015.</p>
         <p><a className="btn btn-ghost" href="/teachers">Meet our teachers</a></p>
       </div></section>
       <section className="sec" style={{ paddingTop: 0 }}><div className="wrap">

@@ -1,14 +1,17 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FIELDS, WHERE, STATUSES, whereOf } from '@/lib/ops/eventfields';
 import { SessionActions } from './EventActions';
 
 const GROUPS = ['Session', 'People', 'Website', 'After', 'Planning'];
+// A past session: just what a replay needs, replay first (the rest is one click away)
+const PAST = ['Vimeo Video ID', 'Replay Link', 'Summary', 'Public Title', 'Website', 'Teachers & Hosts'];
+const PAST_GROUPS = ['After', 'Website', 'People'];
 
 // Edit one session's details (Schedule + Event Details) from the event drawer.
 // sessions: [{ id: 'E028', date, label, track }] — more than one for a weekly series or multi-session course
-export default function EventEditor({ sessions }) {
+export default function EventEditor({ sessions, past = false }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [sid, setSid] = useState(sessions[0]?.id || '');
@@ -18,6 +21,7 @@ export default function EventEditor({ sessions }) {
   const [msg, setMsg] = useState('');
   const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
+  const [allFields, setAllFields] = useState(!past);
   const track = sessions.find(s => s.id === sid)?.track || '';
 
   const load = async id => {
@@ -30,6 +34,8 @@ export default function EventEditor({ sessions }) {
   };
   const start = () => { setOpen(true); load(sid); };
   const pick = id => { setSid(id); load(id); };
+  // Past sessions open straight to the form
+  useEffect(() => { if (past && sid) start(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changed = orig ? Object.keys(vals).filter(k => String(vals[k] ?? '') !== String(orig[k] ?? '')) : [];
   const save = async () => {
@@ -64,7 +70,8 @@ export default function EventEditor({ sessions }) {
     return <input id={id} value={v} disabled={dis} inputMode={f.type === 'minutes' ? 'numeric' : undefined} onChange={e => set(f.key, e.target.value)} />;
   };
   // The Zoom link only matters when the session isn't in Circle
-  const hidden = f => f.key === 'Zoom Link' && whereOf(vals['Zoom Type'], track) === 'circle' && !vals['Zoom Link'];
+  const hidden = f => (!allFields && !PAST.includes(f.key)) || (f.key === 'Zoom Link' && whereOf(vals['Zoom Type'], track) === 'circle' && !vals['Zoom Link']);
+  const groups = allFields ? GROUPS : PAST_GROUPS;
 
   return (
     <form className="ops-edit" onSubmit={e => { e.preventDefault(); save(); }}>
@@ -75,7 +82,7 @@ export default function EventEditor({ sessions }) {
           </select>
         </label>
       )}
-      {!orig ? <p className="hint">{busy ? 'Loading…' : msg}</p> : GROUPS.map(g => (
+      {!orig ? <p className="hint">{busy ? 'Loading…' : msg}</p> : groups.map(g => (
         <fieldset key={g}>
           <legend>{g}</legend>
           {FIELDS.filter(f => f.group === g && !hidden(f)).map(f => (
@@ -87,12 +94,13 @@ export default function EventEditor({ sessions }) {
           ))}
         </fieldset>
       ))}
-      {orig && <SessionActions id={sid} date={sessions.find(s => s.id === sid)?.date} />}
+      {orig && past && <p className="ops-edit-open"><button type="button" className="chip" onClick={() => setAllFields(a => !a)}>{allFields ? 'Just the replay fields' : 'Show all fields'}</button></p>}
+      {orig && !past && <SessionActions id={sid} date={sessions.find(s => s.id === sid)?.date} />}
       {orig && (
         <div className="bar">
           <button type="submit" className="chip primary" disabled={busy || !changed.length}>{busy ? 'Saving…' : changed.length ? `Save ${changed.length} change${changed.length === 1 ? '' : 's'}` : 'No changes'}</button>
           <button type="button" className="chip" disabled={busy} onClick={() => { setVals(orig); setErrors({}); setMsg(''); }}>Reset</button>
-          <button type="button" className="chip" onClick={() => setOpen(false)}>Close</button>
+          {!past && <button type="button" className="chip" onClick={() => setOpen(false)}>Close</button>}
           {msg && <span className="hint">{msg}</span>}
         </div>
       )}

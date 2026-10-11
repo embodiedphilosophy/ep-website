@@ -386,3 +386,7 @@
 .ops-shell .ops-enrolled { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 4px; padding: 12px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); font-size: 13.5px }
 .ops-shell .ops-enrolled b { font-family: var(--font-serif), serif; font-size: 28px; font-weight: 600; line-height: 1 }
 .ops-shell .ops-enrolled span { color: var(--soft); font-size: 12.5px }
+
+/* Events → Past: track filter under the add button */
+.ops-shell .ops-past-tracks { margin-top: 12px; gap: 16px; font-size: 13px }
+.ops-shell .ops-drawer > .hint { margin: 6px 0 14px; color: var(--soft); font-size: 13px }

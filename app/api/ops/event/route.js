@@ -8,6 +8,7 @@ import { readRange, toObjects } from '@/lib/google';
 import { moveEventTasks, closeEventTasks } from '@/lib/ops/eventtasks';
 import { zoomMode } from '@/lib/zoomplan';
 import { FIELDS, check } from '@/lib/ops/eventfields';
+import { todayET } from '@/lib/events';
 
 export const dynamic = 'force-dynamic';
 const ID = /^E\d{3,}$/;
@@ -35,7 +36,7 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const keyOf = (date, track) => `${date}-${String(track).toLowerCase()}`;
 const fail = (error, status = 400) => NextResponse.json({ error }, { status });
 
-// POST { action: 'add', date, track, name, time?, teachers? }   a new event on the Schedule tab
+// POST { action: 'add', date, track, name, time?, teachers?, past?, video?, summary? }   a new event on the Schedule tab (past: already over, Status Done)
 //      { action: 'move', id, date }                             a new date; its open tasks move with it
 //      { action: 'cancel' | 'restore', id }                     Status Cancelled (hidden everywhere) / back
 //      { id, changes: { field: value }, before: { field: value as shown } }   edit details
@@ -81,7 +82,7 @@ export async function POST(req) {
 }
 
 
-async function addEvent({ date, track, name, time = '', teachers = '' }, who) {
+async function addEvent({ date, track, name, time = '', teachers = '', past = false, video = '', summary = '' }, who) {
   const tracks = toObjects(await readRange(process.env.CALENDAR_SHEET_ID, "'Track Defaults'!A1:A50")).map(r => String(r.track).toUpperCase()).filter(Boolean);
   const T = String(track || '').toUpperCase();
   if (!DATE.test(String(date)) || isNaN(Date.parse(date))) return fail('Pick a date');
@@ -90,9 +91,20 @@ async function addEvent({ date, track, name, time = '', teachers = '' }, who) {
   if (!title || title.length > 120) return fail('Give it a name (up to 120 characters)');
   const t = FIELDS.find(f => f.key === 'Time'), tm = check(t, time);
   if (tm.error) return fail(tm.error);
+  // A past event (Events → Past) is already over: it goes in as Done, with its replay
+  let extra = {};
+  if (past) {
+    if (date >= todayET()) return fail('A past event needs a date before today');
+    const v = check(FIELDS.find(f => f.key === 'Vimeo Video ID'), video);
+    if (v.error) return fail(v.error);
+    const sm = check(FIELDS.find(f => f.key === 'Summary'), summary);
+    if (sm.error) return fail(sm.error);
+    extra = Object.fromEntries(Object.entries({ 'Vimeo Video ID': v.value, Summary: sm.value }).filter(([, x]) => x));
+  }
   const id = await nextId('schedule');
-  await updateRow('schedule', id, { Date: date, Track: T, Event: title, 'Teachers & Hosts': check(FIELDS.find(f => f.key === 'Teachers & Hosts'), teachers).value, Time: tm.value, Status: 'Not started' },
+  await updateRow('schedule', id, { Date: date, Track: T, Event: title, 'Teachers & Hosts': check(FIELDS.find(f => f.key === 'Teachers & Hosts'), teachers).value, Time: tm.value, Status: past ? 'Done' : 'Not started' },
     { who, create: true, dates: ['Date'] });
+  if (Object.keys(extra).length) await updateRow('details', id, extra, { who, create: true });
   refreshSite();
   return NextResponse.json({ ok: true, id, key: keyOf(date, T) });
 }

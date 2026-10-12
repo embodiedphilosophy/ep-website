@@ -32,7 +32,7 @@ export default function MobileMenu({ signIn, signInWisdom, signInSadhana }) {
             {links.map(([href, label]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
           </nav>
           <div className="mobile-menu-foot">
-            <a className="btn btn-primary" href="https://go.embodiedphilosophy.com/" onClick={() => setOpen(false)}>Join Free</a>
+            <a className="btn btn-primary" href="/meditation-pass" onClick={() => setOpen(false)}>Free Trial</a>
             <p className="mobile-signin-label">Sign in</p>
             <div className="mobile-signin-row">
               <a className="btn btn-ghost" href={signInWisdom || signIn}>Wisdom School</a>

@@ -4,8 +4,8 @@ export const metadata = { title: 'About — Embodied Philosophy' };
 export default function About() {
   return (
     <>
-      <PageHero eyebrow="Our story" title="Philosophy you can practice." img="mirror" ground="black"
-        lede="Embodied Philosophy is an online school for yoga philosophy, meditation, and the world’s contemplative traditions, for people who want to think carefully and practice deeply." />
+      <PageHero eyebrow="Our story" title="Join the online school where ancient wisdom meets modern life." img="mirror" ground="black"
+        lede="Embodied Philosophy is an online school for yoga philosophy, meditation, and the world’s esoteric wisdom traditions." />
       <section className="sec"><div className="wrap prose">
         <h2>Why we exist</h2>
         <p>Since 2015, Embodied Philosophy has offered courses, lectures, a journal and a podcast for practitioners who find most spiritual education either too shallow or too academic. We take the wisdom traditions seriously as living philosophy: texts to be read closely, practices to be done daily, and questions that change how a life is lived.</p>

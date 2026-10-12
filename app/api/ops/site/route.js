@@ -21,7 +21,7 @@ export async function GET(req) {
   if (!canSee(t, user)) return NextResponse.json({ error: 'Please sign in again' }, { status: 401 });
   try {
     const data = await readPlain(t.title, { light: true });
-    const head = [...data.head, ...(t.columns || []).filter(c => !data.head.some(h => h.toLowerCase() === c))];
+    const head = [...data.head, ...(t.columns || []).filter(c => !data.head.some(h => h.toLowerCase() === c.toLowerCase()))];
     return NextResponse.json({ ...data, head, canEdit: canSave(t, user) });
   }
   catch (e) {

@@ -31,6 +31,9 @@ export async function GET(req) {
       rows = rows.filter(r => (r.values.publish_date || '9') >= from)
         .sort((a, b) => (a.values.publish_date || '9').localeCompare(b.values.publish_date || '9') || String(a.values.publish_time_ET).localeCompare(String(b.values.publish_time_ET)))
         .map(r => { const img = byImage[r.values.image_id] || {}; return { ...r, thumb: thumbOf(r.values.image_url || img.public_url, r.values.image_url ? '' : img.drive_file_id), src: img.drive_file_id || driveIdOf(img.public_url) || driveIdOf(r.values.image_url) }; });
+    } else if (v.key === 'images' && url.searchParams.get('pick')) {
+      // The post editor's picker: only pictures that may be used, newest first (uploads are added at the bottom)
+      rows = rows.filter(r => String(r.values.reuse_ok).toUpperCase() === 'TRUE' && String(r.values.hidden).toUpperCase() !== 'TRUE').reverse();
     } else if (v.key === 'history') {
       rows = rows.sort((a, b) => String(b.values.posted_at).localeCompare(String(a.values.posted_at)));
     }

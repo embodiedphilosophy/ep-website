@@ -109,7 +109,7 @@ const oldSite = { 1001: siteTabs['Site Teachers'], 1002: siteTabs['Site Testimon
 delete siteTabs['Site Teachers']; delete siteTabs['Site Testimonials'];
 // Course Library catalog tab: the seed CSV the PR ships (data/catalog-seed.csv)
 const csvRows = t => { const rows = []; let row = [], c = '', q = false; for (let i = 0; i < t.length; i++) { const ch = t[i]; if (q) { if (ch === '"' && t[i + 1] === '"') { c += '"'; i++; } else if (ch === '"') q = false; else c += ch; } else if (ch === '"') q = true; else if (ch === ',') { row.push(c); c = ''; } else if (ch === '\n') { row.push(c); rows.push(row); row = []; c = ''; } else c += ch; } return rows; };
-siteTabs['Catalog'] = csvRows(fs.readFileSync(new URL('../../data/catalog-seed.csv', import.meta.url), 'utf8'));
+siteTabs['catalog'] = csvRows(fs.readFileSync(new URL('../../data/catalog-seed.csv', import.meta.url), 'utf8'));
 const sheetIds = {}; let nextSheet = 5000;
 const tabs = { ...siteTabs, 'Ops Note': undefined, 'Team': team, 'Track Defaults': defaults, 'Master Schedule': schedule, 'Task Templates': templates, 'Weekly Plan': weekly, 'Image Library': imgLib,
   'Post History': [['ig_media_id', 'posted_at', 'media_type', 'caption', 'permalink', 'like_count', 'comments_count', 'archived_image_id', 'pillar', 'notes'], ...Array.from({ length: 70 }, (_, i) => [`M${i}`, day(-i * 3) + 'T15:00:00Z', 'IMAGE', `Post number ${i}: a verse and a painting.`, 'https://instagram.com/p/x' + i, String(200 - i), String(i % 9), '', 'Content', ''])],

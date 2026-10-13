@@ -17,3 +17,4 @@ export GOOGLE_SERVICE_ACCOUNT_EMAIL="${GOOGLE_SERVICE_ACCOUNT_EMAIL:-mock@exampl
 [ -n "$GOOGLE_PRIVATE_KEY" ] || { [ -s "$K/out/mock_key.pem" ] || (umask 077; openssl genrsa -out "$K/out/mock_key.pem" 2048 2>/dev/null); export GOOGLE_PRIVATE_KEY="$(cat "$K/out/mock_key.pem")"; }
 export COURSES_REVALIDATE_SECRET=mock-courses-secret
 export MOCK_LOG="$K/out/mock.log"
+export NEXT_PUBLIC_COURSES_PREVIEW=1   # lets /courses?preview=member show the member view (never set on Vercel)

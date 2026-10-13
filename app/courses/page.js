@@ -11,5 +11,5 @@ export const metadata = {
 export default async function CoursesPage() {
   const items = (await getCatalog().catch(() => [])).map(o => ({ ...o, unlockLine: unlockLine(o) }));
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
-  return <CatalogBrowser items={items} today={today} meta={{ access: ACCESS, programmes: PROGRAMMES, kinds: KINDS, formats: FORMATS, depths: DEPTHS, topics: TOPICS }} />;
+  return <CatalogBrowser items={items} today={today} member={null} meta={{ access: ACCESS, programmes: PROGRAMMES, kinds: KINDS, formats: FORMATS, depths: DEPTHS, topics: TOPICS }} />;
 }

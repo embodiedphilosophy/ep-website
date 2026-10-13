@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import BuyPanel from '@/components/BuyPanel';
-import Collage from '@/components/Collage';
 import { getCoursePage } from '@/lib/coursepages';
 import { getCatalog, getOffering, ACCESS, PROGRAMMES, unlockLine } from '@/lib/catalog';
 import { getSite } from '@/lib/content';
@@ -13,7 +12,7 @@ const PROGRAM = { wisdom: 'Wisdom School', sadhana: 'Sādhana School', seasonal:
 const lines = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
 const fmtLong = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
 const initials = n => { const a = String(n || '?').trim().split(/\s+/); return (a[0]?.[0] || '?') + (a.length > 1 ? a[a.length - 1][0] : ''); };
-const ART = { meditation_mondays: ['yogi-shiva', 'navy'], wisdom_school: ['holyman-tigers', 'vermilion'], learning_pathways: ['mirror', 'black'], sadhana_school: ['woman-music', 'slate'], seasonal: ['holyman-tigers', 'vermilion'], on_demand: ['yogi-shiva', 'navy'] };
+const ART = { meditation_mondays: 'yogi-shiva', wisdom_school: 'holyman-tigers', learning_pathways: 'mirror', sadhana_school: 'woman-music', seasonal: 'holyman-tigers', on_demand: 'yogi-shiva' };
 
 export async function generateStaticParams() {
   return (await getCatalog().catch(() => [])).map(o => ({ offering_id: o.id }));
@@ -39,41 +38,70 @@ export default async function CoursePage({ params }) {
 async function Offering({ o }) {
   const site = await getSite().catch(() => null);
   const prog = PROGRAMMES[o.programme], acc = ACCESS[o.access];
-  const [img, ground] = ART[o.programme];
+  const img = ART[o.programme];
   const promise = o.promise || o.description.split(/(?<=[.!?])\s/)[0];
   const pwyc = o.access === 'pwyc';
   const lock = unlockLine(o);
-  const nextShown = o.next && o.next >= new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   const plus = site?.links?.wisdomPlusJoin;
+  const signIn = site?.links?.signInSadhana || 'https://ss.embodiedphilosophy.com/sign_in';
+  const names = o.teachers.map(t => t.name);
+  const t0 = o.teachers[0];
+  const meta = [o.length, o.format, o.topics.join(' · '), pwyc ? 'Pay what you can' : o.priceLabel].filter(Boolean);
   return (
-    <div className="cl cl-detail" style={{ '--band': prog.color }}>
+    <div className="cl" style={{ '--band': prog.color }}>
       <div className="cl-wrap">
-        <nav className="cl-crumb" aria-label="Breadcrumb"><a href="/courses">Course Library</a><span>/</span><a href="/courses">{prog.label}</a><span>/</span><span aria-current="page">{o.title}</span></nav>
-        <div className="cl-dgrid">
-          <article>
-            <div className="cl-dtop"><i className="cl-dband" />{o.label && <span className="cl-label">{o.label}</span>}<span className={`cl-badge a-${o.access}`}>{pwyc ? 'Pay what you can' : acc.short}</span></div>
-            <h1>{o.title}</h1>
-            {promise && <p className="cl-promise">{promise}</p>}
-            <p className="cl-teachers">With {o.teachers.map(t => t.name).join(' & ')}</p>
-            <p className="cl-meta cl-dmeta">{[o.length, o.format, nextShown && `Starts ${fmtLong(o.next)}`, o.ce && `${o.ce} CE hours`].filter(Boolean).map(x => <span key={x}>{x}</span>)}</p>
-            <div className="cl-art"><Collage img={o.cover || img} ground={ground} ring="#EBA329" alt="" className="art" /></div>
-            <section><h2>About</h2><p>{o.description}</p></section>
-            <section><h2>What’s included</h2><ul className="cl-incl">{o.included.map(x => <li key={x}>{x}</li>)}</ul></section>
-            {o.sessions.length > 0 && <section><h2>Sessions</h2><ol className="cl-sessions">{o.sessions.map((s, i) => <li key={i}>{s.date && <time className="cl-meta">{longDate(s.date)}</time>}<span>{s.title}</span></li>)}</ol></section>}
-          </article>
-          <div className="cl-side">
-            <BuyPanel price={pwyc ? 'Pay what you can' : o.priceLabel || ''} note={o.requires === 'year_long' ? lock : !pwyc ? lock : ''}
-              checkout={o.checkout} pwyc={pwyc} amounts={o.amounts} cta={o.label === 'MEMBERSHIP' ? 'Join' : 'Enrol'} />
-            {(o.access === 'wisdom_school' || o.access === 'ws_plus') && (
-              <aside className="cl-upsell">
-                <span className="eyebrow light">Wisdom School Plus</span>
-                <h3>Study this live, in a small group</h3>
-                <p>Plus adds live study groups, the learning pathways and CE hours to your Wisdom School membership.</p>
-                <a className="btn btn-light" href={plus || '/wisdom-school'}>See Wisdom School Plus →</a>
-              </aside>
+        <nav className="cl-crumb" aria-label="Breadcrumb"><a href="/courses">Course Library</a><span aria-hidden="true">/</span><span>{prog.label}</span><span aria-hidden="true">/</span><span aria-current="page" style={{ color: '#1E1A14' }}>{o.title}</span></nav>
+
+        <section className="cl-hero">
+          <div className="cl-hero-l">
+            <div className="cl-dbar" />
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span className="eyebrow">{o.label || prog.label}</span>
+              <span className={`cl-badge ${pwyc ? 'b-pwyc' : 'b-acc'}`}>{acc.short}</span>
+            </div>
+            <h1 className="cl-dh1">{o.title}</h1>
+            {promise && <p className="cl-dek">{promise}</p>}
+            <div className="cl-dt">
+              {t0.photo ? <img className="cl-av" src={t0.photo} alt="" width="34" height="34" /> : <span className="cl-av" style={{ background: /^\[/.test(t0.name) ? '#6B6253' : '#20302A' }}>{/^\[/.test(t0.name) ? '?' : initials(t0.name)}</span>}
+              <span>with <b>{names.join(' & ')}</b></span>
+            </div>
+            <div className="cl-dmeta">{meta.flatMap((x, i) => [<span key={i} className={i === meta.length - 1 ? 'price' : ''}>{x}</span>, i < meta.length - 1 && <span key={'d' + i}>·</span>])}</div>
+          </div>
+          <div className="cl-hero-r">{/* Kalighat cut-out on sand, from the site image set */}
+            <img src={o.cover || `/kalighat/${img}.webp`} alt="" width="520" height="440" />
+          </div>
+        </section>
+
+        <section className="cl-dbody">
+          <div className="cl-main">
+            <div><h2 className="cl-h2">About this {o.kind === 'Live practice' ? 'practice' : 'course'}</h2><p className="cl-p">{o.description}</p></div>
+            <div>
+              <h2 className="cl-h2">What’s included</h2>
+              <ul className="cl-incl">{o.included.map(x => <li key={x}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A5432A" strokeWidth="2" aria-hidden="true"><path d="M5 12l5 5L19 7" /></svg><span>{x}</span></li>)}</ul>
+            </div>
+            {o.sessions.length > 0 && (
+              <div>
+                <h2 className="cl-h2">Sessions</h2>
+                <ol className="cl-sess">{o.sessions.map((s, i) => <li key={i}><span className="n">{String(i + 1).padStart(2, '0')}</span><span className="t">{s.title}</span><span className="d">{/^\d{4}-\d{2}-\d{2}$/.test(s.when) ? longDate(s.when) : s.when}</span></li>)}</ol>
+              </div>
             )}
           </div>
-        </div>
+
+          <aside className="cl-side" aria-label="Enrol">
+            <BuyPanel eyebrow={pwyc ? 'Pay what you can' : acc.label} heading={pwyc ? 'Choose your contribution' : o.priceLabel || 'Join'}
+              note={pwyc ? 'Every amount opens the full course. Paying more keeps it open to those who can pay less.' : lock}
+              checkout={o.checkout} pwyc={pwyc} amounts={o.amounts.length ? o.amounts : [10, 25, 50]} cta={pwyc ? 'Continue to checkout' : o.label === 'MEMBERSHIP' ? 'Join' : 'Enrol'} signIn={signIn} />
+            {(o.access === 'pwyc' || o.access === 'meditation_pass' || o.access === 'wisdom_school') && (
+              <div className="cl-pine">
+                <span className="k">Go further</span>
+                <span className="t">Every Learning Pathway, with <em>Wisdom School Plus</em></span>
+                <span className="d">The learning pathways, live study groups and CE hours, on top of Wisdom School.</span>
+                <a href={plus || '/wisdom-school'}>See Wisdom School Plus →</a>
+              </div>
+            )}
+            <a className="cl-back" href="/courses">← Back to the Course Library</a>
+          </aside>
+        </section>
       </div>
     </div>
   );

@@ -12,6 +12,9 @@ export const metadata = {
   description: 'A year of guided study and daily practice in the non-dual Śākta-Śaiva tradition, in three eight-week seasons and a summer immersion.',
 };
 
+// Sahṛdaya Upāya applications close Fri Oct 16, 2026 (end of day ET); the deadline line hides itself after that.
+const SU_DEADLINE = new Date('2026-10-17T04:00:00Z');
+
 const statusLabel = s => s.status === 'live' ? `In session · week ${s.week} of ${s.total}` : s.status === 'done' ? 'Completed · recordings available' : null;
 
 const FAQ = [
@@ -19,6 +22,7 @@ const FAQ = [
   ['Who is Sādhana School for?', 'Seekers, practitioners, scholars, and new and seasoned yoga teachers who want to study the tradition deeply and commit to a daily practice. No Sanskrit or prior study is needed; the fall season is designed as a starting point.'],
   ['Can I join for just one season?', 'Yes. Each season stands on its own, and you can join any of them. The full year includes all three seasons and the summer immersion, at a saving.'],
   ['Can I earn continuing education credits?', 'If you hold a certification as a yoga teacher, therapist or counselor, Sādhana School hours may count toward continuing education. Check with your certifying body.'],
+  ['Is there a teacher training?', 'Yes. Sahṛdaya Upāya is a 100-hour apprenticeship in Sahṛdaya Meditation and Subtle Liberation-Based Teaching, held alongside the full Sādhana School year, with eight weekend immersions and monthly one-on-one mentorship. It is open by application to full-year students. See the Sahṛdaya Upāya page to learn more and apply.'],
   ['What if it isn’t right for me?', 'Refund requests within 30 days of purchase are honored in full. Write to hello@embodiedphilosophy.com.'],
 ];
 
@@ -29,6 +33,7 @@ export default async function SadhanaSchool() {
   const quotes = (await getTestimonials('sadhana')).slice(0, 3);
   const year = featured?.school_year || '';
   const enrollHref = featured?.registration_url || site.links.sadhanaSemester;
+  const suOpen = Date.now() < SU_DEADLINE.getTime();
 
   return (
     <>
@@ -137,6 +142,7 @@ export default async function SadhanaSchool() {
               <li className="on"><span aria-hidden="true">✓</span>Recordings of every session</li>
             </ul>
             <a className="btn btn-primary" href={site.links.sadhanaYear}>Enroll for the year</a>
+            <p style={{ marginTop: 14, fontSize: 14, color: 'var(--ink-soft)' }}>Teaching, or called to? Pair the year with <a href="/sahrdaya-upaya">Sahṛdaya Upāya</a> teacher formation.</p>
           </article>
           <article className="plan">
             <h3>A single season</h3>
@@ -155,6 +161,26 @@ export default async function SadhanaSchool() {
         <h2>Questions</h2>
         {FAQ.map(([q, a]) => <details key={q} className="faq"><summary>{q}</summary><p>{a}</p></details>)}
         <p style={{ marginTop: 28 }}>Not ready for a year of study? Start with <a href="/wisdom-school">Wisdom School</a> or the free <a href={site.links.quiz}>Practice Report</a>.</p>
+      </div></section>
+
+      <section className="sec path" id="teacher-formation"><div className="wrap feature rev">
+        <Collage img="woman-music" ground="slate" ring="#EBA329" className="art" alt="Kalighat painting of a woman playing a stringed instrument" />
+        <div>
+          <span className="eyebrow">Teacher Formation · By application</span>
+          <h2>Sahṛdaya Upāya</h2>
+          <p className="theme">Teach from the ground of your own practice</p>
+          <p style={{ marginTop: 18 }}>A 100-hour apprenticeship in Sahṛdaya Meditation and Subtle Liberation-Based Teaching, held alongside the Sādhana School year. For yoga teachers, facilitators, therapists and scholar-practitioners who want to carry this practice into their own teaching.</p>
+          <ul>
+            <li>Eight weekend immersions, November to May</li>
+            <li>Nine monthly one-on-one mentorship sessions with Jacob</li>
+            <li>A certificate in SLBT and Sahṛdaya Meditation (200 hours with the Sādhana School year)</li>
+          </ul>
+          {suOpen && <p className="upnext" style={{ marginBottom: 18 }}><b>Applications close:</b> Fri, Oct 16 · <b>The year begins:</b> Wed, Oct 21</p>}
+          <div className="btns">
+            <a className="btn btn-primary" href="/sahrdaya-upaya">Explore Sahṛdaya Upāya</a>
+            <a className="btn btn-ghost" href="/sahrdaya-upaya/apply">Apply now</a>
+          </div>
+        </div>
       </div></section>
     </>
   );

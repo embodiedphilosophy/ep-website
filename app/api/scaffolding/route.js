@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { runScaffolding } from '@/lib/ops/scaffoldrun';
+import { jobsHere, SKIPPED } from '@/lib/crongate';
 
 // The Weekly Scaffolding draft (vercel.json cron, Thursdays). Builds a Kit DRAFT for the coming Sunday
 // from the "Weekly Scaffolding" tab + that week's Master Schedule events, then emails the directors.
@@ -28,6 +29,7 @@ export async function GET(req) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   const mode = url.searchParams.get('preview') ? 'preview' : url.searchParams.get('dry') ? 'dry' : 'build';
+  if (mode === 'build' && !jobsHere()) return NextResponse.json(SKIPPED);
   const r = await runScaffolding({ date: url.searchParams.get('date'), mode, origin: url.origin });
   if (r.html) return new NextResponse(r.html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   return NextResponse.json(r.json, { status: r.status });

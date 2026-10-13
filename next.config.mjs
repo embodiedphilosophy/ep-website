@@ -5,6 +5,11 @@
 // is then served from the archive automatically, so no old link breaks.
 const ARCHIVE = process.env.ARCHIVE_ORIGIN;
 
+// The team dashboard and teacher onboarding now live in their own project (ep-ops). Once OPS_ORIGIN is set
+// (https://ops.embodiedphilosophy.com), old /ops and /teach links, including sign-in links already in
+// people's inboxes, forward there.
+const OPS = process.env.OPS_ORIGIN?.replace(/\/$/, '');
+
 const nextConfig = {
   async rewrites() {
     return {
@@ -18,7 +23,10 @@ const nextConfig = {
   },
   async redirects() {
     const r = (source, destination) => ({ source, destination, permanent: true });
+    const ops = OPS ? ['/ops', '/ops/:path*', '/teach', '/teach/:path*', '/api/ops/verify']
+      .map(p => ({ source: p, destination: `${OPS}${p}`, permanent: false })) : [];
     return [
+      ...ops,
       // Podcast
       r('/chitheads', '/podcast'),
       r('/chitheads/:path*', '/podcast'),

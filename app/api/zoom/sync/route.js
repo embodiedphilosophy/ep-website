@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { eventRows, recurringRules, todayET } from '@/lib/events';
 import { listUpcoming } from '@/lib/zoom';
 import { planMeetings, ensureMeeting } from '@/lib/zoomplan';
+import { jobsHere, SKIPPED } from '@/lib/crongate';
 
 // Creates or updates Zoom meetings from the sheet's `zoom` column (see lib/zoomplan.js):
 //   one-off → one meeting for that row (multi-day rows get one link for every day)
@@ -22,6 +23,7 @@ export async function GET(req) {
   const report = [];
   try {
     const dry = new URL(req.url).searchParams.get('dry');
+    if (!dry && !jobsHere()) return NextResponse.json(SKIPPED);
     const [rows, rules] = await Promise.all([eventRows(), recurringRules()]);
     const { plans, skipped } = planMeetings(rows, rules, todayET());
     if (dry) return NextResponse.json({ mode: 'dry run: Zoom was not touched',

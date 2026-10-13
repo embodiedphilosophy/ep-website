@@ -12,6 +12,7 @@ import { sendEmail, layout, button, esc } from '@/lib/ops/email';
 import { joinUrlFor, seriesLinksOf, inCircle } from '@/lib/ops/joinurl';
 import { todayET, reminderRows, emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
+import { jobsHere, SKIPPED } from '@/lib/crongate';
 
 // Daily (vercel.json cron): fill Motion from the calendar and send teaching reminders.
 // Emails it sends: one nudge to a task's owners when it is 3 days overdue, reminders to the addresses in each session’s Teacher/Host Emails column, a slides request
@@ -92,6 +93,7 @@ export async function GET(req) {
   const base = process.env.OPS_URL || url.origin;
   const only = url.searchParams.get('only');
   const preview = Number(url.searchParams.get('preview') || 0);
+  if (!preview && !jobsHere()) return NextResponse.json(SKIPPED);
   const testTo = String(url.searchParams.get('test_to') || '').trim().toLowerCase();
 
   const load = async () => {

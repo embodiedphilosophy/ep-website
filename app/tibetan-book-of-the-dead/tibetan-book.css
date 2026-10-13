@@ -1,0 +1,19 @@
+/* Tibetan Book of the Dead landing page. Reuses the Haṃsa page's hs-* classes from globals.css. */
+.tb-frame{position:relative;width:100%;max-width:460px;aspect-ratio:1/1;margin-left:auto;background:#F3C55A;padding:14px;border-radius:2px;box-shadow:0 18px 40px rgba(30,26,20,.14)}
+.tb-frame img{display:block;width:100%;height:100%;object-fit:cover;border-radius:1px}
+.tb-frame::after{content:"";position:absolute;right:-14px;bottom:-14px;width:38%;height:30%;background:#E8762B;z-index:-1}
+.tb-outcomes{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.tb-outcomes .tier{min-width:0}
+.tb-outcomes .tier:nth-child(2){border-top-color:var(--ochre)}
+.tb-outcomes .tier:nth-child(3){border-top-color:var(--pine)}
+.tb-modules{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.tb-band{height:clamp(160px,26vw,320px);overflow:hidden}
+.tb-band img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.tb-list{margin:8px 0 0;padding:0;list-style:none}
+.tb-list li{padding:9px 0 9px 26px;border-bottom:1px solid var(--line);position:relative;font-size:16px}
+.tb-list li::before{content:"";position:absolute;left:4px;top:17px;width:9px;height:9px;border-radius:50%;background:var(--terra)}
+.hs-tiers.tb-tiers{grid-template-columns:repeat(3,1fr);max-width:960px;margin:0 auto}
+.tb-more{font-size:15px;color:var(--ink-soft);margin-top:10px}
+@media(max-width:980px){.tb-outcomes{grid-template-columns:1fr 1fr}.hs-tiers.tb-tiers{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:900px){.tb-hero .hero-aside{display:flex;order:-1}.tb-frame{max-width:220px;padding:10px;margin:0 auto}}
+@media(max-width:720px){.tb-outcomes,.tb-modules,.hs-tiers.tb-tiers{grid-template-columns:1fr}}

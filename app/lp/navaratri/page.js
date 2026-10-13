@@ -1,4 +1,5 @@
 import { getSite } from '@/lib/content';
+import lp from './lp';
 
 export const revalidate = 300;
 export const metadata = {
@@ -90,7 +91,7 @@ const FAQ = [
 
 export default async function Navaratri() {
   const site = await getSite();
-  const checkout = site.links.navaratriCheckout || 'https://embodiedphil.samcart.com/products/navaratri-2026';
+  const checkout = site.links[lp.checkoutKey] || lp.checkout;
   return (
     <>
       <style>{CSS}</style>

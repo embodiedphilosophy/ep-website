@@ -34,6 +34,10 @@ const nextConfig = {
       r('/type/audio/:path*', '/podcast'),
       // Old podcast episode posts end in the episode number, e.g. /what-karma-actually-means-with-philip-goldberg-184/
       r('/:slug([a-z0-9%-]+-\\d{1,3})', '/podcast'),
+      // Landing pages moved under /lp/
+      r('/hamsa-sadhana', '/lp/hamsa-sadhana'),
+      r('/tibetan-book-of-the-dead', '/lp/tibetan-book-of-the-dead'),
+      r('/navaratri', '/lp/navaratri'),
       // Programs
       r('/wisdom-school-courses', '/wisdom-school'),
       r('/wisdom-school-courses/:path*', '/wisdom-school'),

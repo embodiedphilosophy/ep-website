@@ -1,5 +1,6 @@
 import './tibetan-book.css';
 import { getSite } from '@/lib/content';
+import lp from './lp';
 
 export const revalidate = 300;
 export const metadata = {
@@ -11,8 +12,6 @@ export const metadata = {
     images: ['/img/tbotd/citipati-sq.webp'],
   },
 };
-
-const CHECKOUT = 'https://go.embodiedphilosophy.com/products/tibetan-book-of-the-dead';
 
 const OUTCOMES = [
   ['Meet death without dread', 'Work directly with the fear of dying through teaching and guided meditation, rather than avoiding it.'],
@@ -60,7 +59,7 @@ const FAQ = [
 
 export default async function TibetanBook() {
   const site = await getSite();
-  const checkout = site.links.tibetanBookCheckout || CHECKOUT;
+  const checkout = site.links[lp.checkoutKey] || lp.checkout;
   return (
     <>
       <section className="hero page-hero tb-hero">

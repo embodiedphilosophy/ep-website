@@ -1,5 +1,6 @@
 import PageHero from '@/components/PageHero';
 import { getSite } from '@/lib/content';
+import lp from './lp';
 
 export const revalidate = 300;
 export const metadata = {
@@ -43,7 +44,7 @@ const FAQ = [
 
 export default async function HamsaSadhana() {
   const site = await getSite();
-  const checkout = site.links.hamsaCheckout || 'https://embodied-philosophy-2.kit.com/products/hamsa-sadhana';
+  const checkout = site.links[lp.checkoutKey] || lp.checkout;
   return (
     <>
       <PageHero eyebrow="On demand · Pay what you can" title="21-Day Haṃsa Sādhana" img="yogi-shiva" ground="navy" ring="#EBA329"

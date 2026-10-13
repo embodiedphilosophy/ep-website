@@ -6,8 +6,6 @@ export const metadata = {
     'A 100-hour apprenticeship in Sahṛdaya Meditation and Subtle Liberation-Based Teaching, held alongside the Sādhana School 2026–27 year.',
 };
 
-// TODO: replace href="#" on the "Enroll for the year" button with the Circle checkout link.
-
 export default function SahrdayaUpayaPage() {
   return (
     <div className="su-page">
@@ -20,7 +18,7 @@ export default function SahrdayaUpayaPage() {
             <p className="sub">A 100-hour apprenticeship in Sahṛdaya Meditation and Subtle Liberation-Based Teaching, held alongside the Sādhana School year. For teachers, facilitators, therapists and scholar-practitioners who want to teach from the ground of their own practice.</p>
             <p className="upnext"><b>Applications close:</b> Fri, Oct 16 · <b>The year begins:</b> Wed, Oct 21</p>
             <div className="btns">
-              <a className="btn btn-primary" href="#enroll">Enroll in Sādhana School to apply</a>
+              <a className="btn btn-primary" href="/sahrdaya-upaya/apply">Apply now</a>
               <a className="btn btn-ghost" href="#immersions">See the eight immersions</a>
             </div>
           </div>
@@ -280,10 +278,10 @@ export default function SahrdayaUpayaPage() {
             <h2>By application, in four steps</h2>
           </div>
           <div className="su-steps">
-            <div className="su-step"><div className="n">1</div><h3>Enroll in Sādhana School</h3><p>Join the full 2026–27 year. Apprentices must be year-long students.</p></div>
-            <div className="su-step"><div className="n">2</div><h3>Get your application link</h3><p>We email it to you as soon as you enroll.</p></div>
-            <div className="su-step"><div className="n">3</div><h3>Apply</h3><p>Tell us about your teaching, training, coaching or facilitation experience.</p><span className="date">Due Fri, Oct 16</span></div>
-            <div className="su-step"><div className="n">4</div><h3>Hear back from us</h3><p>If accepted, the apprenticeship begins with the school year. If not, continue in Sādhana School or take a full refund within 30 days.</p></div>
+            <div className="su-step"><div className="n">1</div><h3>Apply</h3><p>Tell us about your teaching, training, coaching or facilitation experience.</p><span className="date">Due Fri, Oct 16</span></div>
+            <div className="su-step"><div className="n">2</div><h3>Enroll</h3><p>Join the full Sādhana School year and the apprenticeship in one checkout. Apprentices must be year-long students.</p></div>
+            <div className="su-step"><div className="n">3</div><h3>Hear back from us</h3><p>Jacob reviews every application. If you&apos;re not accepted, you receive a full refund.</p></div>
+            <div className="su-step"><div className="n">4</div><h3>Begin</h3><p>The apprenticeship starts with the school year on Wednesday, October 21.</p></div>
           </div>
         </div>
       </section>
@@ -309,11 +307,11 @@ export default function SahrdayaUpayaPage() {
           <div className="sec-head center">
             <span className="eyebrow">Tuition</span>
             <h2>Sādhana School, plus the apprenticeship</h2>
-            <p>You pay for Sādhana School now. Sahṛdaya Upāya tuition is charged only if you&apos;re accepted.</p>
+            <p>Apprentices enroll in the Sādhana School year and Sahṛdaya Upāya together. If you&apos;re not accepted, you receive a full refund.</p>
           </div>
           <div className="su-plans">
             <article className="plan featured">
-              <span className="badge-top">Step one</span>
+              <span className="badge-top">The year</span>
               <h3>Sādhana School, full year</h3>
               <div className="amt">$1,797<small>2026–27</small></div>
               <ul className="feat">
@@ -321,21 +319,23 @@ export default function SahrdayaUpayaPage() {
                 <li><span>✓</span>Summer immersion: Being With the Heart</li>
                 <li><span>✓</span>Saturday Open Sessions at all eight immersions</li>
                 <li><span>✓</span>100 hours of study</li>
-                <li><span>✓</span>Your Sahṛdaya Upāya application link</li>
+                <li><span>✓</span>Open to all, no application needed</li>
               </ul>
-              <a className="btn btn-primary" href="#" data-todo="Circle checkout: SS full year">Enroll for the year</a>
+              <a className="btn btn-primary" href="https://ss.embodiedphilosophy.com/checkout/sadhana-school-year">Enroll for the year</a>
             </article>
             <article className="plan">
               <span className="badge-top" style={{ background: 'var(--terra)' }}>By application</span>
               <h3>Sahṛdaya Upāya</h3>
-              <div className="amt">$1,300<small>if accepted</small></div>
+              <div className="amt">$1,797<span className="plus">+</span>$1,300</div>
+              <p className="amt-sub">Sādhana School year + apprenticeship</p>
               <ul className="feat">
                 <li><span>✓</span>Eight Sunday Practicums</li>
                 <li><span>✓</span>Nine monthly one-on-ones with Jacob</li>
                 <li><span>✓</span>Private Mentorship space and events</li>
                 <li><span>✓</span>100-hour certificate on completion</li>
               </ul>
-              <p className="note">Pay-over-time options available at checkout.</p>
+              <a className="btn btn-primary" href="/sahrdaya-upaya/apply">Apply Now</a>
+              <p className="note">Apply first, then enroll. Full refund if you&apos;re not accepted. Pay-over-time options available at checkout.</p>
             </article>
           </div>
           <div className="su-guarantee">
@@ -355,8 +355,8 @@ export default function SahrdayaUpayaPage() {
           <div className="faq">
             <details open><summary>Do I need to be enrolled in Sādhana School?</summary><div className="ans">Yes. The Sādhana School process of study and practice is foundational to the apprenticeship, so every apprentice enrolls in the full 2026–27 year.</div></details>
             <details><summary>Do I need teaching experience?</summary><div className="ans">In most cases. We look for past experience in teaching, training, coaching or facilitation, though some applicants are accepted on the strength of their interest and background. Without it, you&apos;re very welcome in Sādhana School, including the Open Session half of every immersion.</div></details>
-            <details><summary>What does Sahṛdaya Upāya cost?</summary><div className="ans">$1,300, charged in addition to Sādhana School tuition and only if you&apos;re accepted. Pay-over-time options are available at checkout.</div></details>
-            <details><summary>What if I&apos;m not accepted?</summary><div className="ans">You owe nothing more. Continue as a Sādhana School student, or receive a full refund within your first 30 days.</div></details>
+            <details><summary>What does Sahṛdaya Upāya cost?</summary><div className="ans">$1,300, in addition to the $1,797 Sādhana School year. You apply first, then enroll in both together; if you&apos;re not accepted, you receive a full refund. Pay-over-time options are available at checkout.</div></details>
+            <details><summary>What if I&apos;m not accepted?</summary><div className="ans">You receive a full refund. If you&apos;d like to stay on in Sādhana School, we simply refund the $1,300 apprenticeship tuition instead.</div></details>
             <details><summary>Is it online?</summary><div className="ans">Yes. The program runs October 2026 to July 2027 online. The retreat practicum can be completed in person or in the online facilitated version.</div></details>
             <details><summary>How much time does it take each week?</summary><div className="ans">On average, about 2–3 hours a week on top of Sādhana School. Immersion weekends carry the most, with a 2.5-hour Open Session and a 2-hour Practicum. Alongside this you keep your Sādhana School commitments: the weekly 150-minute live session during each 8-week term, and a daily Sahṛdaya practice of 20–40 minutes split between two sits.</div></details>
             <details><summary>Do I need to know Sanskrit?</summary><div className="ans">No.</div></details>
@@ -369,9 +369,9 @@ export default function SahrdayaUpayaPage() {
         <div className="wrap">
           <span className="eyebrow">Applications close Friday, October 16</span>
           <h2>Teach from the ground of your <em>own practice</em></h2>
-          <p>Enroll in Sādhana School for the year, and we&apos;ll send your Sahṛdaya Upāya application the same day.</p>
+          <p>Apply now, then enroll in Sādhana School and the apprenticeship together. If you&apos;re not accepted, you receive a full refund.</p>
           <div className="btns">
-            <a className="btn btn-primary" href="#enroll">Enroll &amp; apply</a>
+            <a className="btn btn-primary" href="/sahrdaya-upaya/apply">Apply now</a>
             <a className="btn btn-ghost" href="/sadhana-school">Explore Sādhana School</a>
           </div>
         </div>

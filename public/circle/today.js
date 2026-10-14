@@ -18,13 +18,20 @@
   // (?coupon_code=). Put the coupon's code in FALL_TO_YEAR_COUPON once it exists in Circle (Paywalls → Coupons);
   // until then the suggestion stays hidden.
   var FALL_TO_YEAR_COUPON = '';
+  // Seasonal sādhana credit (Navarātri…): what someone offered counts toward the Fall season or the full year for
+  // 14 days afterwards (offers and amounts: lib/member/credits.js, from Kit). One set of Circle coupons, a "ladder",
+  // valid on the Fall and Year paywalls: each person gets the largest rung at or below what they paid.
+  // Fill in each rung's code once it exists in Circle (Paywalls → Coupons); rungs without a code are skipped.
+  var CREDIT_LADDER = [[10, ''], [20, ''], [30, ''], [40, ''], [50, ''], [60, ''], [79, ''], [100, ''], [149, ''], [200, ''], [250, ''], [297, '']];
+  var CREDIT_CHECKOUT = { fall: '', year: 'sadhana-school-year' }; // Circle checkout slugs; Fall's to fill in
+  var CREDIT_PRICES = { fall: 497, year: 1797 };
   var UPGRADE_FALL = FALL_TO_YEAR_COUPON ? '/checkout/sadhana-school-year?coupon_code=' + encodeURIComponent(FALL_TO_YEAR_COUPON) : '';
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var FEED = /^\/(feed|home)?\/?$/;
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (Sahṛdaya Upāya · Mentorship)
   var LINKS = [['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
   var MENTEE_LINKS = [['Mentorship Circle', '/c/mentorship-circle'], ['Mentorship Sessions', '/c/mentorship-sessions'], ['Apprentice Workbook', '/c/apprentice-workbook']];
-  var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false, cohort: null, cohortErr: '', pick: '' };
+  var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false, credits: {}, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
     none: 'Your practice · Today', meditation: 'Meditation Pass · Today', wisdom: 'Wisdom School · Today',
@@ -50,6 +57,33 @@
   function seasonKey() { var d = new Date(), m = d.getMonth(); return d.getFullYear() + '-' + (m < 2 ? 'w' : m < 5 ? 'sp' : m < 8 ? 'su' : 'f'); }
   function local(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   function nudgeKey() { return 'ep_nudge_' + state.tier + '_' + seasonKey(); }
+  function money(n) { return '$' + (Math.round(n * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+  function longDate(s) { try { return new Date(s + 'T12:00:00Z').toLocaleDateString(undefined, { day: 'numeric', month: 'long', timeZone: 'UTC' }); } catch (e) { return s; } }
+  // The seasonal sādhana credit, if this person has one and isn't already in the Fall season or the year.
+  function creditOffer(evenHidden) {
+    if (['ss_year', 'mentee'].indexOf(state.tier) >= 0 || state.seasons.indexOf('fall') >= 0) return null;
+    var keys = Object.keys(state.credits || {});
+    for (var i = 0; i < keys.length; i++) {
+      var c = state.credits[keys[i]], rung = null;
+      CREDIT_LADDER.forEach(function (r) { if (r[1] && r[0] <= c.amount) rung = r; });
+      if (!rung) continue;
+      if (!evenHidden && local('ep_credit_' + keys[i]) === 'hidden' && !(isAdmin() && /[?&]credit=/.test(location.search))) continue;
+      var opts = [];
+      if (CREDIT_CHECKOUT.fall) opts.push({ label: 'Fall season', href: '/checkout/' + CREDIT_CHECKOUT.fall + '?coupon_code=' + encodeURIComponent(rung[1]), price: CREDIT_PRICES.fall - rung[0] });
+      if (CREDIT_CHECKOUT.year) opts.push({ label: 'The full year', href: '/checkout/' + CREDIT_CHECKOUT.year + '?coupon_code=' + encodeURIComponent(rung[1]), price: CREDIT_PRICES.year - rung[0] });
+      if (opts.length) return { key: keys[i], name: c.name, paid: c.amount, credit: rung[0], until: c.until, opts: opts };
+    }
+    return null;
+  }
+  function creditHtml(o) {
+    return '<div class="ept-nudge" role="note" aria-label="Your ' + esc(o.name) + ' credit"><div class="ept-nt"><span class="ept-l ept-red">Your ' + esc(o.name) + ' offering · until ' + esc(longDate(o.until)) + '</span>' +
+      '<button type="button" class="ept-x" data-act="credit-hide" data-key="' + esc(o.key) + '" aria-label="Hide this offer">×</button></div>' +
+      '<strong class="ept-n-h">Carry ' + esc(o.name) + ' into Sādhana School</strong>' +
+      '<span>What you offered for ' + esc(o.name) + ' counts: ' + money(o.credit) + ' off the Fall season, The Heart of Recognition, or the full year of The Path of Recognition. The credit is already applied at checkout.</span>' +
+      '<div class="ept-row">' + o.opts.map(function (x, i) { return '<a class="ept-q' + (i === 0 ? ' ept-q-red' : '') + '" href="' + esc(x.href) + '">' + esc(x.label) + ' · ' + money(x.price) + '</a>'; }).join('') + '</div>' +
+      '<button type="button" class="ept-why" data-act="why" aria-expanded="' + state.why + '">Why am I seeing this?</button>' +
+      (state.why ? '<span class="ept-s ept-whyt">You joined ' + esc(o.name) + ' this season. For 14 days afterwards, what you offered can go toward Sādhana School. Hide this with × if it isn’t for you.</span>' : '') + '</div>';
+  }
   function nudge() {
     var n = NUDGES[state.tier], p = state.practice;
     if (!n || !n.href || !p) return null;
@@ -83,12 +117,12 @@
 
   function signIn() {
     var saved = store('ep_today_session');
-    if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now()) { state.session = s.session; state.tier = s.tier; state.seasons = s.seasons || []; state.admin = !!s.admin; state.first = s.first; return Promise.resolve(); } } catch (e) {} }
+    if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now()) { state.session = s.session; state.tier = s.tier; state.seasons = s.seasons || []; state.credits = s.credits || {}; state.admin = !!s.admin; state.first = s.first; return Promise.resolve(); } } catch (e) {} }
     return waitForUser(25).then(function (u) {
       return api('/api/member/session', { method: 'POST', body: { identityToken: u.identityToken } });
     }).then(function (r) {
-      state.session = r.session; state.tier = r.tier && r.tier.tier; state.seasons = (r.tier && r.tier.seasons) || []; state.first = r.firstName || ''; state.admin = !!r.admin;
-      store('ep_today_session', JSON.stringify({ session: r.session, tier: state.tier, seasons: state.seasons, admin: state.admin, first: state.first, until: Date.now() + 10 * 60 * 60 * 1000 }));
+      state.session = r.session; state.tier = r.tier && r.tier.tier; state.seasons = (r.tier && r.tier.seasons) || []; state.credits = (r.tier && r.tier.credits) || {}; state.first = r.firstName || ''; state.admin = !!r.admin;
+      store('ep_today_session', JSON.stringify({ session: r.session, tier: state.tier, seasons: state.seasons, credits: state.credits, admin: state.admin, first: state.first, until: Date.now() + 10 * 60 * 60 * 1000 }));
     });
   }
 
@@ -260,8 +294,9 @@
     if (p && p.reached && MS_TEXT[p.reached]) out += '<div class="ept-ms" role="status"><strong>' + MS_TEXT[p.reached] + '</strong>' + (p.nextMilestone ? ' Next milestone: ' + p.nextMilestone + ' days.' : '') + '</div>';
     if (state.form && p) out += formHtml(p);
     out += '</div>';
-    var n = nudge();
-    if (n) {
+    var co = creditOffer(), n = creditOffer(true) ? null : nudge(); // no other suggestion while a credit offer is open
+    if (co) out += creditHtml(co);
+    else if (n) {
       out += '<div class="ept-nudge" role="note" aria-label="A suggestion"><div class="ept-nt"><span class="ept-l ept-red">' + esc(n.eyebrow) + '</span>' +
         '<button type="button" class="ept-x" data-act="dismiss" aria-label="Hide this suggestion">×</button></div>' +
         '<strong class="ept-n-h">' + esc(n.title) + '</strong><span>' + esc(n.body) + '</span>' +
@@ -336,6 +371,7 @@
     if (t.dataset.act === 'form') { state.form = true; state.error = ''; render(); var i = e.currentTarget.querySelector('input[name=minutes]'); if (i) i.focus(); }
     if (t.dataset.act === 'close') { state.form = false; render(); }
     if (t.dataset.act === 'dismiss') { local(nudgeKey(), 'hidden'); state.hidNudge = true; render(); }
+    if (t.dataset.act === 'credit-hide') { local('ep_credit_' + t.dataset.key, 'hidden'); state.hidNudge = true; render(); }
     if (t.dataset.act === 'why') { state.why = !state.why; render(); }
   }
   function onInput(e) { if (e.target.name === 'minutes') state.minutes = e.target.value; }
@@ -399,6 +435,9 @@
       var se = (location.search.match(/[?&]season=([a-z,]+)/) || [])[1];
       state.seasons = as === 'ss_season' ? (se ? se.split(',') : ['fall']) : [];
     }
+    // Admin preview of the seasonal credit: ?credit=79 (as a Navarātri offering, ending in a week)
+    var cr = (location.search.match(/[?&]credit=([0-9.]+)/) || [])[1];
+    if (cr && isAdmin()) { var u = new Date(Date.now() + 7 * 864e5); state.credits = { navaratri_2026: { name: 'Navarātri', amount: parseFloat(cr), until: u.toISOString().slice(0, 10) } }; }
     if (!allowed()) return;
     css();
     return loadData().then(function () {

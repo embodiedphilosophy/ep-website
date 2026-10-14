@@ -167,16 +167,10 @@ export default async function SadhanaSchool() {
         </div>
       </div></section>
 
-      <section className="sec"><div className="wrap prose">
-        <h2>Questions</h2>
-        {FAQ.map(([q, a]) => <details key={q} className="faq"><summary>{q}</summary><p>{a}</p></details>)}
-        <p style={{ marginTop: 28 }}>Not ready for a year of study? Start with <a href="/wisdom-school">Wisdom School</a> or the free <a href={site.links.quiz}>Practice Report</a>.</p>
-      </div></section>
-
-      <section className="sec path" id="teacher-formation"><div className="wrap feature rev">
+      <section className="sec su-band" id="teacher-formation"><div className="wrap feature rev">
         <Collage img="woman-music" ground="slate" ring="#EBA329" className="art" alt="Kalighat painting of a woman playing a stringed instrument" />
         <div>
-          <span className="eyebrow">Teacher Formation · By application</span>
+          <span className="eyebrow light">Teacher Formation · By application</span>
           <h2>Sahṛdaya Upāya</h2>
           <p className="theme">Teach from the ground of your own practice</p>
           <p style={{ marginTop: 18 }}>A 100-hour apprenticeship in Sahṛdaya Meditation and Subtle Liberation-Based Teaching, held alongside the Sādhana School year. For yoga teachers, facilitators, therapists and scholar-practitioners who want to carry this practice into their own teaching.</p>
@@ -191,6 +185,12 @@ export default async function SadhanaSchool() {
             <a className="btn btn-ghost" href="/sahrdaya-upaya/apply">Apply now</a>
           </div>
         </div>
+      </div></section>
+
+      <section className="sec"><div className="wrap prose">
+        <h2>Questions</h2>
+        {FAQ.map(([q, a]) => <details key={q} className="faq"><summary>{q}</summary><p>{a}</p></details>)}
+        <p style={{ marginTop: 28 }}>Not ready for a year of study? Start with <a href="/wisdom-school">Wisdom School</a> or the free <a href={site.links.quiz}>Practice Report</a>.</p>
       </div></section>
     </>
   );

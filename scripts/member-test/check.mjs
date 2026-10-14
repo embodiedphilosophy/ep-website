@@ -56,3 +56,17 @@ assert.equal(r.streak, 0);
 r = summarise([], today); assert.equal(r.streak, 0); assert.equal(r.nextMilestone, 7);
 assert.equal(cleanToday('1999-01-01'), new Date().toISOString().slice(0, 10));
 console.log('practice: ok');
+
+// ---- mentor view: cohort summary (Wed 21 Oct 2026)
+const { cohortSummary } = await import('../../lib/member/practice.js');
+const mk = n => Array.from({ length: n }, (_, i) => { const d = new Date('2026-10-21T00:00:00Z'); d.setUTCDate(d.getUTCDate() - i); return { day: d.toISOString().slice(0, 10), minutes: 30 }; });
+const c = cohortSummary(
+  [{ name: 'Bea', email: 'BEA@x.com' }, { name: 'Ana', email: 'ana@x.com' }, { name: 'Cy', email: 'cy@x.com' }, { name: 'Di', email: 'di@x.com' }],
+  { 'bea@x.com': mk(21), 'ana@x.com': mk(10).slice(5), 'di@x.com': mk(3) },
+  '2026-10-21');
+assert.deepEqual(c.rows.map(r => r.name), ['Ana', 'Bea', 'Cy', 'Di']);
+const by = Object.fromEntries(c.rows.map(r => [r.name, r]));
+assert.equal(by.Bea.streak, 21); assert.equal(by.Bea.days8w, 21); assert.equal(by.Bea.minutes8w, 630); assert.equal(by.Bea.daysSince, 0);
+assert.equal(by.Ana.streak, 0); assert.equal(by.Ana.daysSince, 5); assert.equal(by.Cy.last, null);
+assert.deepEqual(c.attention.map(a => a.name + ':' + (a.good ? 'good' : 'check')), ['Ana:check', 'Bea:good', 'Cy:check']);
+console.log('cohort: ok');

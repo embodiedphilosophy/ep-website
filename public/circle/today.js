@@ -4,7 +4,8 @@
    Shows a Today strip at the top of the Circle feed for every membership (SHOW_FOR): daily practice log,
    the next event for their membership, (mentees) the monthly one-to-one, and one quiet, dismissible
    suggestion for the next step up (NUDGES). The full Today page (/c/today) is for PAGE_FOR.
-   Admins preview with ?today=1, a tier with ?as=<tier>, and the suggestion with ?nudge=1. */
+   Admins preview with ?today=1, a tier with ?as=<tier>, and the suggestion with ?nudge=1.
+   Circle admins see the mentor view (the Sahṛdaya Upāya cohort's practice) at the top of /c/today. */
 (function () {
   if (window.__epToday) return; window.__epToday = true;
 
@@ -13,14 +14,17 @@
   var TIERS = ['none', 'meditation', 'wisdom', 'wisdom_plus', 'ss_season', 'ss_year', 'mentee'];
   var SHOW_FOR = TIERS.slice(); // who sees the feed strip ('none' = course buyers, no membership)
   var PAGE_FOR = ['ss_year', 'mentee']; // who gets the full Today page
-  // Fall season → full year upgrade checkout. Leave empty until the SamCart product exists; the suggestion stays hidden.
-  var UPGRADE_FALL = '';
+  // Fall season → full year upgrade: the Circle checkout for the year, with a Circle coupon applied automatically
+  // (?coupon_code=). Put the coupon's code in FALL_TO_YEAR_COUPON once it exists in Circle (Paywalls → Coupons);
+  // until then the suggestion stays hidden.
+  var FALL_TO_YEAR_COUPON = '';
+  var UPGRADE_FALL = FALL_TO_YEAR_COUPON ? '/checkout/sadhana-school-year?coupon_code=' + encodeURIComponent(FALL_TO_YEAR_COUPON) : '';
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var FEED = /^\/(feed|home)?\/?$/;
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (Sahṛdaya Upāya · Mentorship)
   var LINKS = [['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
   var MENTEE_LINKS = [['Mentorship Circle', '/c/mentorship-circle'], ['Mentorship Sessions', '/c/mentorship-sessions'], ['Apprentice Workbook', '/c/apprentice-workbook']];
-  var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false };
+  var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
     none: 'Your practice · Today', meditation: 'Meditation Pass · Today', wisdom: 'Wisdom School · Today',
@@ -79,12 +83,12 @@
 
   function signIn() {
     var saved = store('ep_today_session');
-    if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now()) { state.session = s.session; state.tier = s.tier; state.seasons = s.seasons || []; state.first = s.first; return Promise.resolve(); } } catch (e) {} }
+    if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now()) { state.session = s.session; state.tier = s.tier; state.seasons = s.seasons || []; state.admin = !!s.admin; state.first = s.first; return Promise.resolve(); } } catch (e) {} }
     return waitForUser(25).then(function (u) {
       return api('/api/member/session', { method: 'POST', body: { identityToken: u.identityToken } });
     }).then(function (r) {
-      state.session = r.session; state.tier = r.tier && r.tier.tier; state.seasons = (r.tier && r.tier.seasons) || []; state.first = r.firstName || '';
-      store('ep_today_session', JSON.stringify({ session: r.session, tier: state.tier, seasons: state.seasons, first: state.first, until: Date.now() + 10 * 60 * 60 * 1000 }));
+      state.session = r.session; state.tier = r.tier && r.tier.tier; state.seasons = (r.tier && r.tier.seasons) || []; state.first = r.firstName || ''; state.admin = !!r.admin;
+      store('ep_today_session', JSON.stringify({ session: r.session, tier: state.tier, seasons: state.seasons, admin: state.admin, first: state.first, until: Date.now() + 10 * 60 * 60 * 1000 }));
     });
   }
 
@@ -97,8 +101,39 @@
         var re = EVENTS_FOR[state.tier];
         state.events = upcoming.filter(function (e) { return !re || re.test([e.program, e.series, e.title].join(' ')); }).slice(0, 5);
         state.event = state.events[0] || null;
-      }).catch(function () {})
+      }).catch(function () {}),
+      mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null
     ]);
+  }
+  // Mentor view: Circle admins on /c/today, unless previewing a member's view with ?as=
+  function mentorView() { return isAdmin() && !/[?&]as=/.test(location.search); }
+  function heat(grid, big) {
+    return '<div class="ept-heat' + (big ? ' ept-heat-l' : '') + '" role="img" aria-label="Last eight weeks of practice">' + grid.map(function (col) {
+      return '<div class="ept-col">' + col.map(function (c) { return '<span class="ept-d ' + c.state + '" title="' + esc(c.day) + '"></span>'; }).join('') + '</div>';
+    }).join('') + '</div>';
+  }
+  function lastText(r) { return r.last === null ? 'No practice logged yet' : r.daysSince === 0 ? 'Practised today' : r.daysSince === 1 ? 'Last practised yesterday' : 'Last practised ' + r.daysSince + ' days ago'; }
+  function cohortHtml() {
+    var c = state.cohort;
+    var out = '<section class="ept-card ept-wide" aria-labelledby="ept-co"><div class="ept-ch"><h2 id="ept-co" class="ept-h2">Your cohort</h2><span class="ept-l">Sahṛdaya Upāya · mentor view</span></div>';
+    if (!c) return out + '<span class="' + (state.cohortErr ? 'ept-err' : 'ept-s') + '">' + esc(state.cohortErr || 'Loading…') + '</span></section>';
+    if (!c.rows.length) return out + '<span class="ept-s">No one has the mentorship tag in Kit yet.</span></section>';
+    out += '<span class="ept-s">Practice signals only: days and minutes. How a practice felt, and anything written in the Inner Travelogue, stays with the mentee.</span>';
+    if (c.attention.length) {
+      out += '<div class="ept-l">Worth a word this week</div><div class="ept-chips">' + c.attention.map(function (a) {
+        return '<button type="button" class="ept-att' + (a.good ? ' good' : '') + '" data-pick="' + esc(a.email) + '"><strong>' + esc(a.name) + '</strong> · ' + esc(a.why) + '</button>';
+      }).join('') + '</div>';
+    }
+    out += '<div class="ept-tbl" role="list"><div class="ept-tr ept-th" aria-hidden="true"><span>Mentee</span><span>Streak</span><span>This week</span><span>8 weeks</span><span>Last practice</span></div>';
+    out += c.rows.map(function (r) {
+      return '<button type="button" role="listitem" class="ept-tr" data-pick="' + esc(r.email) + '" aria-pressed="' + (state.pick === r.email) + '"><span class="ept-t">' + esc(r.name) + '</span><span class="ept-mono">' + r.streak + 'd</span><span class="ept-mono">' + r.weekCount + '/7</span><span class="ept-mono">' + r.days8w + ' days · ' + Math.round(r.minutes8w / 60 * 10) / 10 + ' h</span><span class="ept-s">' + esc(lastText(r)) + '</span></button>';
+    }).join('') + '</div>';
+    var m = c.rows.filter(function (r) { return r.email === state.pick; })[0];
+    if (m) {
+      out += '<div class="ept-det" aria-live="polite"><div class="ept-ch"><h3 class="ept-h2">' + esc(m.name) + '</h3><a class="ept-q" href="mailto:' + esc(m.email) + '">Email</a></div>' +
+        '<span class="ept-s">' + m.streak + '-day streak · ' + m.weekCount + ' of 7 this week · ' + esc(lastText(m)) + '</span>' + heat(m.grid, true) + '</div>';
+    }
+    return out + '</section>';
   }
 
   function css() {
@@ -161,7 +196,16 @@
       '.ept-q-red{border-color:#A5432A;color:#A5432A}',
       '.ept-why{align-self:flex-start;background:transparent;border:0;padding:0;font-size:12px;color:#6B6152;text-decoration:underline;text-underline-offset:3px;cursor:pointer}',
       '.ept-whyt{background:#F2E8D6;border-radius:4px;padding:8px 10px}',
-      '.ept-hid{margin:10px 0 0}'
+      '.ept-hid{margin:10px 0 0}',
+      '.ept-wide{grid-column:1/-1}',
+      '.ept-att{background:#FFFDF8;border:1px solid #D8C9AE;border-left:3px solid #A5432A;border-radius:4px;min-height:36px;padding:6px 10px;font-size:12.5px;text-align:left;cursor:pointer;color:#1E1A14}',
+      '.ept-att.good{border-left-color:#6B8F5E}',
+      '.ept-tbl{display:flex;flex-direction:column;border:1px solid #E3D8C6;border-radius:4px;overflow:hidden}',
+      '.ept-tr{display:grid;grid-template-columns:minmax(120px,1.4fr) 70px 80px minmax(110px,1fr) minmax(140px,1.2fr);gap:10px;align-items:center;padding:10px 12px;background:#FFFDF8;border:0;border-top:1px solid #E3D8C6;text-align:left;font:inherit;color:inherit;cursor:pointer}',
+      '.ept-tr:first-child{border-top:0}.ept-tr:hover{background:#F6EEE1}.ept-tr[aria-pressed="true"]{background:#F2E8D6;box-shadow:inset 3px 0 0 #A5432A}',
+      '.ept-th{cursor:default;background:#F8F1E7;font:500 10.5px/1.4 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;color:#6B6152;text-transform:uppercase}.ept-th:hover{background:#F8F1E7}',
+      '@media (max-width:640px){.ept-tr{grid-template-columns:1fr 60px 60px}.ept-tr>:nth-child(4),.ept-tr>:nth-child(5){display:none}}',
+      '.ept-det{display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid #E3D8C6;border-radius:4px;background:#FFFDF8}'
     ].join('\n');
     document.head.appendChild(s);
   }
@@ -221,7 +265,7 @@
       out += '<div class="ept-nudge" role="note" aria-label="A suggestion"><div class="ept-nt"><span class="ept-l ept-red">' + esc(n.eyebrow) + '</span>' +
         '<button type="button" class="ept-x" data-act="dismiss" aria-label="Hide this suggestion">×</button></div>' +
         '<strong class="ept-n-h">' + esc(n.title) + '</strong><span>' + esc(n.body) + '</span>' +
-        '<div class="ept-row"><a class="ept-q ept-q-red" href="' + esc(n.href) + '" target="_blank" rel="noopener">' + esc(n.cta) + '</a><span class="ept-s">' + esc(n.note) + '</span></div>' +
+        '<div class="ept-row"><a class="ept-q ept-q-red" href="' + esc(n.href) + '"' + (/^\//.test(n.href) ? '' : ' target="_blank" rel="noopener"') + '>' + esc(n.cta) + '</a><span class="ept-s">' + esc(n.note) + '</span></div>' +
         '<button type="button" class="ept-why" data-act="why" aria-expanded="' + state.why + '">Why am I seeing this?</button>' +
         (state.why ? '<span class="ept-s ept-whyt">' + esc(n.why || ('You’ve logged ' + n.at + ' days of practice.')) + ' You can hide it with ×, and we won’t show it again this season.</span>' : '') + '</div>';
     } else if (state.hidNudge) out += '<p class="ept-s ept-hid" role="status">Suggestion hidden. We won’t show it again this season.</p>';
@@ -243,6 +287,7 @@
     var out = '<div class="ept-top"><div><div class="ept-eye">' + esc(EYEBROW[state.tier] || 'Today') + ' · ' + esc(d) + '</div>' +
       '<h1 class="ept-h ept-h1">Good ' + greet() + ', <em>' + esc(state.first || 'sādhaka') + '</em>.</h1></div></div>';
     out += '<div class="ept-pg">';
+    if (mentorView()) out += cohortHtml();
     // Practice
     out += '<section class="ept-card" aria-labelledby="ept-p"><div class="ept-ch"><h2 id="ept-p" class="ept-h2">Practice</h2><span class="ept-l">Sahṛdaya Meditation</span></div>';
     if (p) {
@@ -283,8 +328,9 @@
   }
 
   function onClick(e) {
-    var t = e.target.closest('[data-act],[data-q],[data-x]');
+    var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick]');
     if (!t || !e.currentTarget.contains(t)) return;
+    if (t.dataset.pick) { state.pick = state.pick === t.dataset.pick ? '' : t.dataset.pick; render(); return; }
     if (t.dataset.x) { var xs = state.extras || []; var i0 = xs.indexOf(t.dataset.x); state.extras = i0 >= 0 ? xs.filter(function (z) { return z !== t.dataset.x; }) : xs.concat([t.dataset.x]); render(); return; }
     if (t.dataset.q) { state.quality = state.quality === t.dataset.q ? '' : t.dataset.q; render(); return; }
     if (t.dataset.act === 'form') { state.form = true; state.error = ''; render(); var i = e.currentTarget.querySelector('input[name=minutes]'); if (i) i.focus(); }

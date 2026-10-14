@@ -11,8 +11,8 @@ export async function POST(req) {
     const { identityToken } = await req.json().catch(() => ({}));
     const who = await verifyCircleToken(identityToken);
     const tier = await tierFor(who.email);
-    const session = signSession({ uid: who.uid, email: who.email, tier: tier.tier });
-    return NextResponse.json({ session, firstName: who.firstName, tier }, { headers: h });
+    const session = signSession({ uid: who.uid, email: who.email, tier: tier.tier, admin: !!who.isAdmin });
+    return NextResponse.json({ session, firstName: who.firstName, tier, admin: !!who.isAdmin }, { headers: h });
   } catch (e) {
     return NextResponse.json({ error: e.message || 'Sign-in failed' }, { status: 401, headers: h });
   }

@@ -5,6 +5,8 @@ import { getEvents } from '@/lib/events';
 import { getSeasons } from '@/lib/seasons';
 import { getSite, getTestimonials } from '@/lib/content';
 import { longDate, month, day } from '@/lib/dates';
+import RetreatGallery from '@/components/RetreatGallery';
+import retreat from '@/data/retreat-taos-2026.json';
 
 export const revalidate = 300;
 export const metadata = {
@@ -119,6 +121,14 @@ export default async function SadhanaSchool() {
         <div className="sec-head"><span className="eyebrow">Coming up</span><h2>Sessions and workshops</h2></div>
         <Events events={events} limit={8} links={site.links} photos={site.photos} hideFilters allSessions />
       </div></section>
+
+      {retreat.photos.length > 0 && (
+        <section className="sec" id="retreat"><div className="wrap">
+          <div className="sec-head"><span className="eyebrow">Summer Retreat · Taos, New Mexico · 2026</span><h2>Practicing together in Taos</h2>
+            <p>Each summer the year gathers in person for the retreat. A few moments from our week in the high desert of northern New Mexico.</p></div>
+          <RetreatGallery photos={retreat.photos} />
+        </div></section>
+      )}
 
       {quotes.length > 0 && (
         <section className="sec"><div className="wrap">

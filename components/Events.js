@@ -1,5 +1,8 @@
 'use client';
 import { useState } from 'react';
+
+// Event cards: hovering (or focusing) a card reveals its summary from the Master Schedule.
+// On touch screens there is no hover, so cards with a summary get a small "Details" toggle.
 import { month, day } from '@/lib/dates';
 import { site } from '@/lib/site';
 
@@ -72,19 +75,32 @@ export default function Events({ events, limit = 6, hideFilters = false, links =
       <div className="events-grid" aria-live="polite">
         {list.length === 0 ? (
           <div className="events-empty">{EMPTY[filter]} <a href="/#join">Get the Weekly Scaffolding</a> to hear about new dates first.</div>
-        ) : list.map(e => (
-          <div className="evt" key={e.id || e.title + e.date}>
+        ) : list.map(e => <EventCard key={e.id || e.title + e.date} e={e} links={links} photos={photos} />)}
+      </div>
+    </>
+  );
+}
+
+function EventCard({ e, links, photos }) {
+  const [open, setOpen] = useState(false);
+  const summary = String(e.summary || '').trim();
+  const sid = `evt-sum-${String(e.id || e.title + e.date).replace(/[^a-z0-9-]+/gi, '-')}`;
+  return (
+          <div className={`evt${summary ? ' has-sum' : ''}${open ? ' open' : ''}`}>
             <div className="date-chip"><div className="m">{month(e.date)}</div><div className="d">{day(e.date)}</div></div>
             <div>
               <div className="ttl">{e.title}</div>
               {e.host && <div className="host">{e.host}</div>}
               <div className="meta"><Pill price={e.price} />{hasDropIn(e) && <span className="pill dropin">Drop-In</span>} {[e.time, e.note].filter(Boolean).join(', ')}</div>
               <Teachers list={e.teachers} photos={photos} />
+              {summary && <>
+                <button type="button" className="sum-toggle" aria-expanded={open} aria-controls={sid} onClick={() => setOpen(o => !o)}>
+                  {open ? 'Hide details' : 'Details'} <span aria-hidden="true">{open ? '−' : '+'}</span>
+                </button>
+                <div className="sum" id={sid}><div><p>{summary}</p></div></div>
+              </>}
             </div>
             <Action e={e} links={links} />
           </div>
-        ))}
-      </div>
-    </>
   );
 }

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { samcartTags } from '@/lib/membership';
 import { applyTags, authorized, tellDirectors } from '@/lib/membersync';
+import { samcartCredits } from '@/lib/member/credits';
+import { setFields } from '@/lib/kit';
 
 // SamCart → Kit member tags. SamCart > Apps > Webhooks (marketplace-wide rule), notify URL:
 //   https://<site>/api/members/samcart?key=MEMBERS_WEBHOOK_SECRET
@@ -23,6 +25,19 @@ export async function POST(req) {
   const email = pick(c.email, b.email, b.customer_email);
   const name = pick(c.first_name, b.first_name);
   console.log('SamCart webhook', type, JSON.stringify(b).slice(0, 800));
+
+  // Pay-what-you-can seasonal sādhanas (Navarātri…): remember what they offered, for the Fall / full-year credit.
+  const credits = samcartCredits(b);
+  if (Object.keys(credits).length && email) {
+    try {
+      const refund = /refund|cancel/.test(type);
+      if (refund || /order|purchase|charge|started/.test(type)) {
+        const fields = Object.fromEntries(Object.keys(credits).map(k => [k, refund ? '' : String(credits[k])]));
+        await setFields(email, fields, name);
+        console.log('SamCart credit', type, email, JSON.stringify(fields));
+      }
+    } catch (e) { console.error('SamCart credit failed', e.message); }
+  }
 
   const tags = [...new Set(products(b).flatMap(samcartTags))];
   if (!tags.length) return NextResponse.json({ skipped: `no member tags for products ${products(b).join(', ') || '(none)'}` });

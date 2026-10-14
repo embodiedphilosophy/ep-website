@@ -70,3 +70,15 @@ assert.equal(by.Bea.streak, 21); assert.equal(by.Bea.days8w, 21); assert.equal(b
 assert.equal(by.Ana.streak, 0); assert.equal(by.Ana.daysSince, 5); assert.equal(by.Cy.last, null);
 assert.deepEqual(c.attention.map(a => a.name + ':' + (a.good ? 'good' : 'check')), ['Ana:check', 'Bea:good', 'Cy:check']);
 console.log('cohort: ok');
+
+// ---- seasonal sādhana credits
+const { parseAmount, creditsFromFields, samcartCredits } = await import('../../lib/member/credits.js');
+assert.equal(parseAmount('$79.00'), 79); assert.equal(parseAmount('149.5'), 149.5); assert.equal(parseAmount(''), 0);
+assert.deepEqual(creditsFromFields({ navaratri_2026_paid: '79' }, '2026-10-25'), { navaratri_2026: { name: 'Navarātri', amount: 79, until: '2026-11-03' } });
+assert.deepEqual(creditsFromFields({ navaratri_2026_paid: '79' }, '2026-11-04'), {}, 'offer over');
+assert.deepEqual(creditsFromFields({ navaratri_2026_paid: '' }, '2026-10-25'), {});
+assert.deepEqual(creditsFromFields(undefined, '2026-10-25'), {});
+assert.deepEqual(samcartCredits({ products: [{ id: '999', name: 'Navarātri & the Devī Gītā', price: '149.00' }], order: { total: '149.00' } }), { navaratri_2026_paid: 149 });
+assert.deepEqual(samcartCredits({ product: { name: 'Navaratri 2026' }, order: { total: 35 } }), { navaratri_2026_paid: 35 });
+assert.deepEqual(samcartCredits({ products: [{ id: '1117471', name: 'Sadhana School Fall 2026', price: 497 }] }), {});
+console.log('credits: ok');

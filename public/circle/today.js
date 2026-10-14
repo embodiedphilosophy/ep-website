@@ -93,15 +93,18 @@
 
   function anchor() {
     // Circle's "Start a post" box at the top of the feed; the strip goes just above it.
-    var nodes = document.querySelectorAll('main button, main div, main span');
+    // Circle's feed column has a "space-y-*" class (pinned welcome post, composer, posts); the strip goes at its top.
+    var nodes = document.querySelectorAll('p, span, div, button');
     for (var i = 0; i < nodes.length; i++) {
       var n = nodes[i];
       if (n.children.length === 0 && /^\s*Start a post\s*$/.test(n.textContent || '')) {
-        var card = n;
-        for (var k = 0; k < 8 && card && card.parentElement; k++) {
-          if (card.parentElement.children.length > 1 && card.offsetWidth > 300) return card;
+        var card = n, fallback = null;
+        for (var k = 0; k < 12 && card && card.parentElement; k++) {
+          if (/(^|\s)space-y-/.test(String(card.parentElement.className || ''))) return card.parentElement.firstElementChild;
+          if (!fallback && card.parentElement.children.length > 1 && card.offsetWidth > 300) fallback = card;
           card = card.parentElement;
         }
+        if (fallback) return fallback;
       }
     }
     return null;

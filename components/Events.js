@@ -1,8 +1,28 @@
 'use client';
 import { useState } from 'react';
 
-// Event cards: hovering (or focusing) a card reveals its summary from the Master Schedule.
-// On touch screens there is no hover, so cards with a summary get a small "Details" toggle.
+// Event cards: hovering (or keyboard-focusing) a card reveals its summary from the Master Schedule.
+// Touch screens have no hover, so there the summary simply shows under the teachers.
+// The card styles live here (EVT_CSS) so this one file carries the whole look.
+const EVT_CSS = `
+.events-grid{align-items:start}
+.events-grid .evt{align-items:start}
+.events-grid .evt .date-chip{padding-top:4px}
+.events-grid .evt > .reg,.events-grid .evt > .reg-stack{align-self:start;padding-top:6px}
+.events-grid .evt .host{margin-top:6px}
+.events-grid .evt .meta{margin-top:10px}
+.events-grid .teachers{display:flex;align-items:center;gap:12px;margin-top:14px;font-size:13.5px;line-height:1.4;color:var(--ink)}
+.events-grid .faces{display:flex;flex:none}
+.events-grid .face{width:40px;height:40px;flex:none;margin-left:-10px;font-size:13px;border:2px solid var(--ivory)}
+.events-grid .face:first-child{margin-left:0}
+.events-grid .teachers > span:last-child{min-width:0}
+.events-grid .sum{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s ease,opacity .3s ease}
+.events-grid .sum > div{overflow:hidden;min-height:0}
+.events-grid .sum > div > div{padding-top:16px}
+.events-grid .sum p{margin:0;padding-top:14px;border-top:1px solid var(--line);font-size:14px;line-height:1.6;color:var(--ink-soft);max-width:46ch}
+@media (hover:hover){.events-grid .evt.has-sum:hover .sum,.events-grid .evt.has-sum:focus-within .sum{grid-template-rows:1fr;opacity:1}}
+@media (hover:none){.events-grid .sum{grid-template-rows:1fr;opacity:1}}
+`;
 import { month, day } from '@/lib/dates';
 import { site } from '@/lib/site';
 
@@ -72,6 +92,7 @@ export default function Events({ events, limit = 6, hideFilters = false, links =
           <button key={k} aria-pressed={filter === k} onClick={() => setFilter(k)}>{label}</button>
         ))}
       </div>}
+      <style dangerouslySetInnerHTML={{ __html: EVT_CSS }} />
       <div className="events-grid" aria-live="polite">
         {list.length === 0 ? (
           <div className="events-empty">{EMPTY[filter]} <a href="/#join">Get the Weekly Scaffolding</a> to hear about new dates first.</div>
@@ -82,11 +103,9 @@ export default function Events({ events, limit = 6, hideFilters = false, links =
 }
 
 function EventCard({ e, links, photos }) {
-  const [open, setOpen] = useState(false);
   const summary = String(e.summary || '').trim();
-  const sid = `evt-sum-${String(e.id || e.title + e.date).replace(/[^a-z0-9-]+/gi, '-')}`;
   return (
-          <div className={`evt${summary ? ' has-sum' : ''}${open ? ' open' : ''}`}>
+          <div className={`evt${summary ? ' has-sum' : ''}`}>
             <div className="date-chip"><div className="m">{month(e.date)}</div><div className="d">{day(e.date)}</div></div>
             <div>
               <div className="ttl">{e.title}</div>
@@ -94,10 +113,7 @@ function EventCard({ e, links, photos }) {
               <div className="meta"><Pill price={e.price} />{hasDropIn(e) && <span className="pill dropin">Drop-In</span>} {[e.time, e.note].filter(Boolean).join(', ')}</div>
               <Teachers list={e.teachers} photos={photos} />
               {summary && <>
-                <button type="button" className="sum-toggle" aria-expanded={open} aria-controls={sid} onClick={() => setOpen(o => !o)}>
-                  {open ? 'Hide details' : 'Details'} <span aria-hidden="true">{open ? '−' : '+'}</span>
-                </button>
-                <div className="sum" id={sid}><div><p>{summary}</p></div></div>
+                <div className="sum"><div><div><p>{summary}</p></div></div></div>
               </>}
             </div>
             <Action e={e} links={links} />

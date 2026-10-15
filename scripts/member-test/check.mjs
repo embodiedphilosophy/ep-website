@@ -130,3 +130,44 @@ assert.equal(pricing.CHECKOUT.fall, 'https://ss.embodiedphilosophy.com/checkout/
 assert.equal(pricing.CHECKOUT.winter, 'https://ss.embodiedphilosophy.com/checkout/w');
 assert.equal(pricing.yearQuote({ seasons: ['fall'] }, '2026-11-01').href, 'https://ss.embodiedphilosophy.com/checkout/sadhana-school-year?coupon_code=FALLYEAR');
 console.log('kit purchases + settings: ok');
+
+// ---- schedule: times in New York across the clock change, who sees what, one-to-ones, calendar feed
+const SC = await import('../../lib/member/schedule.js');
+assert.deepEqual(SC.parseTime('9am ET'), { h: 9, m: 0, zone: 'America/New_York' });
+assert.deepEqual(SC.parseTime('7:30 pm UK'), { h: 19, m: 30, zone: 'Europe/London' });
+assert.equal(SC.parseTime('12pm').h, 12); assert.equal(SC.parseTime('12am ET').h, 0); assert.equal(SC.parseTime(''), null);
+assert.equal(SC.zonedToUtc('2026-10-28', 9, 0, 'America/New_York').toISOString(), '2026-10-28T13:00:00.000Z', 'EDT');
+assert.equal(SC.zonedToUtc('2026-11-04', 9, 0, 'America/New_York').toISOString(), '2026-11-04T14:00:00.000Z', 'EST after 1 Nov');
+assert.equal(SC.zonedToUtc('2026-03-08', 9, 0, 'America/New_York').toISOString(), '2026-03-08T13:00:00.000Z', 'spring forward day');
+const EV = [
+  { id: 'a', date: '2026-10-21', time: '9am ET', program: 'sadhana', series: 'sadhana-fall-2026', title: 'The Heart of Recognition: Session 1' },
+  { id: 'b', date: '2026-11-04', time: '9am ET', program: 'sadhana', series: 'sadhana-fall-2026', title: 'The Heart of Recognition' },
+  { id: 'c', date: '2026-12-05', time: '', program: 'sadhana', series: '', title: 'SS Weekend Workshop — Winter on-ramp' },
+  { id: 'd', date: '2026-10-19', time: '12pm ET', program: 'wisdom', series: 'meditation-mondays', title: 'Meditation Mondays' },
+  { id: 'e', date: '2026-10-11', end_date: '2026-10-20', time: '9am ET', program: 'seasonal', title: 'Navarātri' },
+  { id: 'f', date: '2026-10-01', time: '9am ET', program: 'sadhana', series: 'sadhana-fall-2026', title: 'Past' },
+];
+let sch = SC.buildSchedule(EV, 'ss_year', '2026-10-15');
+assert.deepEqual(sch.map(i => i.id), ['a', 'b', 'c']);
+assert.equal(sch[0].kind, 'session'); assert.equal(sch[0].start, '2026-10-21T13:00:00.000Z'); assert.equal(sch[0].end, '2026-10-21T15:30:00.000Z');
+assert.equal(sch[1].start, '2026-11-04T14:00:00.000Z'); assert.equal(sch[2].kind, 'immersion'); assert.equal(sch[2].allDay, true);
+assert.equal(sch[0].live, '/c/fall-live-sessions');
+assert.deepEqual(SC.buildSchedule(EV, 'meditation', '2026-10-15').map(i => i.id), ['d']);
+assert.deepEqual(SC.buildSchedule(EV, 'none', '2026-10-15').map(i => i.id), ['e', 'd', 'a', 'b', 'c']);
+sch = SC.buildSchedule(EV, 'mentee', '2026-10-15');
+const ones = sch.filter(i => i.kind === 'one');
+assert.deepEqual(ones.map(o => [o.date, o.end_date, !!o.book]), [['2026-10-25', '2026-10-31', true], ['2026-11-24', '2026-11-30', false], ['2026-12-25', '2026-12-31', false]]);
+assert.equal(ones[0].title, 'October one-to-one with Jacob');
+process.env.MEMBER_SECRET = 'test-secret';
+const tok = SC.feedToken({ uid: 'u1', email: 'maya@x.com', tier: 'mentee' });
+assert.deepEqual(SC.readFeedToken(tok), { k: 'feed', uid: 'u1', email: 'maya@x.com', tier: 'mentee' });
+assert.equal(SC.readFeedToken(tok.slice(0, -2) + 'xx'), null); assert.equal(SC.readFeedToken('nope'), null);
+const ics = SC.toIcs(sch, { now: new Date('2026-10-15T12:00:00Z') });
+assert.match(ics, /^BEGIN:VCALENDAR\r\n/); assert.match(ics, /END:VCALENDAR\r\n$/);
+assert.equal((ics.match(/BEGIN:VEVENT/g) || []).length, sch.length);
+assert.match(ics, /DTSTART:20261021T130000Z\r\nDTEND:20261021T153000Z/);
+assert.match(ics, /DTSTART;VALUE=DATE:20261205\r\nDTEND;VALUE=DATE:20261206/);
+assert.match(ics, /DTSTART;VALUE=DATE:20261025\r\nDTEND;VALUE=DATE:20261101/);
+assert.ok(ics.split('\r\n').every(l => Buffer.byteLength(l) <= 75), 'lines folded');
+assert.match(ics, /SUMMARY:SS Weekend Workshop — Winter on-ramp/);
+console.log('schedule: ok');

@@ -74,24 +74,26 @@ console.log('cohort: ok');
 // ---- seasonal sādhana credits
 const { parseAmount, creditsFromFields, samcartCredits } = await import('../../lib/member/credits.js');
 assert.equal(parseAmount('$79.00'), 79); assert.equal(parseAmount('149.5'), 149.5); assert.equal(parseAmount(''), 0);
-assert.deepEqual(creditsFromFields({ navaratri_2026_paid: '79' }, '2026-10-25'), { navaratri_2026: { name: 'Navarātri', amount: 79, until: '2026-11-03' } });
-assert.deepEqual(creditsFromFields({ navaratri_2026_paid: '79' }, '2026-11-04'), {}, 'offer over');
-assert.deepEqual(creditsFromFields({ navaratri_2026_paid: '' }, '2026-10-25'), {});
+assert.deepEqual(creditsFromFields({ navaratri_credit: '79' }, '2026-10-25'), { navaratri_2026: { name: 'Navarātri', amount: 79, until: '2026-11-03' } });
+assert.deepEqual(creditsFromFields({ navaratri_credit: '79' }, '2026-11-04'), {}, 'offer over');
+assert.deepEqual(creditsFromFields({ navaratri_credit: '' }, '2026-10-25'), {});
 assert.deepEqual(creditsFromFields(undefined, '2026-10-25'), {});
-assert.deepEqual(samcartCredits({ products: [{ id: '999', name: 'Navarātri & the Devī Gītā', price: '149.00' }], order: { total: '149.00' } }), { navaratri_2026_paid: 149 });
-assert.deepEqual(samcartCredits({ product: { name: 'Navaratri 2026' }, order: { total: 35 } }), { navaratri_2026_paid: 35 });
+assert.deepEqual(samcartCredits({ products: [{ id: '999', name: 'Navarātri & the Devī Gītā', price: '149.00' }], order: { total: '149.00' } }), { navaratri_credit: 149 });
+assert.deepEqual(samcartCredits({ product: { name: 'Navaratri 2026' }, order: { total: 35 } }), { navaratri_credit: 35 });
 assert.deepEqual(samcartCredits({ products: [{ id: '1117471', name: 'Sadhana School Fall 2026', price: 497 }] }), {});
 console.log('credits: ok');
 
 // ---- year pricing: step-down price, what's paid counts, $797 floor
 const { yearQuote, memberOffer, stageOn, couponFor, STAGES } = await import('../../lib/member/pricing.js');
-const C = Object.fromEntries([10, 20, 30, 40, 50, 60, 79, 100, 149, 200, 250, 297, 497, 650, 900].map(a => [a, 'C' + a]));
+const C = Object.fromEntries([10, 20, 30, 40, 50, 60, 79, 100, 149, 200, 250, 297, 497, 650, 697, 900].map(a => [a, 'C' + a]));
 STAGES.find(s => s.key === 'spring').from ||= '2027-04-07'; // a Spring date for the test only
 const q = (seasons, day, credit = 0) => yearQuote({ seasons, credit }, day, C);
 assert.equal(stageOn('2026-10-15').year, 1797); assert.equal(stageOn('2026-10-21').year, 1997);
 assert.equal(stageOn('2027-02-01').year, 1697); assert.equal(stageOn('2027-04-10').year, 1447);
 assert.equal(q(['fall'], '2026-10-15').price, 1300);   // before term: the early $1,797
-assert.equal(q(['fall'], '2026-11-01').price, 1500);   // Fall term: $1,997 − $497
+assert.equal(q(['fall'], '2026-11-01').price, 1300);   // Fall term: Fall students keep $1,797 − $497
+assert.equal(q(['fall'], '2026-11-01').href.endsWith('coupon_code=C697'), true);
+assert.equal(q([], '2026-11-01', 85).price, 1918);    // a credit alone still starts from $1,997
 assert.equal(q(['winter'], '2027-02-01').price, 1200);
 assert.equal(q(['fall', 'winter'], '2027-02-01').price, 797);           // floor
 assert.equal(q(['spring'], '2027-04-10').price, 950);
@@ -106,10 +108,25 @@ assert.deepEqual(couponFor(85, C), { amount: 79, code: 'C79' });
 // offers
 assert.equal(memberOffer({ tier: 'ss_year' }, '2026-11-01', C), null);
 let o = memberOffer({ tier: 'ss_season', seasons: ['fall'] }, '2026-11-01', C);
-assert.equal(o.kind, 'upgrade'); assert.equal(o.options[0].price, 1500); assert.match(o.body, /Winter, Spring and the online summer immersion are yours for \$1,500/);
+assert.equal(o.kind, 'upgrade'); assert.equal(o.options[0].price, 1300); assert.match(o.body, /Winter, Spring and the online summer immersion are yours for \$1,300/);
 o = memberOffer({ tier: 'ss_season', seasons: ['spring'] }, '2027-04-10', C);
 assert.match(o.body, /The online summer immersion, with Fall and Winter on demand, is yours for \$950/);
 o = memberOffer({ tier: 'none', seasons: [], credits: { navaratri_2026: { name: 'Navarātri', amount: 149, until: '2026-11-03' } } }, '2026-11-01', C);
 assert.equal(o.kind, 'credit'); assert.equal(o.options.length, 1); assert.equal(o.options[0].price, 1848);
 assert.equal(memberOffer({ tier: 'wisdom', seasons: [] }, '2026-11-01', C), null);
 console.log('pricing: ok');
+
+// ---- Kit purchases → credit; Vercel pricing settings
+const { kitCredits } = await import('../../lib/member/credits.js');
+assert.deepEqual(kitCredits({ purchase: { status: 'paid', email_address: 'A@x.com', total: 35, products: [{ pid: 9, name: 'Navarātri 2027', unit_price: 35, quantity: 1 }] } }), [{ email: 'a@x.com', name: '', fields: { navaratri_credit: 35 } }]);
+assert.deepEqual(kitCredits({ events: [{ type: 'purchase.purchase_create', data: { purchase: { email_address: 'b@x.com', products: [{ name: 'Navaratri', unit_price: '79.00' }] } } }] })[0].fields, { navaratri_credit: 79 });
+assert.deepEqual(kitCredits({ purchase: { email_address: 'c@x.com', products: [{ name: 'Wisdom School', unit_price: 27 }] } })[0].fields, {});
+assert.equal(kitCredits({ purchase: { status: 'refunded', email_address: 'd@x.com', products: [{ name: 'Navaratri', unit_price: 5 }] } }).length, 0);
+const pricing = await import('../../lib/member/pricing.js');
+assert.equal(pricing.applySettings('not json'), false);
+assert.equal(pricing.applySettings({ coupons: { 697: ' FALLYEAR ' }, checkout: { fall: 'sadhana-school-fall', winter: 'https://ss.embodiedphilosophy.com/checkout/w' }, spring: '2027-04-07' }), true);
+assert.equal(pricing.COUPONS['697'], 'FALLYEAR');
+assert.equal(pricing.CHECKOUT.fall, 'https://ss.embodiedphilosophy.com/checkout/sadhana-school-fall');
+assert.equal(pricing.CHECKOUT.winter, 'https://ss.embodiedphilosophy.com/checkout/w');
+assert.equal(pricing.yearQuote({ seasons: ['fall'] }, '2026-11-01').href, 'https://ss.embodiedphilosophy.com/checkout/sadhana-school-year?coupon_code=FALLYEAR');
+console.log('kit purchases + settings: ok');

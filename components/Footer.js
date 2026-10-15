@@ -16,7 +16,7 @@ export default async function Footer() {
           <div className="fcol"><h4>Explore</h4>
             <a href="/events">Upcoming Events</a><a href="/living-room-lectures">Living Room Lectures</a><a href="/podcast">Chitheads Podcast</a><a href={site.links.tarkaSubstack}>Tarka Journal</a><a href="https://go.embodiedphilosophy.com/scaffolding">The Weekly Scaffolding</a></div>
           <div className="fcol"><h4>About</h4>
-            <a href="/about">Our Story</a><a href="/teachers">Teachers</a><a href="/contribute">Contribute</a><a href="/help">Help Centre</a><a href="/contact">Contact</a></div>
+            <a href="/about">Our Story</a><a href="/teachers">Teachers</a><a href="/contribute">Contribute</a><a href="/help">Help Hub</a><a href="/contact">Contact</a></div>
         </div>
         <p className="credits">Images: 19th-century Kalighat paintings. Cleveland Museum of Art (CC0); Wellcome Collection and Bodleian Library (CC BY 4.0); Bodleian Library, British Library, LACMA, Victoria and Albert Museum (public domain); Wikimedia Commons contributors (CC BY-SA).</p>
         <div className="foot-bottom">

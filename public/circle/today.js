@@ -13,6 +13,8 @@
   if (!window.__epCe) { var ce = document.createElement('script'); ce.src = 'https://www.embodiedphilosophy.com/circle/ce.js'; ce.defer = true; document.head.appendChild(ce); }
   // The Practice Portfolio (/c/portfolio) likewise
   if (!window.__epPortfolio) { var pf = document.createElement('script'); pf.src = 'https://www.embodiedphilosophy.com/circle/portfolio.js'; pf.defer = true; document.head.appendChild(pf); }
+  // …and the Schedule (/c/schedule)
+  if (!window.__epSchedule) { var sc = document.createElement('script'); sc.src = 'https://www.embodiedphilosophy.com/circle/schedule.js'; sc.defer = true; document.head.appendChild(sc); }
 
   var API = 'https://www.embodiedphilosophy.com';
   var SITE = 'https://www.embodiedphilosophy.com';
@@ -24,7 +26,7 @@
   var FEED = /^\/(feed|home)?\/?$/;
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (Sahṛdaya Upāya · Mentorship)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
-  var LINKS = [['Practice Portfolio', '/c/portfolio'], ['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
+  var LINKS = [['Schedule', '/c/schedule'], ['Practice Portfolio', '/c/portfolio'], ['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
   var MENTEE_LINKS = [['Mentorship Circle', '/c/mentorship-circle'], ['Mentorship Sessions', '/c/mentorship-sessions'], ['Apprentice Workbook', '/c/apprentice-workbook']];
   var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 

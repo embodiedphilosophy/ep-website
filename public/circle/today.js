@@ -27,6 +27,12 @@
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (Sahṛdaya Upāya · Mentorship)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
   var LINKS = [['Schedule', '/c/schedule'], ['Practice Portfolio', '/c/portfolio'], ['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
+  // "Your week" for mentees. Ticks are kept in this browser, per week (or per month), so each period starts fresh.
+  var DUE = [
+    { id: 'travelogue', label: 'One Inner Travelogue letter', when: 'This week', period: 'week' },
+    { id: 'peer', label: 'Peer articulation (about an hour)', when: 'This week', period: 'week' },
+    { id: 'reflection', label: 'Monthly reflection post in the Mentorship space', when: 'Before the month ends', period: 'month' }
+  ];
   var MENTEE_LINKS = [['Mentorship Circle', '/c/mentorship-circle'], ['Mentorship Sessions', '/c/mentorship-sessions'], ['Apprentice Workbook', '/c/apprentice-workbook']];
   var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
@@ -144,6 +150,20 @@
   }
   // Nothing logged yet (no practised square in the last eight weeks): show a welcome instead of a bare zero.
   function emptyLog(p) { return !!p && !p.streak && !(p.grid || []).some(function (col) { return col.some(function (c) { return c.state === 'done'; }); }); }
+  function periodKey(kind) {
+    var d = new Date();
+    if (kind === 'month') return d.getFullYear() + '-' + (d.getMonth() + 1);
+    var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - n);
+    return t.getUTCFullYear() + '-w' + Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 86400000 + 1) / 7);
+  }
+  function dueKey(x) { return 'ep_due_' + x.id + '_' + periodKey(x.period); }
+  function dueHtml() {
+    return '<section class="ept-card" aria-labelledby="ept-d"><div class="ept-ch"><h2 id="ept-d" class="ept-h2">Your week</h2><span class="ept-l">Mentorship</span></div>' +
+      DUE.map(function (x) {
+        return '<label class="ept-due"><input type="checkbox" data-due="' + x.id + '"' + (local(dueKey(x)) === '1' ? ' checked' : '') + '><span><span class="ept-t">' + esc(x.label) + '</span><span class="ept-s">' + esc(x.when) + '</span></span></label>';
+      }).join('') + '<a class="ept-li" href="/c/mentorship-circle">The full briefs are in the Mentorship space<span aria-hidden="true">→</span></a></section>';
+  }
   function lastText(r) { return r.last === null ? 'No practice logged yet' : r.daysSince === 0 ? 'Practised today' : r.daysSince === 1 ? 'Last practised yesterday' : 'Last practised ' + r.daysSince + ' days ago'; }
   // Portfolio pages mentees chose to share with Jacob (only shared pages ever reach here)
   function sharedPage(p, open) {
@@ -236,6 +256,7 @@
       '.ept-row{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}',
       '.ept-xl{font-size:32px}',
       '.ept-heat-l{grid-template-columns:repeat(8,16px)}.ept-heat-l .ept-col{grid-template-rows:repeat(7,16px)}.ept-heat-l .ept-d{width:16px;height:16px}',
+      '.ept-due{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:6px 0}.ept-due input{width:18px;height:18px;margin:2px 0 0;accent-color:#A5432A}.ept-due>span{display:flex;flex-direction:column}',
       '.ept-first{margin:0;font:italic 500 20px/1.35 "Cormorant Garamond",Georgia,serif;color:#6B6152}',
       '.ept-first-l{font-style:normal;font:400 13px/1.5 "IBM Plex Sans",system-ui,sans-serif;display:block;margin-top:8px}',
       '.ept-ms-chip{font:500 11.5px/1 "IBM Plex Mono",ui-monospace,monospace;padding:5px 8px;border:1px solid #D8C9AE;border-radius:4px;color:#6B6152}',
@@ -372,6 +393,7 @@
         '<span class="ept-t">Monthly one-to-one · 45 minutes</span><span class="ept-s">Book in the last week of the month, UK evenings.</span>' +
         '<div class="ept-chips"><a class="ept-btn" target="_blank" rel="noopener" href="' + BOOKING + '">Book a time</a><a class="ept-q" href="/messages">Message Jacob</a></div></section>';
     }
+    if (state.tier === 'mentee') out += dueHtml();
     // Links
     var links = (state.tier === 'mentee' ? MENTEE_LINKS : []).concat(LINKS);
     out += '<section class="ept-card" aria-labelledby="ept-k"><div class="ept-ch"><h2 id="ept-k" class="ept-h2">Your spaces</h2></div>' +
@@ -388,8 +410,9 @@
   }
 
   function onClick(e) {
-    var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick]');
+    var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick],[data-due]');
     if (!t || !e.currentTarget.contains(t)) return;
+    if (t.dataset.due) { DUE.forEach(function (x) { if (x.id === t.dataset.due) local(dueKey(x), t.checked ? '1' : '0'); }); return; }
     if (t.dataset.pick) { state.pick = state.pick === t.dataset.pick ? '' : t.dataset.pick; render(); return; }
     if (t.dataset.x) { var xs = state.extras || []; var i0 = xs.indexOf(t.dataset.x); state.extras = i0 >= 0 ? xs.filter(function (z) { return z !== t.dataset.x; }) : xs.concat([t.dataset.x]); render(); return; }
     if (t.dataset.q) { state.quality = state.quality === t.dataset.q ? '' : t.dataset.q; render(); return; }

@@ -27,6 +27,12 @@
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (Sahṛdaya Upāya · Mentorship)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
   var LINKS = [['Schedule', '/c/schedule'], ['Practice Portfolio', '/c/portfolio'], ['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
+  // "Your week" for mentees. Ticks are kept in this browser, per week (or per month), so each period starts fresh.
+  var DUE = [
+    { id: 'travelogue', label: 'One Inner Travelogue letter', when: 'This week', period: 'week' },
+    { id: 'peer', label: 'Peer articulation (about an hour)', when: 'This week', period: 'week' },
+    { id: 'reflection', label: 'Monthly reflection post in the Mentorship space', when: 'Before the month ends', period: 'month' }
+  ];
   var MENTEE_LINKS = [['Mentorship Circle', '/c/mentorship-circle'], ['Mentorship Sessions', '/c/mentorship-sessions'], ['Apprentice Workbook', '/c/apprentice-workbook']];
   var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
@@ -131,6 +137,7 @@
         state.events = upcoming.filter(function (e) { return !re || re.test([e.program, e.series, e.title].join(' ')); }).slice(0, 5);
         state.event = state.events[0] || null;
       }).catch(function () {}),
+      state.tier === 'mentee' && !mentorView() ? api('/api/member/formation').then(function (f) { state.formation = f; }).catch(function (e) { state.formationErr = e.message; }) : null,
       mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
       mentorView() ? api('/api/member/portfolio?shared=1&today=' + localToday()).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
     ]);
@@ -144,6 +151,20 @@
   }
   // Nothing logged yet (no practised square in the last eight weeks): show a welcome instead of a bare zero.
   function emptyLog(p) { return !!p && !p.streak && !(p.grid || []).some(function (col) { return col.some(function (c) { return c.state === 'done'; }); }); }
+  function periodKey(kind) {
+    var d = new Date();
+    if (kind === 'month') return d.getFullYear() + '-' + (d.getMonth() + 1);
+    var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - n);
+    return t.getUTCFullYear() + '-w' + Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 86400000 + 1) / 7);
+  }
+  function dueKey(x) { return 'ep_due_' + x.id + '_' + periodKey(x.period); }
+  function dueHtml() {
+    return '<section class="ept-card" aria-labelledby="ept-d"><div class="ept-ch"><h2 id="ept-d" class="ept-h2">Your week</h2><span class="ept-l">Mentorship</span></div>' +
+      DUE.map(function (x) {
+        return '<label class="ept-due"><input type="checkbox" data-due="' + x.id + '"' + (local(dueKey(x)) === '1' ? ' checked' : '') + '><span><span class="ept-t">' + esc(x.label) + '</span><span class="ept-s">' + esc(x.when) + '</span></span></label>';
+      }).join('') + '<a class="ept-li" href="/c/mentorship-circle">The full briefs are in the Mentorship space<span aria-hidden="true">→</span></a></section>';
+  }
   function lastText(r) { return r.last === null ? 'No practice logged yet' : r.daysSince === 0 ? 'Practised today' : r.daysSince === 1 ? 'Last practised yesterday' : 'Last practised ' + r.daysSince + ' days ago'; }
   // Portfolio pages mentees chose to share with Jacob (only shared pages ever reach here)
   function sharedPage(p, open) {
@@ -161,6 +182,52 @@
   function sharedHtml(list, mine) {
     if (!list.length) return mine ? '<span class="ept-s">No portfolio pages shared yet.</span>' : '';
     return '<div class="ept-l">' + (mine ? 'Portfolio pages shared with you' : 'Recently shared with you') + '</div>' + list.map(function (p, i) { return sharedPage(p, mine && i === 0); }).join('');
+  }
+  // Formation hours toward the 100-hour certificate. Mentees see their own record; mentors credit hours per mentee.
+  function fmtH(n) { return (Math.round(n * 100) / 100).toString(); }
+  function fmNext(f) {
+    var c = (f.components || []).filter(function (x) { return x.id === f.next; })[0];
+    if (f.complete) return 'Every part of the formation is complete.';
+    if (!c) return '';
+    return c.name + ': ' + fmtH(c.credited) + ' of ' + c.target + ' hrs so far.';
+  }
+  function fmBar(f) { return '<div class="ept-bar" role="img" aria-label="' + fmtH(f.total) + ' of ' + f.target + ' hours"><span style="width:' + Math.min(100, f.total / f.target * 100) + '%"></span></div>'; }
+  function fmRows(f) {
+    return '<div class="ept-fm" role="list">' + f.components.map(function (c) {
+      return '<div class="ept-fr" role="listitem"><span><span class="ept-t">' + esc(c.name) + '</span><span class="ept-s">' + esc(c.what) + ' · ' + esc(c.type) + '</span></span><span class="ept-mono">' + fmtH(c.credited) + ' / ' + c.target + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function formationHtml() {
+    var f = state.formation;
+    var out = '<section class="ept-card" aria-labelledby="ept-f"><div class="ept-ch"><h2 id="ept-f" class="ept-h2">Your formation</h2><span class="ept-l">The Path of Recognition, 2026–27</span></div>';
+    if (!f) return out + '<span class="' + (state.formationErr ? 'ept-err' : 'ept-s') + '">' + esc(state.formationErr || 'Loading…') + '</span></section>';
+    out += '<span class="ept-s"><b class="ept-mono">' + fmtH(f.total) + '</b> of ' + f.target + ' hrs credited</span>' + fmBar(f);
+    if (fmNext(f)) out += '<span class="ept-s"><b>Next:</b> ' + esc(fmNext(f)) + '</span>';
+    out += '<details class="ept-sh"><summary>Formation record</summary>' + fmRows(f) +
+      '<span class="ept-s">Your mentor adds hours as they happen. Questions about a number? Message Jacob.</span></details></section>';
+    return out;
+  }
+  function fmtMentor(m) {
+    var f = (state.fm || {})[m.email];
+    if (!f) return '<div class="ept-l">Formation hours</div><span class="' + (state.fmErr ? 'ept-err' : 'ept-s') + '">' + esc(state.fmErr || 'Loading…') + '</span>';
+    var names = {}; f.components.forEach(function (c) { names[c.id] = c.name; });
+    return '<div class="ept-l">Formation hours</div><span class="ept-s"><b class="ept-mono">' + fmtH(f.total) + '</b> of ' + f.target + ' hrs credited</span>' + fmBar(f) + fmRows(f) +
+      '<form class="ept-fmf" data-form="credit" data-email="' + esc(m.email) + '"><span class="ept-l">Credit hours</span>' +
+        '<label class="ept-s">Counts toward <select name="component" class="ept-in ept-sel">' + f.components.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('') + '</select></label>' +
+        '<div class="ept-row"><label class="ept-s">Hours <input class="ept-in" name="hours" type="number" step="0.25" min="0.25" max="40" inputmode="decimal" required></label>' +
+        '<label class="ept-s">Date <input class="ept-in ept-date" name="day" type="date" value="' + localToday() + '" required></label></div>' +
+        '<label class="ept-s">Note (optional) <input class="ept-in ept-note" name="note" maxlength="200" placeholder="e.g. October immersion"></label>' +
+        '<div><button class="ept-btn" type="submit"' + (state.fmSaving ? ' disabled' : '') + '>' + (state.fmSaving ? 'Saving…' : 'Credit hours') + '</button></div>' +
+        (state.fmErr ? '<span class="ept-err">' + esc(state.fmErr) + '</span>' : '') + '</form>' +
+      (f.entries.length ? '<details class="ept-sh"><summary>' + f.entries.length + ' credited ' + (f.entries.length === 1 ? 'entry' : 'entries') + '</summary>' + f.entries.map(function (x) {
+        return '<div class="ept-fr"><span><span class="ept-t">' + esc(names[x.component] || x.component) + ' · ' + fmtH(x.hours) + ' hrs</span><span class="ept-s">' + esc(niceDate(x.day)) + (x.note ? ' · ' + esc(x.note) : '') + '</span></span>' +
+          '<button type="button" class="ept-q" data-fmdel="' + esc(x.id) + '" data-email="' + esc(m.email) + '" aria-label="Remove this entry">Remove</button></div>';
+      }).join('') + '</details>' : '');
+  }
+  function loadFm(email) {
+    if (!email || (state.fm || {})[email]) return;
+    state.fmErr = '';
+    api('/api/member/formation?email=' + encodeURIComponent(email)).then(function (f) { (state.fm = state.fm || {})[email] = f; }).catch(function (e) { state.fmErr = e.message; }).then(render);
   }
   function cohortHtml() {
     var c = state.cohort;
@@ -181,7 +248,7 @@
     if (m) {
       out += '<div class="ept-det" aria-live="polite"><div class="ept-ch"><h3 class="ept-h2">' + esc(m.name) + '</h3><a class="ept-q" href="mailto:' + esc(m.email) + '">Email</a></div>' +
         '<span class="ept-s">' + m.streak + '-day streak · ' + m.weekCount + ' of 7 this week · ' + esc(lastText(m)) + '</span>' + heat(m.grid, true) +
-        sharedHtml((state.shared || []).filter(function (p) { return p.email === m.email; }), true) + '</div>';
+        fmtMentor(m) + sharedHtml((state.shared || []).filter(function (p) { return p.email === m.email; }), true) + '</div>';
     }
     if (!m) out += sharedHtml((state.shared || []).slice(0, 5), false);
     return out + '</section>';
@@ -236,6 +303,10 @@
       '.ept-row{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}',
       '.ept-xl{font-size:32px}',
       '.ept-heat-l{grid-template-columns:repeat(8,16px)}.ept-heat-l .ept-col{grid-template-rows:repeat(7,16px)}.ept-heat-l .ept-d{width:16px;height:16px}',
+      '.ept-due{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:6px 0}.ept-due input{width:18px;height:18px;margin:2px 0 0;accent-color:#A5432A}.ept-due>span{display:flex;flex-direction:column}',
+      '.ept-bar{height:6px;background:#E3D8C6}.ept-bar span{display:block;height:100%;background:#A5432A}',
+      '.ept-fm{display:flex;flex-direction:column}.ept-fr{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px solid #E3D8C6}.ept-fr>span:first-child{display:flex;flex-direction:column;min-width:0}',
+      '.ept-fmf{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid #E3D8C6}.ept-sel{width:100%;display:block;margin-top:4px}.ept-date{width:150px}.ept-note{width:100%;display:block;margin-top:4px}',
       '.ept-first{margin:0;font:italic 500 20px/1.35 "Cormorant Garamond",Georgia,serif;color:#6B6152}',
       '.ept-first-l{font-style:normal;font:400 13px/1.5 "IBM Plex Sans",system-ui,sans-serif;display:block;margin-top:8px}',
       '.ept-ms-chip{font:500 11.5px/1 "IBM Plex Mono",ui-monospace,monospace;padding:5px 8px;border:1px solid #D8C9AE;border-radius:4px;color:#6B6152}',
@@ -361,6 +432,7 @@
       else out += p.loggedToday ? '<button class="ept-q" data-act="form">Logged today · edit</button>' : '<button class="ept-btn" data-act="form">Log today’s practice</button>';
     } else out += '<span class="ept-err">' + esc(state.error || 'Loading…') + '</span>';
     out += '</section>';
+    if (state.tier === 'mentee' && !mentorView()) out += formationHtml();
     // Coming up
     out += '<section class="ept-card" aria-labelledby="ept-c"><div class="ept-ch"><h2 id="ept-c" class="ept-h2">Coming up</h2><a class="ept-link" href="/events">All events</a></div>';
     if (evs.length) out += evs.map(function (e) { return '<div class="ept-ev"><span class="ept-mono">' + esc(niceDate(e.date)) + '<br>' + esc(e.time || '') + '</span><span class="ept-t">' + esc(e.title) + '</span></div>'; }).join('');
@@ -372,6 +444,7 @@
         '<span class="ept-t">Monthly one-to-one · 45 minutes</span><span class="ept-s">Book in the last week of the month, UK evenings.</span>' +
         '<div class="ept-chips"><a class="ept-btn" target="_blank" rel="noopener" href="' + BOOKING + '">Book a time</a><a class="ept-q" href="/messages">Message Jacob</a></div></section>';
     }
+    if (state.tier === 'mentee') out += dueHtml();
     // Links
     var links = (state.tier === 'mentee' ? MENTEE_LINKS : []).concat(LINKS);
     out += '<section class="ept-card" aria-labelledby="ept-k"><div class="ept-ch"><h2 id="ept-k" class="ept-h2">Your spaces</h2></div>' +
@@ -388,9 +461,11 @@
   }
 
   function onClick(e) {
-    var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick]');
+    var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick],[data-due],[data-fmdel]');
     if (!t || !e.currentTarget.contains(t)) return;
-    if (t.dataset.pick) { state.pick = state.pick === t.dataset.pick ? '' : t.dataset.pick; render(); return; }
+    if (t.dataset.due) { DUE.forEach(function (x) { if (x.id === t.dataset.due) local(dueKey(x), t.checked ? '1' : '0'); }); return; }
+    if (t.dataset.fmdel) { var em = t.dataset.email; api('/api/member/formation?email=' + encodeURIComponent(em) + '&id=' + encodeURIComponent(t.dataset.fmdel), { method: 'DELETE' }).then(function (f) { state.fm[em] = f; state.fmErr = ''; }).catch(function (er) { state.fmErr = er.message; }).then(render); return; }
+    if (t.dataset.pick) { state.pick = state.pick === t.dataset.pick ? '' : t.dataset.pick; render(); loadFm(state.pick); return; }
     if (t.dataset.x) { var xs = state.extras || []; var i0 = xs.indexOf(t.dataset.x); state.extras = i0 >= 0 ? xs.filter(function (z) { return z !== t.dataset.x; }) : xs.concat([t.dataset.x]); render(); return; }
     if (t.dataset.q) { state.quality = state.quality === t.dataset.q ? '' : t.dataset.q; render(); return; }
     if (t.dataset.act === 'form') { state.form = true; state.error = ''; render(); var i = e.currentTarget.querySelector('input[name=minutes]'); if (i) i.focus(); }
@@ -401,6 +476,14 @@
   }
   function onInput(e) { if (e.target.name === 'minutes') state.minutes = e.target.value; }
   function onSubmit(e) {
+    if (e.target.matches('[data-form=credit]')) {
+      e.preventDefault();
+      var fe = e.target, em2 = fe.dataset.email;
+      state.fmSaving = true; state.fmErr = '';
+      api('/api/member/formation', { method: 'POST', body: { email: em2, component: fe.component.value, hours: fe.hours.value, day: fe.day.value, note: fe.note.value } })
+        .then(function (f) { state.fm[em2] = f; }).catch(function (er) { state.fmErr = er.message; }).then(function () { state.fmSaving = false; render(); });
+      return;
+    }
     if (!e.target.matches('[data-form=log]')) return;
     e.preventDefault();
     state.minutes = e.target.minutes.value; state.saving = true; state.error = ''; render();
@@ -431,7 +514,41 @@
     render();
   }
 
+  // 108 days in a row: a full-screen celebration, shown once. Admins can preview it with ?milestone=108.
+  function addDays(iso, n) { var d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+  function showMilestone() {
+    var p = state.practice;
+    if (state.ms108 || !p) return;
+    var preview = isAdmin() && /[?&]milestone=108/.test(location.search);
+    if (!preview && !(p.reached === 108 && local('ep_ms108_' + p.today) !== 'seen')) return;
+    state.ms108 = true;
+    var tones = ['#5B6343', '#8F7843', '#D2A65A'], beads = '';
+    for (var i = 0; i < 108; i++) beads += '<i style="background:' + (i === 107 ? '#F4EDE0' : tones[(i * 5) % 3]) + ';animation-delay:' + (i * 12) + 'ms"></i>';
+    var o = document.createElement('div');
+    o.className = 'ept108'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', '108 days of sādhana');
+    o.innerHTML = '<style>.ept108{position:fixed;inset:0;z-index:2147483000;background:#20302A;color:#F4EDE0;overflow:auto;font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif}' +
+      '.ept108 *{box-sizing:border-box}.ept108-in{max-width:430px;min-height:100%;margin:0 auto;padding:56px 24px 32px;display:flex;flex-direction:column;gap:24px}' +
+      '.ept108-n{font:500 56px/1 "IBM Plex Mono",ui-monospace,monospace;color:#D2A65A}' +
+      '.ept108-h{margin:8px 0;font:600 34px/1.1 "Cormorant Garamond",Georgia,serif}.ept108-h em{color:#D2A65A}.ept108 p{margin:0;color:#C8BEAC}' +
+      '.ept108-g{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:3px}.ept108-g i{aspect-ratio:1;animation:ept108-in .4s ease-out both}' +
+      '@keyframes ept108-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.ept108-g i{animation:none}}' +
+      '.ept108-b{margin-top:auto;display:flex;flex-direction:column;gap:10px}.ept108 a,.ept108 button{display:flex;align-items:center;justify-content:center;min-height:48px;font:600 15px "IBM Plex Sans",system-ui,sans-serif;text-decoration:none;cursor:pointer}' +
+      '.ept108-p{background:#B98A3E;color:#16140F;border:0}.ept108-p:hover{background:#D2A65A}.ept108-q{background:transparent;color:#F4EDE0;border:1px solid #3E544A;font-weight:400!important}.ept108-q:hover{border-color:#F4EDE0}' +
+      '.ept108 :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}</style>' +
+      '<div class="ept108-in"><div><div class="ept108-n">108</div><h1 class="ept108-h">One hundred and eight days of <em>sādhana</em>.</h1>' +
+      '<p>A full turn of the mālā, one bead a day, since ' + esc(longDate(addDays(p.today, -107))) + '.</p></div>' +
+      '<div class="ept108-g" role="img" aria-label="108 squares, every one filled">' + beads + '</div>' +
+      '<div class="ept108-b"><a class="ept108-p" href="/c/portfolio" data-close>Write to the Travelogue</a><button type="button" class="ept108-q" data-close>Back to today</button></div></div>';
+    function close() { if (!preview) local('ep_ms108_' + p.today, 'seen'); o.remove(); document.removeEventListener('keydown', key); }
+    function key(e) { if (e.key === 'Escape') close(); }
+    o.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) close(); });
+    document.addEventListener('keydown', key);
+    document.body.appendChild(o);
+    o.querySelector('.ept108-p').focus();
+  }
+
   function mount() {
+    showMilestone();
     mountPage();
     if (!FEED.test(location.pathname) || !FEED_OK()) return;
     if (root && document.body.contains(root)) return;

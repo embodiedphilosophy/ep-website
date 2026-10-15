@@ -5,11 +5,14 @@
    the next event for their membership, (mentees) the monthly one-to-one, and one quiet, dismissible
    suggestion for the next step up (NUDGES). The full Today page (/c/today) is for PAGE_FOR.
    Admins preview with ?today=1, a tier with ?as=<tier>, and the suggestion with ?nudge=1.
-   Circle admins see the mentor view (the Sahṛdaya Upāya cohort's practice) at the top of /c/today. */
+   Circle admins see the mentor view (the Sahṛdaya Upāya cohort's practice, and portfolio pages mentees chose to
+   share) at the top of /c/today. The Practice Portfolio itself is /c/portfolio (public/circle/portfolio.js). */
 (function () {
   if (window.__epToday) return; window.__epToday = true;
   // The CE credits page (/c/ce-credits) has its own script; load it here so Circle needs no extra snippet.
   if (!window.__epCe) { var ce = document.createElement('script'); ce.src = 'https://www.embodiedphilosophy.com/circle/ce.js'; ce.defer = true; document.head.appendChild(ce); }
+  // The Practice Portfolio (/c/portfolio) likewise
+  if (!window.__epPortfolio) { var pf = document.createElement('script'); pf.src = 'https://www.embodiedphilosophy.com/circle/portfolio.js'; pf.defer = true; document.head.appendChild(pf); }
 
   var API = 'https://www.embodiedphilosophy.com';
   var SITE = 'https://www.embodiedphilosophy.com';
@@ -20,7 +23,8 @@
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var FEED = /^\/(feed|home)?\/?$/;
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (Sahṛdaya Upāya · Mentorship)
-  var LINKS = [['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
+  var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
+  var LINKS = [['Practice Portfolio', '/c/portfolio'], ['Fall Live Sessions', '/c/fall-live-sessions'], ['Fall Recordings & Readings', '/c/fall-recordings-readings'], ['Practice Resources', '/c/practice-resources'], ['Open Sessions', '/c/open-sessions']];
   var MENTEE_LINKS = [['Mentorship Circle', '/c/mentorship-circle'], ['Mentorship Sessions', '/c/mentorship-sessions'], ['Apprentice Workbook', '/c/apprentice-workbook']];
   var state = { session: null, tier: null, seasons: [], first: '', practice: null, event: null, form: false, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
@@ -125,7 +129,8 @@
         state.events = upcoming.filter(function (e) { return !re || re.test([e.program, e.series, e.title].join(' ')); }).slice(0, 5);
         state.event = state.events[0] || null;
       }).catch(function () {}),
-      mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null
+      mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
+      mentorView() ? api('/api/member/portfolio?shared=1&today=' + localToday()).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
     ]);
   }
   // Mentor view: Circle admins on /c/today, unless previewing a member's view with ?as=
@@ -136,12 +141,29 @@
     }).join('') + '</div>';
   }
   function lastText(r) { return r.last === null ? 'No practice logged yet' : r.daysSince === 0 ? 'Practised today' : r.daysSince === 1 ? 'Last practised yesterday' : 'Last practised ' + r.daysSince + ' days ago'; }
+  // Portfolio pages mentees chose to share with Jacob (only shared pages ever reach here)
+  function sharedPage(p, open) {
+    var d = p.data || {}, body = '';
+    if (p.kind === 'week') {
+      body = (d.answers || []).map(function (a, i) { return a ? '<p><b>' + ['Emerging patterns', 'Turning points', 'Integration into life', 'Commitment adjustment'][i] + '.</b> ' + esc(a) + '</p>' : ''; }).join('');
+    } else {
+      var facts = [d.minutes ? d.minutes + ' min' : '', d.quality, (d.bodies || []).join(', '), d.energy, d.aware].filter(Boolean).join(' · ');
+      body = (facts ? '<p class="ept-s">' + esc(facts) + '</p>' : '') + (d.feel ? '<p>' + esc(d.feel) + '</p>' : '') +
+        (d.reflections || []).map(function (r, i) { return r ? '<p><b>' + ['Felt sense', 'Insight', 'Obstacle', 'Integration'][i] + '.</b> ' + esc(r) + '</p>' : ''; }).join('') +
+        (d.dedication ? '<p><em>' + esc(d.dedication) + '</em></p>' : '');
+    }
+    return '<details class="ept-sh"' + (open ? ' open' : '') + '><summary><strong>' + esc(p.name || p.email) + '</strong> · ' + (p.kind === 'week' ? 'weekly reflection, week of ' : '') + esc(niceDate(p.day)) + '</summary>' + body + '</details>';
+  }
+  function sharedHtml(list, mine) {
+    if (!list.length) return mine ? '<span class="ept-s">No portfolio pages shared yet.</span>' : '';
+    return '<div class="ept-l">' + (mine ? 'Portfolio pages shared with you' : 'Recently shared with you') + '</div>' + list.map(function (p, i) { return sharedPage(p, mine && i === 0); }).join('');
+  }
   function cohortHtml() {
     var c = state.cohort;
     var out = '<section class="ept-card ept-wide" aria-labelledby="ept-co"><div class="ept-ch"><h2 id="ept-co" class="ept-h2">Your cohort</h2><span class="ept-l">Sahṛdaya Upāya · mentor view</span></div>';
     if (!c) return out + '<span class="' + (state.cohortErr ? 'ept-err' : 'ept-s') + '">' + esc(state.cohortErr || 'Loading…') + '</span></section>';
     if (!c.rows.length) return out + '<span class="ept-s">No one has the mentorship tag in Kit yet.</span></section>';
-    out += '<span class="ept-s">Practice signals only: days and minutes. How a practice felt, and anything written in the Inner Travelogue, stays with the mentee.</span>';
+    out += '<span class="ept-s">Practice signals only: days and minutes. How a practice felt, and anything written in the Inner Travelogue, stays with the mentee, unless they share a portfolio page with you.</span>';
     if (c.attention.length) {
       out += '<div class="ept-l">Worth a word this week</div><div class="ept-chips">' + c.attention.map(function (a) {
         return '<button type="button" class="ept-att' + (a.good ? ' good' : '') + '" data-pick="' + esc(a.email) + '"><strong>' + esc(a.name) + '</strong> · ' + esc(a.why) + '</button>';
@@ -154,8 +176,10 @@
     var m = c.rows.filter(function (r) { return r.email === state.pick; })[0];
     if (m) {
       out += '<div class="ept-det" aria-live="polite"><div class="ept-ch"><h3 class="ept-h2">' + esc(m.name) + '</h3><a class="ept-q" href="mailto:' + esc(m.email) + '">Email</a></div>' +
-        '<span class="ept-s">' + m.streak + '-day streak · ' + m.weekCount + ' of 7 this week · ' + esc(lastText(m)) + '</span>' + heat(m.grid, true) + '</div>';
+        '<span class="ept-s">' + m.streak + '-day streak · ' + m.weekCount + ' of 7 this week · ' + esc(lastText(m)) + '</span>' + heat(m.grid, true) +
+        sharedHtml((state.shared || []).filter(function (p) { return p.email === m.email; }), true) + '</div>';
     }
+    if (!m) out += sharedHtml((state.shared || []).slice(0, 5), false);
     return out + '</section>';
   }
 
@@ -165,6 +189,10 @@
     s.textContent = [
       '.ept{background:#FBF6EE;border:1px solid #E3D8C6;border-radius:6px;box-shadow:inset 0 3px 0 #A5432A;padding:18px 20px;margin:0 0 14px;font-family:inherit;color:#1E1A14}',
       '.ept *{box-sizing:border-box}',
+      '.ept-pf{color:#A5432A;text-decoration:underline;text-underline-offset:3px}',
+      '.ept-sh{border-top:1px solid #E3D8C6;padding:10px 0;font-size:13px}',
+      '.ept-sh summary{cursor:pointer;min-height:32px;display:flex;align-items:center;gap:4px}',
+      '.ept-sh p{margin:6px 0 0;line-height:1.5}',
       '.ept-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px}',
       '.ept-eye{font:500 10.5px/1.4 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;color:#A5432A;text-transform:uppercase}',
       '.ept-h{margin:2px 0 0;font:600 26px/1.1 "Cormorant Garamond",Georgia,serif}',
@@ -268,6 +296,7 @@
       }).join('') + '</div>';
       out += '<span class="ept-s">' + p.weekCount + ' of 7 this week' + (p.nextMilestone ? ' · next milestone ' + p.nextMilestone : '') + '</span>';
       out += p.loggedToday ? '<button class="ept-q" data-act="form">Logged today · edit</button>' : '<button class="ept-btn" data-act="form">Log today’s practice</button>';
+      if (PORTFOLIO_FOR.indexOf(state.tier) >= 0) out += '<a class="ept-s ept-pf" href="/c/portfolio">Write today’s portfolio page →</a>';
     } else out += '<span class="ept-err">' + esc(state.error || 'Loading…') + '</span>';
     out += '</div>';
     // Next session

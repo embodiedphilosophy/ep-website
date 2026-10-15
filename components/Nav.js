@@ -16,6 +16,7 @@ export default async function Nav() {
           <a href="/podcast">Listen</a>
           <a href="/#tarka">Tarka</a>
           <a href="/about">About</a>
+          <a className="nav-help" href="/help">Help</a>
         </nav>
         <div className="nav-cta">
           <SignInMenu wisdom={site.links.signInWisdom} sadhana={site.links.signInSadhana} />

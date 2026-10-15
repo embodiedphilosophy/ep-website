@@ -8,6 +8,8 @@
    Circle admins see the mentor view (the Sahṛdaya Upāya cohort's practice) at the top of /c/today. */
 (function () {
   if (window.__epToday) return; window.__epToday = true;
+  // The CE credits page (/c/ce-credits) has its own script; load it here so Circle needs no extra snippet.
+  if (!window.__epCe) { var ce = document.createElement('script'); ce.src = 'https://www.embodiedphilosophy.com/circle/ce.js'; ce.defer = true; document.head.appendChild(ce); }
 
   var API = 'https://www.embodiedphilosophy.com';
   var SITE = 'https://www.embodiedphilosophy.com';
@@ -256,7 +258,7 @@
     var p = state.practice, ev = state.event;
     var out = '<div class="ept-top"><div><div class="ept-eye">' + esc(EYEBROW[state.tier] || 'Today') + '</div>' +
       '<h2 class="ept-h">Today, <em>' + esc(state.first || 'friend') + '</em></h2></div>' +
-      (PAGE_FOR.indexOf(state.tier) >= 0 ? '<a class="ept-link" href="/c/today">Open Today →</a>' : '') + '</div><div class="ept-grid">';
+      (PAGE_FOR.indexOf(state.tier) >= 0 ? '<a class="ept-link" href="/c/today">Open Today →</a>' : (state.tier === 'wisdom_plus' ? '<a class="ept-link" href="/c/ce-credits">Your CE hours →</a>' : '')) + '</div><div class="ept-grid">';
     // Practice
     out += '<div class="ept-cell"><span class="ept-l">Daily practice</span>';
     if (p) {

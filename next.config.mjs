@@ -17,8 +17,8 @@ const nextConfig = {
     return {
       beforeFiles: [],
       afterFiles: [
-        // Kalighat cutouts are shared with the Practice Report app.
-        { source: '/kalighat/:file', destination: 'https://report.embodiedphilosophy.com/img/:file' },
+        // Kalighat cutouts live in public/ (copied from the Practice Report app).
+        { source: '/kalighat/:file', destination: '/:file' },
       ],
       fallback: ARCHIVE ? [{ source: '/:path*', destination: `${ARCHIVE}/:path*` }] : [],
     };

@@ -11,6 +11,8 @@ const ARCHIVE = process.env.ARCHIVE_ORIGIN;
 const OPS = process.env.OPS_ORIGIN?.replace(/\/$/, '');
 
 const nextConfig = {
+  // The certificate PDF reads its fonts from disk (lib/ce/pdf.js)
+  outputFileTracingIncludes: { '/api/ce/certificate/[id]': ['./lib/ce/fonts/**'] },
   async rewrites() {
     return {
       beforeFiles: [],

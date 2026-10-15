@@ -19,7 +19,7 @@ export default function MobileMenu({ signIn, signInWisdom, signInSadhana }) {
   const links = [
     ['/wisdom-school', 'Wisdom School'], ['/sadhana-school', 'Sādhana School'], ['/meditation-pass', 'Meditation Pass'],
     ['/living-room-lectures', 'Living Room Lectures'], ['/events', 'Events'], ['/podcast', 'Listen'],
-    ['/#tarka', 'Tarka'], ['/about', 'About'], ['/teachers', 'Teachers'], ['/contact', 'Contact'],
+    ['/#tarka', 'Tarka'], ['/about', 'About'], ['/teachers', 'Teachers'], ['/contact', 'Contact'], ['/help', 'Help'],
   ];
   return (
     <>
@@ -29,7 +29,7 @@ export default function MobileMenu({ signIn, signInWisdom, signInSadhana }) {
       {open && createPortal(
         <div className="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menu" style={{ top }}>
           <nav aria-label="Mobile">
-            {links.map(([href, label]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
+            {links.map(([href, label]) => <a key={href} href={href} className={href === '/help' ? 'nav-help' : undefined} onClick={() => setOpen(false)}>{label}</a>)}
           </nav>
           <div className="mobile-menu-foot">
             <a className="btn btn-primary" href="/meditation-pass" onClick={() => setOpen(false)}>Free Trial</a>

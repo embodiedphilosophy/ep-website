@@ -454,7 +454,41 @@
     render();
   }
 
+  // 108 days in a row: a full-screen celebration, shown once. Admins can preview it with ?milestone=108.
+  function addDays(iso, n) { var d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+  function showMilestone() {
+    var p = state.practice;
+    if (state.ms108 || !p) return;
+    var preview = isAdmin() && /[?&]milestone=108/.test(location.search);
+    if (!preview && !(p.reached === 108 && local('ep_ms108_' + p.today) !== 'seen')) return;
+    state.ms108 = true;
+    var tones = ['#5B6343', '#8F7843', '#D2A65A'], beads = '';
+    for (var i = 0; i < 108; i++) beads += '<i style="background:' + (i === 107 ? '#F4EDE0' : tones[(i * 5) % 3]) + ';animation-delay:' + (i * 12) + 'ms"></i>';
+    var o = document.createElement('div');
+    o.className = 'ept108'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', '108 days of sādhana');
+    o.innerHTML = '<style>.ept108{position:fixed;inset:0;z-index:2147483000;background:#20302A;color:#F4EDE0;overflow:auto;font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif}' +
+      '.ept108 *{box-sizing:border-box}.ept108-in{max-width:430px;min-height:100%;margin:0 auto;padding:56px 24px 32px;display:flex;flex-direction:column;gap:24px}' +
+      '.ept108-n{font:500 56px/1 "IBM Plex Mono",ui-monospace,monospace;color:#D2A65A}' +
+      '.ept108-h{margin:8px 0;font:600 34px/1.1 "Cormorant Garamond",Georgia,serif}.ept108-h em{color:#D2A65A}.ept108 p{margin:0;color:#C8BEAC}' +
+      '.ept108-g{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:3px}.ept108-g i{aspect-ratio:1;animation:ept108-in .4s ease-out both}' +
+      '@keyframes ept108-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.ept108-g i{animation:none}}' +
+      '.ept108-b{margin-top:auto;display:flex;flex-direction:column;gap:10px}.ept108 a,.ept108 button{display:flex;align-items:center;justify-content:center;min-height:48px;font:600 15px "IBM Plex Sans",system-ui,sans-serif;text-decoration:none;cursor:pointer}' +
+      '.ept108-p{background:#B98A3E;color:#16140F;border:0}.ept108-p:hover{background:#D2A65A}.ept108-q{background:transparent;color:#F4EDE0;border:1px solid #3E544A;font-weight:400!important}.ept108-q:hover{border-color:#F4EDE0}' +
+      '.ept108 :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}</style>' +
+      '<div class="ept108-in"><div><div class="ept108-n">108</div><h1 class="ept108-h">One hundred and eight days of <em>sādhana</em>.</h1>' +
+      '<p>A full turn of the mālā, one bead a day, since ' + esc(longDate(addDays(p.today, -107))) + '.</p></div>' +
+      '<div class="ept108-g" role="img" aria-label="108 squares, every one filled">' + beads + '</div>' +
+      '<div class="ept108-b"><a class="ept108-p" href="/c/portfolio" data-close>Write to the Travelogue</a><button type="button" class="ept108-q" data-close>Back to today</button></div></div>';
+    function close() { if (!preview) local('ep_ms108_' + p.today, 'seen'); o.remove(); document.removeEventListener('keydown', key); }
+    function key(e) { if (e.key === 'Escape') close(); }
+    o.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) close(); });
+    document.addEventListener('keydown', key);
+    document.body.appendChild(o);
+    o.querySelector('.ept108-p').focus();
+  }
+
   function mount() {
+    showMilestone();
     mountPage();
     if (!FEED.test(location.pathname) || !FEED_OK()) return;
     if (root && document.body.contains(root)) return;

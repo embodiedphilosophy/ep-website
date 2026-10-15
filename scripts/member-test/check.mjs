@@ -115,3 +115,18 @@ o = memberOffer({ tier: 'none', seasons: [], credits: { navaratri_2026: { name: 
 assert.equal(o.kind, 'credit'); assert.equal(o.options.length, 1); assert.equal(o.options[0].price, 1848);
 assert.equal(memberOffer({ tier: 'wisdom', seasons: [] }, '2026-11-01', C), null);
 console.log('pricing: ok');
+
+// ---- Kit purchases → credit; Vercel pricing settings
+const { kitCredits } = await import('../../lib/member/credits.js');
+assert.deepEqual(kitCredits({ purchase: { status: 'paid', email_address: 'A@x.com', total: 35, products: [{ pid: 9, name: 'Navarātri 2027', unit_price: 35, quantity: 1 }] } }), [{ email: 'a@x.com', name: '', fields: { navaratri_credit: 35 } }]);
+assert.deepEqual(kitCredits({ events: [{ type: 'purchase.purchase_create', data: { purchase: { email_address: 'b@x.com', products: [{ name: 'Navaratri', unit_price: '79.00' }] } } }] })[0].fields, { navaratri_credit: 79 });
+assert.deepEqual(kitCredits({ purchase: { email_address: 'c@x.com', products: [{ name: 'Wisdom School', unit_price: 27 }] } })[0].fields, {});
+assert.equal(kitCredits({ purchase: { status: 'refunded', email_address: 'd@x.com', products: [{ name: 'Navaratri', unit_price: 5 }] } }).length, 0);
+const pricing = await import('../../lib/member/pricing.js');
+assert.equal(pricing.applySettings('not json'), false);
+assert.equal(pricing.applySettings({ coupons: { 697: ' FALLYEAR ' }, checkout: { fall: 'sadhana-school-fall', winter: 'https://ss.embodiedphilosophy.com/checkout/w' }, spring: '2027-04-07' }), true);
+assert.equal(pricing.COUPONS['697'], 'FALLYEAR');
+assert.equal(pricing.CHECKOUT.fall, 'https://ss.embodiedphilosophy.com/checkout/sadhana-school-fall');
+assert.equal(pricing.CHECKOUT.winter, 'https://ss.embodiedphilosophy.com/checkout/w');
+assert.equal(pricing.yearQuote({ seasons: ['fall'] }, '2026-11-01').href, 'https://ss.embodiedphilosophy.com/checkout/sadhana-school-year?coupon_code=FALLYEAR');
+console.log('kit purchases + settings: ok');

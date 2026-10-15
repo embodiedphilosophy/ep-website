@@ -142,6 +142,8 @@
       return '<div class="ept-col">' + col.map(function (c) { return '<span class="ept-d ' + c.state + '" title="' + esc(c.day) + '"></span>'; }).join('') + '</div>';
     }).join('') + '</div>';
   }
+  // Nothing logged yet (no practised square in the last eight weeks): show a welcome instead of a bare zero.
+  function emptyLog(p) { return !!p && !p.streak && !(p.grid || []).some(function (col) { return col.some(function (c) { return c.state === 'done'; }); }); }
   function lastText(r) { return r.last === null ? 'No practice logged yet' : r.daysSince === 0 ? 'Practised today' : r.daysSince === 1 ? 'Last practised yesterday' : 'Last practised ' + r.daysSince + ' days ago'; }
   // Portfolio pages mentees chose to share with Jacob (only shared pages ever reach here)
   function sharedPage(p, open) {
@@ -234,6 +236,8 @@
       '.ept-row{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}',
       '.ept-xl{font-size:32px}',
       '.ept-heat-l{grid-template-columns:repeat(8,16px)}.ept-heat-l .ept-col{grid-template-rows:repeat(7,16px)}.ept-heat-l .ept-d{width:16px;height:16px}',
+      '.ept-first{margin:0;font:italic 500 20px/1.35 "Cormorant Garamond",Georgia,serif;color:#6B6152}',
+      '.ept-first-l{font-style:normal;font:400 13px/1.5 "IBM Plex Sans",system-ui,sans-serif;display:block;margin-top:8px}',
       '.ept-ms-chip{font:500 11.5px/1 "IBM Plex Mono",ui-monospace,monospace;padding:5px 8px;border:1px solid #D8C9AE;border-radius:4px;color:#6B6152}',
       '.ept-ms-chip.on{background:#A5432A;border-color:#A5432A;color:#fff}',
       '.ept-ev{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid #E3D8C6;align-items:center}',
@@ -296,7 +300,7 @@
       out += '<div class="ept-heat" role="img" aria-label="Your last eight weeks of practice">' + p.grid.map(function (col) {
         return '<div class="ept-col">' + col.map(function (c) { return '<span class="ept-d ' + c.state + '"></span>'; }).join('') + '</div>';
       }).join('') + '</div>';
-      out += '<span class="ept-s">' + p.weekCount + ' of 7 this week' + (p.nextMilestone ? ' · next milestone ' + p.nextMilestone : '') + '</span>';
+      if (emptyLog(p)) out += '<span class="ept-s">Your log begins with today’s sitting.</span>'; else out += '<span class="ept-s">' + p.weekCount + ' of 7 this week' + (p.nextMilestone ? ' · next milestone ' + p.nextMilestone : '') + '</span>';
       out += p.loggedToday ? '<button class="ept-q" data-act="form">Logged today · edit</button>' : '<button class="ept-btn" data-act="form">Log today’s practice</button>';
       if (PORTFOLIO_FOR.indexOf(state.tier) >= 0) out += '<a class="ept-s ept-pf" href="/c/portfolio">Write today’s portfolio page →</a>';
     } else out += '<span class="ept-err">' + esc(state.error || 'Loading…') + '</span>';
@@ -351,6 +355,7 @@
         return '<div class="ept-col">' + col.map(function (c) { return '<span class="ept-d ' + c.state + '" title="' + esc(c.day) + '"></span>'; }).join('') + '</div>';
       }).join('') + '</div>';
       out += '<div class="ept-chips">' + [7, 21, 40, 108].map(function (m) { return '<span class="ept-ms-chip' + (p.streak >= m ? ' on' : '') + '">' + m + ' days</span>'; }).join('') + '</div>';
+      if (emptyLog(p) && !state.form) out += '<p class="ept-first">Your log begins with today’s sitting. Each square is one day of sādhana; the milestones mark 7, 21, 40 and 108 days.<span class="ept-first-l">Sit for as long as feels right, then tap “Log today’s practice” to add the first square. A few minutes counts.</span></p>';
       if (p.reached && MS_TEXT[p.reached]) out += '<div class="ept-ms" role="status"><strong>' + MS_TEXT[p.reached] + '</strong>' + (p.nextMilestone ? ' Next milestone: ' + p.nextMilestone + ' days.' : '') + '</div>';
       if (state.form) out += formHtml(p);
       else out += p.loggedToday ? '<button class="ept-q" data-act="form">Logged today · edit</button>' : '<button class="ept-btn" data-act="form">Log today’s practice</button>';

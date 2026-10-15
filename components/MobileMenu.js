@@ -19,7 +19,7 @@ export default function MobileMenu({ signIn, signInWisdom, signInSadhana }) {
   }, [open]);
   const links = [
     ['/events', 'Events'], ['/podcast', 'Listen'], ['/#tarka', 'Tarka'],
-    ['/about', 'About'], ['/teachers', 'Teachers'], ['/contact', 'Contact'],
+    ['/about', 'About'], ['/teachers', 'Teachers'], ['/contact', 'Contact'], ['/help', 'Help'],
   ];
   return (
     <>
@@ -32,7 +32,7 @@ export default function MobileMenu({ signIn, signInWisdom, signInSadhana }) {
             <p className="mobile-menu-label">Study</p>
             {STUDY_LINKS.map(([href, label]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
             <p className="mobile-menu-label">Explore</p>
-            {links.map(([href, label]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
+            {links.map(([href, label]) => <a key={href} href={href} className={href === '/help' ? 'nav-help' : undefined} onClick={() => setOpen(false)}>{label}</a>)}
           </nav>
           <div className="mobile-menu-foot">
             <a className="btn btn-primary" href="/meditation-pass" onClick={() => setOpen(false)}>Free Trial</a>

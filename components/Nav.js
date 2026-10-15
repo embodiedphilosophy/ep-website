@@ -1,6 +1,7 @@
 import { getSite } from '@/lib/content';
 import MobileMenu from './MobileMenu';
 import SignInMenu from './SignInMenu';
+import StudyMenu from './studymenu';
 export default async function Nav() {
   const site = await getSite();
   return (
@@ -10,8 +11,7 @@ export default async function Nav() {
           <img className="wordmark" src="/brand/ep-wordmark-black.png" alt="Embodied Philosophy" width="147" height="36" />
         </a>
         <nav className="links" aria-label="Main">
-          <a href="/wisdom-school">Wisdom School</a>
-          <a href="/sadhana-school">Sādhana School</a>
+          <StudyMenu />
           <a href="/events">Events</a>
           <a href="/podcast">Listen</a>
           <a href="/#tarka">Tarka</a>

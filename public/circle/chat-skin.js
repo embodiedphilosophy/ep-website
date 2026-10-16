@@ -40,6 +40,10 @@
     // the composer: ivory, rounded, thin line
     '[data-testid=tiptap-editor]{background:#FAF5EB!important;border:1px solid #D8C9AE!important;border-radius:14px!important;box-shadow:none!important;margin-bottom:12px}',
     '[data-testid=tiptap-editor] .tiptap{font-size:15px!important}',
+    // the empty chat ("Say hi!") and the right-hand Details panel
+    '[data-testid=start-conversation]{font:600 28px/1.15 "Cormorant Garamond",Georgia,serif!important;color:#1E1A14!important}',
+    '[data-testid=circle-ai-shell-rail-panel]{background-color:#FAF5EB!important;border-left:1px solid #D8C9AE!important}',
+    '[data-testid=circle-ai-shell-workspace-header]{background-color:#FAF5EB!important;border-bottom:1px solid #D8C9AE!important}',
     // Send: a terra button with the word, like the design
     '#tiptap-send{background:#A5432A!important;color:#fff!important;border-radius:10px!important;padding:0 20px!important;width:auto!important;min-width:76px!important;height:40px!important;min-height:40px;border:0!important;gap:0!important}',
     '#tiptap-send:hover{background:#83341F!important}',

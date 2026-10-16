@@ -347,6 +347,7 @@
   // Someone who turns out not to be a mentee gets Circle's own page back
   function unmount() {
     if (!root) return;
+    state.logOpen = false; state.lineOpen = false;
     var box = root.__box; root.remove(); root = null;
     if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = '';
   }
@@ -387,5 +388,14 @@
   start();
   // Circle is a single-page app: mount when someone navigates to the page
   var t = null;
-  new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; start(); if (started) mount(); }, 300); }).observe(document.body, { childList: true, subtree: true });
+  new MutationObserver(function () {
+    if (t) return;
+    t = setTimeout(function () {
+      t = null;
+      // Circle switches pages without reloading: the moment we are not on /c/this-week, take our page out and give Circle's back
+      if (!PAGE.test(location.pathname)) { unmount(); return; }
+      start(); if (started) mount();
+    }, 250);
+  }).observe(document.body, { childList: true, subtree: true });
+  window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) unmount(); });
 })();

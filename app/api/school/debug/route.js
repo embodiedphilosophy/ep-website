@@ -18,7 +18,9 @@ export async function GET() {
     const one = inSpace[0] || ev[0];
     // time-like and replay-like fields, shown as names and value types only
     const shape = o => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /start|end|time|date|at$|replay|record|url|link|host|duration|rsvp|attend/i.test(k)).map(([k, v]) => [k, v && typeof v === 'object' ? keys(v) : typeof v === 'string' ? v.slice(0, 12) + '…' : v]));
-    return { count: ev.length, bySpace, firstKeys: keys(one), shape: shape(one) };
+    const val = v => (v && typeof v === 'object' ? keys(v) : typeof v === 'string' ? (/^https?:/.test(v) ? 'url' : v.slice(0, 28)) : v);
+    const titles = inSpace.slice(0, 4).map(e => ({ name: e.name, display_title: e.display_title, slug: e.slug }));
+    return { count: ev.length, bySpace, titles, settings: Object.fromEntries(Object.entries(one?.event_setting_attributes || {}).map(([k, v]) => [k, val(v)])), recurring: keys(one?.recurring_setting_attributes), action: val(one?.action), shape: shape(one) };
   });
   for (const s of allSeasons()) {
     if (!s.hub_space_id) continue;

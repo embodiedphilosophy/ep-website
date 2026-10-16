@@ -16,6 +16,8 @@
   // …and the Schedule (/c/schedule)
   if (!window.__epSchedule) { var sc = document.createElement('script'); sc.src = 'https://www.embodiedphilosophy.com/circle/schedule.js'; sc.defer = true; document.head.appendChild(sc); }
   // …and "This week" for Sahṛdaya Upāya mentees (/c/this-week; does nothing for anyone else)
+  // …and a troubleshooting helper that only shows with ?epdebug=1 (copies the page's structure for the restyle)
+  if (!window.__epProbe) { var pr = document.createElement('script'); pr.src = 'https://www.embodiedphilosophy.com/circle/probe.js'; pr.defer = true; document.head.appendChild(pr); }
   if (!window.__epThisWeek) { var tw = document.createElement('script'); tw.src = 'https://www.embodiedphilosophy.com/circle/this-week.js'; tw.defer = true; document.head.appendChild(tw); }
 
   var API = 'https://www.embodiedphilosophy.com';

@@ -13,9 +13,10 @@
   };
   // Pages that are not a season: Circle space slug → our page. "This Week" is a Secret space, so only mentees ever see it;
   // the page checks the mentee tag again on its own.
-  var PAGES = { 'this-week': '/school/sahrdaya-upaya/this-week' };
+  // "This week" is drawn natively by public/circle/this-week.js now (like the Schedule page); the frame route is switched off.
+  var PAGES = {};
   // Circle often adds a short code to a space's address (this-week-a1b2c3): treat that as the same space
-  function pageKey(s) { return PAGES[s] ? s : /^this-week-[a-z0-9]{3,10}$/.test(s) ? 'this-week' : null; }
+  function pageKey(s) { return PAGES[s] ? s : null; }
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   var WARM_MS = 10 * 3600 * 1000, warming = null, queued = false;
 
@@ -24,7 +25,7 @@
   document.head.appendChild(st);
 
   // Add ?epdebug=1 to a Circle address to show a small status badge (bottom right) for troubleshooting
-  var DEBUG = /[?&]epdebug=1/.test(location.search), state = { loaded: false, ready: false, html: false, error: '', drew: null, built: 0 };
+  var DEBUG = /[?&]epdebug=1/.test(location.search), state = { stopped: false, loaded: false, ready: false, html: false, error: '', drew: null, built: 0 };
   function badge() {
     if (!DEBUG || !document.body) return;
     var b = document.getElementById('ep-debug');
@@ -35,7 +36,7 @@
     t += 'signed in to Circle: ' + (user() ? 'yes' : 'NO') + '\n';
     t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
-    t += 'frame built: ' + state.built + ' time(s)\n';
+    t += 'frame built: ' + state.built + ' time(s)' + (state.stopped ? '  STOPPED: Circle kept removing it' : '') + '\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
     t += 'page html arrived: ' + (state.html ? 'yes' : 'no') + '\n';
@@ -85,6 +86,7 @@
     frame.style.left = r.left + 'px'; frame.style.top = r.top + 'px'; frame.style.width = r.width + 'px'; frame.style.height = h + 'px';
   }
   function embed(host, slug) {
+    if (state.stopped || tooMany()) { state.stopped = true; return; }
     var path = PAGES[slug] || '/school/sadhana-school/' + slug, overlay = !!PAGES[slug];
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
@@ -112,7 +114,10 @@
     if (frame) frame.remove();
     embed(host, slug);
   }
-  function soon() { if (!queued) { queued = true; requestAnimationFrame(tick); } }
+  // Never run more than about twice a second, however busy Circle's page is, and give up after repeated rebuilds
+  var lastTick = 0, builds = [];
+  function soon() { if (queued) return; queued = true; setTimeout(function () { lastTick = Date.now(); tick(); }, Math.max(0, 400 - (Date.now() - lastTick))); }
+  function tooMany() { var now = Date.now(); builds = builds.filter(function (t) { return now - t < 15000; }); builds.push(now); return builds.length > 4; }
 
   // If the quiet sign-in has expired, the frame asks to sign in again once
   window.addEventListener('message', function (e) {
@@ -137,9 +142,9 @@
   window.addEventListener('popstate', soon);
   function start() {
     new MutationObserver(soon).observe(document.documentElement, { childList: true, subtree: true });
-    setInterval(tick, 1500); setInterval(badge, 1000);
+    setInterval(soon, 1500); setInterval(badge, 1000);
     setInterval(function () { var f = document.getElementById('ep-season-frame'); if (f && f.getAttribute('data-overlay')) place(f, document.querySelector(HOST)); }, 300);
-    tick();
+    soon();
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();

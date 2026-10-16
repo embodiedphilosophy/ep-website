@@ -12,7 +12,7 @@ export async function POST(req) {
     const who = await verifyCircleToken(form?.get('identityToken'));
     // Not a redirect: browsers drop the cookie when the redirect comes straight from a cross-site form post.
     // A small page that moves on by itself makes the next step a normal visit to our own site.
-    const html = `<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${next}"><title>Opening your season</title><p style="font-family:system-ui;padding:40px">Opening your season… <a href="${next}">Continue</a></p><script>location.replace(${JSON.stringify(next)})</script>`;
+    const html = `<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${next}"><title>Opening your season</title><style>html,body{margin:0;height:100%;background:#F0E8D8}.s{position:fixed;left:50%;top:120px;width:26px;height:26px;margin-left:-13px;border:3px solid #D8C9AE;border-top-color:#20302A;border-radius:50%;animation:r .9s linear infinite}@keyframes r{to{transform:rotate(360deg)}}</style><div class="s" role="status" aria-label="Loading your season"></div><noscript><a href="${next}">Continue</a></noscript><script>location.replace(${JSON.stringify(next)})</script>`;
     const res = new NextResponse(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
     res.cookies.set(COOKIE, issue(who), { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: MAX_AGE });
     return res;

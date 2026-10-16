@@ -31,7 +31,8 @@ assert.ok(!L.all.some(i => i.id === '9'), 'events from other spaces never show')
 for (const k of ['live', 'recordings', 'readings', 'reflections']) for (const i of L[k]) assert.ok(L.all.includes(i), `${k} item also in All`);
 assert.ok(joinOpen(L.live[0], Date.parse('2026-10-28T12:50:00Z')), 'Join opens 10 minutes before');
 assert.ok(!joinOpen(L.live[0], Date.parse('2026-10-28T12:49:00Z')), 'not before that');
-assert.ok(!joinOpen(L.live[0], Date.parse('2026-10-28T15:01:00Z')), 'closed after the session ends');
+assert.ok(joinOpen(L.live[0], Date.parse('2026-10-28T15:01:00Z')), 'still open just after the scheduled end');
+assert.ok(!joinOpen(L.live[0], Date.parse('2026-10-28T15:31:00Z')), 'closed 30 minutes after the end');
 console.log('school tabs: all checks passed');
 
 // Events that share a title are numbered in date order

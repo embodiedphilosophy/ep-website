@@ -46,11 +46,11 @@ function Card({ it, tz, now, pinned }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const live = it.kind === 'event' && !it.ended;
-  const href = it.kind === 'event' ? (it.replayUrl || it.pageUrl) : it.url;
+  const href = it.kind === 'event' ? (it.replayUrl || it.pageUrl || it.url) : it.url;
   const opens = live && !joinOpen(it, now) ? 'Live room opens 10 minutes before' : '';
   const replies = it.replies ? `${it.replies} ${it.replies === 1 ? 'reply' : 'replies'}` : '';
   const meta = it.kind === 'event'
-    ? [opens || (live ? 'Live room is open' : ''), it.ended && it.replayUrl && ['Replay', length(it.duration)].filter(Boolean).join(' · '), it.teacher].filter(Boolean)
+    ? [opens || (live ? 'Live room is open' : ''), it.ended && (it.replayUrl ? ['Replay', length(it.duration)].filter(Boolean).join(' · ') : now - it.endedAt < 2 * 3600 * 1000 ? 'Replay is being prepared' : 'Replay on the session page'), it.teacher].filter(Boolean)
     : [it.chip === 'Recording' && ['Replay', length(it.duration)].filter(Boolean).join(' · '), it.teacher && (it.chip === 'Reflection' ? `Started by ${it.teacher}` : it.teacher), replies, dateOnly(it.at, tz)].filter(Boolean);
   const when = it.kind === 'event' ? clock(it.at, tz) : '';
 

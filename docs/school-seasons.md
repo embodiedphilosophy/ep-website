@@ -10,29 +10,10 @@ Edit `data/school-seasons.json`. Each season needs `hub_space_id` (the post spac
 - `MEMBER_SECRET` (or `OPS_SECRET`): signs the member cookie, as for `/api/member/*`.
 - `CIRCLE_IDENTITY_AUD`: already used by the member sign-in.
 
-## How sign-in works (differs from the handoff, on purpose)
-The headless token can act as *any* email, so an email typed into a page must never be enough. Identity comes from Circle's signed identity token, verified by `lib/member/identity.js`:
-1. Paste the snippet below into Circle → Settings → Custom code. Any link in Circle to `https://www.embodiedphilosophy.com/school/...` then posts `window.circleUser.identityToken` to `/api/school/enter`, and opens the page named in the link (for example `?tab=live`).
-2. The server verifies it, sets an httpOnly cookie `ep_school` (12 hours) holding only the email, and redirects.
-3. The server turns that email into a one-hour Circle access token and keeps it in memory. No Circle token reaches the browser, and no refresh token is stored.
+## How the season view gets into Circle
+Circle's own sidebar stays; our page is drawn inside the content area of each season space (an iframe over `circle-ai-shell-workspace-body`). The snippet is `docs/circle-season-loader.js`: paste it between `<script>` tags into Circle → Settings → Code snippets → **Head code snippets**. It maps each Circle space slug (the post space and the hidden event space) to a season slug. Add `?native=1` to a Circle space address to see Circle's own page (admins need this to post or edit).
 
-```html
-<script>
-document.addEventListener('click', function (e) {
-  var a = e.target.closest('a[href*="embodiedphilosophy.com/school/"]');
-  if (!a || !window.circleUser || !window.circleUser.identityToken) return;
-  e.preventDefault();
-  var u = new URL(a.href);
-  var f = document.createElement('form');
-  f.method = 'post';
-  f.action = 'https://www.embodiedphilosophy.com/api/school/enter';
-  [['identityToken', window.circleUser.identityToken], ['next', u.pathname + u.search]].forEach(function (p) {
-    var i = document.createElement('input'); i.type = 'hidden'; i.name = p[0]; i.value = p[1]; f.appendChild(i);
-  });
-  document.body.appendChild(f); f.submit();
-}, true);
-</script>
-```
+Sign-in: the snippet posts Circle's signed identity token (`window.circleUser.identityToken`) to `/api/school/enter`, which verifies it (`lib/member/identity.js`) and sets an httpOnly cookie holding only the email. It does this quietly on any Circle page (`?warm=1`), so the season opens straight away. A typed email is never enough, because the headless token can act as anyone. The server turns the email into a one-hour Circle access token and keeps it in memory; no Circle token reaches the browser.
 
 ## Not yet checked against the real Circle API
 These are the handoff's open questions. The code takes the likeliest answer and keeps each in one place (`lib/school/tabs.js` normalisers, `lib/school/circle.js`):

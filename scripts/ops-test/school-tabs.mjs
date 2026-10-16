@@ -39,3 +39,10 @@ console.log('school tabs: all checks passed');
 const same = [ev(1, '2026-10-21T13:00:00Z', { name: 'The Heart' }), ev(2, '2026-10-28T13:00:00Z', { name: 'The Heart' }), ev(3, '2026-11-04T13:00:00Z', { name: 'The Heart' })];
 assert.deepEqual(tabLists(buildItems(season, same, [], now)).live.map(i => i.title), ['The Heart: Session 2', 'The Heart: Session 3']);
 console.log('school tabs: numbering ok');
+
+// A past session without a detected replay still shows in Recordings (Circle's session page has it)
+const past = [ev(1, '2026-10-21T13:00:00Z'), ev(2, '2026-10-28T13:00:00Z')];
+const P = tabLists(buildItems(season, past, [], Date.parse('2026-10-29T12:00:00Z')));
+assert.deepEqual(P.recordings.map(i => i.title), ['Session 2', 'Session 1'], 'past sessions are recordings, newest first');
+assert.equal(P.live.length, 0);
+console.log('school tabs: past sessions ok');

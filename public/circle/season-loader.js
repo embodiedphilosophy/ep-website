@@ -1,4 +1,9 @@
+/* Embodied Philosophy · season views and "This week" drawn inside Circle (ss.embodiedphilosophy.com).
+   Loaded by ONE line in Circle → Settings → Code snippets → Head code snippets (no inline copy):
+     <script src="https://www.embodiedphilosophy.com/circle/season-loader.js"></script>
+   Add ?epdebug=1 to a Circle address to see a status badge (bottom right). */
 (function () {
+  if (window.__epSeasonLoader) return; window.__epSeasonLoader = true;
   var ORIGIN = 'https://www.embodiedphilosophy.com';
   var SEASONS = {
     'fall-heart-of-recognition': 'fall-2026', 'fall-live-sessions-da549d': 'fall-2026',
@@ -19,7 +24,7 @@
   document.head.appendChild(st);
 
   // Add ?epdebug=1 to a Circle address to show a small status badge (bottom right) for troubleshooting
-  var DEBUG = /[?&]epdebug=1/.test(location.search), state = { loaded: false, ready: false };
+  var DEBUG = /[?&]epdebug=1/.test(location.search), state = { loaded: false, ready: false, html: false, error: '', drew: null };
   function badge() {
     if (!DEBUG || !document.body) return;
     var b = document.getElementById('ep-debug');
@@ -32,7 +37,10 @@
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
-    t += 'page said hello: ' + (state.ready ? 'yes' : 'no') + '\n';
+    t += 'page html arrived: ' + (state.html ? 'yes' : 'no') + '\n';
+    t += 'page started up (hello): ' + (state.ready ? 'yes' : 'no') + '\n';
+    t += 'page drew content: ' + (state.drew ? (state.drew.ok ? 'yes' : 'NO') + ' [' + state.drew.text + ']' : 'not yet') + '\n';
+    t += 'page error: ' + (state.error || 'none') + '\n';
     t += 'what is on top of it: ' + (top ? (top === f ? 'the frame (good)' : top.tagName + (top.id ? '#' + top.id : '') + ' (covering it?)') : '-');
     b.textContent = t;
   }
@@ -96,7 +104,12 @@
 
   // If the quiet sign-in has expired, the frame asks to sign in again once
   window.addEventListener('message', function (e) {
-    if (e.origin === ORIGIN && e.data && (e.data.ep === 'ready' || e.data.ep === 'height')) state.ready = true;
+    if (e.origin === ORIGIN && e.data) {
+      if (e.data.ep === 'ready' || e.data.ep === 'height') state.ready = true;
+      if (e.data.ep === 'html') state.html = true;
+      if (e.data.ep === 'error') state.error = String(e.data.msg).slice(0, 120);
+      if (e.data.ep === 'drew') state.drew = { ok: !!e.data.ok, text: String(e.data.text || '') };
+    }
     if (e.origin !== ORIGIN || !e.data || e.data.ep !== 'need-signin') return;
     var frame = document.getElementById('ep-season-frame');
     if (!frame || frame.getAttribute('data-retried') || !user()) return;

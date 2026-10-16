@@ -11,7 +11,7 @@ The handoff assumed a new member area in ep-ops with a magic-link sign-in and an
 |---|---|---|
 | Page in ep-ops, `/m/this-week` | ep-website, `/school/sahrdaya-upaya/this-week` | The season pages, Circle sign-in, practice log and formation record already live here. |
 | Magic-link email + 30-day partitioned cookie | Circle's own identity token → our `ep_school` cookie (`/api/school/enter`) | No email step, and it works in Safari. Closes the "who is the member" question. |
-| iframe embed in a pinned Circle post | The head snippet (`docs/circle-season-loader.js`) draws the page over the space's content area | Already working for the season spaces, so the "does Business plan allow a full-width iframe" question is answered. Nothing to put in the post. |
+| iframe embed in a pinned Circle post | The head snippet (`public/circle/season-loader.js`) draws the page over the space's content area | Already working for the season spaces, so the "does Business plan allow a full-width iframe" question is answered. Nothing to put in the post. |
 | New `practice_logs` table | The existing `member_practice` (same streak as the Today strip) | The handoff asked to reuse it. |
 | New `formation_hours` table | The existing `member_formation` (ten components, Circle admins credit hours) | Same. |
 | New booking system + invites | The existing Calendly one-to-one (`oneToOnes()` in `lib/member/schedule.js`); Calendly sends the invites | The handoff left "existing booking tool?" open. |
@@ -21,13 +21,13 @@ New tables (Neon, made on first use): `mentee_assignments` (ticks) and `mentee_t
 
 ## Setting it up in Circle (Jacob)
 1. Make a space called **This Week** at the top of the Sahṛdaya Upāya space group. Access **Secret**, members = mentees. Turn off posting and comments. Its **slug must be `this-week`** (Space settings → Basics) or change the `PAGES` line in the snippet.
-2. Re-paste `docs/circle-season-loader.js` into Circle → Settings → Code snippets → Head code snippets (it now also knows the `this-week` slug). Season spaces behave as before.
+2. In Circle → Settings → Code snippets → Head code snippets, replace the old inline loader (the one containing `ep-season-frame`) with this one line: `<script src="https://www.embodiedphilosophy.com/circle/season-loader.js"></script>`. The loader is now served from the site, so later changes to it need no re-pasting. It knows the `this-week` slug and the seasons. Add `?epdebug=1` to a Circle address to see a status badge.
 3. Open the space as a mentee: the page appears under Circle's sidebar. Add `?native=1` to see Circle's own empty space.
 4. In `data/mentee.json` fill in the Circle space ids (`mentorship_sessions_space_id`, `mentorship_circle_space_id`) and `mentorship_circle_url`; add the Apprentice Workbook link (`workbook_url`). Without them the "Next live" card uses only the Fall season's live-sessions space, and the Mentorship card shows Jacob's notes but no threads.
 5. In Ops, Settings → Sahṛdaya Upāya, fill the weekly reading and assignments (`season` = `fall-2026`; week 1 is the week of Session 1).
 
 ## Who can see it
-Only people with the Sahṛdaya Upāya Kit tag (`tierFor`) or Circle admins. Checked when the page opens and on every call it makes; the space is also Secret, and the loader only acts on the one slug. Writes need a same-origin request. **Temporarily not in place:** a `frame-ancestors` rule limiting who may frame the page was removed while checking the page inside Circle; restore it in `next.config.mjs` (`headers()`, source `/school/sahrdaya-upaya/this-week`, value `frame-ancestors https://ss.embodiedphilosophy.com https://embodied-philosophy.circle.so`) once confirmed.
+Only people with the Sahṛdaya Upāya Kit tag (`tierFor`) or Circle admins. Checked when the page opens and on every call it makes; the space is also Secret, and the loader only acts on the one slug. Writes need a same-origin request. Only ss.embodiedphilosophy.com and the Circle domain may frame the page (`frame-ancestors`, `next.config.mjs`).
 
 ## What each part reads
 Greeting/week: `data/school-seasons.json` (`starts_on`). Next live and week ahead: Circle events (headless API, 5-min cache) in the season's live-sessions space and the Mentorship Sessions space, plus the events sheet for what Circle doesn't hold (immersions, one-to-one window). Practice, mālā: `member_practice`. Hours: `member_formation`. Reading, assignments, feedback, launches: the four tabs (5-min cache, so edits show within minutes). If one source fails the card says so and the rest still shows.

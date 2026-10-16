@@ -6,6 +6,9 @@
     'spring-many-faces-of-kali': 'spring-2027', 'spring-live-sessions': 'spring-2027',
     'summer-being-with-the-heart': 'summer-2027', 'summer-immersion-sessions': 'summer-2027'
   };
+  // Pages that are not a season: Circle space slug → our page. "This Week" is a Secret space, so only mentees ever see it;
+  // the page checks the mentee tag again on its own.
+  var PAGES = { 'this-week': '/school/sahrdaya-upaya/this-week' };
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   var WARM_MS = 10 * 3600 * 1000, warming = null, queued = false;
 
@@ -46,19 +49,20 @@
   }
 
   function embed(host, slug) {
+    var path = PAGES[slug] || '/school/sadhana-school/' + slug;
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
-    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = 'Season view';
-    frame.setAttribute('data-slug', slug);
+    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = PAGES[slug] ? 'This week' : 'Season view';
+    frame.setAttribute('data-slug', slug); frame.setAttribute('data-path', path);
     frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';
     host.appendChild(frame);
-    function show() { if (frame.parentNode) frame.src = ORIGIN + '/school/sadhana-school/' + slug; }
+    function show() { if (frame.parentNode) frame.src = ORIGIN + path; }
     warm().then(show, show);
   }
 
   function tick() {
     queued = false;
-    var m = location.pathname.match(/^\/c\/([^\/]+)/), slug = m && SEASONS[m[1]];
+    var m = location.pathname.match(/^\/c\/([^\/]+)/), slug = m && (PAGES[m[1]] ? m[1] : SEASONS[m[1]]);
     var host = document.querySelector(HOST), frame = document.getElementById('ep-season-frame');
     if (user()) warm();
     var off = !slug || /[?&]native=1/.test(location.search) || !host || !user();
@@ -76,7 +80,7 @@
     if (!frame || frame.getAttribute('data-retried') || !user()) return;
     frame.setAttribute('data-retried', '1');
     store(key(), null);
-    post('/school/sadhana-school/' + frame.getAttribute('data-slug'), 'ep-season-frame');
+    post(frame.getAttribute('data-path'), 'ep-season-frame');
   });
 
   ['pushState', 'replaceState'].forEach(function (fn) {

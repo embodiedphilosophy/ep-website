@@ -14,7 +14,11 @@ export async function GET() {
   await attempt('events', async () => {
     const ev = await eventList(me.email);
     const bySpace = {}; for (const e of ev) { const k = String(e.space_id ?? e.space?.id ?? 'none'); bySpace[k] = (bySpace[k] || 0) + 1; }
-    return { count: ev.length, bySpace, firstKeys: keys(ev[0]) };
+    const inSpace = ev.filter(e => String(e.space_id ?? e.space?.id) === String(allSeasons()[0].event_space_id));
+    const one = inSpace[0] || ev[0];
+    // time-like and replay-like fields, shown as names and value types only
+    const shape = o => Object.fromEntries(Object.entries(o || {}).filter(([k]) => /start|end|time|date|at$|replay|record|url|link|host|duration|rsvp|attend/i.test(k)).map(([k, v]) => [k, v && typeof v === 'object' ? keys(v) : typeof v === 'string' ? v.slice(0, 12) + '…' : v]));
+    return { count: ev.length, bySpace, firstKeys: keys(one), shape: shape(one) };
   });
   for (const s of allSeasons()) {
     if (!s.hub_space_id) continue;

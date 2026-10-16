@@ -10,6 +10,7 @@ export default function SeasonView({ programme, slug, lists, initialTab, canRefl
   const [tab, setTab] = useState(initialTab);
   const [tz, setTz] = useState('America/New_York'); // swapped for the member's own zone once we are in the browser
   const [now, setNow] = useState(Date.now());
+  const [mine, setMine] = useState([]); // reflections posted in this visit, shown at once
   useEffect(() => {
     setTz(Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York');
     const t = setInterval(() => setNow(Date.now()), 30000);
@@ -22,7 +23,8 @@ export default function SeasonView({ programme, slug, lists, initialTab, canRefl
     if (key === 'all') u.searchParams.delete('tab'); else u.searchParams.set('tab', key);
     window.history.replaceState(null, '', u);
   };
-  const list = lists[tab] || [];
+  const justPosted = mine.map(m => ({ kind: 'post', id: m.id, title: m.title, at: new Date(m.at).toISOString(), chip: 'Reflection', teacher: 'You', replies: 0 }));
+  const list = [...(tab === 'reflections' || tab === 'all' ? justPosted : []), ...(lists[tab] || [])];
 
   return (
     <>
@@ -33,7 +35,7 @@ export default function SeasonView({ programme, slug, lists, initialTab, canRefl
           </button>
         ))}
       </div>
-      {tab === 'reflections' && canReflect && <Composer programme={programme} slug={slug} />}
+      {tab === 'reflections' && canReflect && <Composer programme={programme} slug={slug} onPosted={m => setMine(x => [{ ...m, id: `new${x.length}`, at: Date.now() }, ...x])} />}
       {list.length === 0
         ? <p className="sch-empty">{EMPTY[tab]}</p>
         : <ul className="sch-list">{list.map((it, i) => <Card key={`${it.kind}${it.id}`} it={it} tz={tz} now={now} pinned={tab === 'all' && i === 0 && it.kind === 'event' && !it.ended} />)}</ul>}
@@ -79,7 +81,7 @@ function Card({ it, tz, now, pinned }) {
   );
 }
 
-function Composer({ programme, slug }) {
+function Composer({ programme, slug, onPosted }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [state, setState] = useState({ busy: false, msg: '', ok: false });
@@ -87,7 +89,7 @@ function Composer({ programme, slug }) {
     e.preventDefault();
     setState({ busy: true, msg: '', ok: false });
     const r = await fetch('/api/school/reflection', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ programme, season: slug, title, body }) }).catch(() => null);
-    if (r?.ok) { setTitle(''); setBody(''); setState({ busy: false, ok: true, msg: 'Posted. It will show here in a moment.' }); }
+    if (r?.ok) { onPosted({ title: title.trim() || 'Reflection' }); setTitle(''); setBody(''); setState({ busy: false, ok: true, msg: 'Posted. It is now in Circle too.' }); }
     else setState({ busy: false, ok: false, msg: (await r?.json().catch(() => ({})))?.error || 'We could not post your reflection. Please try again.' });
   }
   return (

@@ -48,14 +48,22 @@
         });
       });
   }
+  var DKEY = function () { return 'ep_week_data_' + ((window.circleUser && window.circleUser.email) || ''); };
+  function keep(d) { if (d && d.due && !d.pending) store(DKEY(), JSON.stringify({ day: localToday(), d: d })); }
+  function cached() { try { var c = JSON.parse(store(DKEY()) || 'null'); return c && c.day === localToday() ? c.d : null; } catch (e) { return null; } }
   var tzq = function () { return 'today=' + localToday() + '&tz=' + encodeURIComponent(myZone()); };
+  // Fast answer first (practice, ticks, hours, reading, assignments), then the full one (sessions, threads, calendar)
   function load() {
-    return call('/api/member/this-week?' + tzq()).then(function (d) { state.data = d; state.error = ''; })
-      .catch(function (e) { state.error = e.status === 403 ? 'This page is for Sahṛdaya Upāya mentees.' : e.message; });
+    var fail = function (e) { state.error = e.status === 403 ? 'This page is for Sahṛdaya Upāya mentees.' : e.message; };
+    return call('/api/member/this-week?fast=1&' + tzq()).then(function (d) { if (!state.data || state.data.pending || !cached()) state.data = d; state.error = ''; render(); }).catch(fail)
+      .then(function () {
+        return call('/api/member/this-week?' + tzq()).then(function (d) { state.data = d; state.error = ''; keep(d); render(); })
+          .catch(function (e) { if (!state.data) fail(e); else if (state.data.pending) { state.data.pending = false; state.data.unavailable = (state.data.unavailable || []).concat(['sessions']); } });
+      });
   }
   function act(key, fn) {
     state.busy = key; state.msg = ''; render();
-    return fn().then(function (d) { if (d && d.due) state.data = d; }).catch(function (e) { state.msg = e.message; })
+    return fn().then(function (d) { if (d && d.due) { state.data = d; keep(d); } }).catch(function (e) { state.msg = e.message; })
       .then(function () { state.busy = ''; render(); });
   }
 
@@ -92,6 +100,7 @@
       '.etw-bar{height:8px;background:#EADDC6;border-radius:99px;overflow:hidden}.etw-bar i{display:block;height:100%;background:#20302A}',
       '.etw-form{display:grid;gap:8px}.etw-form label{font-weight:600;color:#20302A;font-size:14px}',
       '.etw-form input,.etw-form textarea{width:100%;font:16px inherit;font-family:inherit;padding:10px 12px;border:1px solid #D8C9AE;border-radius:6px;background:#fff;min-height:44px;color:#1E1A14}',
+      '.etw-sk{height:150px;border-radius:8px;background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:etwsh 1.4s ease-in-out infinite}.etw-sk.tall{height:320px}@keyframes etwsh{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.etw-sk{animation:none}}',
       '.etw-days{list-style:none;margin:0;padding:0}',
       '.etw-days li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid #D8C9AE}.etw-days li:first-child{border-top:0}',
       '.etw-days li.today .dn{color:#A5432A}.etw .dn{font-weight:600;font-size:14px}',
@@ -142,6 +151,7 @@
   }
   function nextLiveCard(w) {
     var s = w.nextLive;
+    if (!s && w.pending) return card('Next live', '<p class="etw-muted">Loading…</p>');
     if (!s) return card('Next live', '<p class="etw-muted">' + (w.unavailable.indexOf('sessions') >= 0 ? 'We couldn’t reach Circle just now.' : 'The next session will appear here.') + '</p>');
     var open = joinOpen(s, Date.now()), going = s.rsvped || state.going[s.id];
     var out = '<p class="etw-strong">' + esc(s.title) + '</p><p class="etw-muted">' + esc(fmt(s.start, { weekday: 'short', day: 'numeric', month: 'short' })) + ', ' + esc(fmt(s.start, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })) + '</p><div class="etw-acts">';
@@ -157,7 +167,7 @@
     return card('Due this week', '<p class="etw-big">' + d.done + '<span>of ' + d.total + ' done</span></p><div class="etw-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + d.total + '" aria-valuenow="' + d.done + '" aria-label="Assignments done this week"><i style="width:' + (d.total ? Math.round(d.done / d.total * 100) : 0) + '%"></i></div>');
   }
   function weekCard(w) {
-    return card('The week ahead', '<ol class="etw-days">' + w.week.map(function (d) {
+    return card('The week ahead', (w.pending ? '<p class="etw-muted">Loading sessions…</p>' : '') + '<ol class="etw-days">' + w.week.map(function (d) {
       var items = d.items.length ? d.items.map(function (it) {
         var t = it.url ? link(it.url, esc(it.title), '', !it.circle) : esc(it.title);
         return '<p class="etw-item">' + t + (it.start ? '<span class="etw-muted"> · ' + esc(fmt(it.start, { hour: 'numeric', minute: '2-digit' })) + '</span>' : '') + '</p>';
@@ -221,7 +231,7 @@
   function html() {
     if (state.error && !state.data) return '<div class="etw-head"><div><h1 class="etw-h1">This week</h1><p class="etw-sub">' + esc(state.error) + '</p></div></div>';
     var w = state.data;
-    if (!w) return '<p class="etw-sub">Opening your week…</p>';
+    if (!w) return '<div class="etw-head"><div><h1 class="etw-h1">' + esc(hello() + (state.first ? ', ' + state.first : '')) + '</h1><p class="etw-sub">Opening your week…</p></div></div><div class="etw-row3"><div class="etw-sk"></div><div class="etw-sk"></div><div class="etw-sk"></div></div><div class="etw-sk tall"></div>';
     var g = w.greeting, note = clockNote(w.today);
     return '<div class="etw-head"><div><h1 class="etw-h1">' + esc(hello() + (g.firstName || state.first ? ', ' + (g.firstName || state.first) : '')) + '</h1><p class="etw-sub">' + esc(dayFmt(w.today, { weekday: 'long', day: 'numeric', month: 'long' })) + ' · Week ' + g.week + ' of ' + esc(g.seasonTitle) + '</p></div><span class="etw-badge">' + esc(g.badge) + '</span></div>' +
       (w.unavailable.length ? '<p class="etw-warn" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
@@ -261,16 +271,22 @@
   }
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   function mount() {
-    if (!PAGE.test(location.pathname) || !state.ok) return;
+    if (!PAGE.test(location.pathname) || state.ok === false) return;
     if (root && document.body.contains(root)) return;
     var box = pageContainer() || document.querySelector(HOST);
     if (!box) return;
     for (var i = 0; i < box.children.length; i++) box.children[i].style.display = 'none';
-    root = document.createElement('div');
+    root = document.createElement('div'); root.__box = box;
     root.className = 'etw'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'This week');
     root.addEventListener('click', onClick); root.addEventListener('input', onInput);
     box.insertBefore(root, box.firstChild);
     render();
+  }
+  // Someone who turns out not to be a mentee gets Circle's own page back
+  function unmount() {
+    if (!root) return;
+    var box = root.__box; root.remove(); root = null;
+    if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = '';
   }
 
   // ?epdebug=1 on a Circle address shows a small status badge (bottom left) for troubleshooting
@@ -294,7 +310,11 @@
   function start() {
     if (started || !PAGE.test(location.pathname)) return;
     started = true; css(); setInterval(badge, 1000);
-    signIn().then(function () { if (state.ok) return load(); }).catch(function () { state.error = 'Please sign in to Circle to see your week.'; }).then(function () { mount(); render(); });
+    // Draw straight away (last answer or a skeleton), then sign in and refresh; no need to wait for either
+    state.ok = null; state.data = cached(); mount(); render();
+    signIn().then(function () { if (!state.ok) { unmount(); return; } mount(); render(); return load(); })
+      .catch(function () { state.error = 'Please sign in to Circle to see your week.'; })
+      .then(function () { mount(); render(); });
     // Keeps "Join" and today's date current; never while someone is typing
     setInterval(function () { if (root && document.body.contains(root) && !state.logOpen && !state.line && !state.busy) { render(); } }, 60000);
   }

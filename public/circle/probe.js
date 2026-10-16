@@ -1,10 +1,16 @@
 /* Embodied Philosophy · page-structure probe for Circle (ss.embodiedphilosophy.com)
-   Loaded by public/circle/today.js. Does nothing unless the address has ?epdebug=1. Then it adds a button (bottom right,
-   above the other badges): "Copy page structure". It copies a short outline of the page (tags, class names, labels and the first
+   Loaded by public/circle/today.js. Shows for Circle admins only (or with ?epdebug=1 on the address, or after pressing
+   Control+Option+P). It adds a button (bottom right): "Copy page structure". It copies a short outline of the page (tags, class names, labels and the first
    words of text, never anything typed into a box) so the Circle restyle can be written against the real markup. */
 (function () {
   if (window.__epProbe) return; window.__epProbe = true;
-  if (!/[?&]epdebug=1/.test(location.search)) return;
+  function flag(v) { try { if (v === undefined) return sessionStorage.getItem('ep_probe'); if (v) sessionStorage.setItem('ep_probe', v); else sessionStorage.removeItem('ep_probe'); } catch (e) { return null; } }
+  function wanted() {
+    var u = window.circleUser;
+    return /[?&]epdebug=1/.test(location.search) || flag() === '1' || !!(u && (u.isAdmin || u.admin || u.is_admin));
+  }
+  // Control+Option+P switches the button on or off, for pages where the address can't be changed
+  window.addEventListener('keydown', function (e) { if (e.ctrlKey && e.altKey && e.code === 'KeyP') { flag(flag() === '1' ? '' : '1'); add(); } });
 
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, PATH: 1, CIRCLE: 1, RECT: 1, LINE: 1, POLYGON: 1, G: 1, DEFS: 1, USE: 1 };
@@ -58,7 +64,9 @@
   }
 
   function add() {
-    if (!document.body || document.getElementById('ep-probe')) return;
+    var have = document.getElementById('ep-probe');
+    if (!wanted()) { if (have) have.remove(); return; }
+    if (!document.body || have) return;
     var b = document.createElement('button'); b.id = 'ep-probe'; b.type = 'button'; b.textContent = 'Copy page structure';
     b.style.cssText = 'position:fixed;right:12px;bottom:200px;z-index:2147483647;background:#A5432A;color:#fff;border:0;border-radius:6px;padding:10px 14px;font:600 13px system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)';
     b.addEventListener('click', function () {

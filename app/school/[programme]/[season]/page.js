@@ -1,5 +1,5 @@
 import { redirect, notFound } from 'next/navigation';
-import { currentMember } from '@/lib/school/session';
+import { currentMember, missingReason } from '@/lib/school/session';
 import { headlessConfigured, memberSpaceIds, eventList, spacePosts } from '@/lib/school/circle';
 import { PROGRAMMES, programmeSeasons, findSeason, isWired, seasonState } from '@/lib/school/config';
 import { buildItems, tabLists, TABS } from '@/lib/school/tabs';
@@ -16,7 +16,7 @@ export default async function Page({ params, searchParams }) {
   const season = findSeason(programme, slug);
   if (!PROGRAMMES[programme] || !season) notFound();
   const me = await currentMember();
-  if (!me) redirect(`/school/sign-in?next=${encodeURIComponent(`/school/${programme}/${slug}`)}`);
+  if (!me) redirect(`/school/sign-in?next=${encodeURIComponent(`/school/${programme}/${slug}`)}&why=${encodeURIComponent(await missingReason())}`);
 
   const all = programmeSeasons(programme);
   const notice = (title, text, cta) => (

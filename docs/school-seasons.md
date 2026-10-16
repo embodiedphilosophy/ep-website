@@ -12,16 +12,26 @@ Edit `data/school-seasons.json`. Each season needs `hub_space_id` (the post spac
 
 ## How sign-in works (differs from the handoff, on purpose)
 The headless token can act as *any* email, so an email typed into a page must never be enough. Identity comes from Circle's signed identity token, verified by `lib/member/identity.js`:
-1. A link or button in Circle's custom code posts `window.circleUser.identityToken` to `/api/school/enter` (form POST, optional `next=/school/sadhana-school/fall-2026?tab=live`).
+1. Paste the snippet below into Circle → Settings → Custom code. Any link in Circle to `https://www.embodiedphilosophy.com/school/...` then posts `window.circleUser.identityToken` to `/api/school/enter`, and opens the page named in the link (for example `?tab=live`).
 2. The server verifies it, sets an httpOnly cookie `ep_school` (12 hours) holding only the email, and redirects.
 3. The server turns that email into a one-hour Circle access token and keeps it in memory. No Circle token reaches the browser, and no refresh token is stored.
 
 ```html
-<form method="post" action="https://embodiedphilosophy.com/api/school/enter">
-  <input type="hidden" name="identityToken" value="">
-  <input type="hidden" name="next" value="/school/sadhana-school/fall-2026">
-</form>
-<script>document.querySelector('[name=identityToken]').value = window.circleUser.identityToken;</script>
+<script>
+document.addEventListener('click', function (e) {
+  var a = e.target.closest('a[href*="embodiedphilosophy.com/school/"]');
+  if (!a || !window.circleUser || !window.circleUser.identityToken) return;
+  e.preventDefault();
+  var u = new URL(a.href);
+  var f = document.createElement('form');
+  f.method = 'post';
+  f.action = 'https://www.embodiedphilosophy.com/api/school/enter';
+  [['identityToken', window.circleUser.identityToken], ['next', u.pathname + u.search]].forEach(function (p) {
+    var i = document.createElement('input'); i.type = 'hidden'; i.name = p[0]; i.value = p[1]; f.appendChild(i);
+  });
+  document.body.appendChild(f); f.submit();
+}, true);
+</script>
 ```
 
 ## Not yet checked against the real Circle API

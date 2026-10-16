@@ -13,7 +13,9 @@ export async function POST(req) {
     const res = NextResponse.redirect(new URL(next, req.url), 303);
     res.cookies.set(COOKIE, issue(who), { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: MAX_AGE });
     return res;
-  } catch {
-    return NextResponse.redirect(new URL(`/school/sign-in?next=${encodeURIComponent(next)}`, req.url), 303);
+  } catch (e) {
+    // Plain reasons from lib/member/identity.js ("Circle sign-in has expired"...), shown on the sign-in page
+    const why = encodeURIComponent(String(e.message || 'Sign-in failed').slice(0, 120));
+    return NextResponse.redirect(new URL(`/school/sign-in?next=${encodeURIComponent(next)}&why=${why}`, req.url), 303);
   }
 }

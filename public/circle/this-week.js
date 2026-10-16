@@ -259,10 +259,11 @@
     for (var i = 0; i < all.length; i++) { var c = String(all[i].className || ''); if (c.indexOf('container-type:inline-size') >= 0 && c.indexOf('bg-secondary') >= 0) return all[i]; }
     return null;
   }
+  var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   function mount() {
     if (!PAGE.test(location.pathname) || !state.ok) return;
     if (root && document.body.contains(root)) return;
-    var box = pageContainer();
+    var box = pageContainer() || document.querySelector(HOST);
     if (!box) return;
     for (var i = 0; i < box.children.length; i++) box.children[i].style.display = 'none';
     root = document.createElement('div');
@@ -272,14 +273,32 @@
     render();
   }
 
+  // ?epdebug=1 on a Circle address shows a small status badge (bottom left) for troubleshooting
+  var DEBUG = /[?&]epdebug=1/.test(location.search);
+  function badge() {
+    if (!DEBUG || !document.body) return;
+    var b = document.getElementById('etw-debug');
+    if (!b) { b = document.createElement('div'); b.id = 'etw-debug'; b.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:2147483647;background:#20302A;color:#fff;font:12px/1.5 monospace;padding:10px 12px;border-radius:6px;max-width:340px;white-space:pre-wrap'; document.body.appendChild(b); }
+    var u = window.circleUser;
+    b.textContent = 'this-week.js loaded: yes\n' +
+      'address matches /c/this-week: ' + (PAGE.test(location.pathname) ? 'yes' : 'NO (' + location.pathname + ')') + '\n' +
+      'signed in to Circle: ' + (u && u.identityToken ? 'yes' : 'NO') + '\n' +
+      'signed in to EP: ' + (state.session ? 'yes' : 'no') + '\n' +
+      'allowed (mentee/admin): ' + (state.ok ? 'yes' : 'NO') + '\n' +
+      'page data: ' + (state.data ? 'loaded' : state.error || 'not yet') + '\n' +
+      'page area: ' + (pageContainer() ? 'schedule-style' : document.querySelector(HOST) ? 'workspace body' : 'NOT FOUND') + '\n' +
+      'drawn: ' + (root && document.body.contains(root) ? 'yes' : 'no');
+  }
+
   var started = false;
   function start() {
     if (started || !PAGE.test(location.pathname)) return;
-    started = true; css();
+    started = true; css(); setInterval(badge, 1000);
     signIn().then(function () { if (state.ok) return load(); }).catch(function () { state.error = 'Please sign in to Circle to see your week.'; }).then(function () { mount(); render(); });
     // Keeps "Join" and today's date current; never while someone is typing
     setInterval(function () { if (root && document.body.contains(root) && !state.logOpen && !state.line && !state.busy) { render(); } }, 60000);
   }
+  if (DEBUG) setInterval(badge, 1000);
   start();
   // Circle is a single-page app: mount when someone navigates to the page
   var t = null;

@@ -1,0 +1,78 @@
+[
+  {
+    "slug": "fall-2026",
+    "programme": "sadhana-school",
+    "title": "Fall · The Heart of Recognition",
+    "short": "Fall 2026",
+    "subtitle": "Kṣemārāja's Pratyabhijñāhṛdaya",
+    "order": 1,
+    "hub_space_id": 2896663,
+    "event_space_id": 2911531,
+    "topic_ids": {
+      "readings": 597025,
+      "reflections": 597026,
+      "recordings": 597024
+    },
+    "starts_on": "2026-10-21",
+    "ends_on": "2026-12-09",
+    "cover_image": "",
+    "enrol_url": "https://enroll.embodiedphilosophy.com/sadhana-school"
+  },
+  {
+    "slug": "winter-2027",
+    "programme": "sadhana-school",
+    "title": "Winter · Poetry as Philosophy",
+    "short": "Winter 2027",
+    "subtitle": "Śivastotrāvalī, Rasa Theory & the Songs of Utpaladeva",
+    "order": 2,
+    "hub_space_id": 2896665,
+    "event_space_id": 2896664,
+    "topic_ids": {
+      "readings": 597025,
+      "reflections": 597026,
+      "recordings": 597024
+    },
+    "starts_on": "2027-01-27",
+    "ends_on": "2027-03-24",
+    "cover_image": "",
+    "enrol_url": "https://enroll.embodiedphilosophy.com/sadhana-school"
+  },
+  {
+    "slug": "spring-2027",
+    "programme": "sadhana-school",
+    "title": "Spring · The Many Faces of Kālī",
+    "short": "Spring 2027",
+    "subtitle": "Deity, Iconography & the Fierce Faces of Non-Dual Tantra",
+    "order": 3,
+    "hub_space_id": 2896667,
+    "event_space_id": 2896666,
+    "topic_ids": {
+      "readings": 597025,
+      "reflections": 597026,
+      "recordings": 597024
+    },
+    "starts_on": "2027-04-21",
+    "ends_on": "2027-06-16",
+    "cover_image": "",
+    "enrol_url": "https://enroll.embodiedphilosophy.com/sadhana-school"
+  },
+  {
+    "slug": "summer-2027",
+    "programme": "sadhana-school",
+    "title": "Summer · Being With the Heart",
+    "short": "Summer 2027",
+    "subtitle": "The Sahṛdaya Summer Immersion",
+    "order": 4,
+    "hub_space_id": 2896669,
+    "event_space_id": 2896668,
+    "topic_ids": {
+      "readings": 597025,
+      "reflections": 597026,
+      "recordings": 597024
+    },
+    "starts_on": "2027-07-10",
+    "ends_on": "2027-07-16",
+    "cover_image": "",
+    "enrol_url": "https://enroll.embodiedphilosophy.com/sadhana-school"
+  }
+]

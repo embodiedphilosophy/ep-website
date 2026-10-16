@@ -10,7 +10,10 @@ export async function POST(req) {
   const next = safeNext(form?.get('next'));
   try {
     const who = await verifyCircleToken(form?.get('identityToken'));
-    const res = NextResponse.redirect(new URL(next, req.url), 303);
+    // Not a redirect: browsers drop the cookie when the redirect comes straight from a cross-site form post.
+    // A small page that moves on by itself makes the next step a normal visit to our own site.
+    const html = `<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${next}"><title>Opening your season</title><p style="font-family:system-ui;padding:40px">Opening your season… <a href="${next}">Continue</a></p><script>location.replace(${JSON.stringify(next)})</script>`;
+    const res = new NextResponse(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
     res.cookies.set(COOKIE, issue(who), { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: MAX_AGE });
     return res;
   } catch (e) {

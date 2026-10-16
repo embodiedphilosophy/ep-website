@@ -49,6 +49,7 @@ export default function ThisWeek() {
   useEffect(() => {
     const post = () => window.parent !== window && window.parent.postMessage({ ep: 'height', height: document.documentElement.scrollHeight }, CIRCLE);
     const ro = new ResizeObserver(post); ro.observe(document.documentElement); post();
+    if (window.parent !== window) window.parent.postMessage({ ep: 'ready' }, CIRCLE);
     return () => ro.disconnect();
   }, []);
 

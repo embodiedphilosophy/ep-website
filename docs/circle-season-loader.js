@@ -18,6 +18,24 @@
   st.textContent = '[data-ep-season]{position:relative !important;overflow:hidden !important;min-height:calc(100vh - 80px) !important}[data-ep-season] > :not(#ep-season-frame){visibility:hidden}';
   document.head.appendChild(st);
 
+  // Add ?epdebug=1 to a Circle address to show a small status badge (bottom right) for troubleshooting
+  var DEBUG = /[?&]epdebug=1/.test(location.search), state = { loaded: false, ready: false };
+  function badge() {
+    if (!DEBUG || !document.body) return;
+    var b = document.getElementById('ep-debug');
+    if (!b) { b = document.createElement('div'); b.id = 'ep-debug'; b.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#20302A;color:#fff;font:12px/1.5 monospace;padding:10px 12px;border-radius:6px;max-width:340px;white-space:pre-wrap'; document.body.appendChild(b); }
+    var f = document.getElementById('ep-season-frame'), host = document.querySelector(HOST), t = '';
+    var r = f && f.getBoundingClientRect(), top = r && document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(200, r.height / 2));
+    t += 'path: ' + location.pathname + '\n';
+    t += 'signed in to Circle: ' + (user() ? 'yes' : 'NO') + '\n';
+    t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
+    t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
+    t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
+    t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
+    t += 'page said hello: ' + (state.ready ? 'yes' : 'no') + '\n';
+    t += 'what is on top of it: ' + (top ? (top === f ? 'the frame (good)' : top.tagName + (top.id ? '#' + top.id : '') + ' (covering it?)') : '-');
+    b.textContent = t;
+  }
   function user() { var u = window.circleUser; return u && u.identityToken ? u : null; }
   function key() { return 'ep_warm_' + (user() ? user().email : ''); }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
@@ -57,6 +75,7 @@
     frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = PAGES[slug] ? 'This week' : 'Season view';
     frame.setAttribute('data-slug', slug); frame.setAttribute('data-path', path);
     frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';
+    frame.onload = function () { state.loaded = true; };
     host.appendChild(frame);
     function show() { if (frame.parentNode) frame.src = ORIGIN + path; }
     warm().then(show, show);
@@ -77,6 +96,7 @@
 
   // If the quiet sign-in has expired, the frame asks to sign in again once
   window.addEventListener('message', function (e) {
+    if (e.origin === ORIGIN && e.data && (e.data.ep === 'ready' || e.data.ep === 'height')) state.ready = true;
     if (e.origin !== ORIGIN || !e.data || e.data.ep !== 'need-signin') return;
     var frame = document.getElementById('ep-season-frame');
     if (!frame || frame.getAttribute('data-retried') || !user()) return;
@@ -92,7 +112,7 @@
   window.addEventListener('popstate', soon);
   function start() {
     new MutationObserver(soon).observe(document.documentElement, { childList: true, subtree: true });
-    setInterval(tick, 1500);
+    setInterval(tick, 1500); setInterval(badge, 1000);
     tick();
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);

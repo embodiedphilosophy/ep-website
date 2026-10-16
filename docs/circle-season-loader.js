@@ -15,7 +15,7 @@
   var WARM_MS = 10 * 3600 * 1000, warming = null, queued = false;
 
   var st = document.createElement('style');
-  st.textContent = '[data-ep-season]{position:relative !important;overflow:hidden !important}[data-ep-season] > :not(#ep-season-frame){visibility:hidden}';
+  st.textContent = '[data-ep-season]{position:relative !important;overflow:hidden !important;min-height:calc(100vh - 80px) !important}[data-ep-season] > :not(#ep-season-frame){visibility:hidden}';
   document.head.appendChild(st);
 
   function user() { var u = window.circleUser; return u && u.identityToken ? u : null; }

@@ -24,7 +24,7 @@
   document.head.appendChild(st);
 
   // Add ?epdebug=1 to a Circle address to show a small status badge (bottom right) for troubleshooting
-  var DEBUG = /[?&]epdebug=1/.test(location.search), state = { loaded: false, ready: false, html: false, error: '', drew: null };
+  var DEBUG = /[?&]epdebug=1/.test(location.search), state = { loaded: false, ready: false, html: false, error: '', drew: null, built: 0 };
   function badge() {
     if (!DEBUG || !document.body) return;
     var b = document.getElementById('ep-debug');
@@ -35,6 +35,7 @@
     t += 'signed in to Circle: ' + (user() ? 'yes' : 'NO') + '\n';
     t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
+    t += 'frame built: ' + state.built + ' time(s)\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
     t += 'page html arrived: ' + (state.html ? 'yes' : 'no') + '\n';
@@ -76,15 +77,25 @@
     return warming;
   }
 
+  // Keeps the page's frame laid over Circle's content area. For "This week" the frame lives on the page itself (not inside
+  // Circle's content area), so Circle re-drawing that area can never tear it down and restart it.
+  function place(frame, host) {
+    if (!frame || !host) return;
+    var r = host.getBoundingClientRect(), h = Math.max(r.height, window.innerHeight - r.top);
+    frame.style.left = r.left + 'px'; frame.style.top = r.top + 'px'; frame.style.width = r.width + 'px'; frame.style.height = h + 'px';
+  }
   function embed(host, slug) {
-    var path = PAGES[slug] || '/school/sadhana-school/' + slug;
+    var path = PAGES[slug] || '/school/sadhana-school/' + slug, overlay = !!PAGES[slug];
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
-    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = PAGES[slug] ? 'This week' : 'Season view';
+    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = overlay ? 'This week' : 'Season view';
     frame.setAttribute('data-slug', slug); frame.setAttribute('data-path', path);
-    frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';
+    if (overlay) { frame.setAttribute('data-overlay', '1'); frame.style.cssText = 'position:fixed;z-index:20;border:0;background:#F2E8D6'; }
+    else frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';
     frame.onload = function () { state.loaded = true; };
-    host.appendChild(frame);
+    state.built++;
+    (overlay ? document.body : host).appendChild(frame);
+    if (overlay) place(frame, host);
     function show() { if (frame.parentNode) frame.src = ORIGIN + path; }
     warm().then(show, show);
   }
@@ -96,6 +107,7 @@
     if (user()) warm();
     var off = !slug || /[?&]native=1/.test(location.search) || !host || !user();
     if (off) { if (frame) frame.remove(); var h = document.querySelector('[data-ep-season]'); if (h) h.removeAttribute('data-ep-season'); return; }
+    if (frame && frame.getAttribute('data-slug') === slug && frame.getAttribute('data-overlay')) { host.setAttribute('data-ep-season', '1'); place(frame, host); return; }
     if (frame && frame.getAttribute('data-slug') === slug && frame.parentNode === host) return;
     if (frame) frame.remove();
     embed(host, slug);
@@ -126,6 +138,7 @@
   function start() {
     new MutationObserver(soon).observe(document.documentElement, { childList: true, subtree: true });
     setInterval(tick, 1500); setInterval(badge, 1000);
+    setInterval(function () { var f = document.getElementById('ep-season-frame'); if (f && f.getAttribute('data-overlay')) place(f, document.querySelector(HOST)); }, 300);
     tick();
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);

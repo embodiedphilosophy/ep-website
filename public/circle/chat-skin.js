@@ -41,7 +41,7 @@
     '[data-testid=tiptap-editor]{background:#FAF5EB!important;border:1px solid #D8C9AE!important;border-radius:14px!important;box-shadow:none!important;margin-bottom:12px}',
     '[data-testid=tiptap-editor] .tiptap{font-size:15px!important}',
     // Send: a terra button with the word, like the design
-    '#tiptap-send{background:#A5432A!important;color:#fff!important;border-radius:10px!important;padding:0 18px!important;min-height:38px;border:0!important}',
+    '#tiptap-send{background:#A5432A!important;color:#fff!important;border-radius:10px!important;padding:0 20px!important;width:auto!important;min-width:76px!important;height:40px!important;min-height:40px;border:0!important;gap:0!important}',
     '#tiptap-send:hover{background:#83341F!important}',
     '#tiptap-send svg{display:none!important}',
     '#tiptap-send::after{content:"Send";font:600 14px Inter,system-ui,sans-serif;color:#fff}'

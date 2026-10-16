@@ -9,6 +9,8 @@
   // Pages that are not a season: Circle space slug → our page. "This Week" is a Secret space, so only mentees ever see it;
   // the page checks the mentee tag again on its own.
   var PAGES = { 'this-week': '/school/sahrdaya-upaya/this-week' };
+  // Circle often adds a short code to a space's address (this-week-a1b2c3): treat that as the same space
+  function pageKey(s) { return PAGES[s] ? s : /^this-week-[a-z0-9]{3,10}$/.test(s) ? 'this-week' : null; }
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   var WARM_MS = 10 * 3600 * 1000, warming = null, queued = false;
 
@@ -62,7 +64,7 @@
 
   function tick() {
     queued = false;
-    var m = location.pathname.match(/^\/c\/([^\/]+)/), slug = m && (PAGES[m[1]] ? m[1] : SEASONS[m[1]]);
+    var m = location.pathname.match(/^\/c\/([^\/]+)/), slug = m && (pageKey(m[1]) || SEASONS[m[1]]);
     var host = document.querySelector(HOST), frame = document.getElementById('ep-season-frame');
     if (user()) warm();
     var off = !slug || /[?&]native=1/.test(location.search) || !host || !user();

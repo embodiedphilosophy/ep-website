@@ -27,7 +27,7 @@ New tables (Neon, made on first use): `mentee_assignments` (ticks) and `mentee_t
 5. In Ops, Settings → Sahṛdaya Upāya, fill the weekly reading and assignments (`season` = `fall-2026`; week 1 is the week of Session 1).
 
 ## Who can see it
-Only people with the Sahṛdaya Upāya Kit tag (`tierFor`) or Circle admins. Checked when the page opens and on every call it makes; the space is also Secret, and the loader only acts on the one slug. Writes need a same-origin request.
+Only people with the Sahṛdaya Upāya Kit tag (`tierFor`) or Circle admins. Checked when the page opens and on every call it makes; the space is also Secret, and the loader only acts on the one slug. Writes need a same-origin request. **Temporarily not in place:** a `frame-ancestors` rule limiting who may frame the page was removed while checking the page inside Circle; restore it in `next.config.mjs` (`headers()`, source `/school/sahrdaya-upaya/this-week`, value `frame-ancestors https://ss.embodiedphilosophy.com https://embodied-philosophy.circle.so`) once confirmed.
 
 ## What each part reads
 Greeting/week: `data/school-seasons.json` (`starts_on`). Next live and week ahead: Circle events (headless API, 5-min cache) in the season's live-sessions space and the Mentorship Sessions space, plus the events sheet for what Circle doesn't hold (immersions, one-to-one window). Practice, mālā: `member_practice`. Hours: `member_formation`. Reading, assignments, feedback, launches: the four tabs (5-min cache, so edits show within minutes). If one source fails the card says so and the rest still shows.

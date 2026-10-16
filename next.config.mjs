@@ -23,10 +23,8 @@ const nextConfig = {
       fallback: ARCHIVE ? [{ source: '/:path*', destination: `${ARCHIVE}/:path*` }] : [],
     };
   },
-  // "This week" (Sahṛdaya Upāya) is drawn inside Circle only: no other site may frame it
-  async headers() {
-    return [{ source: '/school/sahrdaya-upaya/this-week', headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors https://ss.embodiedphilosophy.com https://embodied-philosophy.circle.so' }] }];
-  },
+  // TEMPORARY (user-approved test): "This week" had a frame-ancestors rule limiting framing to Circle. Removed while the page is
+  // checked inside Circle (the season pages have none). Put it back once confirmed: see docs/mentee-this-week.md.
   async redirects() {
     const r = (source, destination) => ({ source, destination, permanent: true });
     const ops = OPS ? ['/ops', '/ops/:path*', '/teach', '/teach/:path*', '/api/ops/verify']

@@ -23,6 +23,10 @@ const nextConfig = {
       fallback: ARCHIVE ? [{ source: '/:path*', destination: `${ARCHIVE}/:path*` }] : [],
     };
   },
+  // "This week" (Sahṛdaya Upāya) is drawn inside Circle only: no other site may frame it
+  async headers() {
+    return [{ source: '/school/sahrdaya-upaya/this-week', headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors https://ss.embodiedphilosophy.com https://embodied-philosophy.circle.so' }] }];
+  },
   async redirects() {
     const r = (source, destination) => ({ source, destination, permanent: true });
     const ops = OPS ? ['/ops', '/ops/:path*', '/teach', '/teach/:path*', '/api/ops/verify']

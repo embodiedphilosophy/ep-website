@@ -15,6 +15,8 @@
   if (!window.__epPortfolio) { var pf = document.createElement('script'); pf.src = 'https://www.embodiedphilosophy.com/circle/portfolio.js'; pf.defer = true; document.head.appendChild(pf); }
   // …and the Schedule (/c/schedule)
   if (!window.__epSchedule) { var sc = document.createElement('script'); sc.src = 'https://www.embodiedphilosophy.com/circle/schedule.js'; sc.defer = true; document.head.appendChild(sc); }
+  // …and "This week" for Sahṛdaya Upāya mentees (/c/this-week; does nothing for anyone else)
+  if (!window.__epThisWeek) { var tw = document.createElement('script'); tw.src = 'https://www.embodiedphilosophy.com/circle/this-week.js'; tw.defer = true; document.head.appendChild(tw); }
 
   var API = 'https://www.embodiedphilosophy.com';
   var SITE = 'https://www.embodiedphilosophy.com';

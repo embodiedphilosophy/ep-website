@@ -15,7 +15,7 @@ export async function POST(req) {
     const { identityToken, preview } = await req.json().catch(() => ({}));
     const who = await verifyCircleToken(identityToken);
     const tier = await tierFor(who.email);
-    const session = signSession({ uid: who.uid, email: who.email, tier: tier.tier, admin: !!who.isAdmin });
+    const session = signSession({ uid: who.uid, email: who.email, tier: tier.tier, admin: !!who.isAdmin, firstName: String(who.firstName || '').slice(0, 60) });
     let offer = memberOffer(tier, nyToday());
     if (preview && who.isAdmin) {
       const o = CREDIT_OFFERS[0];

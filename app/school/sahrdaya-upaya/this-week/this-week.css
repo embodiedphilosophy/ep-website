@@ -1,0 +1,60 @@
+/* "This week" for Sahṛdaya Upāya, drawn inside Circle's content area. Background matches Circle's (#F2E8D6) so the frame shows no seam. */
+body:has(.tw),body:has(.tw-away){background:#F2E8D6}
+.sch-root:has(.tw),.sch-root:has(.tw-away){background:#F2E8D6}
+.tw{--terra:#A5432A;--pine:#20302A;--ivory:#FAF5EB;--sand:#EADDC6;--line:#D8C9AE;--mute:#5A5346;max-width:1120px;margin:0 auto;padding:32px 32px 64px;color:#2a2620}
+.tw *{box-sizing:border-box}
+.tw-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}
+.tw-head h1{font-family:var(--font-serif),serif;font-weight:600;font-size:44px;line-height:1.05;margin:0;color:#1E1A14}
+.tw-sub{margin:6px 0 0;color:var(--mute);font-size:16px}
+.tw-badge{flex:none;background:var(--pine);color:var(--ivory);font-size:12px;font-weight:600;letter-spacing:.5px;padding:7px 14px;border-radius:99px}
+.tw-warn{background:var(--sand);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:14px;color:#2a2620}
+.tw-row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.tw-cols{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.tw-col{display:grid;gap:16px;min-width:0}
+.tw-card{background:var(--ivory);border:1px solid var(--line);border-radius:10px;padding:20px 22px;min-width:0}
+.tw-card h2{font-family:var(--font-serif),serif;font-weight:600;font-size:23px;line-height:1.15;margin:0 0 10px;color:#1E1A14}
+.tw-big{font-family:var(--font-serif),serif;font-weight:600;font-size:44px;line-height:1;margin:0 0 12px;color:var(--pine)}
+.tw-big span{font:500 15px var(--font-sans),sans-serif;color:var(--mute);margin-left:8px}
+.tw-strong{font-weight:600;color:var(--pine);margin:0 0 2px}
+a.tw-strong:hover,.tw-item a:hover{text-decoration:underline}
+.tw-muted{color:var(--mute);font-size:14px;margin:0 0 6px}
+.tw-ok{color:var(--pine);font-weight:600;font-size:14px;margin:0 0 8px}
+.tw-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.tw-link{background:none;border:0;padding:0;min-height:44px;color:var(--terra);font:600 14px var(--font-sans),sans-serif;text-decoration:underline;cursor:pointer}
+.tw-bar{height:8px;background:var(--sand);border-radius:99px;overflow:hidden}.tw-bar i{display:block;height:100%;background:var(--pine);transition:width .2s}
+.tw-form{display:grid;gap:8px}.tw-form label{font-weight:600;color:var(--pine);font-size:14px}
+.tw-form input,.tw-form textarea{width:100%;font:16px var(--font-sans),sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;min-height:44px}
+.tw-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tw-days{list-style:none;margin:0;padding:0;display:grid}
+.tw-days li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.tw-days li:first-child{border-top:0}.tw-days li.today .tw-dn{color:var(--terra)}
+.tw-dayhead{display:flex;align-items:center;gap:8px}.tw-dn{font-weight:600;font-size:14px}
+.tw-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--pine);display:inline-block;flex:none}
+.tw-dot.done{background:var(--pine)}.tw-dot.future{border-color:var(--line)}.tw-dot.missed{border-color:var(--line)}.tw-dot.today{border-color:var(--terra)}
+.tw-item{margin:0 0 4px;font-size:15px}.tw-item a{color:var(--pine);font-weight:500}
+.tw-sanskrit{font-family:var(--font-serif),serif;font-size:26px;line-height:1.35;margin:0 0 8px;color:#1E1A14}
+.tw-translation{font-style:italic;font-size:17px;margin:0 0 6px}
+.tw-tasks,.tw-threads,.tw-types,.tw-record,.tw-lines{list-style:none;margin:0;padding:0}
+.tw-tasks li{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}.tw-tasks li:first-child{border-top:0}
+.tw-tasks li.done .tw-strong{text-decoration:line-through;color:var(--mute)}
+.tw-tick{flex:none;width:44px;height:44px;margin:-6px -6px -6px -8px;background:none;border:0;padding:0;cursor:pointer;display:grid;place-items:center;position:relative}
+.tw-tick::before{z-index:-1;content:'';width:24px;height:24px;border:2px solid var(--pine);border-radius:6px;background:#fff;position:absolute}
+.tw-tick{font-weight:700;color:var(--ivory);z-index:0}.tw-tick[aria-checked=true]::before{background:var(--pine)}.tw-tick span,.tw-tick{line-height:1}
+.tw-tick{isolation:isolate}.tw-tick:disabled{opacity:.5}
+.tw-threads li{padding:8px 0;border-top:1px solid var(--line)}.tw-threads li:first-child{border-top:0}
+.tw-quote{margin:0 0 12px;padding:10px 14px;border-left:3px solid var(--terra);background:#fff;border-radius:0 6px 6px 0}.tw-quote p{margin:0 0 4px;font-size:15px}.tw-quote cite{display:block;font-style:normal;font-size:13px;color:var(--mute)}
+.tw-beads{display:grid;grid-template-columns:repeat(18,1fr);gap:4px;margin-bottom:10px}
+.tw-beads i{aspect-ratio:1;border-radius:50%;border:1.5px solid var(--line);display:block}.tw-beads i.on{background:var(--terra);border-color:var(--terra)}
+.tw-types li,.tw-record li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:14px}.tw-types li:first-child{border-top:0}
+.tw-record li span:nth-child(2){flex:1;color:var(--mute)}
+.tw-lines li{padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.tw-note,.tw-away{max-width:560px;margin:60px auto;padding:0 24px;font-size:17px;color:var(--mute)}
+.tw-skel{display:grid;gap:16px;padding:32px}.tw-skel .sk{height:140px}
+.tw .sch-btn:focus-visible,.tw a:focus-visible,.tw button:focus-visible,.tw input:focus-visible,.tw textarea:focus-visible{outline:3px solid var(--terra);outline-offset:2px}
+@media (max-width:900px){.tw-row3,.tw-cols{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:700px){
+  .tw{padding:20px 16px 48px}.tw-head{flex-direction:column}.tw-head h1{font-size:34px}
+  .tw-days li{grid-template-columns:70px minmax(0,1fr)}
+  .tw-actions .sch-btn{width:100%}
+  .tw-beads{grid-template-columns:repeat(12,1fr)}
+}

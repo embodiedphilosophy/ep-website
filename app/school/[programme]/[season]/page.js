@@ -1,14 +1,12 @@
 import { redirect, notFound } from 'next/navigation';
 import { currentMember, missingReason } from '@/lib/school/session';
 import { headlessConfigured, memberSpaceIds, eventList, spacePosts } from '@/lib/school/circle';
-import { PROGRAMMES, programmeSeasons, findSeason, isWired, seasonState } from '@/lib/school/config';
+import { PROGRAMMES, findSeason, isWired } from '@/lib/school/config';
 import { buildItems, tabLists, TABS } from '@/lib/school/tabs';
 import Shell from '../../Shell';
 import SeasonView from './SeasonView';
 
 export const dynamic = 'force-dynamic';
-
-const fmt = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 export default async function Page({ params, searchParams }) {
   const { programme, season: slug } = await params;
@@ -18,9 +16,8 @@ export default async function Page({ params, searchParams }) {
   const me = await currentMember();
   if (!me) redirect(`/school/sign-in?next=${encodeURIComponent(`/school/${programme}/${slug}`)}&why=${encodeURIComponent(await missingReason())}`);
 
-  const all = programmeSeasons(programme);
   const notice = (title, text, cta) => (
-    <Shell programme={programme} seasons={all.filter(isWired)} active={slug}>
+    <Shell>
       <div className="sch-empty-page"><h1>{title}</h1><p>{text}</p>{cta}</div>
     </Shell>
   );
@@ -34,11 +31,9 @@ export default async function Page({ params, searchParams }) {
     return notice(season.title, e.status === 429 ? 'Circle is busy right now. Please try again in a minute.' : 'We could not reach Circle just now. Please try again in a moment.');
   }
 
-  // Single-season students see only their own season; annual students see all of them
-  const visible = all.filter(s => isWired(s) && spaces.has(String(s.hub_space_id)));
   if (!spaces.has(String(season.hub_space_id))) {
     return (
-      <Shell programme={programme} seasons={visible} active={slug}>
+      <Shell>
         <div className="sch-empty-page">
           <p className="sch-eyebrow">{PROGRAMMES[programme].title} · {season.short}</p>
           <h1>{season.title}</h1>
@@ -52,14 +47,10 @@ export default async function Page({ params, searchParams }) {
   const lists = tabLists(buildItems(season, events, posts));
   const view = TABS.some(t => t.key === tab) ? tab : 'all';
   return (
-    <Shell programme={programme} seasons={visible} active={slug}>
+    <Shell>
       <header className="sch-head">
-        <div>
-          <p className="sch-eyebrow">{PROGRAMMES[programme].title} · {season.short}</p>
-          <h1>{season.title}</h1>
-          <p className="sch-dek">{season.subtitle}</p>
-          <p className="sch-dates">{fmt(season.starts_on)}{seasonState(season) === 'now' && <span className="sch-now">Now</span>}</p>
-        </div>
+        <p className="sch-eyebrow">{season.short}{season.subtitle ? ` · ${season.subtitle}` : ''}</p>
+        <h1>{season.title.split(' · ').slice(1).join(' · ') || season.title}</h1>
         {season.cover_image && <img className="sch-cover" src={season.cover_image} alt="" />}
       </header>
       <SeasonView programme={programme} slug={slug} lists={lists} initialTab={view} canReflect={season.topic_ids?.reflections != null} />

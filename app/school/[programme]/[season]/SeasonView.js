@@ -47,7 +47,12 @@ function Card({ it, tz, now, pinned }) {
   const [err, setErr] = useState('');
   const live = it.kind === 'event' && !it.ended;
   const href = it.kind === 'event' ? (it.replayUrl || it.pageUrl) : it.url;
-  const meta = [live || it.kind === 'event' ? clock(it.at, tz) : dateOnly(it.at, tz), it.teacher, it.chip === 'Recording' && length(it.duration), it.replies ? `${it.replies} ${it.replies === 1 ? 'reply' : 'replies'}` : ''].filter(Boolean);
+  const opens = live && !joinOpen(it, now) ? 'Live room opens 10 minutes before' : '';
+  const replies = it.replies ? `${it.replies} ${it.replies === 1 ? 'reply' : 'replies'}` : '';
+  const meta = it.kind === 'event'
+    ? [opens || (live ? 'Live now' : ''), it.ended && it.replayUrl && ['Replay', length(it.duration)].filter(Boolean).join(' · '), it.teacher].filter(Boolean)
+    : [it.chip === 'Recording' && ['Replay', length(it.duration)].filter(Boolean).join(' · '), it.teacher && (it.chip === 'Reflection' ? `Started by ${it.teacher}` : it.teacher), replies, dateOnly(it.at, tz)].filter(Boolean);
+  const when = it.kind === 'event' ? clock(it.at, tz) : '';
 
   async function rsvp() {
     setBusy(true); setErr('');
@@ -58,12 +63,9 @@ function Card({ it, tz, now, pinned }) {
 
   return (
     <li className={`sch-card${pinned ? ' pinned' : ''}`}>
+      <span className={`sch-chip${it.chip === 'Live session' ? ' live' : ''}`}>{it.chip === 'Live session' ? 'Live sessions' : it.chip + 's'}</span>
       <div className="sch-card-main">
-        <p className="sch-chips">
-          <span className={`sch-chip${it.chip === 'Live session' ? ' live' : ''}`}>{it.chip}</span>
-          {pinned && <span className="sch-pin">Next up</span>}
-        </p>
-        <h2>{href ? <a href={href}>{it.title}</a> : it.title}</h2>
+        <h2>{href ? <a href={href}>{it.title}</a> : it.title}{when && <span className="sch-when"> · {when}</span>}</h2>
         <p className="sch-meta">{meta.join(' · ')}</p>
         {err && <p className="sch-err" role="alert">{err}</p>}
       </div>

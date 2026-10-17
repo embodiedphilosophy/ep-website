@@ -39,14 +39,14 @@
     if (!DEBUG || !document.body) return;
     var b = document.getElementById('ep-debug');
     if (!b) { b = document.createElement('div'); b.id = 'ep-debug'; b.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#20302A;color:#fff;font:12px/1.5 monospace;padding:10px 12px;border-radius:6px;max-width:340px;white-space:pre-wrap'; document.body.appendChild(b); }
-    var f = document.getElementById('ep-season-frame'), host = document.querySelector(HOST), t = '';
+    var f = frameEl(), host = document.querySelector(HOST), t = '';
     var r = f && f.getBoundingClientRect(), top = r && document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(200, r.height / 2));
     t += 'path: ' + location.pathname + '\n';
     t += 'signed in to Circle: ' + (user() ? 'yes' : 'NO') + '\n';
     t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
     t += 'frame built: ' + state.built + ' time(s)' + (state.stopped ? '  STOPPED: Circle kept removing it' : '') + '\n';
-    t += 'loader: hub v4 (ignores address changes)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
+    t += 'loader: hub v5 (own frame id)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
     t += 'removed by: ' + (state.other || '-') + '\nremoved from: ' + (state.mut || '-') + '\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
@@ -59,12 +59,14 @@
   }
   // Troubleshooting: if something other than this loader takes the frame out of the page, remember what did it
   (function () {
-    function note(how, node) { try { if (node && node.id === 'ep-season-frame') state.other = how + ' | ' + String(new Error().stack).split('\n').slice(2, 5).map(function (l) { return l.trim().slice(0, 70); }).join(' < '); } catch (e) {} }
+    function note(how, node) { try { if (node && (node.id === 'ep-season-frame' || node.id === 'ep-hub-frame')) state.other = how + ' | ' + String(new Error().stack).split('\n').slice(2, 5).map(function (l) { return l.trim().slice(0, 70); }).join(' < '); } catch (e) {} }
     var rm = Element.prototype.remove, rc = Node.prototype.removeChild;
     Element.prototype.remove = function () { note('remove()', this); return rm.apply(this, arguments); };
     Node.prototype.removeChild = function (c) { note('removeChild', c); return rc.apply(this, arguments); };
-    try { new MutationObserver(function (list) { list.forEach(function (m) { for (var i = 0; i < m.removedNodes.length; i++) { var n = m.removedNodes[i]; if (n.id === 'ep-season-frame' || (n.querySelector && n.querySelector('#ep-season-frame'))) state.mut = 'node removed from <' + String(m.target.tagName || m.target.nodeName).toLowerCase() + (m.target.id ? '#' + m.target.id : '') + '> (' + (n.tagName || '?').toLowerCase() + ')'; } }); }).observe(document, { childList: true, subtree: true }); } catch (e) {}
+    try { new MutationObserver(function (list) { list.forEach(function (m) { for (var i = 0; i < m.removedNodes.length; i++) { var n = m.removedNodes[i]; if (n.id === 'ep-season-frame' || n.id === 'ep-hub-frame' || (n.querySelector && n.querySelector('#ep-season-frame,#ep-hub-frame'))) state.mut = 'node removed from <' + String(m.target.tagName || m.target.nodeName).toLowerCase() + (m.target.id ? '#' + m.target.id : '') + '> (' + (n.tagName || '?').toLowerCase() + ')'; } }); }).observe(document, { childList: true, subtree: true }); } catch (e) {}
   })();
+  // The hub's frame has its own id: an older copy of this loader elsewhere on the page only knows #ep-season-frame and would remove it
+  function frameEl() { return document.getElementById('ep-hub-frame') || document.getElementById('ep-season-frame'); }
   function user() { var u = window.circleUser; return u && u.identityToken ? u : null; }
   function key() { return 'ep_warm_' + (user() ? user().email : ''); }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
@@ -111,7 +113,7 @@
     var overlay = !!PAGES[slug] || !!hubPathOf;
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
-    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = hubPathOf ? 'Sādhana School' : overlay ? 'This week' : 'Season view';
+    frame.id = hubPathOf ? 'ep-hub-frame' : 'ep-season-frame'; frame.name = frame.id; frame.title = hubPathOf ? 'Sādhana School' : overlay ? 'This week' : 'Season view';
     frame.setAttribute('data-slug', slug); frame.setAttribute('data-path', path);
     if (overlay) { frame.setAttribute('data-overlay', '1'); frame.style.cssText = 'position:fixed;z-index:20;border:0;background:#F2E8D6'; }
     else frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';
@@ -127,7 +129,7 @@
     queued = false;
     var m = location.pathname.match(/^\/c\/([^\/]+)/), hk = m && hubKey(m[1]), hp = hk && hubPath(hk);
     var slug = m && (hk ? 'hub:' + hk : pageKey(m[1]) || SEASONS[m[1]]); // the hub's identity ignores ?tab=, which Circle may change while it draws the space
-    var host = document.querySelector(HOST), frame = document.getElementById('ep-season-frame');
+    var host = document.querySelector(HOST), frame = frameEl();
     if (user()) warm();
     // Leaving the page (or asking for Circle's own view) removes the frame. Circle briefly losing its content area or the
     // signed-in user while it redraws does not: removing the frame then made it rebuild until the loader gave up.
@@ -153,11 +155,11 @@
       if (e.data.ep === 'drew') state.drew = { ok: !!e.data.ok, text: String(e.data.text || '') };
     }
     if (e.origin !== ORIGIN || !e.data || e.data.ep !== 'need-signin') return;
-    var frame = document.getElementById('ep-season-frame');
+    var frame = frameEl();
     if (!frame || frame.getAttribute('data-retried') || !user()) return;
     frame.setAttribute('data-retried', '1');
     store(key(), null);
-    post(frame.getAttribute('data-path'), 'ep-season-frame');
+    post(frame.getAttribute('data-path'), frame.id);
   });
 
   ['pushState', 'replaceState'].forEach(function (fn) {
@@ -168,7 +170,7 @@
   function start() {
     new MutationObserver(soon).observe(document.documentElement, { childList: true, subtree: true });
     setInterval(soon, 1500); setInterval(badge, 1000);
-    setInterval(function () { var f = document.getElementById('ep-season-frame'); if (f && f.getAttribute('data-overlay')) place(f, document.querySelector(HOST)); }, 300);
+    setInterval(function () { var f = frameEl(); if (f && f.getAttribute('data-overlay')) place(f, document.querySelector(HOST)); }, 300);
     soon();
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);

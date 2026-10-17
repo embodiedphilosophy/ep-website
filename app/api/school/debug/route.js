@@ -12,6 +12,8 @@ export async function GET() {
   const attempt = async (name, fn) => { try { out[name] = await fn(); } catch (e) { out[name] = { error: e.message, status: e.status }; } };
   await attempt('spaces', async () => { const s = await memberSpaceIds(me.email); return { count: s.size, ids: [...s].slice(0, 80) }; });
   // Hub question: does a space record say whether the member joined it? Field names and yes/no values only, no content.
+  // Names beside ids, so the hub's config can be filled in by copying this list (names and addresses only, no content)
+  await attempt('spaceList', async () => (await memberSpaces(me.email)).map(r => `${r.id} = ${r.name || r.title || '?'} (${String(r.slug || r.url || '').replace(/^https?:\/\/[^/]+/, '')})`));
   await attempt('spaceFlags', async () => {
     const recs = await memberSpaces(me.email);
     const flags = {};

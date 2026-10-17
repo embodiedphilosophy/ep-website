@@ -70,7 +70,7 @@ assert.deepEqual(withPreview.cards.seasons[2].preview, { link: 'https://www.embo
 
 // Open cards link to the Circle space, and a not-yet-wired row is left out
 assert.equal(term.cards.seasons[0].href, urls[fall]);
-assert.ok(!view([fall], { items: cfg.items }).cards.practice.length, 'rows with no Circle space yet are not drawn');
+assert.ok(!view([fall], { items: cfg.items.map(i => ({ ...i, circle_space_ids: [] })) }).cards.practice.length, 'rows with no Circle space yet are not drawn');
 
 // New-item counts: against the member's last visit; never-visited spaces count the last two weeks; store off = no counts
 const posts = { [fall]: [{ id: 1, name: 'Old', created_at: '2026-10-01T00:00:00Z' }, { id: 2, name: 'Mid', created_at: '2026-10-20T00:00:00Z' }, { id: 3, name: 'New', created_at: '2026-10-23T00:00:00Z' }] };

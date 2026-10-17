@@ -17,7 +17,7 @@ const days = []; for (let i = 1; i <= 39; i++) { const d = new Date(TODAY + 'T00
 const events = [
   { id: 'E1', title: 'Meditation Mondays', date: '2026-10-19', time: '12pm ET', series: 'meditation-mondays', program: 'meditation' },
   { id: 'E2', title: 'The Heart of Recognition · Session 1', date: '2026-10-21', time: '9am ET', series: 'sadhana-fall-2026', program: 'sadhana' },
-  { id: 'E3', title: 'CHITHEADS Live', date: '2026-12-17', time: '1pm ET', program: 'community' },
+  { id: 'E3', title: 'CHITHEADS Live', date: '2026-12-17', program: 'community' }, // no time set: shown as a plain date
   { id: 'E4', title: 'Living Room Lecture', date: '2027-01-14', time: '7pm ET', program: 'community' },
 ];
 async function payload(tier, streakDays = days) {
@@ -30,10 +30,11 @@ async function payload(tier, streakDays = days) {
 }
 
 const js = fs.readFileSync(new URL('../../public/circle/today.js', import.meta.url), 'utf8');
+const probe = fs.readFileSync(new URL('../../public/circle/probe.js', import.meta.url), 'utf8');
 const b = await chromium.launch(); const errs = [];
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
 
-async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false } = {}) {
+async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '' } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
   const p = await ctx.newPage(); const calls = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
@@ -45,6 +46,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
     const j = o => r.fulfill({ contentType: 'application/json', headers: CORS, body: JSON.stringify(o) });
     if (path === '/circle/today.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js });
+    if (path === '/circle/probe.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: probe });
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
     calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`);
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
@@ -55,7 +57,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (path === '/api/member/travelogue') return j({ travelogue: m === 'POST' ? [{ id: '1', day: TODAY, text: JSON.parse(r.request().postData()).text }] : [] });
     return j({});
   });
-  await p.goto('https://ss.example.test/c/today');
+  await p.goto('https://ss.example.test/c/today' + query);
   await p.waitForSelector('.etd-h1', { timeout: 8000 });
   return { p, ctx, calls };
 }
@@ -82,8 +84,11 @@ for (const [tier, w] of Object.entries(WANT)) {
   assert.equal(await p.locator('.etd-sd').count(), 4);
   assert.match(await p.locator('.etd-skt').innerText(), /citiḥ svatantrā/);
   assert.equal(await p.locator('.etd-card[aria-label] .ept-btn').count(), w.open.length);
+  assert.equal(await p.locator('button:has-text("Copy page structure")').count(), 0);
   if (tier === 'none') { assert.match(await p.locator('.etd-none').innerText(), /yours to keep, free/); assert.equal(await p.locator('.etd-rail .etd-ev').count(), 2); }
   assert.equal(await p.locator('text=Join a practice circle').count(), 0);
+  const dates = await text(p, '.etd-rail .etd-ev > .ept-mono'); assert.ok(dates.every(d => /^(\w{3} \d{1,2}|\d{1,2}–\d{1,2})$/.test(d.trim())), `short dates: ${dates}`);
+  assert.ok(await p.evaluate(() => [...document.querySelectorAll('.etd-ev')].every(e => { const a = e.children[0].getBoundingClientRect(), b = e.children[1].getBoundingClientRect(); return a.right <= b.left + 0.5; })), 'dates never run into titles');
   await p.screenshot({ path: `${OUT}/today-${tier}.png`, fullPage: true });
   await ctx.close();
 }
@@ -164,6 +169,10 @@ console.log('travelogue, milestone: ok');
   const order = await p.evaluate(() => { const top = e => e.getBoundingClientRect().top; return [top(document.querySelector('.etd-hero')), top(document.querySelector('.ept-pg'))]; });
   assert.ok(order[0] < order[1], 'cohort below the hero');
   assert.match(await p.locator('.etd-mentor').innerText(), /mentor view/i);
+  await p.waitForTimeout(500);
+  assert.equal(await p.locator('button:has-text("Copy page structure")').count(), 0, 'no debug button for admins');
+  const dbg = await open('ss_year', { admin: true, query: '?epdebug=1' }); await dbg.p.waitForTimeout(500);
+  assert.equal(await dbg.p.locator('button:has-text("Copy page structure")').count(), 1, 'debug button still available on request'); await dbg.ctx.close();
   assert.match(await p.locator('.ept-pg').innerText(), /Your cohort/);
   await p.screenshot({ path: `${OUT}/today-admin.png`, fullPage: true });
   await ctx.close();

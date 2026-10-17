@@ -1,0 +1,251 @@
+{
+  "settings": {
+    "upgrade_label": "Upgrade to the full year",
+    "upgrade_url": "https://enroll.embodiedphilosophy.com/sadhana-school",
+    "join_url": "https://enroll.embodiedphilosophy.com/sadhana-school",
+    "formation_url": "https://www.embodiedphilosophy.com/sahrdaya-upaya"
+  },
+  "items": [
+    {
+      "key": "fall-2026",
+      "tabs": [
+        "seasons"
+      ],
+      "kind": "season",
+      "season": "fall-2026",
+      "audience_note": "Fall term",
+      "description": "Kṣemārāja's Pratyabhijñāhṛdaya, with live sessions, recordings and readings.",
+      "order": 1,
+      "preview": "",
+      "cta_label": "Add this season",
+      "cta_url": ""
+    },
+    {
+      "key": "winter-2027",
+      "tabs": [
+        "seasons"
+      ],
+      "kind": "season",
+      "season": "winter-2027",
+      "audience_note": "Full year",
+      "description": "Śivastotrāvalī, Rasa Theory and the songs of Utpaladeva.",
+      "order": 2,
+      "preview": "",
+      "cta_label": "Add this season",
+      "cta_url": ""
+    },
+    {
+      "key": "spring-2027",
+      "tabs": [
+        "seasons"
+      ],
+      "kind": "season",
+      "season": "spring-2027",
+      "audience_note": "Full year",
+      "description": "Deity, iconography and the fierce faces of non-dual Tantra.",
+      "order": 3,
+      "preview": "",
+      "cta_label": "Add this season",
+      "cta_url": ""
+    },
+    {
+      "key": "summer-2027",
+      "tabs": [
+        "seasons"
+      ],
+      "kind": "season",
+      "season": "summer-2027",
+      "audience_note": "Full year",
+      "description": "The Sahṛdaya Summer Immersion.",
+      "order": 4,
+      "preview": "",
+      "cta_label": "Add this season",
+      "cta_url": ""
+    },
+    {
+      "key": "today-in-school",
+      "tabs": [
+        "home"
+      ],
+      "kind": "space",
+      "title": "Today in School",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "What is happening across the school today.",
+      "order": 10
+    },
+    {
+      "key": "announcements",
+      "tabs": [
+        "home",
+        "kula"
+      ],
+      "kind": "space",
+      "title": "Announcements",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "News from the teachers and the team.",
+      "order": 11
+    },
+    {
+      "key": "welcome-orientation",
+      "tabs": [
+        "home",
+        "practice"
+      ],
+      "kind": "space",
+      "title": "Welcome & Orientation",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "Start here: how the school works and how to find your way around.",
+      "order": 12
+    },
+    {
+      "key": "kula-commentary",
+      "tabs": [
+        "kula"
+      ],
+      "kind": "space",
+      "title": "Kula Commentary",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "Notes and commentary from the kula.",
+      "order": 20
+    },
+    {
+      "key": "kula-chat",
+      "tabs": [
+        "kula"
+      ],
+      "kind": "chat",
+      "title": "Kula chat",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "Talk with the whole kula.",
+      "order": 21
+    },
+    {
+      "key": "practice-resources",
+      "tabs": [
+        "practice"
+      ],
+      "kind": "space",
+      "title": "Practice Resources",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "Guided practices, texts and tools for your own sādhana.",
+      "order": 30
+    },
+    {
+      "key": "practice-portfolio",
+      "tabs": [
+        "practice"
+      ],
+      "kind": "space",
+      "title": "Practice Portfolio",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "Your practice record, kept in one place.",
+      "order": 31
+    },
+    {
+      "key": "saturday-open-sessions",
+      "tabs": [
+        "home",
+        "workshops"
+      ],
+      "kind": "events",
+      "title": "Saturday Open Sessions",
+      "circle_space_ids": [],
+      "weekday": 6,
+      "requires_plan": "full-year",
+      "audience_note": "Full year",
+      "description": "Open practice and conversation on Saturdays.",
+      "preview": "",
+      "cta_label": "Upgrade to the full year",
+      "cta_url": "",
+      "order": 40
+    },
+    {
+      "key": "sunday-practicum",
+      "tabs": [
+        "workshops"
+      ],
+      "kind": "events",
+      "title": "Sunday Practicum",
+      "circle_space_ids": [],
+      "weekday": 0,
+      "requires_plan": "mentee",
+      "audience_note": "Sahṛdaya Upāya",
+      "description": "A guided practicum for those in formation.",
+      "preview": "",
+      "cta_label": "Learn about formation",
+      "cta_url": "",
+      "order": 41
+    },
+    {
+      "key": "mentorship-circle",
+      "tabs": [
+        "mentor"
+      ],
+      "kind": "space",
+      "title": "Mentorship Circle",
+      "circle_space_ids": [],
+      "mentee_marker": true,
+      "audience_note": "Sahṛdaya Upāya",
+      "description": "Your mentorship circle.",
+      "preview": "",
+      "cta_label": "Learn about formation",
+      "cta_url": "",
+      "order": 50,
+      "collapse_to": "formation"
+    },
+    {
+      "key": "mentorship-sessions",
+      "tabs": [
+        "mentor"
+      ],
+      "kind": "events",
+      "title": "Mentorship Sessions",
+      "circle_space_ids": [],
+      "audience_note": "Sahṛdaya Upāya",
+      "description": "Live mentorship sessions.",
+      "preview": "",
+      "cta_label": "Learn about formation",
+      "cta_url": "",
+      "order": 51,
+      "collapse_to": "formation"
+    },
+    {
+      "key": "apprentice-workbook",
+      "tabs": [
+        "mentor"
+      ],
+      "kind": "space",
+      "title": "Apprentice Workbook",
+      "circle_space_ids": [],
+      "audience_note": "Sahṛdaya Upāya",
+      "description": "Your workbook for the apprenticeship.",
+      "preview": "",
+      "cta_label": "Learn about formation",
+      "cta_url": "",
+      "order": 52,
+      "collapse_to": "formation"
+    },
+    {
+      "key": "formation",
+      "tabs": [
+        "mentor"
+      ],
+      "kind": "info",
+      "title": "Sahṛdaya Upāya",
+      "always_locked": true,
+      "audience_note": "Full year",
+      "description": "A year of mentored formation: a small circle, regular mentorship sessions and an apprentice workbook, alongside the school.",
+      "preview": "",
+      "cta_label": "Learn about formation",
+      "cta_url": "",
+      "order": 53
+    }
+  ]
+}

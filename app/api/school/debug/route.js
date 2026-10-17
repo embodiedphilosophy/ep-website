@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { currentMember } from '@/lib/school/session';
-import { memberSpaceIds, eventList, spacePosts } from '@/lib/school/circle';
+import { memberSpaceIds, memberSpaces, eventList, spacePosts } from '@/lib/school/circle';
 import { allSeasons } from '@/lib/school/config';
 
 // Admins only: what Circle's headless API returns for this member, as counts and field names (no content).
@@ -11,6 +11,15 @@ export async function GET() {
   const keys = o => (o && typeof o === 'object' ? Object.keys(o).slice(0, 60) : typeof o);
   const attempt = async (name, fn) => { try { out[name] = await fn(); } catch (e) { out[name] = { error: e.message, status: e.status }; } };
   await attempt('spaces', async () => { const s = await memberSpaceIds(me.email); return { count: s.size, ids: [...s].slice(0, 80) }; });
+  // Hub question: does a space record say whether the member joined it? Field names and yes/no values only, no content.
+  // Names beside ids, so the hub's config can be filled in by copying this list (names and addresses only, no content)
+  await attempt('spaceList', async () => (await memberSpaces(me.email)).map(r => `${r.id} = ${r.name || r.title || '?'} (${String(r.slug || r.url || '').replace(/^https?:\/\/[^/]+/, '')})`));
+  await attempt('spaceFlags', async () => {
+    const recs = await memberSpaces(me.email);
+    const flags = {};
+    for (const r of recs) for (const [k, v] of Object.entries(r)) if (typeof v === 'boolean' || /member|join|unread|hide|sidebar|private|visib|slug|url/i.test(k)) (flags[k] ||= new Set()).add(typeof v === 'boolean' ? v : typeof v);
+    return { count: recs.length, fields: Object.fromEntries(Object.entries(flags).map(([k, v]) => [k, [...v]])) };
+  });
   await attempt('events', async () => {
     const ev = await eventList(me.email);
     const bySpace = {}; for (const e of ev) { const k = String(e.space_id ?? e.space?.id ?? 'none'); bySpace[k] = (bySpace[k] || 0) + 1; }

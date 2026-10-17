@@ -33,13 +33,13 @@ const js = fs.readFileSync(new URL('../../public/circle/today.js', import.meta.u
 const b = await chromium.launch(); const errs = [];
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
 
-async function open(tier, { vw = 1366, h = 900, data, seasons = [] } = {}) {
+async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
   const p = await ctx.newPage(); const calls = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
   await p.clock.install({ time: new Date('2026-10-17T10:30:00-04:00') });
   const body = data || await payload(tier);
-  await p.route('https://ss.example.test/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:false}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
+  await p.route('https://ss.example.test/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
   await p.route('https://www.embodiedphilosophy.com/**', async r => {
     const u = new URL(r.request().url()), m = r.request().method(), path = u.pathname;
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
@@ -50,6 +50,8 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [] } = {}) {
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
     if (path === '/api/member/today') return j(body);
     if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: [], logged: post.minutes }); }
+    if (path === '/api/member/cohort') return j({ today: TODAY, rows: [{ name: 'Carolyn', email: 'c@example.com', streak: 0, weekCount: 0, days8w: 0, minutes8w: 0, last: null, daysSince: null, grid: [] }], attention: [{ email: 'c@example.com', name: 'Carolyn', why: 'Hasn’t logged any practice yet' }] });
+    if (path === '/api/member/portfolio') return j({ pages: [] });
     if (path === '/api/member/travelogue') return j({ travelogue: m === 'POST' ? [{ id: '1', day: TODAY, text: JSON.parse(r.request().postData()).text }] : [] });
     return j({});
   });
@@ -154,6 +156,19 @@ console.log('timer and log: ok');
   await m.p.screenshot({ path: `${OUT}/today-milestone.png`, fullPage: true }); await m.ctx.close();
 }
 console.log('travelogue, milestone: ok');
+
+// ---- Circle admins: the cohort sits below the student's page, never on top of it
+{
+  const { p, ctx } = await open('ss_year', { admin: true });
+  await p.waitForSelector('.ept-pg');
+  const order = await p.evaluate(() => { const top = e => e.getBoundingClientRect().top; return [top(document.querySelector('.etd-hero')), top(document.querySelector('.ept-pg'))]; });
+  assert.ok(order[0] < order[1], 'cohort below the hero');
+  assert.match(await p.locator('.etd-mentor').innerText(), /mentor view/i);
+  assert.match(await p.locator('.ept-pg').innerText(), /Your cohort/);
+  await p.screenshot({ path: `${OUT}/today-admin.png`, fullPage: true });
+  await ctx.close();
+}
+console.log('admin mentor view: ok');
 
 // ---- phone width: no sideways scroll, targets at least 44px
 for (const tier of ['none', 'mentee']) {

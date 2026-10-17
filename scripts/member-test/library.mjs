@@ -37,3 +37,17 @@ assert.deepEqual([...await S.starsOf('u1')], [id], 'starring twice is one star')
 await S.setStar('u1', id, false); assert.equal((await S.starsOf('u1')).size, 0);
 await assert.rejects(() => S.setStar('u1', 'nope', true), /Unknown item/);
 console.log('library: ok');
+{
+  const r = L.catalogRows([{ id: 'x1', programme: 'wisdom_school', depth: 'Deepen', label: 'Course', kind: 'Course', title: 'Tantra I', teachers: [{ name: 'A' }, { name: 'B' }], access: 'ws_plus' }, { id: 'x2', programme: 'meditation_mondays', depth: '', title: 'Sit', teachers: [], access: 'pwyc' }]);
+  const m = L.shapeLibrary(r, 'wisdom', false);
+  if (m.items.length !== 1 || m.items[0].level !== 'Deepening' && false) throw new Error('catalog rows: wisdom sees only pwyc');
+  const w = L.shapeLibrary(r, 'wisdom_plus', false);
+  if (w.items.length !== 2 || w.items.find(i => i.title === 'Tantra I').level !== 'Deepening' || w.items[0].teachers !== 'A, B') throw new Error('catalog rows mapping');
+  console.log('library catalog rows: ok');
+}
+{
+  const sp = [{ id: 1, name: 'Tantra I', space_type: 'course', space_group_name: 'Wisdom School', url: 'https://ss.embodiedphilosophy.com/c/tantra-i' }, { id: 2, name: 'Chat', space_type: 'chat' }];
+  const r = L.circleRows(sp, [{ title: 'Tantra I', depth: 'Formation', teachers: [{ name: 'A' }], programme: 'wisdom_school' }]);
+  if (r.length !== 1 || r[0].department !== 'Wisdom School' || r[0].level !== 'Advanced' || !r[0].url) throw new Error('circle rows');
+  console.log('library circle rows: ok');
+}

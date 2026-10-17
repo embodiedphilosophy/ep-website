@@ -2,7 +2,7 @@
    Loaded by public/circle/today.js (no extra Circle snippet needed). Draws the Library into the space, the same way as "This week"
    (no frame). Each member sees the rows their membership opens (the server decides), and can star items; stars are theirs alone.
    Removes itself when the member goes to another page. Data: /api/member/library (lib/library/load.js), /api/member/library/star.
-   Staff enter the items in Ops → Settings → Library. See docs/library-departments.md. */
+   The courses come from Circle itself (the spaces of type course the member can open, grouped by Circle space group), plus Ops → Course Library and Settings → Library items. See docs/library-departments.md. */
 (function () {
   if (window.__epLibrary) return; window.__epLibrary = true;
 
@@ -96,6 +96,7 @@
   var STARRED = '*starred*';
 
   function html() {
+    function dbg(d) { return /epdebug=1/.test(location.search) ? '<p class="elb-none">Debug: ' + esc(JSON.stringify({ source: d.source, unavailable: d.unavailable })) + '</p>' : ''; }
     var head = '<p class="elb-eye">Library · By department</p>';
     if (state.error && !state.data) return head + '<h1 class="elb-h1">Library</h1><p class="elb-none">' + esc(state.error) + '</p>';
     var d = state.data;
@@ -103,7 +104,7 @@
     var stars = {}; d.stars.forEach(function (id) { stars[id] = 1; });
     var starred = d.items.filter(function (i) { return stars[i.id]; });
     var depts = d.departments.slice();
-    if (!d.items.length) return head + '<h1 class="elb-h1">Library</h1><p class="elb-none">The library is being filled in. Check back soon.</p>';
+    if (!d.items.length) return head + '<h1 class="elb-h1">Library</h1><p class="elb-none">The library is being filled in. Check back soon.</p>' + dbg(d);
     var cur = state.dept === STARRED && starred.length ? STARRED : (depts.some(function (x) { return x.name === state.dept; }) ? state.dept : depts[0].name);
     var items = cur === STARRED ? starred : d.items.filter(function (i) { return i.department === cur; });
 

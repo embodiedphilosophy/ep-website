@@ -49,4 +49,9 @@ assert.equal(r.today, today); assert.equal(r.moon.place.zone, 'America/New_York'
 practice._setSql(() => Promise.reject(new Error('down')));
 r = await freeToday({ uid: 'u1', today });
 assert.equal(r.practice, null); assert.equal(r.practisingToday, null); assert.equal(r.moon.days.length, 7);
+// A mentee's "due this week": null until the mentee record is connected, then a count (no assignments in the sheet → 0)
+const T = await import('../../lib/member/today.js');
+assert.equal(await T.dueThisWeek('u1', today).catch(() => 'err'), null);
+const mentee = await import('../../lib/mentee/store.js'); mentee._setSql((strings, ...vals) => db.sql(strings, ...vals).then(r => r.rows));
+assert.equal(await T.dueThisWeek('u1', '2026-10-21'), 0);
 console.log('today-db: ok');

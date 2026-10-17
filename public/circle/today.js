@@ -339,7 +339,7 @@
       '.etd-b{min-height:44px;padding:0 16px}',
       '.etd-morel{margin:0 0 8px}.etd-lg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}',
       '.etd-lock{border:1px dashed #D8C9AE;border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:#6B6152;min-height:44px}.etd-lt{display:flex;align-items:center;gap:8px;font-weight:600;color:#1E1A14}.etd-op{color:#A5432A;font-size:12.5px}',
-      '.etd-mentor{margin-top:28px;margin-bottom:12px}.etd-ev>.ept-mono{white-space:nowrap}.etd-ev{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid #E3D8C6}.etd-evt{display:flex;flex-direction:column}',
+      '.etd-mentor{margin-top:28px;margin-bottom:12px}.etd-ev>.ept-mono{white-space:nowrap}.etd-ev{display:grid;grid-template-columns:minmax(48px,max-content) minmax(0,1fr);gap:12px;padding:8px 0;border-top:1px solid #E3D8C6}.etd-evt{display:flex;flex-direction:column}',
       '.etd-green{color:#2E5A4B;font-size:12px}.etd-red{color:#A5432A;font-size:12px}',
       '.etd-timer{position:fixed;inset:0;z-index:2147483000;background:#20302A;color:#F4EDE0;display:flex;align-items:center;justify-content:center;font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif;overflow:auto}',
       '.etd-tin{width:min(420px,100%);padding:32px 24px;display:flex;flex-direction:column;gap:20px;align-items:center;text-align:center}',
@@ -350,7 +350,7 @@
       '.etd-lab{display:flex;flex-direction:column;gap:6px;color:#C8BEAC}.etd-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}',
       '.etd-chip{background:transparent;border:1px solid #5B6E64;color:#F4EDE0;border-radius:999px;min-height:40px;padding:0 12px;cursor:pointer}.etd-chip[aria-pressed="true"]{background:#F4EDE0;color:#16140F}',
       '.etd-err{color:#F0B7A5}',
-      '.etd .ept-x{width:44px;height:44px}.etd .ept-q{min-height:44px}.etd .ept-why,.etd-rail>.etd-card>a,.etd-wp,.etd-ev a{min-height:44px;display:inline-flex;align-items:center}.etd-ev a{min-height:44px}',
+      '.etd .ept-x{width:44px;height:44px}.etd .ept-q{min-height:44px}.etd .ept-why,.etd-rail>.etd-card>a,.etd-wp,.etd-ev a{min-height:44px;display:inline-flex;align-items:center}.etd-ev a{min-height:44px;margin:-8px 0}',
       '.etd :focus-visible,.etd-timer :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}',
       '@media (max-width:640px){.etd{padding:20px 16px 24px}.etd-h1{font-size:34px}.etd-sit,.etd-rec{padding:22px 20px}.etd-sd{grid-template-columns:1fr auto}.etd-sd>.ept-mono{grid-column:1/-1}.etd-clock{font-size:56px}}'
     ].join('\n');
@@ -493,7 +493,7 @@
     var out = '<aside class="etd-rail" aria-label="Coming up"><section class="ept-card etd-card" aria-labelledby="etd-cu"><h2 id="etd-cu" class="ept-h2">Coming up</h2>';
     if (!cu.length) out += '<span class="ept-s">Nothing scheduled just yet.</span>';
     out += cu.map(function (e) {
-      var when = e.start ? dayShort(e.start) : e.end_date ? (e.date.slice(8).replace(/^0/, '') + '–' + e.end_date.slice(8).replace(/^0/, '')) : niceDate(e.date);
+      var when = e.start ? dayShort(e.start) : e.end_date ? (e.date.slice(8).replace(/^0/, '') + '–' + e.end_date.slice(8).replace(/^0/, '')) : dayShort(e.date + 'T12:00:00');
       var sub = e.open ? '<span class="etd-green">Open to everyone</span>' : e.book ? '<a class="etd-red" href="' + esc(e.book) + '" target="_blank" rel="noopener">Book a time</a>' : '<span class="ept-s">' + (e.start ? esc(clock(e.start)) + ' · yours' : '') + '</span>';
       return '<div class="etd-ev"><span class="ept-mono">' + esc(when) + '</span><span class="etd-evt"><b>' + esc(e.title) + '</b>' + sub + '</span></div>'; }).join('');
     out += '<a class="ept-pf" href="' + (cards.length ? '/c/schedule' : SITE + '/events') + '">' + (cards.length ? 'Your full schedule' : 'All events') + '</a></section>';

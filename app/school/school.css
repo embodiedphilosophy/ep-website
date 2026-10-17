@@ -45,3 +45,38 @@ body:has(.sch-root) > :not(main){display:none !important}
 .sk-card{height:92px;margin-bottom:12px;border-radius:10px;opacity:.7}
 @keyframes skshim{to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.sk{animation:none}}
+
+/* Hub */
+.sch-badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 7px;border-radius:99px;font-size:12px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.sch-badge.new{background:#A5432A;color:#FAF5EB}
+.sch-badge.lock{border:1px dashed #A5432A;color:#83341F;background:transparent;font-weight:500}
+.sch-tab.on .sch-badge.lock{border-color:#FAF5EB;color:#FAF5EB}
+.sch-card h2 .sch-badge{margin-left:10px;vertical-align:middle;height:22px}
+.sch-tag{margin-left:10px;font:600 12px var(--font-sans),sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#83341F;vertical-align:middle}
+.sch-card.hub{grid-template-columns:128px minmax(0,1fr) auto}
+.sch-card.locked{border:1px dashed #A5432A;background:transparent}
+.sch-card.locked .sch-chip,.sch-card.locked h2{opacity:.55}
+.sch-card.locked .sch-btn{opacity:1}
+.sch-preview{margin:8px 0 0;font-size:14px;color:var(--ink5)}
+.sch-preview q{font-family:var(--font-serif),serif;font-size:17px;font-style:italic}
+.sch-preview a{text-decoration:underline;color:#83341F}
+.sch-banner,.sch-upgrade{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 26px;border-radius:10px;margin-bottom:18px}
+.sch-banner{background:var(--pine);color:var(--ivory)}
+.sch-banner .sch-eyebrow{color:#EADDC6}
+.sch-banner h2{font-family:var(--font-serif),serif;font-weight:600;font-size:30px;line-height:1.1;margin:0 0 6px;color:var(--ivory)}
+.sch-banner .sch-meta{color:#EADDC6}
+.sch-banner .sch-btn{background:var(--ivory);color:var(--pine);border-color:var(--ivory)}
+.sch-upgrade{margin:18px 0 0;border:1px solid var(--line);background:#EADDC6}
+.sch-upgrade h2{font-family:var(--font-serif),serif;font-weight:600;font-size:24px;margin:0 0 4px}
+.sch-upgrade p{margin:0;color:var(--ink5)}
+.sch-new{margin-bottom:18px;padding:16px 22px;border:1px solid var(--line);border-radius:10px;background:#FAF5EB}
+.sch-sub{font-family:var(--font-serif),serif;font-weight:600;font-size:22px;margin:0 0 8px}
+.sch-newlist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.sch-newlist li{font-size:15px;color:var(--ink5);min-height:28px}
+.sch-newlist a{font-weight:600;color:var(--pine);text-decoration:underline}
+@media (max-width:700px){
+  .sch-card.hub{grid-template-columns:minmax(0,1fr)}
+  .sch-banner,.sch-upgrade{flex-direction:column;align-items:stretch;padding:18px}
+  .sch-banner .sch-btn,.sch-upgrade .sch-btn{width:100%}
+}
+.sch-card.hub h2{font-size:22px}

@@ -11,6 +11,15 @@
     'spring-many-faces-of-kali': 'spring-2027', 'spring-live-sessions': 'spring-2027',
     'summer-being-with-the-heart': 'summer-2027', 'summer-immersion-sessions': 'summer-2027'
   };
+  // The Sādhana School hub: Circle space slug → the hub's tab. The Circle address's own ?tab= (emails, This week) wins.
+  // Confirm both slugs against the real spaces (Circle often adds a short code; those are matched by prefix below).
+  var HUBS = { 'sadhana-school': 'home', 'mentorship': 'mentor' };
+  var TABS = { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, mentor: 1 };
+  function hubKey(s) { for (var k in HUBS) if (s === k || s.indexOf(k + '-') === 0) return k; return null; }
+  function hubPath(k) {
+    var m = location.search.match(/[?&]tab=([a-z]+)/), t = m && TABS[m[1]] ? m[1] : HUBS[k];
+    return '/school/sadhana-school' + (t === 'home' ? '' : '?tab=' + t);
+  }
   // Pages that are not a season: Circle space slug → our page. "This Week" is a Secret space, so only mentees ever see it;
   // the page checks the mentee tag again on its own.
   // "This week" is drawn natively by public/circle/this-week.js now (like the Schedule page); the frame route is switched off.
@@ -85,12 +94,12 @@
     var r = host.getBoundingClientRect(), h = Math.max(r.height, window.innerHeight - r.top);
     frame.style.left = r.left + 'px'; frame.style.top = r.top + 'px'; frame.style.width = r.width + 'px'; frame.style.height = h + 'px';
   }
-  function embed(host, slug) {
+  function embed(host, slug, hubPathOf) {
     if (state.stopped || tooMany()) { state.stopped = true; return; }
-    var path = PAGES[slug] || '/school/sadhana-school/' + slug, overlay = !!PAGES[slug];
+    var path = hubPathOf || PAGES[slug] || '/school/sadhana-school/' + slug, overlay = !!PAGES[slug];
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
-    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = overlay ? 'This week' : 'Season view';
+    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = overlay ? 'This week' : hubPathOf ? 'Sādhana School' : 'Season view';
     frame.setAttribute('data-slug', slug); frame.setAttribute('data-path', path);
     if (overlay) { frame.setAttribute('data-overlay', '1'); frame.style.cssText = 'position:fixed;z-index:20;border:0;background:#F2E8D6'; }
     else frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';
@@ -104,7 +113,8 @@
 
   function tick() {
     queued = false;
-    var m = location.pathname.match(/^\/c\/([^\/]+)/), slug = m && (pageKey(m[1]) || SEASONS[m[1]]);
+    var m = location.pathname.match(/^\/c\/([^\/]+)/), hk = m && hubKey(m[1]), hp = hk && hubPath(hk);
+    var slug = m && (hk ? 'hub:' + hp : pageKey(m[1]) || SEASONS[m[1]]);
     var host = document.querySelector(HOST), frame = document.getElementById('ep-season-frame');
     if (user()) warm();
     var off = !slug || /[?&]native=1/.test(location.search) || !host || !user();
@@ -112,7 +122,7 @@
     if (frame && frame.getAttribute('data-slug') === slug && frame.getAttribute('data-overlay')) { host.setAttribute('data-ep-season', '1'); place(frame, host); return; }
     if (frame && frame.getAttribute('data-slug') === slug && frame.parentNode === host) return;
     if (frame) frame.remove();
-    embed(host, slug);
+    embed(host, slug, hp || null);
   }
   // Never run more than about twice a second, however busy Circle's page is, and give up after repeated rebuilds
   var lastTick = 0, builds = [];

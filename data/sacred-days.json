@@ -1,0 +1,14 @@
+{
+  "_note": "The great observances shown on Today. Dates as reckoned for the US (Drik Panchang, Houston); some fall a day differently elsewhere. Re-check every date against Drik Panchang before launch. Add or change entries by editing this list (date is YYYY-MM-DD).",
+  "region": "US (Houston)",
+  "days": [
+    { "date": "2026-11-08", "name": "Dīpāvalī", "note": "Festival of lights · Lakṣmī Pūjā on the new moon", "region": "US" },
+    { "date": "2027-02-07", "name": "Māgha Gupta Navarātri", "note": "The hidden Navarātri of winter · nine nights", "region": "US" },
+    { "date": "2027-03-06", "name": "Mahāśivarātri", "note": "The great night of Śiva · vigil and fast", "region": "US" },
+    { "date": "2027-04-07", "name": "Caitra Navarātri", "note": "Nine nights of the Goddess in spring · Rāma Navamī on 14 Apr", "region": "US" },
+    { "date": "2027-07-04", "name": "Āṣāḍha Gupta Navarātri", "note": "The hidden Navarātri of the rains · to 12 July", "region": "US" },
+    { "date": "2027-07-18", "name": "Guru Pūrṇimā", "note": "The full moon of the teacher", "region": "US" },
+    { "date": "2027-09-30", "name": "Śāradīya Navarātri", "note": "Nine nights of the Goddess in autumn · Vijayadaśamī on 9 Oct", "region": "US" },
+    { "date": "2027-10-28", "name": "Dīpāvalī", "note": "Festival of lights", "region": "US" }
+  ]
+}

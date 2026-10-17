@@ -1,0 +1,12 @@
+{
+  "_note": "The weekly sūtra and the daily questions on Today (and in the app). One entry per week; week_start is the Monday. The questions (prompt_mon … prompt_sun) are for Jacob to write: a day left empty simply shows no question. Later this moves to a sheet tab edited in Ops → Settings; this file is the fallback.",
+  "weeks": [
+    {
+      "week_start": "2026-10-12",
+      "source": "Pratyabhijñāhṛdaya 1",
+      "sanskrit_iast": "citiḥ svatantrā viśvasiddhihetuḥ",
+      "translation": "Consciousness, utterly free, is the cause of the accomplishment of the universe.",
+      "prompt_mon": "", "prompt_tue": "", "prompt_wed": "", "prompt_thu": "", "prompt_fri": "", "prompt_sat": "", "prompt_sun": ""
+    }
+  ]
+}

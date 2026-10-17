@@ -46,6 +46,7 @@
     t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
     t += 'frame built: ' + state.built + ' time(s)' + (state.stopped ? '  STOPPED: Circle kept removing it' : '') + '\n';
+    t += 'loader: hub v2 (overlay, keeps frame)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
     t += 'page html arrived: ' + (state.html ? 'yes' : 'no') + '\n';
@@ -119,8 +120,11 @@
     var slug = m && (hk ? 'hub:' + hp : pageKey(m[1]) || SEASONS[m[1]]);
     var host = document.querySelector(HOST), frame = document.getElementById('ep-season-frame');
     if (user()) warm();
-    var off = !slug || /[?&]native=1/.test(location.search) || !host || !user();
-    if (off) { if (frame) frame.remove(); var h = document.querySelector('[data-ep-season]'); if (h) h.removeAttribute('data-ep-season'); return; }
+    // Leaving the page (or asking for Circle's own view) removes the frame. Circle briefly losing its content area or the
+    // signed-in user while it redraws does not: removing the frame then made it rebuild until the loader gave up.
+    var leaving = !slug || /[?&]native=1/.test(location.search);
+    if (leaving) { if (frame) { state.why = !slug ? 'left the page' : 'native view'; frame.remove(); } var h = document.querySelector('[data-ep-season]'); if (h) h.removeAttribute('data-ep-season'); return; }
+    if (!host || !user()) { state.waited = (state.waited || 0) + 1; if (frame && frame.getAttribute('data-overlay')) return; if (frame) { state.why = !host ? 'no content area' : 'not signed in'; frame.remove(); } return; }
     if (frame && frame.getAttribute('data-slug') === slug && frame.getAttribute('data-overlay')) { host.setAttribute('data-ep-season', '1'); place(frame, host); return; }
     if (frame && frame.getAttribute('data-slug') === slug && frame.parentNode === host) return;
     if (frame) frame.remove();

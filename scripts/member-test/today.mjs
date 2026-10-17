@@ -66,3 +66,28 @@ assert.equal(teachingFor('2026-10-11', weeks), null);  // before the week starts
 assert.equal(teachingFor('2026-10-19', weeks), null);  // a week later, no stale sūtra
 assert.equal(teachingFor('2026-10-17').source, 'Pratyabhijñāhṛdaya 1'); // the shipped data covers the week of 12 Oct
 console.log('today (free layer): ok');
+
+// ---- the teaching read from the "Site Teachings" tab (a tiny stand-in for Google), with the shipped file as fallback
+import http from 'http';
+import crypto from 'crypto';
+const T = await import('../../lib/member/teaching.js');
+const { privateKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
+let rows = [['week_start', 'source', 'sanskrit_iast', 'translation', 'prompt_sat', 'publish'],
+  ['2026-10-12', 'From the sheet', 'x', 'Sheet translation', 'Sheet question', 'TRUE'], ['2026-10-19', 'Hidden', 'y', 'z', '', 'No'], ['soon', 'Bad date', '', '', '', '']];
+let status = 200;
+const srv = http.createServer((req, res) => {
+  if (req.url.startsWith('/token')) { res.setHeader('content-type', 'application/json'); return res.end(JSON.stringify({ access_token: 't', expires_in: 3600 })); }
+  res.statusCode = status; res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(status === 200 ? { values: rows } : { error: 'nope' }));
+}).listen(0);
+await new Promise(r => srv.on('listening', r));
+const port = srv.address().port;
+Object.assign(process.env, { CALENDAR_SHEET_ID: 'sheet', GOOGLE_SERVICE_ACCOUNT_EMAIL: 'a@b.c', GOOGLE_PRIVATE_KEY: privateKey.export({ type: 'pkcs8', format: 'pem' }), GOOGLE_TOKEN_URL: `http://localhost:${port}/token`, SHEETS_BASE: `http://localhost:${port}` });
+let w = await T.loadWeeks();
+assert.equal(w.length, 1); assert.equal(w[0].source, 'From the sheet'); // hidden and badly dated rows left out
+assert.equal((await T.currentTeaching('2026-10-17')).question, 'Sheet question');
+rows = [rows[0]]; w = await T.loadWeeks();                              // tab made but empty → shipped file
+assert.equal(w[0].source, 'Pratyabhijñāhṛdaya 1');
+status = 400; w = await T.loadWeeks();                                  // tab not made yet → shipped file
+assert.equal(w[0].source, 'Pratyabhijñāhṛdaya 1');
+srv.close();
+console.log('teachings sheet: ok');

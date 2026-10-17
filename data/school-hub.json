@@ -69,7 +69,9 @@
       ],
       "kind": "space",
       "title": "Today in School",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2909890
+      ],
       "audience_note": "Sādhana School",
       "description": "What is happening across the school today.",
       "order": 10
@@ -82,7 +84,9 @@
       ],
       "kind": "space",
       "title": "Announcements",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2896659
+      ],
       "audience_note": "Sādhana School",
       "description": "News from the teachers and the team.",
       "order": 11
@@ -95,7 +99,9 @@
       ],
       "kind": "space",
       "title": "Welcome & Orientation",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2896658
+      ],
       "audience_note": "Sādhana School",
       "description": "Start here: how the school works and how to find your way around.",
       "order": 12
@@ -107,7 +113,9 @@
       ],
       "kind": "space",
       "title": "Kula Commentary",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2896660
+      ],
       "audience_note": "Sādhana School",
       "description": "Notes and commentary from the kula.",
       "order": 20
@@ -119,7 +127,9 @@
       ],
       "kind": "chat",
       "title": "Kula chat",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2912499
+      ],
       "audience_note": "Sādhana School",
       "description": "Talk with the whole kula.",
       "order": 21
@@ -131,7 +141,9 @@
       ],
       "kind": "space",
       "title": "Practice Resources",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2896661
+      ],
       "audience_note": "Sādhana School",
       "description": "Guided practices, texts and tools for your own sādhana.",
       "order": 30
@@ -143,7 +155,9 @@
       ],
       "kind": "space",
       "title": "Practice Portfolio",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2910158
+      ],
       "audience_note": "Sādhana School",
       "description": "Your practice record, kept in one place.",
       "order": 31
@@ -156,7 +170,9 @@
       ],
       "kind": "events",
       "title": "Saturday Open Sessions",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2897912
+      ],
       "weekday": 6,
       "requires_plan": "full-year",
       "audience_note": "Full year",
@@ -173,7 +189,9 @@
       ],
       "kind": "events",
       "title": "Sunday Practicum",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2897912
+      ],
       "weekday": 0,
       "requires_plan": "mentee",
       "audience_note": "Sahṛdaya Upāya",
@@ -190,7 +208,9 @@
       ],
       "kind": "space",
       "title": "Mentorship Circle",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2896670
+      ],
       "mentee_marker": true,
       "audience_note": "Sahṛdaya Upāya",
       "description": "Your mentorship circle.",
@@ -207,7 +227,9 @@
       ],
       "kind": "events",
       "title": "Mentorship Sessions",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2896671
+      ],
       "audience_note": "Sahṛdaya Upāya",
       "description": "Live mentorship sessions.",
       "preview": "",
@@ -223,7 +245,9 @@
       ],
       "kind": "space",
       "title": "Apprentice Workbook",
-      "circle_space_ids": [],
+      "circle_space_ids": [
+        2900305
+      ],
       "audience_note": "Sahṛdaya Upāya",
       "description": "Your workbook for the apprenticeship.",
       "preview": "",

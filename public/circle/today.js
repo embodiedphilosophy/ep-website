@@ -339,7 +339,7 @@
       '.etd-b{min-height:44px;padding:0 16px}',
       '.etd-morel{margin:0 0 8px}.etd-lg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}',
       '.etd-lock{border:1px dashed #D8C9AE;border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:#6B6152;min-height:44px}.etd-lt{display:flex;align-items:center;gap:8px;font-weight:600;color:#1E1A14}.etd-op{color:#A5432A;font-size:12.5px}',
-      '.etd-ev{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid #E3D8C6}.etd-evt{display:flex;flex-direction:column}',
+      '.etd-mentor{margin-top:28px;margin-bottom:12px}.etd-ev>.ept-mono{white-space:nowrap}.etd-ev{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid #E3D8C6}.etd-evt{display:flex;flex-direction:column}',
       '.etd-green{color:#2E5A4B;font-size:12px}.etd-red{color:#A5432A;font-size:12px}',
       '.etd-timer{position:fixed;inset:0;z-index:2147483000;background:#20302A;color:#F4EDE0;display:flex;align-items:center;justify-content:center;font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif;overflow:auto}',
       '.etd-tin{width:min(420px,100%);padding:32px 24px;display:flex;flex-direction:column;gap:20px;align-items:center;text-align:center}',
@@ -507,10 +507,11 @@
     var date = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
     var out = '<header class="etd-top"><span class="ept-l ept-red">' + esc(eyebrow()) + '</span><h1 class="etd-h1">Good ' + greet() + ', <em>' + esc(first) + '</em>.</h1>' +
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
-    if (mentorView()) out += '<div class="ept-pg">' + cohortHtml() + '</div>';
     if (!d) return out + '<p class="' + (state.failed ? 'ept-err' : 'ept-s') + '" role="status">' + esc(state.failed ? 'We couldn’t load Today just now. Please refresh the page.' : 'Loading…') + '</p>';
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
       heroHtml() + teachingHtml() + moonHtml() + enrolHtml() + '</div>' + railHtml() + '</div>';
+    // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
+    if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + cohortHtml() + '</div>';
     return out;
   }
 

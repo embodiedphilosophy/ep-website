@@ -46,7 +46,7 @@
     t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
     t += 'frame built: ' + state.built + ' time(s)' + (state.stopped ? '  STOPPED: Circle kept removing it' : '') + '\n';
-    t += 'loader: hub v3 (finds who removes the frame)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
+    t += 'loader: hub v4 (ignores address changes)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
     t += 'removed by: ' + (state.other || '-') + '\nremoved from: ' + (state.mut || '-') + '\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
@@ -126,7 +126,7 @@
   function tick() {
     queued = false;
     var m = location.pathname.match(/^\/c\/([^\/]+)/), hk = m && hubKey(m[1]), hp = hk && hubPath(hk);
-    var slug = m && (hk ? 'hub:' + hp : pageKey(m[1]) || SEASONS[m[1]]);
+    var slug = m && (hk ? 'hub:' + hk : pageKey(m[1]) || SEASONS[m[1]]); // the hub's identity ignores ?tab=, which Circle may change while it draws the space
     var host = document.querySelector(HOST), frame = document.getElementById('ep-season-frame');
     if (user()) warm();
     // Leaving the page (or asking for Circle's own view) removes the frame. Circle briefly losing its content area or the
@@ -136,7 +136,7 @@
     if (!host || !user()) { state.waited = (state.waited || 0) + 1; if (frame && frame.getAttribute('data-overlay')) return; if (frame) { state.why = !host ? 'no content area' : 'not signed in'; frame.remove(); } return; }
     if (frame && frame.getAttribute('data-slug') === slug && frame.getAttribute('data-overlay')) { host.setAttribute('data-ep-season', '1'); place(frame, host); return; }
     if (frame && frame.getAttribute('data-slug') === slug && frame.parentNode === host) return;
-    if (frame) frame.remove();
+    if (frame) { state.why = 'replaced: ' + frame.getAttribute('data-slug') + ' -> ' + slug; frame.remove(); }
     embed(host, slug, hp || null);
   }
   // Never run more than about twice a second, however busy Circle's page is, and give up after repeated rebuilds

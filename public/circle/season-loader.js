@@ -96,10 +96,12 @@
   }
   function embed(host, slug, hubPathOf) {
     if (state.stopped || tooMany()) { state.stopped = true; return; }
-    var path = hubPathOf || PAGES[slug] || '/school/sadhana-school/' + slug, overlay = !!PAGES[slug];
+    var path = hubPathOf || PAGES[slug] || '/school/sadhana-school/' + slug;
+    // The hub and "This week" sit on the page itself, over Circle's content area, so Circle re-drawing that area cannot tear them down
+    var overlay = !!PAGES[slug] || !!hubPathOf;
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
-    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = overlay ? 'This week' : hubPathOf ? 'Sādhana School' : 'Season view';
+    frame.id = 'ep-season-frame'; frame.name = 'ep-season-frame'; frame.title = hubPathOf ? 'Sādhana School' : overlay ? 'This week' : 'Season view';
     frame.setAttribute('data-slug', slug); frame.setAttribute('data-path', path);
     if (overlay) { frame.setAttribute('data-overlay', '1'); frame.style.cssText = 'position:fixed;z-index:20;border:0;background:#F2E8D6'; }
     else frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';

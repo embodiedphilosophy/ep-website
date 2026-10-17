@@ -1,0 +1,68 @@
+[
+  {
+    "slug": "meditation-mondays",
+    "title": "Meditation Mondays",
+    "color": "#B98A3E",
+    "locked_note": "Included with the Meditation Pass",
+    "description": "A live guided meditation every Monday with Wisdom School faculty, rooted in yoga, Tantra and the wider contemplative traditions. Sit with a community from around the world, and build a practice that lasts.",
+    "included": [
+      "A live guided meditation every Monday",
+      "Replays of every session",
+      "Teachings from yoga, Tantra and the wider contemplative world",
+      "A community sitting together at a set time"
+    ],
+    "sample": { "text": "Returning to the breath again and again trains the very capacity that distraction wears down.", "from": "From the Meditation Pass page" },
+    "cta_label": "Start a free trial",
+    "cta_url": "https://www.embodiedphilosophy.com/meditation-pass"
+  },
+  {
+    "slug": "wisdom-school",
+    "title": "Wisdom School",
+    "color": "#2F4A3F",
+    "locked_note": "For Wisdom School members",
+    "description": "Contemplative study for modern life. A live meditation every week, a lecture every month, and seasonal workshops, all recorded so you can join live or catch up when it suits you.",
+    "included": [
+      "Meditation Mondays, live every week, with replays",
+      "The monthly lecture and seasonal workshops",
+      "This year’s programming, on demand",
+      "A starter learning pathway"
+    ],
+    "plus_note": "Wisdom School Plus is the step after: every learning pathway, the certificate programs, and continuing-education certificates for yoga teachers.",
+    "sample": { "text": "Pick the question you’re living with, and follow a sequence of courses chosen to answer it.", "from": "From the Wisdom School page" },
+    "cta_label": "Join Wisdom School",
+    "cta_url": "https://enroll.embodiedphilosophy.com/wisdom-school"
+  },
+  {
+    "slug": "sadhana-school",
+    "title": "Sādhana School",
+    "color": "#A5432A",
+    "locked_note": "Open to students enrolled in a season",
+    "description": "A year of guided study and daily practice in the non-dual Śākta-Śaiva tradition of Kashmir. Three eight-week seasons and a summer immersion, with a community of serious practitioners walking the path together.",
+    "included": [
+      "Live weekly two-hour sessions each season, with recordings",
+      "Daily Sahṛdaya Meditation, the spine of the year",
+      "The Practice Portfolio, Inner Travelogue and Sādhaka’s Sourcebook",
+      "Live weekend workshops",
+      "A member community in Circle"
+    ],
+    "sample": { "text": "The practice imperative is simple: sit every day, and let the study feed the sitting.", "from": "From the Sādhana School page" },
+    "cta_label": "Choose a season or the full year",
+    "cta_url": "https://enroll.embodiedphilosophy.com/sadhana-school"
+  },
+  {
+    "slug": "sahrdaya-upaya",
+    "title": "Sahṛdaya Upāya",
+    "color": "#20302A",
+    "locked_note": "For full-year students",
+    "description": "A 100-hour apprenticeship in Sahṛdaya Meditation and Subtle Liberation-Based Teaching, held alongside the full Sādhana School year, with eight weekend immersions and monthly one-on-one mentorship. Open by application to full-year students.",
+    "included": [
+      "Eight Sunday Practicums",
+      "Nine monthly one-on-ones with Jacob",
+      "A private Mentorship space and events",
+      "A 100-hour certificate on completion"
+    ],
+    "sample": { "text": "Nothing is acquired. Consciousness is already full.", "from": "From the Sahṛdaya Upāya page" },
+    "cta_label": "Learn more",
+    "cta_url": "https://www.embodiedphilosophy.com/sahrdaya-upaya"
+  }
+]

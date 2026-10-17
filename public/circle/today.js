@@ -20,6 +20,8 @@
   if (!window.__epProbe) { var pr = document.createElement('script'); pr.src = 'https://www.embodiedphilosophy.com/circle/probe.js'; pr.defer = true; document.head.appendChild(pr); }
   // …and the chat restyle for Sādhana School students and mentees (does nothing for anyone else)
   if (!window.__epChatSkin) { var cs = document.createElement('script'); cs.src = 'https://www.embodiedphilosophy.com/circle/chat-skin.js'; cs.defer = true; document.head.appendChild(cs); }
+  // …and "My Practice", the Meditation Pass homepage (/c/my-practice; does nothing for anyone else)
+  if (!window.__epMyPractice) { var mp = document.createElement('script'); mp.src = 'https://www.embodiedphilosophy.com/circle/my-practice.js'; mp.defer = true; document.head.appendChild(mp); }
   if (!window.__epThisWeek) { var tw = document.createElement('script'); tw.src = 'https://www.embodiedphilosophy.com/circle/this-week.js'; tw.defer = true; document.head.appendChild(tw); }
 
   var API = 'https://www.embodiedphilosophy.com';

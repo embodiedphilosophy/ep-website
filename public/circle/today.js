@@ -22,6 +22,8 @@
   if (!window.__epChatSkin) { var cs = document.createElement('script'); cs.src = 'https://www.embodiedphilosophy.com/circle/chat-skin.js'; cs.defer = true; document.head.appendChild(cs); }
   // …and "My Practice", the Meditation Pass homepage (/c/my-practice; does nothing for anyone else)
   if (!window.__epMyPractice) { var mp = document.createElement('script'); mp.src = 'https://www.embodiedphilosophy.com/circle/my-practice.js'; mp.defer = true; document.head.appendChild(mp); }
+  // …and the Library by department (/c/library)
+  if (!window.__epLibrary) { var lb = document.createElement('script'); lb.src = 'https://www.embodiedphilosophy.com/circle/library.js'; lb.defer = true; document.head.appendChild(lb); }
   if (!window.__epThisWeek) { var tw = document.createElement('script'); tw.src = 'https://www.embodiedphilosophy.com/circle/this-week.js'; tw.defer = true; document.head.appendChild(tw); }
 
   var API = 'https://www.embodiedphilosophy.com';

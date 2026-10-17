@@ -31,6 +31,16 @@ assert.equal((await freeToday({ uid: 'u1', today })).practisingToday, 5);
 // Someone else's log never shows as mine
 assert.equal((await freeToday({ uid: 'u9', today })).practice.streak, 0);
 
+// A second sit adds to the day's minutes (the timer); the quick log replaces them
+const mins = async () => (await db.query("SELECT minutes, quality FROM member_practice WHERE uid = 'u6' AND day = $1", [today])).rows[0];
+await practice.logPractice({ uid: 'u6', email: 'u6@example.com', day: today, minutes: 20, quality: 'Calm', extras: [] });
+await practice.logPractice({ uid: 'u6', email: 'u6@example.com', day: today, minutes: 15, quality: '', extras: [], add: true });
+assert.deepEqual(await mins(), { minutes: 35, quality: 'Calm' });
+await practice.logPractice({ uid: 'u6', email: 'u6@example.com', day: today, minutes: 590, quality: 'Focused', extras: [], add: true });
+assert.deepEqual(await mins(), { minutes: 600, quality: 'Focused' }, 'capped at ten hours');
+await practice.logPractice({ uid: 'u6', email: 'u6@example.com', day: today, minutes: 10, quality: 'Calm', extras: [] });
+assert.equal((await mins()).minutes, 10);
+
 // A bad day from the browser falls back to the server's; bad time zone falls back to New York
 r = await freeToday({ uid: 'u1', today: '1999-01-01', tz: 'Not/AZone' });
 assert.equal(r.today, today); assert.equal(r.moon.place.zone, 'America/New_York');

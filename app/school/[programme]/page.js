@@ -35,7 +35,7 @@ export default async function Page({ params, searchParams }) {
     const plan = planOf(resolveItems(items, seasons), member);
     if (plan.key === 'none') {
       return notice(title, 'This hub is for Sādhana School students. When you join a season, everything opens here.',
-        settings.join_url ? <a className="sch-btn" href={settings.join_url}>See how to join</a> : null);
+        settings.join_url ? <a className="sch-btn" href={settings.join_url} target="_top">See how to join</a> : null);
     }
     // Reads that fail one by one (a space that is slow or private) only blank that card's line, never the page
     const ids = postSpaces(items, seasons, member, plan, today);

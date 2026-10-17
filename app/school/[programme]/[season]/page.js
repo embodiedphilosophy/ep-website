@@ -38,7 +38,7 @@ export default async function Page({ params, searchParams }) {
           <p className="sch-eyebrow">{PROGRAMMES[programme].title} · {season.short}</p>
           <h1>{season.title}</h1>
           <p>{season.subtitle}. This season is open to students enrolled in it.</p>
-          <a className="sch-btn" href={season.enrol_url}>See how to join</a>
+          <a className="sch-btn" href={season.enrol_url} target="_top">See how to join</a>
         </div>
       </Shell>
     );

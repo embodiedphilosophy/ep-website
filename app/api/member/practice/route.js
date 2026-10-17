@@ -21,7 +21,7 @@ export async function POST(req) {
   if (!practiceAvailable()) return NextResponse.json({ error: 'The practice log isn’t connected yet' }, { status: 503, headers: h });
   const body = await req.json().catch(() => ({}));
   const today = cleanToday(body.today);
-  await logPractice({ uid: s.uid, email: s.email, day: today, minutes: body.minutes, quality: body.quality, extras: body.extras });
+  await logPractice({ uid: s.uid, email: s.email, day: today, minutes: body.minutes, quality: body.quality, extras: body.extras, add: body.add === true });
   const summary = await practiceSummary(s.uid, today);
   return NextResponse.json({ ...summary, qualities: QUALITIES, extras: EXTRAS }, { headers: h });
 }

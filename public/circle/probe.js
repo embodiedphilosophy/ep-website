@@ -1,13 +1,12 @@
 /* Embodied Philosophy · page-structure probe for Circle (ss.embodiedphilosophy.com)
-   Loaded by public/circle/today.js. Shows for Circle admins only (or with ?epdebug=1 on the address, or after pressing
-   Control+Option+P). It adds a button (bottom right): "Copy page structure". It copies a short outline of the page (tags, class names, labels and the first
+   Loaded by public/circle/today.js. Hidden from everyone by default. Shows only with ?epdebug=1 on the address, or after pressing
+   Control+Option+P. It adds a button (bottom right): "Copy page structure". It copies a short outline of the page (tags, class names, labels and the first
    words of text, never anything typed into a box) so the Circle restyle can be written against the real markup. */
 (function () {
   if (window.__epProbe) return; window.__epProbe = true;
   function flag(v) { try { if (v === undefined) return sessionStorage.getItem('ep_probe'); if (v) sessionStorage.setItem('ep_probe', v); else sessionStorage.removeItem('ep_probe'); } catch (e) { return null; } }
   function wanted() {
-    var u = window.circleUser;
-    return /[?&]epdebug=1/.test(location.search) || flag() === '1' || !!(u && (u.isAdmin || u.admin || u.is_admin));
+    return /[?&]epdebug=1/.test(location.search) || flag() === '1';
   }
   // Control+Option+P switches the button on or off, for pages where the address can't be changed
   window.addEventListener('keydown', function (e) { if (e.ctrlKey && e.altKey && e.code === 'KeyP') { flag(flag() === '1' ? '' : '1'); add(); } });

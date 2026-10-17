@@ -46,7 +46,8 @@
     t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
     t += 'frame built: ' + state.built + ' time(s)' + (state.stopped ? '  STOPPED: Circle kept removing it' : '') + '\n';
-    t += 'loader: hub v2 (overlay, keeps frame)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
+    t += 'loader: hub v3 (finds who removes the frame)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
+    t += 'removed by: ' + (state.other || '-') + '\nremoved from: ' + (state.mut || '-') + '\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
     t += 'page html arrived: ' + (state.html ? 'yes' : 'no') + '\n';
@@ -56,6 +57,14 @@
     t += 'what is on top of it: ' + (top ? (top === f ? 'the frame (good)' : top.tagName + (top.id ? '#' + top.id : '') + ' (covering it?)') : '-');
     b.textContent = t;
   }
+  // Troubleshooting: if something other than this loader takes the frame out of the page, remember what did it
+  (function () {
+    function note(how, node) { try { if (node && node.id === 'ep-season-frame') state.other = how + ' | ' + String(new Error().stack).split('\n').slice(2, 5).map(function (l) { return l.trim().slice(0, 70); }).join(' < '); } catch (e) {} }
+    var rm = Element.prototype.remove, rc = Node.prototype.removeChild;
+    Element.prototype.remove = function () { note('remove()', this); return rm.apply(this, arguments); };
+    Node.prototype.removeChild = function (c) { note('removeChild', c); return rc.apply(this, arguments); };
+    try { new MutationObserver(function (list) { list.forEach(function (m) { for (var i = 0; i < m.removedNodes.length; i++) { var n = m.removedNodes[i]; if (n.id === 'ep-season-frame' || (n.querySelector && n.querySelector('#ep-season-frame'))) state.mut = 'node removed from <' + String(m.target.tagName || m.target.nodeName).toLowerCase() + (m.target.id ? '#' + m.target.id : '') + '> (' + (n.tagName || '?').toLowerCase() + ')'; } }); }).observe(document, { childList: true, subtree: true }); } catch (e) {}
+  })();
   function user() { var u = window.circleUser; return u && u.identityToken ? u : null; }
   function key() { return 'ep_warm_' + (user() ? user().email : ''); }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }

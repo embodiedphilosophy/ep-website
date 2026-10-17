@@ -5,7 +5,11 @@ import { SITE_TABLES, ADMIN_TABLES, SCAFFOLDING, SCAFFOLDING_STATUSES, tableOf, 
 const SELECTS = { rule: RULE_OPTIONS, teamtype: TYPE_OPTIONS, newsletter: NEWSLETTER_OPTIONS, scaffstatus: SCAFFOLDING_STATUSES };
 const RULE_LABEL = { '': 'Worked out from the wording', bio: 'Bio and headshot are in', title: 'Public title and summary are in', blurbs: 'Promo blurbs are in', readings: 'Readings shared up front', video_id: 'Replay link (or Vimeo ID) is in', manual: 'Only by hand' };
 
-const label = h => h.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
+// Plainer names for a few columns of the Today tabs (Settings → Today: teaching / sacred days)
+const NICE = { week_start: 'Week starts (Monday)', sanskrit_iast: 'Sanskrit', translation: 'Translation', source: 'Source',
+  prompt_mon: 'Question for Monday', prompt_tue: 'Question for Tuesday', prompt_wed: 'Question for Wednesday', prompt_thu: 'Question for Thursday',
+  prompt_fri: 'Question for Friday', prompt_sat: 'Question for Saturday', prompt_sun: 'Question for Sunday' };
+const label = h => NICE[h] || h.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
 const yes = v => String(v).toUpperCase() !== 'FALSE';
 
 // Content → Website (scope 'site'), Content → Email (scope 'email': the Weekly Scaffolding) and

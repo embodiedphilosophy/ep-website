@@ -33,7 +33,7 @@
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (open to every member)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
-  var state = { session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
+  var state = { geo: null, geoBusy: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
     none: 'Your practice · Today', meditation: 'Meditation Pass · Today', wisdom: 'Wisdom School · Today',
@@ -121,10 +121,27 @@
   }
 
   function asParam() { var a = (location.search.match(/[?&]as=([a-z_]+)/) || [])[1]; return a && isAdmin() && TIERS.indexOf(a) >= 0 ? '&as=' + a : ''; }
+  // Exact tithi: with the member's say-so, the browser's position (rounded to about 11 km) goes with this request only.
+  // We never keep it; only a "yes, use it" flag stays in this browser, and the browser itself asks first.
+  function geoParam() { return state.geo ? '&lat=' + state.geo.lat + '&lon=' + state.geo.lon : ''; }
+  function round1(n) { return Math.round(n * 10) / 10; }
+  function askPlace(quiet) {
+    if (!navigator.geolocation) { state.geoErr = 'Your browser can’t share a location, so we’re using your time zone.'; return Promise.resolve(); }
+    state.geoBusy = true; state.geoErr = ''; render();
+    return new Promise(function (res) {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        state.geo = { lat: round1(pos.coords.latitude), lon: round1(pos.coords.longitude) }; local('ep_geo', '1'); res(true);
+      }, function () {
+        state.geo = null; local('ep_geo', '');
+        if (!quiet) state.geoErr = 'We couldn’t get your location, so we’re using your time zone. You can allow it in your browser’s settings.';
+        res(false);
+      }, { timeout: 8000, maximumAge: 3600000 });
+    }).then(function (ok) { state.geoBusy = false; return ok ? loadData() : null; }).then(render);
+  }
   function zone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } }
   function loadData() {
     return Promise.all([
-      api('/api/member/today?today=' + localToday() + '&tz=' + encodeURIComponent(zone()) + asParam()).then(function (d) { state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet'; }).catch(function (e) { state.error = e.message; state.failed = true; }),
+      api('/api/member/today?today=' + localToday() + '&tz=' + encodeURIComponent(zone()) + geoParam() + asParam()).then(function (d) { state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet'; }).catch(function (e) { state.error = e.message; state.failed = true; }),
       mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
       mentorView() ? api('/api/member/portfolio?shared=1&today=' + localToday()).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
     ]);
@@ -350,6 +367,7 @@
       '.etd-lab{display:flex;flex-direction:column;gap:6px;color:#C8BEAC}.etd-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}',
       '.etd-chip{background:transparent;border:1px solid #5B6E64;color:#F4EDE0;border-radius:999px;min-height:40px;padding:0 12px;cursor:pointer}.etd-chip[aria-pressed="true"]{background:#F4EDE0;color:#16140F}',
       '.etd-err{color:#F0B7A5}',
+      '.etd-geo{background:transparent;border:0;padding:0 2px;min-height:44px;font:inherit;font-size:12.5px;color:#A5432A;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:right}',
       '.etd .ept-x{width:44px;height:44px}.etd .ept-q{min-height:44px}.etd .ept-why,.etd-rail>.etd-card>a,.etd-wp,.etd-ev a{min-height:44px;display:inline-flex;align-items:center}.etd-ev a{min-height:44px;margin:-8px 0}',
       '.etd :focus-visible,.etd-timer :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}',
       '@media (max-width:640px){.etd{padding:20px 16px 24px}.etd-h1{font-size:34px}.etd-sit,.etd-rec{padding:22px 20px}.etd-sd{grid-template-columns:1fr auto}.etd-sd>.ept-mono{grid-column:1/-1}.etd-clock{font-size:56px}}'
@@ -438,12 +456,18 @@
     var bg = d.lit <= 2 ? '#1E1A14' : d.lit >= 98 ? '#FBF6EE' : d.waxing ? 'linear-gradient(90deg,#1E1A14 ' + (100 - d.lit) + '%,#FBF6EE ' + (100 - d.lit) + '%)' : 'linear-gradient(90deg,#FBF6EE ' + d.lit + '%,#1E1A14 ' + d.lit + '%)';
     return '<span class="etd-moon" style="background:' + bg + '" role="img" aria-label="' + esc(d.phase) + '" title="' + esc(d.phase) + '"></span>';
   }
+  function geoHtml() {
+    if (state.geoBusy) return '<span class="ept-s" role="status">Finding your location…</span>';
+    if (state.geo) return '<button type="button" class="etd-geo" data-act="geo-off">Tithi for your location · use my time zone instead</button>';
+    return '<button type="button" class="etd-geo" data-act="geo">Use my location for an exact tithi</button>';
+  }
   function moonHtml() {
     var m = state.data && state.data.moon, sa = (state.data && state.data.sacred) || [];
     if (!m) return '';
-    var out = '<section class="ept-card etd-card" aria-labelledby="etd-moon"><div class="ept-ch"><h2 id="etd-moon" class="ept-h2">This week’s moon</h2></div>' +
+    var out = '<section class="ept-card etd-card" aria-labelledby="etd-moon"><div class="ept-ch"><h2 id="etd-moon" class="ept-h2">This week’s moon</h2>' + geoHtml() + '</div>' +
       '<div class="etd-moons" role="list">' + m.days.map(function (d) {
-        return '<div role="listitem" class="etd-md' + (d.today ? ' now' : '') + '"><span class="ept-l">' + esc(d.dow) + '</span>' + moonGlyph(d) + '<span class="etd-note">' + (d.today ? 'Today' : '') + '</span></div>'; }).join('') + '</div>';
+        return '<div role="listitem" class="etd-md' + (d.today ? ' now' : '') + '"><span class="ept-l">' + esc(d.dow) + '</span>' + moonGlyph(d) + '<span class="etd-note">' + (d.today ? 'Today' : '') + '</span></div>'; }).join('') + '</div>' +
+      (state.geoErr ? '<span class="ept-err" role="status">' + esc(state.geoErr) + '</span>' : '');
     if (sa.length) out += '<div class="etd-sacred"><span class="ept-l">Sacred days ahead</span>' + sa.map(function (x) {
       return '<div class="etd-sd"><span class="ept-mono">' + esc(niceDate(x.date)) + '</span><span class="etd-sdn"><b>' + esc(x.name) + '</b><span class="ept-s">' + esc(x.note) + '</span></span><span class="etd-away">' + away(x.inDays) + '</span></div>'; }).join('') +
       '<span class="ept-s">Dates as reckoned for the US; some fall a day differently where you are.</span></div>';
@@ -611,6 +635,8 @@
     var a = t.dataset.act;
     if (a === 'len') { state.len = parseInt(t.dataset.len, 10) || 20; local('ep_timer_len', String(state.len)); render(); }
     if (a === 'begin') startTimer();
+    if (a === 'geo') askPlace(false);
+    if (a === 'geo-off') { state.geo = null; local('ep_geo', ''); loadData().then(render); }
     if (a === 'form') { state.form = !state.form; state.error = ''; render(); var i = e.currentTarget.querySelector('input[name=minutes]'); if (i) i.focus(); }
     if (a === 'close') { state.form = false; render(); }
     if (a === 'line-open') { state.lineOpen = true; state.lineErr = ''; render(); var ta = pageRoot.querySelector('#etd-line'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center' }); }
@@ -730,8 +756,10 @@
       return;
     }
     state.loaded = true;
+    var again = local('ep_geo') === '1' && navigator.geolocation && !!navigator.geolocation.getCurrentPosition;
     return loadData().then(function () {
       mount();
+      if (again) askPlace(true); // they said yes before: the browser answers quietly, or the page stays on the time zone
       // Circle is a single-page app: re-check when the page changes
       var t = null;
       new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; mount(); }, 300); }).observe(document.body, { childList: true, subtree: true });

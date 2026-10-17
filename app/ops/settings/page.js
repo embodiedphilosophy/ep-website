@@ -13,7 +13,8 @@ export default async function Settings({ searchParams }) {
   const user = await opsUser(canEditSite);
   const sp = await searchParams;
   const t = tableOf(sp?.t);
-  const ok = t && ['site', 'admin'].includes(t.scope) && (t.scope !== 'admin' || user.director) && t.key !== 'scaffolding' && !['profiles', 'coursepages'].includes(t.key);
+  const scope = t?.scope || 'site'; // the website tables don't name a scope
+  const ok = t && ['site', 'admin'].includes(scope) && (scope !== 'admin' || user.director) && t.key !== 'scaffolding' && !['profiles', 'coursepages'].includes(t.key);
   const initial = ok ? t.key : user.director ? 'templates' : 'links';
   return (
     <Shell user={user} current="settings" eyebrow="Every table the dashboard and the website read" title="Settings">

@@ -36,7 +36,7 @@ const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 
 async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '' } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
-  const p = await ctx.newPage(); const calls = [];
+  const p = await ctx.newPage(); const calls = [], urls = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
   await p.clock.install({ time: new Date('2026-10-17T10:30:00-04:00') });
   const body = data || await payload(tier);
@@ -48,7 +48,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (path === '/circle/today.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js });
     if (path === '/circle/probe.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: probe });
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
-    calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`);
+    calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`); if (path === '/api/member/today') urls.push(u.search);
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
     if (path === '/api/member/today') return j(body);
     if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: [], logged: post.minutes }); }
@@ -59,7 +59,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
   });
   await p.goto('https://ss.example.test/c/today' + query);
   await p.waitForSelector('.etd-h1', { timeout: 8000 });
-  return { p, ctx, calls };
+  return { p, ctx, calls, urls };
 }
 const text = (p, sel) => p.locator(sel).allInnerTexts();
 
@@ -178,6 +178,27 @@ console.log('travelogue, milestone: ok');
   await ctx.close();
 }
 console.log('admin mentor view: ok');
+
+// ---- exact tithi: only when asked, rounded, never kept
+{
+  const { p, ctx, urls } = await open('none');
+  await ctx.grantPermissions(['geolocation']); await ctx.setGeolocation({ latitude: 51.5074, longitude: -0.1278 });
+  assert.ok(urls.every(u => !/lat=/.test(u)), 'no location unless asked');
+  await p.locator('[data-act=geo]').click(); await p.waitForSelector('[data-act=geo-off]');
+  assert.match(urls.at(-1), /lat=51\.5&lon=-0\.1/, 'rounded coordinates go with the request');
+  assert.equal(await p.evaluate(() => localStorage.getItem('ep_geo')), '1');
+  assert.ok(!JSON.stringify(await p.evaluate(() => ({ ...localStorage }))).includes('51.5'), 'coordinates are not kept');
+  await p.locator('[data-act=geo-off]').click(); await p.waitForSelector('[data-act=geo]');
+  assert.ok(!/lat=/.test(urls.at(-1))); assert.equal(await p.evaluate(() => localStorage.getItem('ep_geo')), '');
+  await ctx.close();
+  const d = await open('none'); // not allowed: say so, stay on the time zone
+  await d.p.evaluate(() => { navigator.geolocation.getCurrentPosition = (ok, no) => no({ code: 1, message: 'denied' }); });
+  await d.p.locator('[data-act=geo]').click();
+  await d.p.waitForSelector('.ept-err[role=status]', { timeout: 5000 });
+  assert.match(await d.p.locator('.ept-err[role=status]').innerText(), /time zone/); assert.equal(await d.p.locator('[data-act=geo]').count(), 1);
+  await d.ctx.close();
+}
+console.log('location: ok');
 
 // ---- phone width: no sideways scroll, targets at least 44px
 for (const tier of ['none', 'mentee']) {

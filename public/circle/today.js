@@ -67,7 +67,7 @@
     return '<div class="ept-nudge" role="note" aria-label="' + esc(o.title) + '"><div class="ept-nt"><span class="ept-l ept-red">' + esc(o.eyebrow) + (o.until ? ' · until ' + esc(longDate(o.until)) : '') + '</span>' +
       '<button type="button" class="ept-x" data-act="offer-hide" data-key="' + esc(o.key) + '" aria-label="Hide this offer">×</button></div>' +
       '<strong class="ept-n-h">' + esc(o.title) + '</strong><span>' + esc(o.body) + '</span>' +
-      '<div class="ept-row">' + o.options.map(function (x, i) { return '<a class="ept-q' + (i === o.options.length - 1 ? ' ept-q-red' : '') + '" href="' + esc(x.href) + '">' + esc(/\$/.test(x.label) ? x.label : x.label + ' · ' + money(x.price)) + '</a>'; }).join('') +
+      '<div class="ept-row">' + o.options.map(function (x, i) { return '<a class="ept-q' + (i === o.options.length - 1 ? ' ept-q-red' : '') + '" href="' + esc(x.href) + '" data-pop target="_blank" rel="noopener">' + esc(/\$/.test(x.label) ? x.label : x.label + ' · ' + money(x.price)) + '</a>'; }).join('') +
       (o.note ? '<span class="ept-s">' + esc(o.note) + '</span>' : '') + '</div>' +
       '<button type="button" class="ept-why" data-act="why" aria-expanded="' + state.why + '">Why am I seeing this?</button>' +
       (state.why ? '<span class="ept-s ept-whyt">' + esc(o.why) + ' Hide this with × if it isn’t for you.</span>' : '') + '</div>';
@@ -528,7 +528,7 @@
     if (n) return '<div class="ept-nudge" role="note" aria-label="A suggestion"><div class="ept-nt"><span class="ept-l ept-red">' + esc(n.eyebrow) + '</span>' +
       '<button type="button" class="ept-x" data-act="dismiss" aria-label="Hide this suggestion">×</button></div>' +
       '<strong class="ept-n-h">' + esc(n.title) + '</strong><span>' + esc(n.body) + '</span>' +
-      '<div class="ept-row"><a class="ept-q ept-q-red" href="' + esc(n.href) + '">' + esc(n.cta) + '</a><span class="ept-s">' + esc(n.note) + '</span></div>' +
+      '<div class="ept-row"><a class="ept-q ept-q-red" href="' + esc(n.href) + '" data-pop target="_blank" rel="noopener">' + esc(n.cta) + '</a><span class="ept-s">' + esc(n.note) + '</span></div>' +
       '<button type="button" class="ept-why" data-act="why" aria-expanded="' + state.why + '">Why am I seeing this?</button>' +
       (state.why ? '<span class="ept-s ept-whyt">' + esc(n.why || ('You’ve logged ' + n.at + ' days of practice.')) + ' You can hide it with ×, and we won’t show it again this season.</span>' : '') + '</div>';
     return state.hidNudge ? '<p class="ept-s ept-hid" role="status">Suggestion hidden. We won’t show it again this season.</p>' : '';
@@ -539,7 +539,7 @@
     if (!cards.length) out += '<p class="etd-none">Your practice, the daily teaching and the moon calendar are yours to keep, free. When you join a programme, its sessions and spaces appear here.</p>';
     out += cards.map(cardHtml).join('') + nudgeBlock();
     if (locked.length) out += '<section aria-labelledby="etd-more"><h2 id="etd-more" class="ept-l etd-morel">Also at Embodied Philosophy</h2><div class="etd-lg">' + locked.map(function (c) {
-      return '<a class="etd-lock" href="' + esc(c.href) + '" target="_top"><span class="etd-lt">' + LOCK + esc(c.title) + '</span><span class="ept-s">' + esc(c.line) + '</span><span class="etd-op">Opens with ' + esc(c.opens) + ' →</span></a>'; }).join('') + '</div></section>';
+      return '<a class="etd-lock" href="' + esc(c.href) + '" data-pop target="_blank" rel="noopener"><span class="etd-lt">' + LOCK + esc(c.title) + '</span><span class="ept-s">' + esc(c.line) + '</span><span class="etd-op">Opens with ' + esc(c.opens) + ' →</span></a>'; }).join('') + '</div></section>';
     return out;
   }
 
@@ -667,7 +667,28 @@
     }
   }
 
+  // Upgrade and "what opens this" links open in a pop-up window over the dashboard, so the dashboard stays where it is. (Checkout
+  // and programme pages can't be shown inside the page itself: checkout sites commonly refuse that.) On a phone, or if pop-ups are
+  // blocked, the link simply opens in a new tab. When the pop-up is closed the page checks again, in case something was bought.
+  function openPop(href) {
+    if (window.innerWidth < 700) return false;
+    var w = 520, h = Math.min(screen.availHeight - 80, 820), l = Math.round(window.screenX + (window.outerWidth - w) / 2), t = Math.round(window.screenY + Math.max(20, (window.outerHeight - h) / 2));
+    var win = null;
+    try { win = window.open(href, 'ep-upgrade', 'popup=yes,width=' + w + ',height=' + h + ',left=' + l + ',top=' + t + ',resizable=yes,scrollbars=yes'); } catch (e) {}
+    if (!win) return false;
+    try { win.opener = null; win.focus(); } catch (e) {}
+    var watch = setInterval(function () {
+      if (!win.closed) return;
+      clearInterval(watch);
+      var u = window.circleUser; // fresh sign-in, in case the membership changed
+      if (u && u.identityToken) { store('ep_today_session', ''); state.session = null; state.identity = u.identityToken; loadData().then(render); }
+    }, 800);
+    return true;
+  }
+
   function onClick(e) {
+    var pop = e.target.closest && e.target.closest('a[data-pop]');
+    if (pop && pageRoot && pageRoot.contains(pop) && !(e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button)) { if (openPop(pop.href)) e.preventDefault(); return; }
     var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick],[data-fmdel]');
     if (!t || !e.currentTarget.contains(t)) return;
     if (t.dataset.fmdel) { var em = t.dataset.email; api('/api/member/formation?email=' + encodeURIComponent(em) + '&id=' + encodeURIComponent(t.dataset.fmdel), { method: 'DELETE' }).then(function (f) { state.fm[em] = f; state.fmErr = ''; }).catch(function (er) { state.fmErr = er.message; }).then(render); return; }

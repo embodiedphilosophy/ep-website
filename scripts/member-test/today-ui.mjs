@@ -36,16 +36,17 @@ const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 
 async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '' } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
-  const p = await ctx.newPage(); const calls = [], urls = [];
+  const p = await ctx.newPage(); const calls = [], urls = [], frameSrcs = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
   await p.clock.install({ time: new Date('2026-10-17T10:30:00-04:00') });
   const body = data || await payload(tier);
-  await p.route('https://ss.example.test/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
+  await p.route('https://ss.example.test/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><nav id="top" style="height:56px;width:100%;display:flex;gap:8px"><span>Meditation</span><button>New post</button></nav><div style="display:flex"><aside id="side" style="width:250px;height:600px"><a aria-current="page">Today in School</a><button>New post</button></aside><div id="col" style="flex:1;height:2400px"><div id="banner" style="position:sticky;top:0;height:70px;display:flex;justify-content:space-between"><h1>Today in School</h1><span><button>New post</button><button>⋯</button></span></div><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div></div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
   await p.route('https://www.embodiedphilosophy.com/**', async r => {
     const u = new URL(r.request().url()), m = r.request().method(), path = u.pathname;
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
     const j = o => r.fulfill({ contentType: 'application/json', headers: CORS, body: JSON.stringify(o) });
     if (path === '/circle/today.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js });
+    if (path === '/today/panchanga') { frameSrcs.push(u.search); return r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body>stub<script>parent.postMessage({ep:"panchanga-height",h:777},"*")</script>' }); }
     if (path === '/circle/probe.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: probe });
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
     calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`); if (path === '/api/member/today') urls.push(u.search);
@@ -59,7 +60,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
   });
   await p.goto('https://ss.example.test/c/today' + query);
   await p.waitForSelector('.etd-h1', { timeout: 8000 });
-  return { p, ctx, calls, urls };
+  return { p, ctx, calls, urls, frameSrcs };
 }
 const text = (p, sel) => p.locator(sel).allInnerTexts();
 
@@ -161,6 +162,41 @@ console.log('timer and log: ok');
   await m.p.screenshot({ path: `${OUT}/today-milestone.png`, fullPage: true }); await m.ctx.close();
 }
 console.log('travelogue, milestone: ok');
+
+// ---- Circle's own space banner ("Today in School", New post) is hidden; the top bar and sidebar are left alone; it comes back elsewhere
+{
+  const { p, ctx } = await open('none');
+  await p.waitForFunction(() => document.querySelector('#banner').style.display === 'none');
+  assert.equal(await p.locator('#banner').isVisible(), false, 'banner hidden');
+  assert.equal(await p.locator('#top').isVisible(), true, 'top bar kept'); assert.equal(await p.locator('#top button').isVisible(), true);
+  assert.equal(await p.locator('#side').isVisible(), true, 'sidebar kept'); assert.equal(await p.locator('#side button').isVisible(), true);
+  // scrolled down (a sticky banner is then pinned at the top): still found
+  await ctx.close();
+  const s2 = await open('none'); await s2.p.evaluate(() => window.scrollTo(0, 500)); await s2.p.waitForTimeout(400);
+  assert.equal(await s2.p.locator('#banner').isVisible(), false);
+  // moving to another space gives the banner back
+  await s2.p.evaluate(() => history.pushState({}, '', '/c/announcements')); await s2.p.evaluate(() => document.body.appendChild(document.createElement('i'))); await s2.p.waitForTimeout(700);
+  assert.equal(await s2.p.locator('#banner').isVisible(), true, 'banner restored on another space');
+  await s2.ctx.close();
+}
+console.log('space banner: ok');
+
+// ---- the pañcāṅga card: the site's own panel framed in the page, sized by the panel; a chosen exact location goes with it
+{
+  const { p, ctx, frameSrcs } = await open('none');
+  await p.waitForSelector('.etd-pn');
+  assert.match(await p.locator('.etd-card h2').allInnerTexts().then(a => a.join('|')), /Today’s pañcāṅga/);
+  await p.waitForFunction(() => document.querySelector('.etd-pn').style.height === '777px');
+  assert.ok(frameSrcs.length >= 1 && !/lat=/.test(frameSrcs[0]), 'no location unless chosen');
+  await ctx.grantPermissions(['geolocation']); await ctx.setGeolocation({ latitude: 51.5074, longitude: -0.1278 });
+  await p.locator('[data-act=geo]').click(); await p.waitForSelector('[data-act=geo-off]'); await p.waitForTimeout(500);
+  assert.match(frameSrcs.at(-1), /lat=51\.5&lon=-0\.1&tz=America%2FNew_York/);
+  assert.equal(await p.locator('.etd-pn').evaluate(f => f.style.height), '777px', 'keeps its height when the page redraws');
+  // the same for every enrolment
+  for (const t of ['mentee', 'wisdom']) { const x = await open(t); assert.equal(await x.p.locator('.etd-pn').count(), 1, t); await x.ctx.close(); }
+  await ctx.close();
+}
+console.log('panchanga card: ok');
 
 // ---- Circle admins: the cohort sits below the student's page, never on top of it
 {

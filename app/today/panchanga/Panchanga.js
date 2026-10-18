@@ -76,6 +76,17 @@ export default function Panchanga() {
     return () => { clearInterval(id); document.removeEventListener('visibilitychange', vis); };
   }, [place]);
 
+  // Framed (inside Circle's Today page): tell the parent how tall the panel is, so the frame fits with no inner scrollbar
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.parent === window) return;
+    const card = document.querySelector('.pn-card'); if (!card) return;
+    const send = () => { try { window.parent.postMessage({ ep: 'panchanga-height', h: Math.ceil(card.getBoundingClientRect().height) }, '*'); } catch {} };
+    send();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(send) : null;
+    ro?.observe(card);
+    return () => ro?.disconnect();
+  }, [day]);
+
   const choose = useCallback(e => {
     const v = e.target.value;
     setGeoMsg('');

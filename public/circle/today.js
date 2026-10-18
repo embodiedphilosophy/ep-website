@@ -33,7 +33,7 @@
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (open to every member)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
-  var state = { geo: null, geoBusy: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
+  var state = { pnH: 980, geo: null, geoBusy: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
     none: 'Your practice · Today', meditation: 'Meditation Pass · Today', wisdom: 'Wisdom School · Today',
@@ -367,6 +367,7 @@
       '.etd-lab{display:flex;flex-direction:column;gap:6px;color:#C8BEAC}.etd-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}',
       '.etd-chip{background:transparent;border:1px solid #5B6E64;color:#F4EDE0;border-radius:999px;min-height:40px;padding:0 12px;cursor:pointer}.etd-chip[aria-pressed="true"]{background:#F4EDE0;color:#16140F}',
       '.etd-err{color:#F0B7A5}',
+      '.etd-pn{display:block;width:100%;max-width:560px;margin:0 auto;border:0;background:transparent}',
       '.etd-geo{background:transparent;border:0;padding:0 2px;min-height:44px;font:inherit;font-size:12.5px;color:#A5432A;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:right}',
       '.etd .ept-x{width:44px;height:44px}.etd .ept-q{min-height:44px}.etd .ept-why,.etd-rail>.etd-card>a,.etd-wp,.etd-ev a{min-height:44px;display:inline-flex;align-items:center}.etd-ev a{min-height:44px;margin:-8px 0}',
       '.etd :focus-visible,.etd-timer :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}',
@@ -452,6 +453,23 @@
     return out + '</div></section>';
   }
 
+  // Today's pañcāṅga: the five limbs of the day, from the site's own panel (/today/panchanga) framed in a card. It is the same
+  // for everyone (it depends on where you are, not on what you've joined). The panel tells us its height, so no inner scrollbar.
+  function panchangaSrc() {
+    return SITE + '/today/panchanga' + (state.geo ? '?lat=' + state.geo.lat + '&lon=' + state.geo.lon + '&tz=' + encodeURIComponent(zone()) + '&place=' + encodeURIComponent('your location') : '');
+  }
+  function panchangaHtml() {
+    return '<section class="ept-card etd-card" aria-labelledby="etd-pnc"><div class="ept-ch"><h2 id="etd-pnc" class="ept-h2">Today’s pañcāṅga</h2><span class="ept-l">The day’s five limbs</span></div>' +
+      '<iframe class="etd-pn" title="Today’s pañcāṅga" src="' + esc(panchangaSrc()) + '" loading="lazy" scrolling="no" style="height:' + state.pnH + 'px"></iframe></section>';
+  }
+  window.addEventListener('message', function (e) {
+    if (e.origin !== SITE || !e.data || e.data.ep !== 'panchanga-height') return;
+    var h = Math.max(300, Math.min(2000, Math.ceil(Number(e.data.h) || 0)));
+    if (!h) return;
+    state.pnH = h;
+    var f = pageRoot && pageRoot.querySelector('.etd-pn'); if (f) f.style.height = h + 'px';
+  });
+
   function moonGlyph(d) {
     var bg = d.lit <= 2 ? '#1E1A14' : d.lit >= 98 ? '#FBF6EE' : d.waxing ? 'linear-gradient(90deg,#1E1A14 ' + (100 - d.lit) + '%,#FBF6EE ' + (100 - d.lit) + '%)' : 'linear-gradient(90deg,#FBF6EE ' + d.lit + '%,#1E1A14 ' + d.lit + '%)';
     return '<span class="etd-moon" style="background:' + bg + '" role="img" aria-label="' + esc(d.phase) + '" title="' + esc(d.phase) + '"></span>';
@@ -533,7 +551,7 @@
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
     if (!d) return out + '<p class="' + (state.failed ? 'ept-err' : 'ept-s') + '" role="status">' + esc(state.failed ? 'We couldn’t load Today just now. Please refresh the page.' : 'Loading…') + '</p>';
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
-      heroHtml() + teachingHtml() + moonHtml() + enrolHtml() + '</div>' + railHtml() + '</div>';
+      heroHtml() + teachingHtml() + moonHtml() + panchangaHtml() + enrolHtml() + '</div>' + railHtml() + '</div>';
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
     if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + cohortHtml() + '</div>';
     return out;
@@ -731,9 +749,38 @@
     o.querySelector('.ept108-p').focus();
   }
 
+  // Circle puts the space's own banner ("Today in School", member avatars, New post) above the page. Today is a dashboard, so
+  // it goes. Found by its "New post" button (or its title), then the largest block around it that sits in the content column
+  // and doesn't contain our page. Anything wider or taller than a banner (the top bar, the sidebar) is left alone. Put back
+  // when the member moves to another space, since Circle reuses the banner there.
+  var hiddenBanners = [];
+  function banner(el, box) {
+    var n = el;
+    while (n.parentElement && n.parentElement !== document.body && !n.parentElement.contains(pageRoot)) n = n.parentElement;
+    if (!n || n.contains(pageRoot) || n === document.body) return null;
+    var r = n.getBoundingClientRect(), b = box.getBoundingClientRect();
+    // a banner-sized block in the content column (the top bar is wider, the sidebar is taller and further left); position on screen is ignored, as the banner may be sticky
+    if (r.height < 20 || r.height > 220 || r.width > b.width + 120 || r.width < 200 || r.left < b.left - 120 || r.right > b.right + 120) return null;
+    return n;
+  }
+  function hideBanner() {
+    if (!pageRoot || !document.body.contains(pageRoot)) return;
+    var box = pageRoot.parentElement; if (!box) return;
+    var title = String(document.title || '').split(/\s[·|–—-]\s/)[0].trim();
+    var cands = document.querySelectorAll('button, a, h1, h2');
+    for (var i = 0; i < cands.length; i++) {
+      var el = cands[i], t = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (pageRoot.contains(el) || !(t === 'New post' || (title && t === title && /^H[12]$/.test(el.tagName)))) continue;
+      var n = banner(el, box);
+      if (n && n.style.display !== 'none') { n.style.display = 'none'; hiddenBanners.push(n); }
+    }
+  }
+  function restoreBanners() { while (hiddenBanners.length) { var n = hiddenBanners.pop(); n.style.display = ''; } }
+
   function mount() {
     showMilestone();
     mountPage();
+    if (PAGE.test(location.pathname) && pageRoot && document.body.contains(pageRoot)) hideBanner(); else restoreBanners();
   }
 
   // Every signed-in member gets the Today page. Admins preview a membership with ?as=<tier> (and ?as=ss_season&season=fall

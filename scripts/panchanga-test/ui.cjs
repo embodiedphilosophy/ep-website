@@ -102,10 +102,14 @@ const DELHI = '?date=2026-10-18&lat=28.61&lon=77.21&tz=Asia%2FKolkata&place=New%
   const host = async origin => {
     const ctx = await b.newContext(); const p = await ctx.newPage();
     await p.route('https://panchanga.test/**', async r => { const u = new URL(r.request().url()); r.fulfill({ response: await r.fetch({ url: BASE + u.pathname + u.search }) }).catch(() => {}); });
-    await p.route(origin + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: `<!doctype html><body><iframe id=f src="https://panchanga.test/today/panchanga${DELHI}" width="420" height="900"></iframe>` }));
+    await p.route(origin + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: `<!doctype html><body><script>window.__m=[];addEventListener('message',e=>__m.push(e.data))</script><iframe id=f src="https://panchanga.test/today/panchanga${DELHI}" width="420" height="900"></iframe>` }));
     await p.goto(origin + '/c/today', { waitUntil: 'domcontentloaded' });
     const fr = p.frames().find(f => f !== p.mainFrame());
     let ok = 0; try { await fr.waitForSelector('.pn-name', { timeout: 9000 }); ok = await fr.locator('.pn-name').count(); } catch { ok = 0; }
+    if (ok && origin.includes('ss.embodiedphilosophy.com')) {
+      const msgs = await p.evaluate(() => window.__m.filter(m => m && m.ep === 'panchanga-height').map(m => m.h));
+      assert.ok(msgs.length && msgs.at(-1) > 500 && msgs.at(-1) < 1500, 'the panel tells its parent its height: ' + msgs);
+    }
     if (ok && origin.includes('ss.embodiedphilosophy.com')) await p.screenshot({ path: `${OUT}/panchanga-in-circle.png`, timeout: 8000 }).catch(() => {}); // best effort: web fonts may be unreachable
     await ctx.close(); return ok;
   };

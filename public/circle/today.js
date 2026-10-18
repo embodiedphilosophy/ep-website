@@ -9,22 +9,24 @@
    and portfolio pages mentees chose to share) at the top. The Practice Portfolio itself is /c/portfolio. */
 (function () {
   if (window.__epToday) return; window.__epToday = true;
-  // The CE credits page (/c/ce-credits) has its own script; load it here so Circle needs no extra snippet.
-  if (!window.__epCe) { var ce = document.createElement('script'); ce.src = 'https://www.embodiedphilosophy.com/circle/ce.js'; ce.defer = true; document.head.appendChild(ce); }
-  // The Practice Portfolio (/c/portfolio) likewise
-  if (!window.__epPortfolio) { var pf = document.createElement('script'); pf.src = 'https://www.embodiedphilosophy.com/circle/portfolio.js'; pf.defer = true; document.head.appendChild(pf); }
-  // …and the Schedule (/c/schedule)
-  if (!window.__epSchedule) { var sc = document.createElement('script'); sc.src = 'https://www.embodiedphilosophy.com/circle/schedule.js'; sc.defer = true; document.head.appendChild(sc); }
-  // …and "This week" for Sahṛdaya Upāya mentees (/c/this-week; does nothing for anyone else)
-  // …and a troubleshooting helper that only shows with ?epdebug=1 (copies the page's structure for the restyle)
-  if (!window.__epProbe) { var pr = document.createElement('script'); pr.src = 'https://www.embodiedphilosophy.com/circle/probe.js'; pr.defer = true; document.head.appendChild(pr); }
-  // …and the chat restyle for Sādhana School students and mentees (does nothing for anyone else)
-  if (!window.__epChatSkin) { var cs = document.createElement('script'); cs.src = 'https://www.embodiedphilosophy.com/circle/chat-skin.js'; cs.defer = true; document.head.appendChild(cs); }
-  // …and "My Practice", the Meditation Pass homepage (/c/my-practice; does nothing for anyone else)
-  if (!window.__epMyPractice) { var mp = document.createElement('script'); mp.src = 'https://www.embodiedphilosophy.com/circle/my-practice.js'; mp.defer = true; document.head.appendChild(mp); }
-  // …and the Library by department (/c/library)
-  if (!window.__epLibrary) { var lb = document.createElement('script'); lb.src = 'https://www.embodiedphilosophy.com/circle/library.js'; lb.defer = true; document.head.appendChild(lb); }
-  if (!window.__epThisWeek) { var tw = document.createElement('script'); tw.src = 'https://www.embodiedphilosophy.com/circle/this-week.js'; tw.defer = true; document.head.appendChild(tw); }
+  // The other Circle pages have their own scripts (CE credits, Portfolio, Schedule, My Practice, Library, This week). They used to
+  // all load on every page, in competition with this one. Now each loads when its page is opened, and is fetched quietly in the
+  // background once Today is showing, so moving between pages stays instant. The chat restyle works on every page and loads at once.
+  var BASE = 'https://www.embodiedphilosophy.com/circle/';
+  var LAZY = [
+    [/^\/c\/ce-credits\/?$/, 'ce'], [/^\/c\/portfolio\/?$/, 'portfolio'], [/^\/c\/schedule\/?$/, 'schedule'],
+    [/^\/c\/my-practice(-[a-z0-9]{3,10})?\/?$/, 'my-practice'], [/^\/c\/library(-[a-z0-9]{3,10})?\/?$/, 'library'], [/^\/c\/this-week(-[a-z0-9]{3,10})?\/?$/, 'this-week']
+  ];
+  var added = {};
+  function addScript(name) { if (added[name]) return; added[name] = true; var el = document.createElement('script'); el.src = BASE + name + '.js'; el.defer = true; document.head.appendChild(el); }
+  function loadFor(path) { for (var i = 0; i < LAZY.length; i++) if (LAZY[i][0].test(path)) addScript(LAZY[i][1]); }
+  function prefetchRest() {
+    LAZY.forEach(function (x) { if (added[x[1]]) return; var l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'script'; l.href = BASE + x[1] + '.js'; document.head.appendChild(l); });
+    setTimeout(function () { addScript('probe'); }, 1500); // the "Copy page structure" helper (shows only with ?epdebug=1 or Ctrl+Option+P)
+  }
+  if (!window.__epChatSkin) { var cs = document.createElement('script'); cs.src = BASE + 'chat-skin.js'; cs.defer = true; document.head.appendChild(cs); }
+  loadFor(location.pathname);
+  try { if (/[?&]epdebug=1/.test(location.search) || sessionStorage.getItem('ep_probe') === '1') addScript('probe'); } catch (e) {} // the helper at once when asked for
 
   var API = 'https://www.embodiedphilosophy.com';
   var SITE = 'https://www.embodiedphilosophy.com';
@@ -33,7 +35,7 @@
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (open to every member)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
-  var state = { pnH: 980, geo: null, geoBusy: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
+  var state = { pnH: 520, pnReady: false, geo: null, geoBusy: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
     none: 'Your practice · Today', meditation: 'Meditation Pass · Today', wisdom: 'Wisdom School · Today',
@@ -90,6 +92,7 @@
     opts = opts || {};
     var headers = { 'Content-Type': 'application/json' };
     if (state.session) headers.Authorization = 'Bearer ' + state.session;
+    else if (opts.identity && state.identity) headers['X-Circle-Identity'] = state.identity; // first visit: the data call signs us in
     return fetch(API + path, { method: opts.method || 'GET', headers: headers, body: opts.body ? JSON.stringify(opts.body) : undefined })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) { var e = new Error(j.error || 'Something went wrong'); e.status = r.status; throw e; } return j; }); });
   }
@@ -98,7 +101,7 @@
     var u = window.circleUser;
     if (u && u.signedIn !== false && u.identityToken) return Promise.resolve(u);
     if (tries <= 0) return Promise.reject(new Error('not signed in'));
-    return new Promise(function (res) { setTimeout(res, 400); }).then(function () { return waitForUser(tries - 1); });
+    return new Promise(function (res) { setTimeout(res, 100); }).then(function () { return waitForUser(tries - 1); });
   }
 
   // Admin preview of an offer, worked out by the server: ?as=<tier>&season=fall,winter&credit=79&day=2027-02-03
@@ -111,13 +114,18 @@
     var pv = previewParams();
     var saved = pv ? null : store('ep_today_session');
     if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now()) { state.session = s.session; state.tier = s.tier; state.seasons = s.seasons || []; state.offer = s.offer || null; state.admin = !!s.admin; state.first = s.first; return Promise.resolve(); } } catch (e) {} }
-    return waitForUser(25).then(function (u) {
-      return api('/api/member/session', { method: 'POST', body: { identityToken: u.identityToken, preview: pv || undefined } });
+    return waitForUser(100).then(function (u) {
+      if (!pv) { state.identity = u.identityToken; return null; } // the data call below signs us in (one round trip, not two)
+      return api('/api/member/session', { method: 'POST', body: { identityToken: u.identityToken, preview: pv } });
     }).then(function (r) {
-      state.session = r.session; state.tier = r.tier && r.tier.tier; state.seasons = (r.tier && r.tier.seasons) || []; state.offer = r.offer || null; state.first = r.firstName || ''; state.admin = !!r.admin;
-      state.preview = !!pv;
-      if (!pv) store('ep_today_session', JSON.stringify({ session: r.session, tier: state.tier, seasons: state.seasons, offer: state.offer, admin: state.admin, first: state.first, until: Date.now() + 10 * 60 * 60 * 1000 }));
+      if (!r) return;
+      applySignin(r); state.preview = true;
     });
+  }
+  // The session, tier and offer from /api/member/session or from the signin block of /api/member/today
+  function applySignin(r) {
+    state.session = r.session; state.tier = r.tier && r.tier.tier; state.seasons = (r.tier && r.tier.seasons) || []; state.offer = r.offer || null; state.first = r.firstName || ''; state.admin = !!r.admin; state.identity = null;
+    if (!state.preview) store('ep_today_session', JSON.stringify({ session: r.session, tier: state.tier, seasons: state.seasons, offer: state.offer, admin: state.admin, first: state.first, until: Date.now() + 10 * 60 * 60 * 1000 }));
   }
 
   function asParam() { var a = (location.search.match(/[?&]as=([a-z_]+)/) || [])[1]; return a && isAdmin() && TIERS.indexOf(a) >= 0 ? '&as=' + a : ''; }
@@ -141,7 +149,11 @@
   function zone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } }
   function loadData() {
     return Promise.all([
-      api('/api/member/today?today=' + localToday() + '&tz=' + encodeURIComponent(zone()) + geoParam() + asParam()).then(function (d) { state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet'; }).catch(function (e) { state.error = e.message; state.failed = true; }),
+      api('/api/member/today?today=' + localToday() + '&tz=' + encodeURIComponent(zone()) + geoParam() + asParam(), { identity: true }).then(function (d) {
+        if (d.signin) applySignin(d.signin);
+        if (d.tier) state.tier = d.tier === 'course' ? 'none' : d.tier; // the tier the server worked the page out for (an admin's ?as= preview included)
+        state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet';
+      }).catch(function (e) { state.error = e.message; state.failed = true; if (e.status === 401) store('ep_today_session', ''); }),
       mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
       mentorView() ? api('/api/member/portfolio?shared=1&today=' + localToday()).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
     ]);
@@ -367,6 +379,7 @@
       '.etd-lab{display:flex;flex-direction:column;gap:6px;color:#C8BEAC}.etd-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}',
       '.etd-chip{background:transparent;border:1px solid #5B6E64;color:#F4EDE0;border-radius:999px;min-height:40px;padding:0 12px;cursor:pointer}.etd-chip[aria-pressed="true"]{background:#F4EDE0;color:#16140F}',
       '.etd-err{color:#F0B7A5}',
+      '.etd-sk{display:block;background:#EADDC6;border-radius:6px}.etd-sk-b{border-radius:8px;background:#EFE4D0}',
       '.etd-pnc{padding:0;overflow:hidden;gap:0}.etd-pnh{display:flex;flex-direction:column;gap:2px;padding:16px 18px 12px}',
       '.etd-pn{display:block;width:100%;border:0;background:transparent}',
       '.etd-geo{background:transparent;border:0;padding:0 2px;min-height:44px;font:inherit;font-size:12.5px;color:#A5432A;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:right}',
@@ -461,14 +474,14 @@
   }
   function panchangaHtml() {
     return '<section class="ept-card etd-card etd-pnc" aria-labelledby="etd-pnc"><div class="etd-pnh"><h2 id="etd-pnc" class="ept-h2">Today’s pañcāṅga</h2><span class="ept-l">The day’s five limbs</span></div>' +
-      '<iframe class="etd-pn" title="Today’s pañcāṅga" src="' + esc(panchangaSrc()) + '" loading="lazy" scrolling="no" style="height:' + state.pnH + 'px"></iframe></section>';
+      '<iframe class="etd-pn' + (state.pnReady ? '' : ' etd-sk-b') + '" title="Today’s pañcāṅga" src="' + esc(panchangaSrc()) + '" loading="lazy" scrolling="no" style="height:' + state.pnH + 'px"></iframe></section>';
   }
   window.addEventListener('message', function (e) {
     if (e.origin !== SITE || !e.data || e.data.ep !== 'panchanga-height') return;
     var h = Math.max(300, Math.min(2000, Math.ceil(Number(e.data.h) || 0)));
     if (!h) return;
-    state.pnH = h;
-    var f = pageRoot && pageRoot.querySelector('.etd-pn'); if (f) f.style.height = h + 'px';
+    state.pnH = h; state.pnReady = true;
+    var f = pageRoot && pageRoot.querySelector('.etd-pn'); if (f) { f.style.height = h + 'px'; f.className = 'etd-pn'; }
   });
 
   function moonGlyph(d) {
@@ -545,13 +558,22 @@
     return out + '</aside>';
   }
 
+  // Shown the moment the page opens, in the shape of the real one, so nothing of Circle's own page shows through while the data arrives
+  function skeletonHtml() {
+    var bar = function (w, h) { return '<span class="etd-sk" style="width:' + w + ';height:' + h + 'px"></span>'; };
+    return '<div class="etd-top" role="status" aria-label="Loading Today">' + bar('160px', 12) + bar('min(420px,80%)', 44) + bar('min(300px,60%)', 16) + '</div>' +
+      '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
+      '<div class="etd-sk etd-sk-b" style="height:300px"></div><div class="etd-sk etd-sk-b" style="height:210px"></div><div class="etd-sk etd-sk-b" style="height:260px"></div></div>' +
+      '<aside class="etd-rail"><div class="etd-sk etd-sk-b" style="height:220px"></div></aside></div>';
+  }
+
   function pageHtml() {
     var d = state.data, first = state.first || (d && d.firstName) || 'friend';
     var tithi = d && d.moon && d.moon.tithi ? d.moon.tithi.text : '';
     var date = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
     var out = '<header class="etd-top"><span class="ept-l ept-red">' + esc(eyebrow()) + '</span><h1 class="etd-h1">Good ' + greet() + ', <em>' + esc(first) + '</em>.</h1>' +
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
-    if (!d) return out + '<p class="' + (state.failed ? 'ept-err' : 'ept-s') + '" role="status">' + esc(state.failed ? 'We couldn’t load Today just now. Please refresh the page.' : 'Loading…') + '</p>';
+    if (!d) return state.failed ? out + '<p class="ept-err" role="status">We couldn’t load Today just now. Please refresh the page.</p>' : skeletonHtml();
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
       heroHtml() + teachingHtml() + moonHtml() + enrolHtml() + '</div>' + railHtml() + '</div>';
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
@@ -699,9 +721,7 @@
 
   function pageContainer() {
     // Circle's content area for a space: the "[container-type:inline-size] bg-secondary" wrapper
-    var all = document.querySelectorAll('div');
-    for (var i = 0; i < all.length; i++) { var c = String(all[i].className || ''); if (c.indexOf('container-type:inline-size') >= 0 && c.indexOf('bg-secondary') >= 0) return all[i]; }
-    return null;
+    return document.querySelector('div[class*="container-type:inline-size"][class*="bg-secondary"]');
   }
   function mountPage() {
     if (!PAGE.test(location.pathname)) return;
@@ -789,29 +809,52 @@
   // a Fall-only student).
   function isAdmin() { var u = window.circleUser || {}; return !!u.isAdmin; }
 
-  signIn().then(function () {
-    var as = (location.search.match(/[?&]as=([a-z_]+)/) || [])[1];
-    if (as && isAdmin() && TIERS.indexOf(as) >= 0) {
-      state.tier = as;
-      var se = (location.search.match(/[?&]season=([a-z,]+)/) || [])[1];
-      state.seasons = as === 'ss_season' ? (se ? se.split(',') : ['fall']) : [];
-    }
-    if (state.tier === 'course') state.tier = 'none';
-    var saved = parseInt(local('ep_timer_len'), 10); if ([10, 20, 30, 45].indexOf(saved) >= 0) state.len = saved;
-    css();
-    // Only the Today page needs data; elsewhere in Circle this script stays quiet (the other pages have their own scripts)
-    if (!PAGE.test(location.pathname)) {
-      new MutationObserver(function () { if (PAGE.test(location.pathname) && !state.loaded) { state.loaded = true; loadData().then(mount); } }).observe(document.body, { childList: true, subtree: true });
-      return;
-    }
-    state.loaded = true;
-    var again = local('ep_geo') === '1' && navigator.geolocation && !!navigator.geolocation.getCurrentPosition;
-    return loadData().then(function () {
-      mount();
+  // ---- start-up ----
+  // The moment the Today address opens, Circle's own page is hidden by CSS and a placeholder of the real layout takes its
+  // place; sign-in and data follow in a single call. Elsewhere in Circle this script does nothing but watch for the address.
+  var beginP = null, lastPath = null, mutT = null;
+  function onToday() { return PAGE.test(location.pathname); }
+  function earlyStyle(on) {
+    var el = document.getElementById('ept-early');
+    if (on && !el) { el = document.createElement('style'); el.id = 'ept-early'; el.textContent = 'div[class*="container-type:inline-size"][class*="bg-secondary"] > :not(.ept-page){display:none!important}'; document.head.appendChild(el); }
+    else if (!on && el) el.remove();
+  }
+  // Signed out or unavailable: give Circle's own page back
+  function abandon() {
+    earlyStyle(false);
+    if (pageRoot) { var box = pageRoot.parentElement; pageRoot.remove(); if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = ''; pageRoot = null; }
+  }
+  function begin() {
+    if (beginP) return beginP;
+    var giveUp = setTimeout(function () { if (!state.data && !state.failed) { state.failed = true; render(); } }, 20000);
+    beginP = signIn().then(function () { return loadData(); }).then(function () {
+      clearTimeout(giveUp);
+      var as = (location.search.match(/[?&]as=([a-z_]+)/) || [])[1];
+      if (as === 'ss_season' && isAdmin()) { var se = (location.search.match(/[?&]season=([a-z,]+)/) || [])[1]; state.seasons = se ? se.split(',') : ['fall']; }
+      var again = local('ep_geo') === '1' && navigator.geolocation && !!navigator.geolocation.getCurrentPosition;
+      render(); mount();
       if (again) askPlace(true); // they said yes before: the browser answers quietly, or the page stays on the time zone
-      // Circle is a single-page app: re-check when the page changes
-      var t = null;
-      new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; mount(); }, 300); }).observe(document.body, { childList: true, subtree: true });
-    });
-  }).catch(function () { /* signed out or not available: show nothing */ });
+      setTimeout(prefetchRest, 800);
+    }).catch(function () { clearTimeout(giveUp); abandon(); /* signed out or not available: show nothing */ });
+    return beginP;
+  }
+  // Circle's page is only taken over once Circle says the member is signed in (a signed-out visitor keeps Circle's own page)
+  function whenUser(go) {
+    var n = 0;
+    (function look() { var u = window.circleUser; if (u && u.signedIn !== false && u.identityToken) return go(); if (++n <= 50) setTimeout(look, 100); })();
+  }
+  function syncPath() {
+    var p = location.pathname; if (p === lastPath) return; lastPath = p;
+    loadFor(p);
+    if (onToday()) whenUser(function () { if (onToday()) { earlyStyle(true); mountPage(); begin(); } }); else { abandon(); restoreBanners(); } // leaving Today: Circle's own content and banner come back
+  }
+  var savedLen = parseInt(local('ep_timer_len'), 10); if ([10, 20, 30, 45].indexOf(savedLen) >= 0) state.len = savedLen;
+  css();
+  syncPath();
+  // Circle is a single-page app: react to the address changing straight away, tidy up a moment later
+  new MutationObserver(function () {
+    syncPath();
+    if (onToday() && !(pageRoot && document.body.contains(pageRoot))) mountPage();
+    if (mutT) return; mutT = setTimeout(function () { mutT = null; if (state.data || !onToday()) mount(); }, 300);
+  }).observe(document.documentElement, { childList: true, subtree: true });
 })();

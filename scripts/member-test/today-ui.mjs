@@ -35,9 +35,9 @@ const probe = fs.readFileSync(new URL('../../public/circle/probe.js', import.met
 const b = await chromium.launch(); const errs = [];
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
 
-async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '' } = {}) {
+async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '', delay = 0, wait = true } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
-  const p = await ctx.newPage(); const calls = [], urls = [], frameSrcs = [];
+  const p = await ctx.newPage(); const calls = [], urls = [], frameSrcs = [], todayHeaders = [], scripts = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
   await p.clock.install({ time: new Date('2026-10-17T10:30:00-04:00') });
   const body = data || await payload(tier);
@@ -49,11 +49,12 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (path === '/circle/today.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js });
     if (process.env.REAL_PANEL && (path.startsWith('/today/panchanga') || path.startsWith('/_next') || path.startsWith('/brand') || path.startsWith('/kalighat'))) return r.fulfill({ response: await r.fetch({ url: process.env.REAL_PANEL + path + u.search }) }).catch(() => {}); // look-only: the real panel from a running server
     if (path === '/today/panchanga') { frameSrcs.push(u.search); return r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body>stub<script>parent.postMessage({ep:"panchanga-height",h:777},"*")</script>' }); }
+    if (path.startsWith('/circle/') && r.request().resourceType() === 'script') scripts.push(path.slice(8)); // real loads only (not quiet prefetches)
     if (path === '/circle/probe.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: probe });
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
     calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`); if (path === '/api/member/today') urls.push(u.search);
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
-    if (path === '/api/member/today') return j(body);
+    if (path === '/api/member/today') { todayHeaders.push(r.request().headers()); if (delay) await new Promise(x => setTimeout(x, delay)); return j(r.request().headers()['x-circle-identity'] ? { ...body, signin: { session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null, admin } } : body); }
     if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: [], logged: post.minutes }); }
     if (path === '/api/member/cohort') return j({ today: TODAY, rows: [{ name: 'Carolyn', email: 'c@example.com', streak: 0, weekCount: 0, days8w: 0, minutes8w: 0, last: null, daysSince: null, grid: [] }], attention: [{ email: 'c@example.com', name: 'Carolyn', why: 'Hasn’t logged any practice yet' }] });
     if (path === '/api/member/portfolio') return j({ pages: [] });
@@ -61,8 +62,8 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     return j({});
   });
   await p.goto(HOST + '/c/today' + query);
-  await p.waitForSelector('.etd-h1', { timeout: 8000 });
-  return { p, ctx, calls, urls, frameSrcs };
+  if (wait) await p.waitForSelector('.etd-h1', { timeout: 8000 });
+  return { p, ctx, calls, urls, frameSrcs, todayHeaders, scripts };
 }
 const text = (p, sel) => p.locator(sel).allInnerTexts();
 
@@ -164,6 +165,40 @@ console.log('timer and log: ok');
   await m.p.screenshot({ path: `${OUT}/today-milestone.png`, fullPage: true }); await m.ctx.close();
 }
 console.log('travelogue, milestone: ok');
+
+// ---- speed: Circle's own page never shows through; one round trip signs in and loads; only the scripts that are needed load
+{
+  const { p, ctx, calls, todayHeaders, scripts } = await open('none', { delay: 1500, wait: false });
+  await p.waitForSelector('.etd-sk', { timeout: 4000 });                    // the placeholder is up long before the data
+  assert.equal(await p.getByText('Circle’s own page').isVisible(), false, 'Circle’s page is never visible while loading');
+  assert.equal(await p.locator('.etd-h1').count(), 0, 'still waiting for the data');
+  await p.waitForSelector('.etd-h1', { timeout: 6000 });
+  assert.equal(await p.locator('.etd-sk').count(), 0, 'placeholder replaced');
+  assert.equal(await p.getByText('Circle’s own page').isVisible(), false);
+  assert.ok(!calls.some(c => c.includes('/api/member/session')), 'no separate sign-in call');
+  assert.equal(calls.filter(c => c.includes('/api/member/today')).length, 1, 'one call for sign-in and data');
+  assert.equal(todayHeaders[0]['x-circle-identity'], 't', 'the first call carries Circle’s identity token'); assert.ok(!todayHeaders[0].authorization);
+  assert.equal(await p.evaluate(() => !!JSON.parse(sessionStorage.getItem('ep_today_session') || 'null')?.session), true, 'session kept for the next visit');
+  await p.waitForTimeout(1500);
+  assert.ok(!scripts.some(x => /^(ce|portfolio|schedule|my-practice|library|this-week)\.js$/.test(x)), 'other pages’ scripts not loaded on Today: ' + scripts);
+  assert.ok(scripts.includes('chat-skin.js'), 'chat restyle still loads');
+  // a reload re-uses the saved session: Bearer, no identity token needed
+  await p.reload(); await p.waitForSelector('.etd-h1', { timeout: 8000 });
+  assert.match(todayHeaders.at(-1).authorization || '', /^Bearer s$/); assert.ok(!todayHeaders.at(-1)['x-circle-identity']);
+  // moving to another Circle page loads that page's script, and gives Circle's page back
+  await p.evaluate(() => history.pushState({}, '', '/c/schedule')); await p.evaluate(() => document.body.appendChild(document.createElement('i'))); await p.waitForTimeout(500);
+  assert.ok(scripts.includes('schedule.js'), 'schedule.js loads when that page opens');
+  assert.equal(await p.getByText('Circle’s own page').isVisible(), true, 'Circle’s page back off Today');
+  await ctx.close();
+  // a signed-out visitor is not left with a blank page
+  const out = await b.newContext({ viewport: { width: 1000, height: 700 } }); const po = await out.newPage();
+  await po.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body><div class="[container-type:inline-size] bg-secondary"><div>Circle sign-in page</div></div><script>window.circleUser={signedIn:false}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
+  await po.route('https://www.embodiedphilosophy.com/**', r => r.request().url().endsWith('/circle/today.js') ? r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js }) : r.fulfill({ contentType: 'text/javascript', body: '' }));
+  await po.goto(HOST + '/c/today'); await po.waitForTimeout(500);
+  assert.equal(await po.getByText('Circle sign-in page').isVisible(), true, 'while waiting, Circle’s page is hidden or shown, never lost');
+  await out.close();
+}
+console.log('speed: ok');
 
 // ---- Circle's own space banner ("Today in School", New post) is hidden; the top bar and sidebar are left alone; it comes back elsewhere
 {

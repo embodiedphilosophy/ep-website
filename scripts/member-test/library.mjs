@@ -76,3 +76,12 @@ console.log('library: ok');
   assert.deepEqual(L.applyTopic(raw[3], idx, '99'), raw[3], 'no topic row: unchanged');
   console.log('library topics: ok');
 }
+{
+  // A season (posts space) or Navarātri (events space) joins the Library only when the Library Topics tab files it
+  const sp = [{ id: 21, name: 'Fall · The Heart of Recognition', space_type: 'basic', space_group_name: 'Sādhana School' }, { id: 22, name: 'Kula chat', space_type: 'chat' }];
+  const listed = s => s.id === 21;
+  const r = L.circleRows(sp, [], listed);
+  if (r.length !== 1 || r[0].title !== 'Fall · The Heart of Recognition' || r[0].space_id !== '21') throw new Error('filed non-course space');
+  if (L.circleRows(sp, []).length !== 0) throw new Error('unfiled non-course spaces stay out');
+  console.log('library filed spaces: ok');
+}

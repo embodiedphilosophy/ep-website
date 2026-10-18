@@ -8,7 +8,11 @@
   if (window.__epSchedule) return; window.__epSchedule = true;
 
   var API = 'https://www.embodiedphilosophy.com';
-  var PAGE = /^\/c\/schedule\/?$/;
+  var PAGE = /^\/c\/schedule(-[a-z0-9]{3,10})?\/?$/;
+  var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
+  var ON = 'eps-on'; // class on <html> while the Schedule is showing: hides Circle's own page (header strip included) at once
+  var CKEY = function () { return 'ep_schedule_data_' + ((window.circleUser && window.circleUser.email) || '') + '_' + localToday(); };
+  function cached() { try { return JSON.parse(store(CKEY()) || 'null'); } catch (e) { return null; } }
   var EYEBROW = { ss_season: 'Sādhana School · The Path of Recognition', ss_year: 'Sādhana School · The Path of Recognition', mentee: 'Sahṛdaya Upāya · The Path of Recognition', wisdom: 'Wisdom School', wisdom_plus: 'Wisdom School Plus', meditation: 'Meditation Pass' };
   var RHYTHM = {
     ss: 'Wednesdays at 9:00 ET for two and a half hours, eight sessions a season, and a weekend immersion each month.',
@@ -47,7 +51,7 @@
     });
   }
   function load() {
-    return api('/api/member/schedule?today=' + localToday()).then(function (d) { state.data = d; state.error = ''; })
+    return api('/api/member/schedule?today=' + localToday()).then(function (d) { state.data = d; state.error = ''; store(CKEY(), JSON.stringify(d)); })
       .catch(function (e) { state.error = e.status === 401 ? 'Please refresh the page to see your schedule.' : e.message; if (e.status === 401) store('ep_today_session', ''); });
   }
 
@@ -56,6 +60,10 @@
     if (!document.querySelector('link[href*="Cormorant+Garamond"]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap'; document.head.appendChild(l); }
     var s = document.createElement('style'); s.id = 'eps-css';
     s.textContent = [
+      // While on the Schedule, Circle's own page (its "Events Schedule / New post" strip and posts) never shows, not even while loading
+      'html.' + ON + ' ' + HOST + ' > :not(.eps){display:none!important}',
+      '.eps-sk{height:92px;border-radius:12px;background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:epssh 1.4s ease-in-out infinite}',
+      '@keyframes epssh{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.eps-sk{animation:none}}',
       '.eps{font-family:inherit;color:#1E1A14;max-width:1120px;margin:0 auto;padding:28px 20px 64px;display:flex;flex-direction:column;gap:20px;line-height:1.5}',
       '.eps *{box-sizing:border-box}',
       '.eps a{color:#A5432A;text-underline-offset:3px}',
@@ -146,7 +154,7 @@
   function html() {
     if (state.error && !state.data) return '<div class="eps-top"><div><h1 class="eps-h1">Schedule</h1><p class="eps-note">' + esc(state.error) + '</p></div></div>';
     var d = state.data;
-    if (!d) return '<p class="eps-note">Opening your schedule…</p>';
+    if (!d) return '<div class="eps-top"><div><h1 class="eps-h1">Schedule</h1></div></div><div class="eps-sk"></div><div class="eps-sk"></div><div class="eps-sk"></div>';
     var zone = myZone(), now = Date.now(), items = d.items || [];
     var counts = {}; items.forEach(function (i) { counts[i.kind] = (counts[i.kind] || 0) + 1; });
     var tabs = GROUPS.filter(function (g) { return g[0] === 'all' || counts[g[0]]; });
@@ -200,33 +208,41 @@
     }
   }
 
-  function pageContainer() {
-    var all = document.querySelectorAll('div');
-    for (var i = 0; i < all.length; i++) { var c = String(all[i].className || ''); if (c.indexOf('container-type:inline-size') >= 0 && c.indexOf('bg-secondary') >= 0) return all[i]; }
-    return null;
-  }
+  // Draw straight into Circle's workspace (like the Library), so the space's header strip is replaced too
   function mount() {
     if (!PAGE.test(location.pathname)) return;
+    document.documentElement.classList.add(ON);
     if (root && document.body.contains(root)) return;
-    var box = pageContainer();
+    var box = document.querySelector(HOST);
     if (!box) return;
-    for (var i = 0; i < box.children.length; i++) box.children[i].style.display = 'none';
     root = document.createElement('div');
     root.className = 'eps'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'Schedule');
     root.addEventListener('click', onClick);
     box.insertBefore(root, box.firstChild);
     render();
   }
+  // Leaving the page: take ours out and give Circle's back
+  function unmount() {
+    document.documentElement.classList.remove(ON);
+    if (root) { root.remove(); root = null; }
+  }
 
   var started = false;
   function start() {
-    if (started || !PAGE.test(location.pathname)) return;
-    started = true; css();
-    signIn().then(load).catch(function () { state.error = 'Please sign in to Circle to see your schedule.'; }).then(function () { mount(); render(); });
+    if (!PAGE.test(location.pathname)) return;
+    css(); document.documentElement.classList.add(ON);
+    if (!state.data) state.data = cached(); // last visit's schedule shows at once, then refreshes
+    mount(); render();
+    if (started) return;
+    started = true;
+    signIn().then(load).catch(function () { if (!state.data) state.error = 'Please sign in to Circle to see your schedule.'; }).then(function () { mount(); render(); });
     setInterval(function () { if (root && document.body.contains(root) && !state.sub) render(); }, 60000); // "Live now" comes and goes
   }
-  start();
-  // Circle is a single-page app: mount when someone navigates to the page
+  function check() { if (PAGE.test(location.pathname)) start(); else unmount(); }
+  check();
+  // Circle is a single-page app: react the moment the address changes, and again when its page has drawn
+  ['pushState', 'replaceState'].forEach(function (k) { var f = history[k]; history[k] = function () { var r = f.apply(this, arguments); check(); return r; }; });
+  window.addEventListener('popstate', check);
   var t = null;
-  new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; start(); if (started) mount(); }, 300); }).observe(document.body, { childList: true, subtree: true });
+  new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; check(); }, 60); }).observe(document.body, { childList: true, subtree: true });
 })();

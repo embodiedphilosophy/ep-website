@@ -17,6 +17,7 @@ const OUT = process.env.OUT || new URL('../ops-test/out/', import.meta.url).path
 const TODAY = '2026-10-17'; // a Saturday
 const days = []; for (let i = 1; i <= 39; i++) { const d = new Date(TODAY + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - i); days.push(d.toISOString().slice(0, 10)); }
 const events = [
+  { id: 'E0', title: 'Song of the Goddess: Navarātri with the Devī Gītā', date: '2026-10-11', end_date: '2026-10-20', time: '9am ET', program: 'seasonal', registration_url: 'https://enroll.embodiedphilosophy.com/navaratri-2026' },
   { id: 'E1', title: 'Meditation Mondays', date: '2026-10-19', time: '12pm ET', series: 'meditation-mondays', program: 'meditation' },
   { id: 'E2', title: 'The Heart of Recognition · Session 1', date: '2026-10-21', time: '9am ET', series: 'sadhana-fall-2026', program: 'sadhana' },
   { id: 'E3', title: 'CHITHEADS Live', date: '2026-12-17', program: 'community' }, // no time set: shown as a plain date
@@ -28,7 +29,7 @@ async function payload(tier, streakDays = days) {
   const { locked } = P.programmesFor(tier);
   return { ...free, today: TODAY, practice, practisingToday: tier === 'none' ? null : 12, tier, firstName: 'Maya',
     cards: P.openCards({ events, tier, today: TODAY, ce: { cycle: { hours: 6, need: 30 } }, formation: { total: 12.5, target: 100 } }),
-    locked: locked.map(P.lockedCard), comingUp: P.comingUp(events, tier, TODAY) };
+    locked: locked.map(P.lockedCard), comingUp: P.comingUp(events, tier, TODAY), week: P.weekAhead(events, tier, TODAY) };
 }
 
 const js = fs.readFileSync(new URL('../../public/circle/today.js', import.meta.url), 'utf8');
@@ -94,6 +95,14 @@ for (const [tier, w] of Object.entries(WANT)) {
   assert.equal(await p.locator('text=Join a practice circle').count(), 0);
   const dates = await text(p, '.etd-rail .etd-ev > .ept-mono'); assert.ok(dates.every(d => /^(\w{3} \d{1,2}|\d{1,2}–\d{1,2})$/.test(d.trim())), `short dates: ${dates}`);
   assert.ok(await p.evaluate(() => [...document.querySelectorAll('.etd-ev')].every(e => { const a = e.children[0].getBoundingClientRect(), b = e.children[1].getBoundingClientRect(); return a.right <= b.left + 0.5; })), 'dates never run into titles');
+  // the week ahead: seven days from today, right under the sit; outside the membership → locked, to the enrol page
+  assert.equal(await p.locator('.etd-wd').count(), 7); assert.equal(await p.locator('.etd-wd.now .etd-wdh .ept-l').innerText(), 'TODAY');
+  assert.ok(await p.evaluate(() => document.querySelector('.etd-hero').nextElementSibling.classList.contains('etd-wk')), 'week sits under the sit');
+  const wk = await p.$$eval('.etd-wev', a => a.map(x => [x.querySelector('.etd-wt').textContent, x.classList.contains('lk'), x.getAttribute('href')]));
+  const nav = wk.filter(x => /Navarātri/.test(x[0])); assert.equal(nav.length, 4, 'Navarātri 17–20'); assert.ok(nav.every(x => x[1] && /navaratri-2026/.test(x[2])));
+  const mm = wk.find(x => x[0] === 'Meditation Mondays'), s1 = wk.find(x => /Session 1/.test(x[0]));
+  assert.equal(mm[1], !w.open.includes('Meditation Mondays'), `${tier} Mondays lock`); assert.equal(s1[1], !w.open.includes('Sādhana School'), `${tier} session lock`);
+  if (s1[1]) assert.match(s1[2], /programmes\/sadhana-school\/preview/);
   await p.screenshot({ path: `${OUT}/today-${tier}.png`, fullPage: true });
   await ctx.close();
 }

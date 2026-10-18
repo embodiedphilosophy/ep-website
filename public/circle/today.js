@@ -354,6 +354,15 @@
       '.etd-h1{margin:0;font:600 46px/1.05 "Cormorant Garamond",Georgia,serif}.etd-h1 em{color:#A5432A}',
       '.etd-sub{color:#5A5346;font-size:14px}',
       '.etd{container:etd/inline-size}',
+      '.etd-wk{gap:14px}.etd-wkh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}',
+      '.etd-wkg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}',
+      '.etd-wd{display:flex;flex-direction:column;gap:6px;min-height:120px;padding:8px 6px;border:1px solid #E3D8C6;border-radius:6px;background:#fff}.etd-wd.now{border:1.5px solid #A5432A}',
+      '.etd-wdh{display:flex;align-items:baseline;gap:6px}.etd-wdh b{font:600 20px/1 "Cormorant Garamond",Georgia,serif;color:#16140F}.etd-wd.now .etd-wdh .ept-l{color:#A5432A}',
+      '.etd-wev{display:flex;flex-direction:column;gap:2px;padding:6px 7px;border-radius:4px;color:#F4EDE0;text-decoration:none;font:500 12px/1.3 "IBM Plex Sans",system-ui,sans-serif;background:var(--c)}a.etd-wev:hover{filter:brightness(1.1)}',
+      '.etd-wev .ept-mono{color:inherit;opacity:.85;font-size:10.5px;display:flex;align-items:center;gap:4px;white-space:normal}.etd-wev .etd-wt{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}',
+      '.etd-wev.lk{background:transparent;color:#6B6152;box-shadow:inset 0 0 0 1px var(--c);border-left:3px solid var(--c)}.etd-wev.lk:hover{background:#F4EDE0;filter:none}.etd-wev .etd-wg{font-size:10.5px;color:#A5432A}',
+      '.etd-wl{display:flex;flex-direction:column;gap:6px}.etd-wn{color:#B5AA98;font:400 12px "IBM Plex Sans",system-ui,sans-serif}',
+      '@media (max-width:760px){.etd-wkg{grid-template-columns:1fr}.etd-wd{min-height:0;flex-direction:row;align-items:flex-start;gap:10px}.etd-wdh{flex-direction:column;gap:2px;width:44px;flex:none}.etd-wd>.etd-wl{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}.etd-wd.none{opacity:.75}}',
       '.etd-cols{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px;align-items:start}',
       '.etd-main{min-width:0;display:flex;flex-direction:column;gap:18px}',
       '.etd-rail{min-width:0;display:flex;flex-direction:column;gap:14px}',
@@ -497,6 +506,38 @@
     }).join('') + '</div></div>';
     out += '<div class="etd-pills">' + [7, 21, 40, 108].map(function (m) { return '<span class="etd-pill' + (p.streak >= m ? ' on' : '') + '">' + m + '</span>'; }).join('') + '</div>';
     if (PORTFOLIO_FOR.indexOf(tierName()) >= 0) out += '<a class="etd-wp" href="/c/portfolio">Your whole practice →</a>';
+    return out + '</div></section>';
+  }
+
+  // ---- The week ahead: the next seven days for everyone, in the member's own time zone. Sessions their membership
+  // doesn't open are shown locked and go to that programme's page to enrol.
+  var WK_COLOR = { ss: '#20302A', mondays: '#B98A3E', wisdom: '#5B6343', mentor: '#8F7843', open: '#2E5A4B' };
+  function ymd(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function hm(iso) { try { return new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } }
+  function dayGap(a, b) { return Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000); }
+  function weekHtml() {
+    var list = (state.data && state.data.week) || [], days = [], base = new Date();
+    for (var i = 0; i < 7; i++) { var d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i); days.push({ key: ymd(d), d: d, items: [] }); }
+    list.forEach(function (e) {
+      days.forEach(function (day) {
+        if (e.start) { if (ymd(new Date(e.start)) === day.key) day.items.push(e); }
+        else if (e.date <= day.key && (e.end_date || e.date) >= day.key) day.items.push(e);
+      });
+    });
+    var out = '<section class="ept-card etd-card etd-wk" aria-labelledby="etd-wkt"><div class="etd-wkh"><h2 id="etd-wkt" class="ept-h2">The week ahead</h2><span class="ept-l">In your time zone</span></div><div class="etd-wkg">';
+    out += days.map(function (day, i) {
+      var name = day.d.toLocaleDateString(undefined, { weekday: 'short' });
+      var ev = day.items.map(function (e) {
+        var c = WK_COLOR[e.key] || '#A5432A', st = e.start || (e.starts && e.starts[day.key]), when = (e.end_date ? 'Day ' + (dayGap(e.date, day.key) + 1) + ' of ' + (dayGap(e.date, e.end_date) + 1) + (st ? ' · ' : '') : '') + (st ? hm(st) : e.end_date ? '' : 'All day');
+        var ext = /^https?:/.test(e.href || '') && e.href.indexOf(location.host) < 0;
+        return '<a class="etd-wev' + (e.locked ? ' lk' : '') + '" style="--c:' + c + '" href="' + esc(e.href || '/c/schedule') + '"' + (ext ? ' data-pop target="_blank" rel="noopener"' : '') +
+          ' aria-label="' + esc(e.title + ', ' + when + (e.locked ? '. Locked: part of ' + e.programme + '. Opens the enrolment page.' : '')) + '">' +
+          '<span class="ept-mono">' + (e.locked ? LOCK : '') + esc(e.programme) + '</span><span class="etd-wt">' + esc(e.title) + '</span><span class="ept-mono">' + esc(when) + '</span>' +
+          (e.locked ? '<span class="etd-wg">Enrol →</span>' : '') + '</a>';
+      }).join('');
+      return '<div class="etd-wd' + (i === 0 ? ' now' : '') + (day.items.length ? '' : ' none') + '"><div class="etd-wdh"><span class="ept-l">' + (i === 0 ? 'Today' : esc(name)) + '</span><b>' + day.d.getDate() + '</b></div>' +
+        '<div class="etd-wl">' + (ev || '<span class="etd-wn">—</span>') + '</div></div>';
+    }).join('');
     return out + '</div></section>';
   }
 
@@ -651,7 +692,7 @@
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
     if (!d) return state.failed ? out + '<p class="ept-err" role="status">We couldn’t load Today just now. Please refresh the page.</p>' : skeletonHtml();
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
-      heroHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
+      heroHtml() + weekHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
     if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + cohortHtml() + '</div>';
     return out;

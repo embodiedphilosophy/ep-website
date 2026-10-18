@@ -1,6 +1,6 @@
 // The Circle Today page in a real browser: a fake Circle page at /c/today, the real public/circle/today.js, and API
 // answers built with the real lib/ code. Checks what each enrolment sees, the timer, the log, the Travelogue and
-// phone width. Screenshots go to $OUT (default scripts/ops-test/out). With REAL_PANEL=http://localhost:3200 (a running server) the real pañcāṅga panel is framed instead of a stub, for looking only.
+// phone width. Screenshots go to $OUT (default scripts/ops-test/out).
 // Run: node --import ./scripts/ce-test/register.mjs scripts/member-test/today-ui.mjs
 import assert from 'assert/strict';
 import fs from 'fs';
@@ -10,7 +10,8 @@ process.env.MEMBER_SECRET = 'test-secret';
 const { summarise } = await import('../../lib/member/practice.js');
 const { freeToday } = await import('../../lib/member/today.js');
 const P = await import('../../lib/member/programmes.js');
-const HOST = process.env.REAL_PANEL ? 'https://ss.embodiedphilosophy.com' : 'https://ss.example.test'; // look-only runs frame the real panel, which only Circle's own domain may do
+const HOST = 'https://ss.example.test';
+const engine = fs.readFileSync(new URL('../../public/circle/panchanga.js', import.meta.url), 'utf8');
 const OUT = process.env.OUT || new URL('../ops-test/out/', import.meta.url).pathname; fs.mkdirSync(OUT, { recursive: true });
 
 const TODAY = '2026-10-17'; // a Saturday
@@ -41,14 +42,13 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
   await p.clock.install({ time: new Date('2026-10-17T10:30:00-04:00') });
   const body = data || await payload(tier);
-  await p.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><nav id="top" style="height:56px;width:100%;display:flex;gap:8px"><span>Meditation</span><button>New post</button></nav><div style="display:flex"><aside id="side" style="width:250px;height:600px"><a aria-current="page">Today in School</a><button>New post</button></aside><div id="col" style="flex:1;height:2400px"><div id="banner" style="position:sticky;top:0;height:70px;display:flex;justify-content:space-between"><h1>Today in School</h1><span><button>New post</button><button>⋯</button></span></div><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div></div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
+  await p.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><nav id="top" style="height:56px;width:100%;display:flex;gap:8px"><span>Meditation</span><button>New post</button></nav><div style="display:flex"><style>@media (max-width:700px){#side{display:none}}</style><aside id="side" style="width:250px;height:600px"><a aria-current="page">Today in School</a><button>New post</button></aside><div id="col" style="flex:1;height:2400px"><div id="banner" style="position:sticky;top:0;height:70px;display:flex;justify-content:space-between"><h1>Today in School</h1><span><button>New post</button><button>⋯</button></span></div><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div></div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
   await p.route('https://www.embodiedphilosophy.com/**', async r => {
     const u = new URL(r.request().url()), m = r.request().method(), path = u.pathname;
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
     const j = o => r.fulfill({ contentType: 'application/json', headers: CORS, body: JSON.stringify(o) });
     if (path === '/circle/today.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js });
-    if (process.env.REAL_PANEL && (path.startsWith('/today/panchanga') || path.startsWith('/_next') || path.startsWith('/brand') || path.startsWith('/kalighat'))) return r.fulfill({ response: await r.fetch({ url: process.env.REAL_PANEL + path + u.search }) }).catch(() => {}); // look-only: the real panel from a running server
-    if (path === '/today/panchanga') { frameSrcs.push(u.search); return r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body>stub<script>parent.postMessage({ep:"panchanga-height",h:777},"*")</script>' }); }
+    if (path === '/circle/panchanga.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: engine });
     if (path.startsWith('/circle/') && r.request().resourceType() === 'script') scripts.push(path.slice(8)); // real loads only (not quiet prefetches)
     if (path === '/circle/probe.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: probe });
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
@@ -83,9 +83,10 @@ for (const [tier, w] of Object.entries(WANT)) {
   assert.deepEqual((await text(p, '.etd-lt')).map(s => s.trim()), w.locked, `${tier} locked cards`);
   if (w.eyebrow) assert.equal((await p.locator('.etd-top .ept-l').innerText()).toUpperCase(), w.eyebrow);
   assert.match(await p.locator('.etd-h1').innerText(), /Good morning, Maya\./);
-  assert.match(await p.locator('.etd-sub').innerText(), /Saturday,? (October 17|17 October) · Śukla Saptamī · waxing moon/);
-  assert.equal(await p.locator('.etd-moons .etd-md').count(), 7);
-  assert.equal(await p.locator('.etd-sd').count(), 4);
+  assert.match(await p.locator('.etd-sub').innerText(), /Saturday,? (October 17|17 October) · (Śukla|Kṛṣṇa) \S+ · (waxing|waning) moon|· (Pūrṇimā · full|Amāvāsyā · new) moon/);
+  assert.equal(await p.locator('.etd-moons').count(), 0, 'no week of moons');
+  assert.equal(await p.locator('.etd-pn-desk .etd-pnb-cell').count(), 5, 'five limbs');
+  assert.equal(await p.locator('.etd-rail-sacred .etd-sdr').count(), 4);
   assert.match(await p.locator('.etd-skt').innerText(), /citiḥ svatantrā/);
   assert.equal(await p.locator('.etd-card[aria-label] .ept-btn').count(), w.open.length);
   assert.equal(await p.locator('button:has-text("Copy page structure")').count(), 0);
@@ -249,26 +250,44 @@ console.log('upgrade pop-up: ok');
 }
 console.log('space banner: ok');
 
-// ---- the pañcāṅga card: the site's own panel framed in the page, sized by the panel; a chosen exact location goes with it
+// ---- the pañcāṅga band: native, full width at the bottom on desktop; the rail holds Coming up, Sacred days, Practising
 {
-  const { p, ctx, frameSrcs } = await open('none');
-  await p.waitForSelector('.etd-pn');
-  assert.match(await p.locator('.etd-card h2').allInnerTexts().then(a => a.join('|')), /Today’s pañcāṅga/);
-  // it lives in the right-hand column, directly under Coming up
-  assert.deepEqual(await p.locator('.etd-rail > section h2').allInnerTexts(), ['Coming up', 'Today’s pañcāṅga'].concat((await p.locator('.etd-rail > section h2').count()) > 2 ? ['Practising with you'] : []));
-  assert.equal(await p.locator('.etd-main .etd-pn').count(), 0, 'not in the main column');
-  assert.equal(await p.locator('.etd-rail .etd-pn').count(), 1);
-  await p.waitForFunction(() => document.querySelector('.etd-pn').style.height === '777px');
-  assert.ok(frameSrcs.length >= 1 && !/lat=/.test(frameSrcs[0]), 'no location unless chosen');
-  await ctx.grantPermissions(['geolocation']); await ctx.setGeolocation({ latitude: 51.5074, longitude: -0.1278 });
-  await p.locator('[data-act=geo]').click(); await p.waitForSelector('[data-act=geo-off]'); await p.waitForTimeout(500);
-  assert.match(frameSrcs.at(-1), /lat=51\.5&lon=-0\.1&tz=America%2FNew_York/);
-  assert.equal(await p.locator('.etd-pn').evaluate(f => f.style.height), '777px', 'keeps its height when the page redraws');
-  // the same for every enrolment
-  for (const t of ['mentee', 'wisdom']) { const x = await open(t); assert.equal(await x.p.locator('.etd-pn').count(), 1, t); await x.ctx.close(); }
+  const { p, ctx } = await open('wisdom');
+  await p.waitForSelector('.etd-pn-desk .etd-pnb-grid');
+  assert.deepEqual(await p.locator('.etd-rail > section h2').allInnerTexts(), ['Coming up', 'Sacred days ahead', 'Practising with you']);
+  const g = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect(); const cells = [...document.querySelectorAll('.etd-pn-desk .etd-pnb-cell')].map(c => c.getBoundingClientRect());
+    return { band: r('.etd-pn-desk'), cols: r('.etd-cols'), rail: r('.etd-rail'), ys: cells.map(c => Math.round(c.top)), phoneShown: getComputedStyle(document.querySelector('.etd-pn-phone')).display }; });
+  assert.ok(g.band.top >= g.cols.bottom - 1, 'band below both columns'); assert.ok(g.band.width >= g.cols.width - 2, 'full width');
+  assert.ok(Math.abs(g.rail.width - 270) < 2, 'rail 270px'); assert.equal(new Set(g.ys).size, 1, 'limbs side by side'); assert.equal(g.phoneShown, 'none');
+  assert.equal(await p.locator('.etd-pn-desk iframe, .etd iframe').count(), 0, 'not an iframe');
+  const names = await p.locator('.etd-pn-desk .etd-pnb-lab').allTextContents(); assert.deepEqual(names, ['Tithi (lunar day)', 'Vāra (weekday)', 'Nakṣatra (lunar mansion)', 'Yoga (Sun and Moon together)', 'Karaṇa (half lunar day)']);
+  assert.match(await p.locator('.etd-pn-desk .etd-pnb-foot').innerText(), /Read at sunrise in New York/);
+  assert.equal(await p.locator('.etd-cards').evaluate(e => getComputedStyle(e).gridTemplateColumns.split(' ').length), 2, 'cards two across');
+  // explainer: button, Esc and backdrop all close it
+  const guide = p.locator('.etd-pn-desk [data-act=pn-about]');
+  await guide.click(); assert.match(await p.locator('.etd-about').innerText(), /The day’s five limbs[\s\S]*Tithi[\s\S]*Karaṇa[\s\S]*How to read it/i);
+  await p.keyboard.press('Escape'); assert.equal(await p.locator('.etd-about').count(), 0);
+  await guide.click(); await p.locator('.etd-about-x').click(); assert.equal(await p.locator('.etd-about').count(), 0);
+  await guide.click(); await p.mouse.click(5, 5); assert.equal(await p.locator('.etd-about').count(), 0);
+  // place: tz city first; choosing another is remembered and moves the times
+  const before = await p.locator('.etd-pn-desk .etd-pnb-when').first().innerText();
+  await p.selectOption('.etd-pn-desk select[data-pn-place]', 'Asia/Kolkata');
+  assert.match(await p.locator('.etd-pn-desk .etd-pnb-foot').innerText(), /Read at sunrise in (Mumbai|Delhi|Kolkata|Chennai|India)|Read at sunrise in/);
+  assert.notEqual(await p.locator('.etd-pn-desk .etd-pnb-when').first().innerText(), before);
+  assert.match(await p.evaluate(() => localStorage.getItem('ep-panchanga-place')), /Asia\/Kolkata/);
+  await p.screenshot({ path: `${OUT}/today-layout2.png`, fullPage: true });
   await ctx.close();
+  // saved place beats the time zone; the address beats the saved place
+  const sv = await open('none', { wait: false });
+  await sv.p.addInitScript(() => localStorage.setItem('ep-panchanga-place', JSON.stringify({ label: 'Reykjavik', lat: 64.1, lon: -21.9, tz: 'Atlantic/Reykjavik', key: 'x' })));
+  await sv.p.reload(); await sv.p.waitForSelector('.etd-pn-desk .etd-pnb-foot');
+  assert.match(await sv.p.locator('.etd-pn-desk .etd-pnb-foot').innerText(), /in Reykjavik/); await sv.ctx.close();
+  const q = await open('none', { query: '?lat=51.5&lon=-0.1&tz=Europe%2FLondon&place=London' }); await q.p.waitForSelector('.etd-pn-desk .etd-pnb-foot');
+  assert.match(await q.p.locator('.etd-pn-desk .etd-pnb-foot').innerText(), /in London/); await q.ctx.close();
+  // everyone gets the band
+  for (const t of ['mentee', 'none']) { const x = await open(t); assert.equal(await x.p.locator('.etd-pn-desk .etd-pnb-cell').count(), 5, t); await x.ctx.close(); }
 }
-console.log('panchanga card: ok');
+console.log('panchanga band: ok');
 
 // ---- Circle admins: the cohort sits below the student's page, never on top of it
 {
@@ -287,23 +306,16 @@ console.log('panchanga card: ok');
 }
 console.log('admin mentor view: ok');
 
-// ---- exact tithi: only when asked, rounded, never kept
+// ---- "use my location": only when chosen, saved on this device, a clear message if it's blocked
 {
-  const { p, ctx, urls } = await open('none');
+  const { p, ctx } = await open('none');
   await ctx.grantPermissions(['geolocation']); await ctx.setGeolocation({ latitude: 51.5074, longitude: -0.1278 });
-  assert.ok(urls.every(u => !/lat=/.test(u)), 'no location unless asked');
-  await p.locator('[data-act=geo]').click(); await p.waitForSelector('[data-act=geo-off]');
-  assert.match(urls.at(-1), /lat=51\.5&lon=-0\.1/, 'rounded coordinates go with the request');
-  assert.equal(await p.evaluate(() => localStorage.getItem('ep_geo')), '1');
-  assert.ok(!JSON.stringify(await p.evaluate(() => ({ ...localStorage }))).includes('51.5'), 'coordinates are not kept');
-  await p.locator('[data-act=geo-off]').click(); await p.waitForSelector('[data-act=geo]');
-  assert.ok(!/lat=/.test(urls.at(-1))); assert.equal(await p.evaluate(() => localStorage.getItem('ep_geo')), '');
+  await p.selectOption('.etd-pn-desk select[data-pn-place]', 'geo'); await p.waitForFunction(() => /your location/.test(document.querySelector('.etd-pn-desk .etd-pnb-foot').textContent));
   await ctx.close();
-  const d = await open('none'); // not allowed: say so, stay on the time zone
+  const d = await open('none');
   await d.p.evaluate(() => { navigator.geolocation.getCurrentPosition = (ok, no) => no({ code: 1, message: 'denied' }); });
-  await d.p.locator('[data-act=geo]').click();
-  await d.p.waitForSelector('.ept-err[role=status]', { timeout: 5000 });
-  assert.match(await d.p.locator('.ept-err[role=status]').innerText(), /time zone/); assert.equal(await d.p.locator('[data-act=geo]').count(), 1);
+  await d.p.selectOption('.etd-pn-desk select[data-pn-place]', 'geo');
+  await d.p.waitForSelector('.etd-pn-desk .etd-pnb-err'); assert.match(await d.p.locator('.etd-pn-desk .etd-pnb-err').innerText(), /Choose a city/);
   await d.ctx.close();
 }
 console.log('location: ok');
@@ -311,7 +323,9 @@ console.log('location: ok');
 // ---- phone width: no sideways scroll, targets at least 44px
 for (const tier of ['none', 'mentee']) {
   const { p, ctx } = await open(tier, { vw: 390, h: 844 });
-  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 0, `${tier}: sideways scroll`);
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 0, `${tier}: sideways scroll ${await p.evaluate(() => [...document.querySelectorAll('.etd *')].filter(e => e.getBoundingClientRect().right > innerWidth + 1 && e.offsetParent).slice(0, 6).map(e => e.className + ':' + Math.round(e.getBoundingClientRect().right)).join(' '))}`);
+  const ph = await p.evaluate(() => { const t = s => document.querySelector(s); const top = s => t(s).getBoundingClientRect().top; return { desk: getComputedStyle(t('.etd-pn-desk')).display, rs: getComputedStyle(t('.etd-rail-sacred') || document.body).display, sacred: !!t('.etd-pn-phone .etd-sdp'), after: top('.etd-pn-phone') > top('#etd-teach'), rows: new Set([...document.querySelectorAll('.etd-pn-phone .etd-pnb-cell')].map(c => Math.round(c.getBoundingClientRect().top))).size }; });
+  assert.equal(ph.desk, 'none'); assert.ok(ph.sacred, 'sacred days inside the band on a phone'); assert.equal(ph.rows, 5, 'limbs as rows'); assert.ok(ph.after, 'band follows the teaching');
   const small = await p.evaluate(() => [...document.querySelectorAll('.etd a, .etd button')].filter(e => e.offsetParent && e.getBoundingClientRect().height < 40 && !e.closest('.ept-chips')).map(e => e.textContent.trim().slice(0, 30) + ':' + Math.round(e.getBoundingClientRect().height)));
   console.log(tier, 'phone: small targets:', JSON.stringify(small));
   await p.screenshot({ path: `${OUT}/today-phone-${tier}.png`, fullPage: true });

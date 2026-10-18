@@ -35,7 +35,7 @@
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (open to every member)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
-  var state = { pnH: 520, pnReady: false, geo: null, geoBusy: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
+  var state = { pn: null, place: null, pnTried: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
     none: 'Your practice · Today', meditation: 'Meditation Pass · Today', wisdom: 'Wisdom School · Today',
@@ -129,27 +129,56 @@
   }
 
   function asParam() { var a = (location.search.match(/[?&]as=([a-z_]+)/) || [])[1]; return a && isAdmin() && TIERS.indexOf(a) >= 0 ? '&as=' + a : ''; }
-  // Exact tithi: with the member's say-so, the browser's position (rounded to about 11 km) goes with this request only.
-  // We never keep it; only a "yes, use it" flag stays in this browser, and the browser itself asks first.
-  function geoParam() { return state.geo ? '&lat=' + state.geo.lat + '&lon=' + state.geo.lon : ''; }
-  function round1(n) { return Math.round(n * 10) / 10; }
-  function askPlace(quiet) {
-    if (!navigator.geolocation) { state.geoErr = 'Your browser can’t share a location, so we’re using your time zone.'; return Promise.resolve(); }
-    state.geoBusy = true; state.geoErr = ''; render();
-    return new Promise(function (res) {
+  // ---- Today's pañcāṅga: worked out here, in the browser, at the member's local sunrise. The engine is public/circle/panchanga.js
+  // (window.EPPanchanga), built from the same modules as /today/panchanga and /api/panchanga, so there is one copy of the maths.
+  // Place: the address (?lat=&lon=&tz=&place=), then the saved choice (localStorage 'ep-panchanga-place'), then a city for the
+  // device's time zone, then an estimate from its offset. "Use my location" is optional (the city list always works).
+  var PNKEY = 'ep-panchanga-place';
+  function pnLoad() {
+    if (window.EPPanchanga) return Promise.resolve();
+    if (state.pnP) return state.pnP;
+    return (state.pnP = new Promise(function (res) { var el = document.createElement('script'); el.src = BASE + 'panchanga.js'; el.defer = true; el.onload = res; el.onerror = res; document.head.appendChild(el); }));
+  }
+  function validTz(tz) { try { new Intl.DateTimeFormat('en-US', { timeZone: tz }); return !!tz; } catch (e) { return false; } }
+  function qnum(k, lo, hi) { var m = location.search.match(new RegExp('[?&]' + k + '=(-?[0-9.]+)')); var n = m ? Number(m[1]) : NaN; return isFinite(n) && n >= lo && n <= hi ? n : null; }
+  function pnInitialPlace() {
+    var P = window.EPPanchanga, dev = zone(), lat = qnum('lat', -90, 90), lon = qnum('lon', -180, 180);
+    if (lat !== null && lon !== null) { var tzq = (location.search.match(/[?&]tz=([^&]+)/) || [])[1], pq = (location.search.match(/[?&]place=([^&]+)/) || [])[1]; tzq = tzq && decodeURIComponent(tzq); return { label: pq ? decodeURIComponent(pq).slice(0, 60) : 'this location', lat: lat, lon: lon, tz: validTz(tzq) ? tzq : (validTz(dev) ? dev : 'UTC'), key: 'url' }; }
+    try { var sv = JSON.parse(local(PNKEY) || 'null'); if (sv && isFinite(sv.lat) && isFinite(sv.lon) && validTz(sv.tz)) return sv; } catch (e) {}
+    if (P.PLACES[dev]) { var c = P.PLACES[dev]; return { label: c[0], lat: c[1], lon: c[2], tz: dev, key: dev }; }
+    var tz = validTz(dev) ? dev : 'UTC';
+    return { label: 'your time zone', lat: 30, lon: (P.tzOffset(tz, Date.now()) / 36e5) * 15, tz: tz, key: 'approx' };
+  }
+  function pnCompute() {
+    var P = window.EPPanchanga; if (!P) return;
+    var pl = state.place || (state.place = pnInitialPlace()), t = P.tzParts(pl.tz, Date.now()), b = { y: t.year, m: t.month, d: t.day };
+    state.pn = { base: b, day: P.describeDay({ lat: pl.lat, lon: pl.lon, tz: pl.tz, y: b.y, m: b.m, d: b.d }) };
+    state.pnDay = b.y + '-' + b.m + '-' + b.d;
+  }
+  function pnChoose(v) {
+    var P = window.EPPanchanga; if (!P) return;
+    state.geoErr = '';
+    if (v === 'geo') {
+      if (!navigator.geolocation) { state.geoErr = 'Your browser can’t share a location. Choose a city from the list instead.'; render(); return; }
       navigator.geolocation.getCurrentPosition(function (pos) {
-        state.geo = { lat: round1(pos.coords.latitude), lon: round1(pos.coords.longitude) }; local('ep_geo', '1'); res(true);
-      }, function () {
-        state.geo = null; local('ep_geo', '');
-        if (!quiet) state.geoErr = 'We couldn’t get your location, so we’re using your time zone. You can allow it in your browser’s settings.';
-        res(false);
-      }, { timeout: 8000, maximumAge: 3600000 });
-    }).then(function (ok) { state.geoBusy = false; return ok ? loadData() : null; }).then(render);
+        state.place = { label: 'your location', lat: pos.coords.latitude, lon: pos.coords.longitude, tz: zone() || 'UTC', key: 'geo-result' };
+        local(PNKEY, JSON.stringify(state.place)); pnCompute(); render();
+      }, function () { state.geoErr = 'Location access was blocked. Choose a city from the list instead.'; render(); }, { timeout: 10000, maximumAge: 864e5 });
+      return;
+    }
+    if (P.PLACES[v]) { var c = P.PLACES[v]; state.place = { label: c[0], lat: c[1], lon: c[2], tz: v, key: v }; local(PNKEY, JSON.stringify(state.place)); pnCompute(); render(); }
+  }
+  // Re-read when the local day changes, and when the tab comes back
+  var pnWatching = false;
+  function pnWatch() {
+    if (pnWatching) return; pnWatching = true;
+    setInterval(function () { var P = window.EPPanchanga; if (!P || !state.place) return; var t = P.tzParts(state.place.tz, Date.now()); if (state.pnDay && state.pnDay !== t.year + '-' + t.month + '-' + t.day) { pnCompute(); render(); } }, 60000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && state.pn) { pnCompute(); render(); } });
   }
   function zone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } }
   function loadData() {
     return Promise.all([
-      api('/api/member/today?today=' + localToday() + '&tz=' + encodeURIComponent(zone()) + geoParam() + asParam(), { identity: true }).then(function (d) {
+      api('/api/member/today?today=' + localToday() + asParam(), { identity: true }).then(function (d) {
         if (d.signin) applySignin(d.signin);
         if (d.tier) state.tier = d.tier === 'course' ? 'none' : d.tier; // the tier the server worked the page out for (an admin's ?as= preview included)
         state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet';
@@ -324,9 +353,11 @@
       '.etd-top{display:flex;flex-direction:column;gap:4px;margin-bottom:18px}',
       '.etd-h1{margin:0;font:600 46px/1.05 "Cormorant Garamond",Georgia,serif}.etd-h1 em{color:#A5432A}',
       '.etd-sub{color:#5A5346;font-size:14px}',
-      '.etd-cols{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}',
-      '.etd-main{flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:18px}',
-      '.etd-rail{flex:1 1 260px;max-width:100%;min-width:240px;display:flex;flex-direction:column;gap:14px}',
+      '.etd{container:etd/inline-size}',
+      '.etd-cols{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px;align-items:start}',
+      '.etd-main{min-width:0;display:flex;flex-direction:column;gap:18px}',
+      '.etd-rail{min-width:0;display:flex;flex-direction:column;gap:14px}',
+      '.etd-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}',
       '.etd-card{padding:20px 22px}',
       '.etd-div{display:flex;align-items:center;gap:10px}.etd-rule{flex:1;height:1px;background:#D8C9AE}',
       '.etd-mono{font:500 10.5px/1.4 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase}',
@@ -358,10 +389,8 @@
       '.etd-quiet{background:transparent;border:1px solid #D8C9AE;border-radius:4px;min-height:44px;padding:0 14px;font-size:13px;color:#1E1A14;cursor:pointer}.etd-quiet:hover{border-color:#1E1A14}',
       '.etd-lineform{display:flex;flex-direction:column;gap:8px}.etd-ta{width:100%;border:1px solid #D8C9AE;border-radius:4px;padding:10px;background:#fff;font:inherit;resize:vertical}',
       '.etd-lines{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}.etd-lines li{display:flex;justify-content:space-between;gap:12px;padding-top:6px;border-top:1px solid #E3D8C6}.etd-lines b{font:500 11px "IBM Plex Mono",ui-monospace,monospace;color:#6B6152;white-space:nowrap}',
-      '.etd-moons{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:#E3D8C6;border:1px solid #E3D8C6}',
-      '.etd-md{background:#FBF6EE;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}.etd-md.now{background:#F2E8D6}',
-      '.etd-moon{width:16px;height:16px;border-radius:50%;border:1.5px solid #3A342B;display:block}.etd-note{font-size:11px;color:#5A5346;min-height:15px;text-align:center}',
-      '.etd-sacred{display:flex;flex-direction:column;gap:6px}.etd-sd{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding-top:6px;border-top:1px solid #E3D8C6}',
+      '.etd-sdr{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding-top:8px;border-top:1px solid #E3D8C6}.etd-sdl{display:flex;flex-direction:column;gap:2px;min-width:0}',
+      '.etd-sdp{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding-top:8px;border-top:1px solid #E3D8C6}',
       '.etd-sdn{display:flex;flex-direction:column}.etd-away{font-size:12px;color:#A5432A;white-space:nowrap}',
       '.etd-none{margin:0;color:#3A342B;font-size:14px}',
       '.etd-next{font-size:14px}.etd-subl{color:#3A342B}.etd-links{display:flex;flex-wrap:wrap;gap:8px}',
@@ -380,12 +409,32 @@
       '.etd-chip{background:transparent;border:1px solid #5B6E64;color:#F4EDE0;border-radius:999px;min-height:40px;padding:0 12px;cursor:pointer}.etd-chip[aria-pressed="true"]{background:#F4EDE0;color:#16140F}',
       '.etd-err{color:#F0B7A5}',
       '.etd-sk{display:block;background:#EADDC6;border-radius:6px}.etd-sk-b{border-radius:8px;background:#EFE4D0}',
-      '.etd-pnc{padding:0;overflow:hidden;gap:0}.etd-pnh{display:flex;flex-direction:column;gap:2px;padding:16px 18px 12px}',
-      '.etd-pn{display:block;width:100%;border:0;background:transparent}',
-      '.etd-geo{background:transparent;border:0;padding:0 2px;min-height:44px;font:inherit;font-size:12.5px;color:#A5432A;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:right}',
+      '.etd-pnb{margin-top:18px;padding:0;overflow:hidden;gap:0}.etd-pnb.etd-pn-phone{display:none}',
+      '.etd-pnb-head{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid #E3D8C6}',
+      '.etd-pnb-t{flex:1 1 220px;min-width:0}.etd-pnb-eye{font:500 10.5px/1.4 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#A5432A}',
+      '.etd-pnb-t h2{margin:2px 0 0;font:600 26px/1.15 "Cormorant Garamond",Georgia,serif}.etd-pnb-t h2 em{font-weight:500;color:#6B6152}',
+      '.etd-pnb-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:12.5px;color:#5A5346}',
+      '.etd-pnb-ctl select{min-height:44px;margin-left:6px;border:1px solid #D8C9AE;border-radius:4px;background:#fff;padding:0 8px;font:inherit;color:#1E1A14}',
+      '.etd-pnb-guide{min-height:44px;background:transparent;border:0;padding:0 2px;font:inherit;font-size:12.5px;color:#A5432A;text-decoration:underline;text-underline-offset:3px;cursor:pointer}',
+      '.etd-pnb-err{margin:0;padding:8px 22px;font-size:12.5px;color:#A5432A}',
+      '.etd-pnb-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}',
+      '.etd-pnb-cell{display:flex;flex-direction:column;gap:10px;padding:18px 18px 20px;border-left:1px solid #E3D8C6}.etd-pnb-cell:first-child{border-left:0}',
+      '.etd-pnb-ico svg{width:34px;height:34px;display:block}.etd-pnb-body{display:flex;flex-direction:column;gap:4px;min-width:0}.etd-pnb-body p{margin:0}',
+      '.etd-pnb-lab{font:500 10px/1.4 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:#6B6152}',
+      '.etd-pnb-name{font:600 24px/1.1 "Cormorant Garamond",Georgia,serif}.etd-pnb-desc{font-size:12.5px;color:#3A342B}',
+      '.etd-pnb-when{display:flex;flex-direction:column;gap:2px;margin-top:4px;font-size:11.5px;color:#6B6152}',
+      '.etd-pnb-foot{margin:0;padding:12px 22px;border-top:1px solid #E3D8C6;font-size:11.5px;color:#6B6152}',
+      '.etd-pnb-sac{display:none;flex-direction:column;gap:2px;padding:14px 18px;border-top:1px solid #E3D8C6}',
+      '.etd-about{position:fixed;inset:0;z-index:2147483000;background:rgba(22,20,15,.55);display:flex;align-items:center;justify-content:center;padding:16px;font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif}',
+      '.etd-about-c{width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#FBF6EE;color:#1E1A14;border-radius:8px;padding:26px 28px;display:flex;flex-direction:column;gap:10px;outline:0}',
+      '.etd-about-c h2{margin:0;font:600 30px/1.1 "Cormorant Garamond",Georgia,serif}.etd-about-c h3{margin:8px 0 0;font:500 11px/1.4 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#A5432A}',
+      '.etd-about-c p,.etd-about-c dd,.etd-about-c dt{margin:0}.etd-about-c dt{font-weight:600;margin-top:6px}.etd-about-c dl{margin:0}',
+      '.etd-about-x{align-self:flex-start;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:#1E1A14;color:#F4EDE0;font:600 14px "IBM Plex Sans",system-ui,sans-serif;cursor:pointer;margin-top:8px}',
       '.etd .ept-x{width:44px;height:44px}.etd .ept-q{min-height:44px}.etd .ept-why,.etd-rail>.etd-card>a,.etd-wp,.etd-ev a{min-height:44px;display:inline-flex;align-items:center}.etd-ev a{min-height:44px;margin:-8px 0}',
       '.etd :focus-visible,.etd-timer :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}',
-      '@media (max-width:640px){.etd{padding:20px 16px 24px}.etd-h1{font-size:34px}.etd-sit,.etd-rec{padding:22px 20px}.etd-sd{grid-template-columns:1fr auto}.etd-sd>.ept-mono{grid-column:1/-1}.etd-clock{font-size:56px}}'
+      '@container etd (max-width:760px){.etd-cols{grid-template-columns:minmax(0,1fr)}.etd-pn-desk,.etd-rail-sacred{display:none}.etd-pnb.etd-pn-phone{display:block;margin-top:0}.etd-pnb-grid{grid-template-columns:minmax(0,1fr)}.etd-pnb-cell{flex-direction:row;gap:14px;border-left:0;border-top:1px solid #E3D8C6}.etd-pnb-cell:first-child{border-top:0}.etd-pnb-sac{display:flex}.etd-pnb-head{padding:16px}.etd-pnb-t h2{font-size:22px}}',
+      '@container etd (max-width:520px){.etd-cards{grid-template-columns:minmax(0,1fr)}}',
+      '@media (max-width:640px){.etd{padding:20px 16px 24px}.etd-h1{font-size:34px}.etd-sit,.etd-rec{padding:22px 20px}.etd-clock{font-size:56px}}'
     ].join('\n');
     document.head.appendChild(s);
   }
@@ -467,43 +516,70 @@
     return out + '</div></section>';
   }
 
-  // Today's pañcāṅga: the five limbs of the day, from the site's own panel (/today/panchanga) framed in a card. It is the same
-  // for everyone (it depends on where you are, not on what you've joined). The panel tells us its height, so no inner scrollbar.
-  function panchangaSrc() {
-    return SITE + '/today/panchanga' + (state.geo ? '?lat=' + state.geo.lat + '&lon=' + state.geo.lon + '&tz=' + encodeURIComponent(zone()) + '&place=' + encodeURIComponent('your location') : '');
+  // ---- Today's pañcāṅga band and the sacred days ----
+  function enDate(ms, o) { try { return new Intl.DateTimeFormat('en-GB', Object.assign({ timeZone: 'UTC' }, o)).format(new Date(ms)); } catch (e) { return ''; } }
+  function sacredWhen(iso) { return enDate(iso + 'T12:00:00Z', { weekday: 'short', day: 'numeric', month: 'short' }); }
+  function sacredList() { return (state.data && state.data.sacred) || []; }
+  // "Sacred days ahead" as its own card in the right-hand column
+  function sacredCard() {
+    var sa = sacredList(); if (!sa.length) return '';
+    return '<section class="ept-card etd-card etd-rail-sacred" aria-labelledby="etd-sac"><h2 id="etd-sac" class="ept-h2 etd-h20">Sacred days ahead</h2>' + sa.map(function (x) {
+      return '<div class="etd-sdr"><span class="etd-sdl"><span class="ept-mono">' + esc(sacredWhen(x.date)) + '</span><b>' + esc(x.name) + '</b><span class="ept-s">' + esc(x.note) + '</span></span><span class="etd-away">' + away(x.inDays) + '</span></div>'; }).join('') +
+      '<span class="ept-s">Dates as reckoned for the US; some fall a day differently where you are.</span></section>';
   }
-  function panchangaHtml() {
-    return '<section class="ept-card etd-card etd-pnc" aria-labelledby="etd-pnc"><div class="etd-pnh"><h2 id="etd-pnc" class="ept-h2">Today’s pañcāṅga</h2><span class="ept-l">The day’s five limbs</span></div>' +
-      '<iframe class="etd-pn' + (state.pnReady ? '' : ' etd-sk-b') + '" title="Today’s pañcāṅga" src="' + esc(panchangaSrc()) + '" loading="lazy" scrolling="no" style="height:' + state.pnH + 'px"></iframe></section>';
+  // The five limbs across the bottom of the page (down the page on a phone, where the sacred days sit inside it)
+  function pnBand(cls) {
+    var P = window.EPPanchanga, s = state.pn;
+    if (!P || !s) return state.pnTried ? '' : '<div class="etd-sk etd-sk-b ' + cls + '" style="height:320px"></div>';
+    var d = s.day, tz = state.place.tz, b = s.base, ms = d.nakshatra.moonSign;
+    var until = function (t) { return 'Until ' + P.fmtTime(tz, t) + P.relDay(tz, t, b); };
+    var limbs = [
+      [P.iconTithi(d.tithi.dayInFortnight), 'Tithi (lunar day)', d.tithi.name, d.tithi.description, [until(d.tithi.endMs) + ', then ' + d.tithi.next]],
+      [P.iconVara(d.vara.index), 'Vāra (weekday)', d.vara.name, d.vara.description, ['Sunrise to sunrise, from ' + P.fmtTime(tz, d.sunrise)]],
+      [P.iconNak(), 'Nakṣatra (lunar mansion)', d.nakshatra.name, d.nakshatra.description, [until(d.nakshatra.endMs) + ', then ' + d.nakshatra.next,
+        'Moon in ' + ms.name + ' (' + P.RASHI_EN[ms.index] + ')' + (ms.enters ? ', entering ' + ms.enters.name + ' at ' + P.fmtTime(tz, ms.enters.atMs) + P.relDay(tz, ms.enters.atMs, b) : '')]],
+      [P.iconYoga(), 'Yoga (Sun and Moon together)', d.yoga.name, d.yoga.description, [until(d.yoga.endMs) + ', then ' + d.yoga.next]],
+      [P.iconKarana(), 'Karaṇa (half lunar day)', d.karana.name, d.karana.description, [until(d.karana.endMs) + ', then ' + d.karana.next]]
+    ];
+    var cities = Object.keys(P.PLACES).sort(function (a, c) { return P.PLACES[a][0].localeCompare(P.PLACES[c][0]); }).map(function (k) { return [k, P.PLACES[k][0]]; });
+    if (!P.PLACES[state.place.key]) cities.unshift(['current', state.place.label.charAt(0).toUpperCase() + state.place.label.slice(1)]);
+    if (navigator.geolocation) cities.push(['geo', 'Use my location']);
+    var sel = P.PLACES[state.place.key] ? state.place.key : 'current';
+    var title = enDate(Date.UTC(b.y, b.m - 1, b.d, 12), { weekday: 'long', day: 'numeric', month: 'long' });
+    var sa = sacredList();
+    return '<section class="ept-card etd-pnb ' + cls + '" aria-label="Today’s pañcāṅga">' +
+      '<div class="etd-pnb-head"><svg viewBox="0 0 100 100" width="60" height="60" role="img" aria-label="Moon phase" style="flex:none"><circle cx="50" cy="50" r="44" fill="#2C3F37"/><path d="' + P.moonPath(d.elongation, 50, 50, 44) + '" fill="#E9D3A4"/><circle cx="50" cy="50" r="44" fill="none" stroke="#E9D3A4" stroke-opacity=".45" stroke-width="1"/></svg>' +
+      '<div class="etd-pnb-t"><span class="etd-pnb-eye">Today’s pañcāṅga</span><h2>' + esc(title) + ' <em>· ' + (d.month.adhika ? 'Adhika ' : '') + esc(d.month.name) + ', ' + d.paksha + ' fortnight</em></h2></div>' +
+      '<div class="etd-pnb-ctl"><label>Times for <select data-pn-place>' + cities.map(function (c) { return '<option value="' + esc(c[0]) + '"' + (c[0] === sel ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('') + '</select></label>' +
+      '<button type="button" class="etd-pnb-guide" data-act="pn-about">How to read this</button></div></div>' +
+      (state.geoErr ? '<p class="etd-pnb-err" role="status">' + esc(state.geoErr) + '</p>' : '') +
+      '<ol class="etd-pnb-grid">' + limbs.map(function (l) {
+        return '<li class="etd-pnb-cell"><div class="etd-pnb-ico">' + l[0] + '</div><div class="etd-pnb-body"><p class="etd-pnb-lab">' + l[1] + '</p><p class="etd-pnb-name">' + esc(l[2]) + '</p><p class="etd-pnb-desc">' + esc(l[3]) + '</p>' +
+          '<div class="etd-pnb-when">' + l[4].map(function (w) { return '<p>' + esc(w) + '</p>'; }).join('') + '</div></div></li>'; }).join('') + '</ol>' +
+      '<p class="etd-pnb-foot">Read at sunrise in ' + esc(state.place.label) + ' (' + esc(P.fmtTime(tz, d.sunrise)) + '), the traditional start of the day. Sidereal zodiac (Lahiri); months run new moon to new moon.</p>' +
+      (sa.length ? '<div class="etd-pnb-sac"><span class="ept-l">Sacred days ahead</span>' + sa.map(function (x) {
+        return '<div class="etd-sdp"><span class="ept-mono">' + esc(sacredWhen(x.date)) + '</span><span class="etd-sdn"><b>' + esc(x.name) + '</b><span class="ept-s">' + esc(x.note) + '</span></span><span class="etd-away">' + away(x.inDays) + '</span></div>'; }).join('') + '</div>' : '') +
+      '</section>';
   }
-  window.addEventListener('message', function (e) {
-    if (e.origin !== SITE || !e.data || e.data.ep !== 'panchanga-height') return;
-    var h = Math.max(300, Math.min(2000, Math.ceil(Number(e.data.h) || 0)));
-    if (!h) return;
-    state.pnH = h; state.pnReady = true;
-    var f = pageRoot && pageRoot.querySelector('.etd-pn'); if (f) { f.style.height = h + 'px'; f.className = 'etd-pn'; }
-  });
-
-  function moonGlyph(d) {
-    var bg = d.lit <= 2 ? '#1E1A14' : d.lit >= 98 ? '#FBF6EE' : d.waxing ? 'linear-gradient(90deg,#1E1A14 ' + (100 - d.lit) + '%,#FBF6EE ' + (100 - d.lit) + '%)' : 'linear-gradient(90deg,#FBF6EE ' + d.lit + '%,#1E1A14 ' + d.lit + '%)';
-    return '<span class="etd-moon" style="background:' + bg + '" role="img" aria-label="' + esc(d.phase) + '" title="' + esc(d.phase) + '"></span>';
+  // "How to read this": the explainer, in a pop-up over the page (Esc, the button and a click outside all close it)
+  var aboutEl = null, aboutFrom = null;
+  function aboutKey(e) { if (e.key === 'Escape') closeAbout(); }
+  function closeAbout() {
+    if (!aboutEl) return;
+    document.removeEventListener('keydown', aboutKey); aboutEl.remove(); aboutEl = null;
+    if (aboutFrom && document.body.contains(aboutFrom)) aboutFrom.focus(); aboutFrom = null;
   }
-  function geoHtml() {
-    if (state.geoBusy) return '<span class="ept-s" role="status">Finding your location…</span>';
-    if (state.geo) return '<button type="button" class="etd-geo" data-act="geo-off">Tithi for your location · use my time zone instead</button>';
-    return '<button type="button" class="etd-geo" data-act="geo">Use my location for an exact tithi</button>';
-  }
-  function moonHtml() {
-    var m = state.data && state.data.moon, sa = (state.data && state.data.sacred) || [];
-    if (!m) return '';
-    var out = '<section class="ept-card etd-card" aria-labelledby="etd-moon"><div class="ept-ch"><h2 id="etd-moon" class="ept-h2">This week’s moon</h2>' + geoHtml() + '</div>' +
-      '<div class="etd-moons" role="list">' + m.days.map(function (d) {
-        return '<div role="listitem" class="etd-md' + (d.today ? ' now' : '') + '"><span class="ept-l">' + esc(d.dow) + '</span>' + moonGlyph(d) + '<span class="etd-note">' + (d.today ? 'Today' : '') + '</span></div>'; }).join('') + '</div>' +
-      (state.geoErr ? '<span class="ept-err" role="status">' + esc(state.geoErr) + '</span>' : '');
-    if (sa.length) out += '<div class="etd-sacred"><span class="ept-l">Sacred days ahead</span>' + sa.map(function (x) {
-      return '<div class="etd-sd"><span class="ept-mono">' + esc(niceDate(x.date)) + '</span><span class="etd-sdn"><b>' + esc(x.name) + '</b><span class="ept-s">' + esc(x.note) + '</span></span><span class="etd-away">' + away(x.inDays) + '</span></div>'; }).join('') +
-      '<span class="ept-s">Dates as reckoned for the US; some fall a day differently where you are.</span></div>';
-    return out + '</section>';
+  function openAbout(from) {
+    var A = window.EPPanchanga && window.EPPanchanga.ABOUT; if (!A || aboutEl) return;
+    aboutFrom = from || null;
+    var o = document.createElement('div'); o.className = 'etd-about'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-labelledby', 'etd-about-t');
+    o.innerHTML = '<div class="etd-about-c" tabindex="-1"><h2 id="etd-about-t">' + A.title + '</h2>' + A.intro.map(function (t) { return '<p>' + t + '</p>'; }).join('') +
+      '<h3>' + A.limbsTitle + '</h3><dl>' + A.limbs.map(function (l) { return '<dt>' + l[0] + '</dt><dd>' + l[1] + '</dd>'; }).join('') + '</dl>' +
+      '<h3>' + A.readTitle + '</h3>' + A.read.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '<button type="button" class="etd-about-x">Close</button></div>';
+    o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('.etd-about-x')) closeAbout(); });
+    document.addEventListener('keydown', aboutKey);
+    document.body.appendChild(o); aboutEl = o;
+    o.querySelector('.etd-about-c').focus();
   }
 
   // ---- your enrolment ----
@@ -536,8 +612,8 @@
   function enrolHtml() {
     var d = state.data || {}, cards = d.cards || [], locked = d.locked || [];
     var out = '<div class="etd-div"><span class="ept-l">' + (cards.length ? 'Your enrolment' : 'When you’re ready') + '</span><span class="etd-rule"></span></div>';
-    if (!cards.length) out += '<p class="etd-none">Your practice, the daily teaching and the moon calendar are yours to keep, free. When you join a programme, its sessions and spaces appear here.</p>';
-    out += cards.map(cardHtml).join('') + nudgeBlock();
+    if (!cards.length) out += '<p class="etd-none">Your practice, the daily teaching and the pañcāṅga are yours to keep, free. When you join a programme, its sessions and spaces appear here.</p>';
+    out += (cards.length ? '<div class="etd-cards">' + cards.map(cardHtml).join('') + '</div>' : '') + nudgeBlock();
     if (locked.length) out += '<section aria-labelledby="etd-more"><h2 id="etd-more" class="ept-l etd-morel">Also at Embodied Philosophy</h2><div class="etd-lg">' + locked.map(function (c) {
       return '<a class="etd-lock" href="' + esc(c.href) + '" data-pop target="_blank" rel="noopener"><span class="etd-lt">' + LOCK + esc(c.title) + '</span><span class="ept-s">' + esc(c.line) + '</span><span class="etd-op">Opens with ' + esc(c.opens) + ' →</span></a>'; }).join('') + '</div></section>';
     return out;
@@ -553,7 +629,7 @@
       var sub = e.open ? '<span class="etd-green">Open to everyone</span>' : e.book ? '<a class="etd-red" href="' + esc(e.book) + '" target="_blank" rel="noopener">Book a time</a>' : '<span class="ept-s">' + (e.start ? esc(clock(e.start)) + ' · yours' : '') + '</span>';
       return '<div class="etd-ev"><span class="ept-mono">' + esc(when) + '</span><span class="etd-evt"><b>' + esc(e.title) + '</b>' + sub + '</span></div>'; }).join('');
     out += '<a class="ept-pf" href="' + (cards.length ? '/c/schedule' : SITE + '/events') + '">' + (cards.length ? 'Your full schedule' : 'All events') + '</a></section>';
-    out += panchangaHtml();
+    out += sacredCard();
     if (d.practisingToday) out += '<section class="ept-card etd-card" aria-labelledby="etd-pw"><h2 id="etd-pw" class="ept-h2">Practising with you</h2><span class="ept-s">' + d.practisingToday + ' people logged a sit today.</span></section>';
     return out + '</aside>';
   }
@@ -569,13 +645,13 @@
 
   function pageHtml() {
     var d = state.data, first = state.first || (d && d.firstName) || 'friend';
-    var tithi = d && d.moon && d.moon.tithi ? d.moon.tithi.text : '';
-    var date = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+    var tithi = state.pn && window.EPPanchanga ? window.EPPanchanga.sublineOf(state.pn.day) : '';
+    var date = enDate(Date.now() - new Date().getTimezoneOffset() * 60000, { weekday: 'long', day: 'numeric', month: 'long' }); // the member's own calendar day
     var out = '<header class="etd-top"><span class="ept-l ept-red">' + esc(eyebrow()) + '</span><h1 class="etd-h1">Good ' + greet() + ', <em>' + esc(first) + '</em>.</h1>' +
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
     if (!d) return state.failed ? out + '<p class="ept-err" role="status">We couldn’t load Today just now. Please refresh the page.</p>' : skeletonHtml();
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
-      heroHtml() + teachingHtml() + moonHtml() + enrolHtml() + '</div>' + railHtml() + '</div>';
+      heroHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
     if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + cohortHtml() + '</div>';
     return out;
@@ -696,10 +772,9 @@
     if (t.dataset.x) { var xs = state.extras || []; var i0 = xs.indexOf(t.dataset.x); state.extras = i0 >= 0 ? xs.filter(function (z) { return z !== t.dataset.x; }) : xs.concat([t.dataset.x]); render(); return; }
     if (t.dataset.q) { state.quality = state.quality === t.dataset.q ? '' : t.dataset.q; render(); return; }
     var a = t.dataset.act;
+    if (a === 'pn-about') { openAbout(t); return; }
     if (a === 'len') { state.len = parseInt(t.dataset.len, 10) || 20; local('ep_timer_len', String(state.len)); render(); }
     if (a === 'begin') startTimer();
-    if (a === 'geo') askPlace(false);
-    if (a === 'geo-off') { state.geo = null; local('ep_geo', ''); loadData().then(render); }
     if (a === 'form') { state.form = !state.form; state.error = ''; render(); var i = e.currentTarget.querySelector('input[name=minutes]'); if (i) i.focus(); }
     if (a === 'close') { state.form = false; render(); }
     if (a === 'line-open') { state.lineOpen = true; state.lineErr = ''; render(); var ta = pageRoot.querySelector('#etd-line'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center' }); }
@@ -755,6 +830,7 @@
     pageRoot.addEventListener('click', onClick);
     pageRoot.addEventListener('submit', onSubmit);
     pageRoot.addEventListener('input', onInput);
+    pageRoot.addEventListener('change', function (e) { if (e.target.matches && e.target.matches('select[data-pn-place]')) pnChoose(e.target.value); });
     box.insertBefore(pageRoot, box.firstChild);
     render();
   }
@@ -848,13 +924,13 @@
   function begin() {
     if (beginP) return beginP;
     var giveUp = setTimeout(function () { if (!state.data && !state.failed) { state.failed = true; render(); } }, 20000);
-    beginP = signIn().then(function () { return loadData(); }).then(function () {
+    var engineP = pnLoad(); // the pañcāṅga engine loads alongside sign-in and the data
+    beginP = signIn().then(function () { return Promise.all([loadData(), engineP]); }).then(function () {
       clearTimeout(giveUp);
       var as = (location.search.match(/[?&]as=([a-z_]+)/) || [])[1];
       if (as === 'ss_season' && isAdmin()) { var se = (location.search.match(/[?&]season=([a-z,]+)/) || [])[1]; state.seasons = se ? se.split(',') : ['fall']; }
-      var again = local('ep_geo') === '1' && navigator.geolocation && !!navigator.geolocation.getCurrentPosition;
+      state.pnTried = true; pnCompute(); pnWatch();
       render(); mount();
-      if (again) askPlace(true); // they said yes before: the browser answers quietly, or the page stays on the time zone
       setTimeout(prefetchRest, 800);
     }).catch(function () { clearTimeout(giveUp); abandon(); /* signed out or not available: show nothing */ });
     return beginP;

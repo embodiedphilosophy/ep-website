@@ -21,7 +21,7 @@ positions: no feed, no key, no daily job.
 - **Place order:** address → the viewer's saved choice (`localStorage` key `ep-panchanga-place`) → a city from the device time
   zone → an estimate from its offset. "Use my location" may be blocked inside a Circle frame; the city list always works.
 
-- **On Circle's Today page:** `public/circle/today.js` shows the panel as a card under the moon (an iframe of `/today/panchanga`).
+- **On Circle's Today page:** drawn natively (not an iframe) as a full-width band at the bottom, five limbs side by side (rows on a phone, with the sacred days inside it). It is worked out in the browser by `public/circle/panchanga.js` (`window.EPPanchanga`), a **generated** bundle of `lib/panchanga/*.js` made by `scripts/build-panchanga.mjs` (runs on `npm run build`; `npm test` fails if the committed file is stale, so after changing the engine or its content run `node scripts/build-panchanga.mjs` and commit). Place order: address (`?lat=&lon=&tz=&place=`), the saved choice (`localStorage['ep-panchanga-place']`), a city for the device time zone, then an estimate from its UTC offset; the city list and "Use my location" change it.
   It is the same for every student: it depends on where they are, not on what they have joined. The panel posts its height to
   the page (`{ ep: 'panchanga-height', h }`) so the frame fits with no inner scrollbar; if the student chose an exact location on
   Today, it goes along in the address.

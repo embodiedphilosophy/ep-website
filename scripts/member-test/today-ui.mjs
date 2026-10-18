@@ -35,7 +35,7 @@ const probe = fs.readFileSync(new URL('../../public/circle/probe.js', import.met
 const b = await chromium.launch(); const errs = [];
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
 
-async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '', delay = 0, wait = true } = {}) {
+async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '', delay = 0, wait = true, offer = null } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
   const p = await ctx.newPage(); const calls = [], urls = [], frameSrcs = [], todayHeaders = [], scripts = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
@@ -54,7 +54,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
     calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`); if (path === '/api/member/today') urls.push(u.search);
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
-    if (path === '/api/member/today') { todayHeaders.push(r.request().headers()); if (delay) await new Promise(x => setTimeout(x, delay)); return j(r.request().headers()['x-circle-identity'] ? { ...body, signin: { session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null, admin } } : body); }
+    if (path === '/api/member/today') { todayHeaders.push(r.request().headers()); if (delay) await new Promise(x => setTimeout(x, delay)); return j(r.request().headers()['x-circle-identity'] ? { ...body, signin: { session: 's', tier: { tier, seasons }, firstName: 'Maya', offer, admin } } : body); }
     if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: [], logged: post.minutes }); }
     if (path === '/api/member/cohort') return j({ today: TODAY, rows: [{ name: 'Carolyn', email: 'c@example.com', streak: 0, weekCount: 0, days8w: 0, minutes8w: 0, last: null, daysSince: null, grid: [] }], attention: [{ email: 'c@example.com', name: 'Carolyn', why: 'Hasn’t logged any practice yet' }] });
     if (path === '/api/member/portfolio') return j({ pages: [] });
@@ -199,6 +199,37 @@ console.log('travelogue, milestone: ok');
   await out.close();
 }
 console.log('speed: ok');
+
+// ---- upgrade links open in a pop-up over the dashboard, which stays where it is
+{
+  const OFFER = { key: 'fall_year', eyebrow: 'Before winter opens', title: 'Apply your Fall season to the full year', body: 'Your $497 counts in full.', why: 'You’re enrolled in Fall.', options: [{ label: 'Make it the full year · add $1,300', price: 1300, href: 'https://ss.embodiedphilosophy.com/checkout/sadhana-school-year?coupon=FALLYEAR' }] };
+  const { p, ctx } = await open('ss_season', { seasons: ['fall'], offer: OFFER });
+  const spy = pg => pg.evaluate(() => { const o = window.open; window.__opened = []; window.open = function (...a) { window.__opened.push(a); return o.apply(this, a); }; });
+  await spy(p);
+  const [pop] = await Promise.all([p.waitForEvent('popup'), p.locator('.ept-q-red').first().click()]);
+  const asked = await p.evaluate(() => window.__opened);
+  assert.equal(asked.length, 1); assert.match(asked[0][0], /ss\.embodiedphilosophy\.com\/checkout\/sadhana-school-year\?coupon=FALLYEAR/); assert.equal(asked[0][1], 'ep-upgrade'); assert.match(asked[0][2], /popup=yes,width=520,height=\d+/);
+  assert.equal(await p.locator('.etd-h1').isVisible(), true, 'the dashboard is still there'); assert.ok(p.url().includes('/c/today'), 'and still on Today');
+  await pop.close();
+  // a plain nudge and a locked card too
+  const n = await open('wisdom', { data: await payload('wisdom', [...days, TODAY]) });
+  await spy(n.p);
+  const [pop2] = await Promise.all([n.p.waitForEvent('popup'), n.p.locator('.ept-nudge .ept-q-red').click()]); assert.match((await n.p.evaluate(() => window.__opened)).at(-1)[0], /\/wisdom-school|\/sadhana-school/); assert.equal(await n.p.locator('.etd-h1').isVisible(), true); await pop2.close();
+  const [pop3] = await Promise.all([n.p.waitForEvent('popup'), n.p.locator('.etd-lock').first().click()]); assert.match((await n.p.evaluate(() => window.__opened)).at(-1)[0], /programmes\/.*\/preview/); assert.equal(await n.p.locator('.etd-h1').isVisible(), true);
+  // closing the pop-up makes the page check again, with a fresh sign-in (in case something was bought)
+  const before = n.calls.filter(c => c.includes('/api/member/today')).length;
+  await pop3.close(); await n.p.waitForTimeout(2200);
+  assert.ok(n.calls.filter(c => c.includes('/api/member/today')).length > before, 'checks again after the pop-up closes');
+  assert.ok(n.todayHeaders.at(-1)['x-circle-identity'], 'with a fresh sign-in');
+  // all of them are ordinary links that open in a new tab when scripts can't (and for ctrl/cmd-click)
+  assert.equal(await n.p.locator('a[data-pop]').evaluateAll(a => a.length > 0 && a.every(x => x.target === '_blank' && /noopener/.test(x.rel))), true);
+  await n.ctx.close(); await ctx.close();
+  // on a phone they open in a new tab, not a window, and the dashboard stays
+  const ph = await open('wisdom', { vw: 390, h: 844, data: await payload('wisdom', [...days, TODAY]) });
+  const [tab] = await Promise.all([ph.ctx.waitForEvent('page'), ph.p.locator('.ept-nudge .ept-q-red').click()]);
+  assert.equal(await ph.p.locator('.etd-h1').isVisible(), true, 'phone: dashboard stays'); await tab.close(); await ph.ctx.close();
+}
+console.log('upgrade pop-up: ok');
 
 // ---- Circle's own space banner ("Today in School", New post) is hidden; the top bar and sidebar are left alone; it comes back elsewhere
 {

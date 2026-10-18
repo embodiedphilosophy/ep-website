@@ -28,6 +28,8 @@ const nextConfig = {
     return [
       { source: '/school/sahrdaya-upaya/this-week', headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors https://ss.embodiedphilosophy.com https://embodied-philosophy.circle.so' }] },
       // Today's Pañcāṅga is framed inside Circle (and by the site itself). No X-Frame-Options anywhere: it would override this.
+      // The Circle scripts are kept for five minutes (then checked again in the background), so a repeat visit doesn't wait on them
+      { source: '/circle/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=86400' }] },
       { source: '/today/panchanga', headers: [{ key: 'Content-Security-Policy', value: "frame-ancestors 'self' https://ss.embodiedphilosophy.com https://*.circle.so" }] },
     ];
   },

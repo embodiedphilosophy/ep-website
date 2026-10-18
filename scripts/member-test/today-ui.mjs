@@ -1,6 +1,6 @@
 // The Circle Today page in a real browser: a fake Circle page at /c/today, the real public/circle/today.js, and API
 // answers built with the real lib/ code. Checks what each enrolment sees, the timer, the log, the Travelogue and
-// phone width. Screenshots go to $OUT (default scripts/ops-test/out).
+// phone width. Screenshots go to $OUT (default scripts/ops-test/out). With REAL_PANEL=http://localhost:3200 (a running server) the real pañcāṅga panel is framed instead of a stub, for looking only.
 // Run: node --import ./scripts/ce-test/register.mjs scripts/member-test/today-ui.mjs
 import assert from 'assert/strict';
 import fs from 'fs';
@@ -10,6 +10,7 @@ process.env.MEMBER_SECRET = 'test-secret';
 const { summarise } = await import('../../lib/member/practice.js');
 const { freeToday } = await import('../../lib/member/today.js');
 const P = await import('../../lib/member/programmes.js');
+const HOST = process.env.REAL_PANEL ? 'https://ss.embodiedphilosophy.com' : 'https://ss.example.test'; // look-only runs frame the real panel, which only Circle's own domain may do
 const OUT = process.env.OUT || new URL('../ops-test/out/', import.meta.url).pathname; fs.mkdirSync(OUT, { recursive: true });
 
 const TODAY = '2026-10-17'; // a Saturday
@@ -34,33 +35,35 @@ const probe = fs.readFileSync(new URL('../../public/circle/probe.js', import.met
 const b = await chromium.launch(); const errs = [];
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
 
-async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '' } = {}) {
+async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '', delay = 0, wait = true } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
-  const p = await ctx.newPage(); const calls = [], urls = [], frameSrcs = [];
+  const p = await ctx.newPage(); const calls = [], urls = [], frameSrcs = [], todayHeaders = [], scripts = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
   await p.clock.install({ time: new Date('2026-10-17T10:30:00-04:00') });
   const body = data || await payload(tier);
-  await p.route('https://ss.example.test/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><nav id="top" style="height:56px;width:100%;display:flex;gap:8px"><span>Meditation</span><button>New post</button></nav><div style="display:flex"><aside id="side" style="width:250px;height:600px"><a aria-current="page">Today in School</a><button>New post</button></aside><div id="col" style="flex:1;height:2400px"><div id="banner" style="position:sticky;top:0;height:70px;display:flex;justify-content:space-between"><h1>Today in School</h1><span><button>New post</button><button>⋯</button></span></div><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div></div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
+  await p.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><nav id="top" style="height:56px;width:100%;display:flex;gap:8px"><span>Meditation</span><button>New post</button></nav><div style="display:flex"><aside id="side" style="width:250px;height:600px"><a aria-current="page">Today in School</a><button>New post</button></aside><div id="col" style="flex:1;height:2400px"><div id="banner" style="position:sticky;top:0;height:70px;display:flex;justify-content:space-between"><h1>Today in School</h1><span><button>New post</button><button>⋯</button></span></div><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div></div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
   await p.route('https://www.embodiedphilosophy.com/**', async r => {
     const u = new URL(r.request().url()), m = r.request().method(), path = u.pathname;
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
     const j = o => r.fulfill({ contentType: 'application/json', headers: CORS, body: JSON.stringify(o) });
     if (path === '/circle/today.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js });
+    if (process.env.REAL_PANEL && (path.startsWith('/today/panchanga') || path.startsWith('/_next') || path.startsWith('/brand') || path.startsWith('/kalighat'))) return r.fulfill({ response: await r.fetch({ url: process.env.REAL_PANEL + path + u.search }) }).catch(() => {}); // look-only: the real panel from a running server
     if (path === '/today/panchanga') { frameSrcs.push(u.search); return r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body>stub<script>parent.postMessage({ep:"panchanga-height",h:777},"*")</script>' }); }
+    if (path.startsWith('/circle/') && r.request().resourceType() === 'script') scripts.push(path.slice(8)); // real loads only (not quiet prefetches)
     if (path === '/circle/probe.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: probe });
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
     calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`); if (path === '/api/member/today') urls.push(u.search);
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
-    if (path === '/api/member/today') return j(body);
+    if (path === '/api/member/today') { todayHeaders.push(r.request().headers()); if (delay) await new Promise(x => setTimeout(x, delay)); return j(r.request().headers()['x-circle-identity'] ? { ...body, signin: { session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null, admin } } : body); }
     if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: [], logged: post.minutes }); }
     if (path === '/api/member/cohort') return j({ today: TODAY, rows: [{ name: 'Carolyn', email: 'c@example.com', streak: 0, weekCount: 0, days8w: 0, minutes8w: 0, last: null, daysSince: null, grid: [] }], attention: [{ email: 'c@example.com', name: 'Carolyn', why: 'Hasn’t logged any practice yet' }] });
     if (path === '/api/member/portfolio') return j({ pages: [] });
     if (path === '/api/member/travelogue') return j({ travelogue: m === 'POST' ? [{ id: '1', day: TODAY, text: JSON.parse(r.request().postData()).text }] : [] });
     return j({});
   });
-  await p.goto('https://ss.example.test/c/today' + query);
-  await p.waitForSelector('.etd-h1', { timeout: 8000 });
-  return { p, ctx, calls, urls, frameSrcs };
+  await p.goto(HOST + '/c/today' + query);
+  if (wait) await p.waitForSelector('.etd-h1', { timeout: 8000 });
+  return { p, ctx, calls, urls, frameSrcs, todayHeaders, scripts };
 }
 const text = (p, sel) => p.locator(sel).allInnerTexts();
 
@@ -163,6 +166,40 @@ console.log('timer and log: ok');
 }
 console.log('travelogue, milestone: ok');
 
+// ---- speed: Circle's own page never shows through; one round trip signs in and loads; only the scripts that are needed load
+{
+  const { p, ctx, calls, todayHeaders, scripts } = await open('none', { delay: 1500, wait: false });
+  await p.waitForSelector('.etd-sk', { timeout: 4000 });                    // the placeholder is up long before the data
+  assert.equal(await p.getByText('Circle’s own page').isVisible(), false, 'Circle’s page is never visible while loading');
+  assert.equal(await p.locator('.etd-h1').count(), 0, 'still waiting for the data');
+  await p.waitForSelector('.etd-h1', { timeout: 6000 });
+  assert.equal(await p.locator('.etd-sk').count(), 0, 'placeholder replaced');
+  assert.equal(await p.getByText('Circle’s own page').isVisible(), false);
+  assert.ok(!calls.some(c => c.includes('/api/member/session')), 'no separate sign-in call');
+  assert.equal(calls.filter(c => c.includes('/api/member/today')).length, 1, 'one call for sign-in and data');
+  assert.equal(todayHeaders[0]['x-circle-identity'], 't', 'the first call carries Circle’s identity token'); assert.ok(!todayHeaders[0].authorization);
+  assert.equal(await p.evaluate(() => !!JSON.parse(sessionStorage.getItem('ep_today_session') || 'null')?.session), true, 'session kept for the next visit');
+  await p.waitForTimeout(1500);
+  assert.ok(!scripts.some(x => /^(ce|portfolio|schedule|my-practice|library|this-week)\.js$/.test(x)), 'other pages’ scripts not loaded on Today: ' + scripts);
+  assert.ok(scripts.includes('chat-skin.js'), 'chat restyle still loads');
+  // a reload re-uses the saved session: Bearer, no identity token needed
+  await p.reload(); await p.waitForSelector('.etd-h1', { timeout: 8000 });
+  assert.match(todayHeaders.at(-1).authorization || '', /^Bearer s$/); assert.ok(!todayHeaders.at(-1)['x-circle-identity']);
+  // moving to another Circle page loads that page's script, and gives Circle's page back
+  await p.evaluate(() => history.pushState({}, '', '/c/schedule')); await p.evaluate(() => document.body.appendChild(document.createElement('i'))); await p.waitForTimeout(500);
+  assert.ok(scripts.includes('schedule.js'), 'schedule.js loads when that page opens');
+  assert.equal(await p.getByText('Circle’s own page').isVisible(), true, 'Circle’s page back off Today');
+  await ctx.close();
+  // a signed-out visitor is not left with a blank page
+  const out = await b.newContext({ viewport: { width: 1000, height: 700 } }); const po = await out.newPage();
+  await po.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body><div class="[container-type:inline-size] bg-secondary"><div>Circle sign-in page</div></div><script>window.circleUser={signedIn:false}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
+  await po.route('https://www.embodiedphilosophy.com/**', r => r.request().url().endsWith('/circle/today.js') ? r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js }) : r.fulfill({ contentType: 'text/javascript', body: '' }));
+  await po.goto(HOST + '/c/today'); await po.waitForTimeout(500);
+  assert.equal(await po.getByText('Circle sign-in page').isVisible(), true, 'while waiting, Circle’s page is hidden or shown, never lost');
+  await out.close();
+}
+console.log('speed: ok');
+
 // ---- Circle's own space banner ("Today in School", New post) is hidden; the top bar and sidebar are left alone; it comes back elsewhere
 {
   const { p, ctx } = await open('none');
@@ -186,6 +223,10 @@ console.log('space banner: ok');
   const { p, ctx, frameSrcs } = await open('none');
   await p.waitForSelector('.etd-pn');
   assert.match(await p.locator('.etd-card h2').allInnerTexts().then(a => a.join('|')), /Today’s pañcāṅga/);
+  // it lives in the right-hand column, directly under Coming up
+  assert.deepEqual(await p.locator('.etd-rail > section h2').allInnerTexts(), ['Coming up', 'Today’s pañcāṅga'].concat((await p.locator('.etd-rail > section h2').count()) > 2 ? ['Practising with you'] : []));
+  assert.equal(await p.locator('.etd-main .etd-pn').count(), 0, 'not in the main column');
+  assert.equal(await p.locator('.etd-rail .etd-pn').count(), 1);
   await p.waitForFunction(() => document.querySelector('.etd-pn').style.height === '777px');
   assert.ok(frameSrcs.length >= 1 && !/lat=/.test(frameSrcs[0]), 'no location unless chosen');
   await ctx.grantPermissions(['geolocation']); await ctx.setGeolocation({ latitude: 51.5074, longitude: -0.1278 });

@@ -13,11 +13,12 @@
   };
   // The Sādhana School hub: Circle space slug → the hub's tab. The Circle address's own ?tab= (emails, This week) wins.
   // Confirm both slugs against the real spaces (Circle often adds a short code; those are matched by prefix below).
-  var HUBS = { 'sadhana-school': 'home', 'mentorship': 'mentor' };
+  var HUBS = { 'sadhana-school': 'home', 'mentorship': 'mentor', 'wisdom-school': 'wisdom' };
   var TABS = { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, mentor: 1 };
   function hubKey(s) { for (var k in HUBS) if (s === k || s.indexOf(k + '-') === 0) return k; return null; }
   function hubPath(k) {
     var m = location.search.match(/[?&]tab=([a-z]+)/), t = m && TABS[m[1]] ? m[1] : HUBS[k];
+    if (k === 'wisdom-school') { var w = location.search.match(/[?&]tab=([a-z]+)/); return '/school/wisdom-school' + (w && /^(month|live|pathways|certificates|ce)$/.test(w[1]) && w[1] !== 'month' ? '?tab=' + w[1] : ''); }
     return '/school/sadhana-school' + (t === 'home' ? '' : '?tab=' + t);
   }
   // Pages that are not a season: Circle space slug → our page. "This Week" is a Secret space, so only mentees ever see it;

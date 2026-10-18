@@ -1,0 +1,24 @@
+{
+  "_note": "Staff-editable text and links for the Wisdom School hub (/school/wisdom-school). Pathways come from the Site Pathways tab; the plan comes from the member's Kit tags (Wisdom School / Plus).",
+  "season": "2026",
+  "project": {
+    "title": "The Pilgrimage Project 2026",
+    "stage": "This month",
+    "summary": "This year's project, taken a stage at a time: a monthly lecture, readings and a live session with EP faculty.",
+    "readings": [],
+    "space_url": "https://ss.embodiedphilosophy.com/c/wisdom-school",
+    "next_project": "The Attention Project begins in 2027."
+  },
+  "live": {
+    "title": "Wisdom School Live",
+    "line": "Live sessions and replays for Wisdom School.",
+    "live_url": "https://ss.embodiedphilosophy.com/c/meditation-mondays-live",
+    "replays_url": "https://ss.embodiedphilosophy.com/c/my-practice/sections/1212934/lessons/4723214",
+    "mondays_line": "Meditation Mondays is included with Wisdom School."
+  },
+  "plus_url": "https://www.embodiedphilosophy.com/wisdom-school",
+  "plus_banner": "Wisdom School Plus opens every Learning Pathway, the certificate programmes and Yoga Alliance CE credits.",
+  "certificate_urls": {},
+  "ce_page": "https://ss.embodiedphilosophy.com/c/ce-credits",
+  "join_url": "https://www.embodiedphilosophy.com/programmes/wisdom-school/preview"
+}

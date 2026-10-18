@@ -21,6 +21,11 @@ positions: no feed, no key, no daily job.
 - **Place order:** address → the viewer's saved choice (`localStorage` key `ep-panchanga-place`) → a city from the device time
   zone → an estimate from its offset. "Use my location" may be blocked inside a Circle frame; the city list always works.
 
+- **On Circle's Today page:** `public/circle/today.js` shows the panel as a card under the moon (an iframe of `/today/panchanga`).
+  It is the same for every student: it depends on where they are, not on what they have joined. The panel posts its height to
+  the page (`{ ep: 'panchanga-height', h }`) so the frame fits with no inner scrollbar; if the student chose an exact location on
+  Today, it goes along in the address.
+
 ## How it is worked out
 - Sun: Meeus ch. 25. Moon: Meeus ch. 47 (full 60-term series, A1/A2, nutation, about 10″). Lahiri ayanāṃśa, 23.853° at J2000 + 50.28″/yr; ΔT fixed at 69 s.
 - tithi = ⌊elongation / 12°⌋; nakṣatra = ⌊sidereal Moon / 13°20′⌋; yoga = ⌊(sidereal Sun + Moon) / 13°20′⌋; karaṇa = ⌊elongation / 6°⌋.

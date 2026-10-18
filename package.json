@@ -7,7 +7,8 @@
     "dev": "next dev",
     "prebuild": "node scripts/lp-index.mjs",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node scripts/panchanga-test/check.mjs && node --import ./scripts/ce-test/register.mjs scripts/panchanga-test/api.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

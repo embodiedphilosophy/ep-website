@@ -26,6 +26,36 @@
   }
   if (!window.__epChatSkin) { var cs = document.createElement('script'); cs.src = BASE + 'chat-skin.js'; cs.defer = true; document.head.appendChild(cs); }
   loadFor(location.pathname);
+
+  // The "Messages" link in the top bar goes to the Kula chat space (/c/kula-chats), which only Sādhana School students are in.
+  // Everyone else sees it locked, and it takes them to the Sādhana School page instead of Circle's "not found".
+  (function () {
+    var MSG = /\/c\/kula-chats\/?$/, LP = 'https://www.embodiedphilosophy.com/programmes/sadhana-school/preview', locked = null, asked = false;
+    var LK = '<svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true" style="margin-right:4px;vertical-align:-1px"><rect x="2" y="5.5" width="8" height="5.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
+    function paint() {
+      if (!locked) return;
+      var links = document.querySelectorAll('a[href]');
+      for (var i = 0; i < links.length; i++) {
+        var a = links[i]; if (a.dataset.epLocked || !MSG.test(a.getAttribute('href') || '') || a.closest('.etd, .eps')) continue;
+        a.dataset.epLocked = '1'; a.setAttribute('href', LP); a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener');
+        a.setAttribute('aria-label', 'Messages, locked: part of Sādhana School'); a.style.opacity = '.7';
+        var t = a.querySelector('span') || a; t.insertAdjacentHTML('afterbegin', LK);
+        a.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); window.open(LP, '_blank', 'noopener'); }, true);
+      }
+    }
+    function ask() {
+      if (asked) return; var u = window.circleUser; if (!u || !u.signedIn) return; asked = true;
+      if (u.isAdmin) { locked = false; return; }
+      try { var c = sessionStorage.getItem('ep_msg_locked'); if (c) { locked = c === '1'; paint(); } } catch (e) {}
+      fetch('/internal_api/spaces/2912499', { headers: { accept: 'application/json' }, credentials: 'include' })
+        .then(function (r) { return r.ok ? r.json() : { is_space_member: false }; })
+        .then(function (j) { locked = j.is_space_member === false; try { sessionStorage.setItem('ep_msg_locked', locked ? '1' : '0'); } catch (e) {} paint(); })
+        .catch(function () {});
+    }
+    var n = 0; (function wait() { ask(); if (!asked && ++n < 60) setTimeout(wait, 150); })();
+    var pt = null; new MutationObserver(function () { if (pt || !locked) return; pt = setTimeout(function () { pt = null; paint(); }, 120); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  })();
   try { if (/[?&]epdebug=1/.test(location.search) || sessionStorage.getItem('ep_probe') === '1') addScript('probe'); } catch (e) {} // the helper at once when asked for
 
   var API = 'https://www.embodiedphilosophy.com';

@@ -12,7 +12,7 @@
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   var LEVELS = ['Foundations', 'Deepening', 'Advanced'];
   var SHOWN = 5; // topic chips before "+ N more topics"
-  var state = { session: null, data: null, error: '', dept: store(DKEY) || '', all: false, msg: '' };
+  var state = { session: null, data: null, error: '', dept: store(DKEY) || '', all: false, msg: '', joined: null };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -49,11 +49,32 @@
       });
   }
   var CKEY = function () { return 'ep_library_data_' + ((window.circleUser && window.circleUser.email) || ''); };
-  function keep() { if (state.data) store(CKEY(), JSON.stringify(state.data)); }
-  function cached() { try { return JSON.parse(store(CKEY()) || 'null'); } catch (e) { return null; } }
+  function keep() { if (state.data) store(CKEY(), JSON.stringify({ d: state.data, j: state.joined })); }
+  function cached() { try { var c = JSON.parse(store(CKEY()) || 'null'); if (c && c.d) { state.joined = c.j || null; return c.d; } return null; } catch (e) { return null; } }
   function load() {
-    return call('/api/member/library').then(function (d) { state.data = d; state.error = ''; keep(); render(); })
+    return Promise.all([call('/api/member/library'), access()]).then(function (r) { state.data = r[0]; state.error = ''; keep(); render(); })
       .catch(function (e) { if (!state.data) state.error = e.message; });
+  }
+  // Which Circle spaces this member has joined, straight from Circle (same browser session), so a space they can't open
+  // shows locked and its card goes to the checkout instead of Circle's "This is a private space" page.
+  function access() {
+    var out = {};
+    function page(n) {
+      return fetch('/internal_api/spaces?per_page=100&page=' + n, { headers: { accept: 'application/json' }, credentials: 'same-origin' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (!j || !j.records) return;
+          j.records.forEach(function (sp) { if (sp && sp.slug) out[sp.slug] = sp.is_space_member !== false; });
+          if (j.has_next_page && n < 5) return page(n + 1);
+        });
+    }
+    return page(1).then(function () { state.joined = out; }, function () { state.joined = null; });
+  }
+  // A card is locked when it points at a Circle space this member hasn't joined (admins see everything open)
+  function lockedItem(i) {
+    if (!state.joined || (state.data && state.data.admin)) return false;
+    var m = /^https:\/\/[^\/]+\/c\/([^\/?#]+)/.exec(i.url || '');
+    return !!(m && state.joined[m[1]] === false);
   }
 
   function css() {
@@ -78,6 +99,10 @@
       '.elb-lab{padding-right:54px;min-height:24px}',
       '.elb-fmt{display:inline-block;padding:3px 10px;border-radius:99px;background:#F1E4CC;color:#7A3220;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}',
       '.elb-note{font-size:12px;color:#5A5346;letter-spacing:.02em}',
+      '.elb-card.is-locked{background:#F4EDDF}.elb-card.is-locked .elb-t{color:#5A5346}',
+      '.elb-lock{display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#5A5346}',
+      '.elb-lock svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8}',
+      '.elb-get{font-size:13px;font-weight:600;color:#A5432A;text-decoration:underline;text-underline-offset:3px}',
       '.elb-t{margin:0;padding-right:48px;font:600 23px/1.2 "Cormorant Garamond",Georgia,serif;color:#1E1A14}',
       '.elb-t a::after{content:"";position:absolute;inset:0;border-radius:12px}',
       '.elb-by{font-size:13px;color:#5A5346;margin-top:auto}',
@@ -96,6 +121,7 @@
 
   var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.7l6.1-.9z" stroke-linejoin="round"/></svg>';
   var STARRED = '*starred*';
+  var LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 
   function html() {
     function dbg(d) { return /epdebug=1/.test(location.search) ? '<p class="elb-none">Debug: ' + esc(JSON.stringify({ source: d.source, unavailable: d.unavailable })) + '</p>' : ''; }
@@ -120,10 +146,10 @@
     var cols = LEVELS.map(function (lv) {
       var here = items.filter(function (i) { return i.level === lv; });
       return '<div class="elb-col"><h2>' + lv + '</h2><div class="elb-stack">' + (here.length ? here.map(function (i) {
-        var on = !!stars[i.id];
-        return '<article class="elb-card"><div class="elb-lab">' + (i.label ? '<span class="elb-fmt">' + esc(i.label) + '</span>' : '') + '</div>' +
+        var on = !!stars[i.id], locked = lockedItem(i), href = locked ? (i.checkout || i.url) : i.url;
+        return '<article class="elb-card' + (locked ? ' is-locked' : '') + '"><div class="elb-lab">' + (i.label ? '<span class="elb-fmt">' + esc(i.label) + '</span>' : '') + (locked ? '<span class="elb-lock">' + LOCK + 'Locked</span>' : '') + '</div>' +
           '<button type="button" class="elb-star" data-act="star" data-id="' + esc(i.id) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Remove star from ' : 'Star ') + esc(i.title) + '">' + STAR + '</button>' +
-          '<h3 class="elb-t">' + link(i.url, esc(i.title), '') + '</h3>' + (i.note ? '<div class="elb-note">' + esc(i.note) + '</div>' : '') + (i.teachers ? '<div class="elb-by">' + esc(i.teachers) + '</div>' : '') + '</article>';
+          '<h3 class="elb-t">' + link(href, esc(i.title), '') + '</h3>' + (i.note ? '<div class="elb-note">' + esc(i.note) + '</div>' : '') + (i.teachers ? '<div class="elb-by">' + esc(i.teachers) + '</div>' : '') + (locked && i.checkout ? '<span class="elb-get">Get access</span>' : '') + '</article>';
       }).join('') : '<p class="elb-none">Nothing here yet.</p>') + '</div></div>';
     }).join('');
     return head + '<h1 class="elb-h1">' + (cur === STARRED ? 'Starred' : esc(cur)) + '</h1>' + (state.msg ? '<p class="elb-err" role="alert">' + esc(state.msg) + '</p>' : '') +

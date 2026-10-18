@@ -85,3 +85,10 @@ console.log('library: ok');
   if (L.circleRows(sp, []).length !== 0) throw new Error('unfiled non-course spaces stay out');
   console.log('library filed spaces: ok');
 }
+{
+  // A topic row's checkout_url rides along, so a member without access can be sent to the checkout
+  const idx = L.topicIndex([{ circle_space_id: '31', title: 'Season', topic: 'Kashmir Śaivism & Tantra', format: 'On-Demand Sādhana', checkout_url: 'https://ss.embodiedphilosophy.com/checkout/x', show: 'TRUE' }]);
+  const lib = L.shapeLibrary([L.applyTopic({ space_id: '31', department: 'Archive', title: 'Season', url: 'https://ss.embodiedphilosophy.com/c/season' }, idx, '31')], 'none', false, idx.order);
+  if (lib.items[0].checkout !== 'https://ss.embodiedphilosophy.com/checkout/x') throw new Error('checkout carried');
+  console.log('library checkout: ok');
+}

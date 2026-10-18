@@ -1,6 +1,6 @@
 // The Circle Today page in a real browser: a fake Circle page at /c/today, the real public/circle/today.js, and API
 // answers built with the real lib/ code. Checks what each enrolment sees, the timer, the log, the Travelogue and
-// phone width. Screenshots go to $OUT (default scripts/ops-test/out).
+// phone width. Screenshots go to $OUT (default scripts/ops-test/out). With REAL_PANEL=http://localhost:3200 (a running server) the real pañcāṅga panel is framed instead of a stub, for looking only.
 // Run: node --import ./scripts/ce-test/register.mjs scripts/member-test/today-ui.mjs
 import assert from 'assert/strict';
 import fs from 'fs';
@@ -10,6 +10,7 @@ process.env.MEMBER_SECRET = 'test-secret';
 const { summarise } = await import('../../lib/member/practice.js');
 const { freeToday } = await import('../../lib/member/today.js');
 const P = await import('../../lib/member/programmes.js');
+const HOST = process.env.REAL_PANEL ? 'https://ss.embodiedphilosophy.com' : 'https://ss.example.test'; // look-only runs frame the real panel, which only Circle's own domain may do
 const OUT = process.env.OUT || new URL('../ops-test/out/', import.meta.url).pathname; fs.mkdirSync(OUT, { recursive: true });
 
 const TODAY = '2026-10-17'; // a Saturday
@@ -40,12 +41,13 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
   await p.clock.install({ time: new Date('2026-10-17T10:30:00-04:00') });
   const body = data || await payload(tier);
-  await p.route('https://ss.example.test/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><nav id="top" style="height:56px;width:100%;display:flex;gap:8px"><span>Meditation</span><button>New post</button></nav><div style="display:flex"><aside id="side" style="width:250px;height:600px"><a aria-current="page">Today in School</a><button>New post</button></aside><div id="col" style="flex:1;height:2400px"><div id="banner" style="position:sticky;top:0;height:70px;display:flex;justify-content:space-between"><h1>Today in School</h1><span><button>New post</button><button>⋯</button></span></div><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div></div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
+  await p.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><nav id="top" style="height:56px;width:100%;display:flex;gap:8px"><span>Meditation</span><button>New post</button></nav><div style="display:flex"><aside id="side" style="width:250px;height:600px"><a aria-current="page">Today in School</a><button>New post</button></aside><div id="col" style="flex:1;height:2400px"><div id="banner" style="position:sticky;top:0;height:70px;display:flex;justify-content:space-between"><h1>Today in School</h1><span><button>New post</button><button>⋯</button></span></div><div class="[container-type:inline-size] bg-secondary"><div>Circle’s own page</div></div></div></div><script>window.circleUser={signedIn:true,identityToken:"t",isAdmin:' + admin + '}</script><script src="https://www.embodiedphilosophy.com/circle/today.js"></script>' }));
   await p.route('https://www.embodiedphilosophy.com/**', async r => {
     const u = new URL(r.request().url()), m = r.request().method(), path = u.pathname;
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
     const j = o => r.fulfill({ contentType: 'application/json', headers: CORS, body: JSON.stringify(o) });
     if (path === '/circle/today.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: js });
+    if (process.env.REAL_PANEL && (path.startsWith('/today/panchanga') || path.startsWith('/_next') || path.startsWith('/brand') || path.startsWith('/kalighat'))) return r.fulfill({ response: await r.fetch({ url: process.env.REAL_PANEL + path + u.search }) }).catch(() => {}); // look-only: the real panel from a running server
     if (path === '/today/panchanga') { frameSrcs.push(u.search); return r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body>stub<script>parent.postMessage({ep:"panchanga-height",h:777},"*")</script>' }); }
     if (path === '/circle/probe.js') return r.fulfill({ contentType: 'text/javascript; charset=utf-8', body: probe });
     if (path.startsWith('/circle/')) return r.fulfill({ contentType: 'text/javascript', body: '' });
@@ -58,7 +60,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (path === '/api/member/travelogue') return j({ travelogue: m === 'POST' ? [{ id: '1', day: TODAY, text: JSON.parse(r.request().postData()).text }] : [] });
     return j({});
   });
-  await p.goto('https://ss.example.test/c/today' + query);
+  await p.goto(HOST + '/c/today' + query);
   await p.waitForSelector('.etd-h1', { timeout: 8000 });
   return { p, ctx, calls, urls, frameSrcs };
 }
@@ -186,6 +188,10 @@ console.log('space banner: ok');
   const { p, ctx, frameSrcs } = await open('none');
   await p.waitForSelector('.etd-pn');
   assert.match(await p.locator('.etd-card h2').allInnerTexts().then(a => a.join('|')), /Today’s pañcāṅga/);
+  // it lives in the right-hand column, directly under Coming up
+  assert.deepEqual(await p.locator('.etd-rail > section h2').allInnerTexts(), ['Coming up', 'Today’s pañcāṅga'].concat((await p.locator('.etd-rail > section h2').count()) > 2 ? ['Practising with you'] : []));
+  assert.equal(await p.locator('.etd-main .etd-pn').count(), 0, 'not in the main column');
+  assert.equal(await p.locator('.etd-rail .etd-pn').count(), 1);
   await p.waitForFunction(() => document.querySelector('.etd-pn').style.height === '777px');
   assert.ok(frameSrcs.length >= 1 && !/lat=/.test(frameSrcs[0]), 'no location unless chosen');
   await ctx.grantPermissions(['geolocation']); await ctx.setGeolocation({ latitude: 51.5074, longitude: -0.1278 });

@@ -367,7 +367,8 @@
       '.etd-lab{display:flex;flex-direction:column;gap:6px;color:#C8BEAC}.etd-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}',
       '.etd-chip{background:transparent;border:1px solid #5B6E64;color:#F4EDE0;border-radius:999px;min-height:40px;padding:0 12px;cursor:pointer}.etd-chip[aria-pressed="true"]{background:#F4EDE0;color:#16140F}',
       '.etd-err{color:#F0B7A5}',
-      '.etd-pn{display:block;width:100%;max-width:560px;margin:0 auto;border:0;background:transparent}',
+      '.etd-pnc{padding:0;overflow:hidden;gap:0}.etd-pnh{display:flex;flex-direction:column;gap:2px;padding:16px 18px 12px}',
+      '.etd-pn{display:block;width:100%;border:0;background:transparent}',
       '.etd-geo{background:transparent;border:0;padding:0 2px;min-height:44px;font:inherit;font-size:12.5px;color:#A5432A;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:right}',
       '.etd .ept-x{width:44px;height:44px}.etd .ept-q{min-height:44px}.etd .ept-why,.etd-rail>.etd-card>a,.etd-wp,.etd-ev a{min-height:44px;display:inline-flex;align-items:center}.etd-ev a{min-height:44px;margin:-8px 0}',
       '.etd :focus-visible,.etd-timer :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}',
@@ -459,7 +460,7 @@
     return SITE + '/today/panchanga' + (state.geo ? '?lat=' + state.geo.lat + '&lon=' + state.geo.lon + '&tz=' + encodeURIComponent(zone()) + '&place=' + encodeURIComponent('your location') : '');
   }
   function panchangaHtml() {
-    return '<section class="ept-card etd-card" aria-labelledby="etd-pnc"><div class="ept-ch"><h2 id="etd-pnc" class="ept-h2">Today’s pañcāṅga</h2><span class="ept-l">The day’s five limbs</span></div>' +
+    return '<section class="ept-card etd-card etd-pnc" aria-labelledby="etd-pnc"><div class="etd-pnh"><h2 id="etd-pnc" class="ept-h2">Today’s pañcāṅga</h2><span class="ept-l">The day’s five limbs</span></div>' +
       '<iframe class="etd-pn" title="Today’s pañcāṅga" src="' + esc(panchangaSrc()) + '" loading="lazy" scrolling="no" style="height:' + state.pnH + 'px"></iframe></section>';
   }
   window.addEventListener('message', function (e) {
@@ -539,6 +540,7 @@
       var sub = e.open ? '<span class="etd-green">Open to everyone</span>' : e.book ? '<a class="etd-red" href="' + esc(e.book) + '" target="_blank" rel="noopener">Book a time</a>' : '<span class="ept-s">' + (e.start ? esc(clock(e.start)) + ' · yours' : '') + '</span>';
       return '<div class="etd-ev"><span class="ept-mono">' + esc(when) + '</span><span class="etd-evt"><b>' + esc(e.title) + '</b>' + sub + '</span></div>'; }).join('');
     out += '<a class="ept-pf" href="' + (cards.length ? '/c/schedule' : SITE + '/events') + '">' + (cards.length ? 'Your full schedule' : 'All events') + '</a></section>';
+    out += panchangaHtml();
     if (d.practisingToday) out += '<section class="ept-card etd-card" aria-labelledby="etd-pw"><h2 id="etd-pw" class="ept-h2">Practising with you</h2><span class="ept-s">' + d.practisingToday + ' people logged a sit today.</span></section>';
     return out + '</aside>';
   }
@@ -551,7 +553,7 @@
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
     if (!d) return out + '<p class="' + (state.failed ? 'ept-err' : 'ept-s') + '" role="status">' + esc(state.failed ? 'We couldn’t load Today just now. Please refresh the page.' : 'Loading…') + '</p>';
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
-      heroHtml() + teachingHtml() + moonHtml() + panchangaHtml() + enrolHtml() + '</div>' + railHtml() + '</div>';
+      heroHtml() + teachingHtml() + moonHtml() + enrolHtml() + '</div>' + railHtml() + '</div>';
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
     if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + cohortHtml() + '</div>';
     return out;

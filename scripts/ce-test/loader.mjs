@@ -7,7 +7,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 export async function resolve(spec, ctx, next) {
   if (spec.startsWith('@/')) spec = pathToFileURL(path.join(ROOT, spec.slice(2))).href;
   try { return await next(spec, ctx); }
-  catch (e) { if (!/\.[a-z]+$/.test(spec) && (spec.startsWith('.') || spec.startsWith('file:'))) return next(spec + '.js', ctx); throw e; }
+  catch (e) { if (!/\.[a-z]+$/.test(spec) && (spec.startsWith('.') || spec.startsWith('file:') || spec.startsWith('next/'))) return next(spec + '.js', ctx); throw e; }
 }
 export async function load(url, ctx, next) {
   if (url.endsWith('.json')) return { format: 'module', shortCircuit: true, source: 'export default ' + await readFile(fileURLToPath(url), 'utf8') };

@@ -25,7 +25,11 @@ const nextConfig = {
   },
   // "This week" (Sahṛdaya Upāya) is drawn inside Circle only: no other site may frame it
   async headers() {
-    return [{ source: '/school/sahrdaya-upaya/this-week', headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors https://ss.embodiedphilosophy.com https://embodied-philosophy.circle.so' }] }];
+    return [
+      { source: '/school/sahrdaya-upaya/this-week', headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors https://ss.embodiedphilosophy.com https://embodied-philosophy.circle.so' }] },
+      // Today's Pañcāṅga is framed inside Circle (and by the site itself). No X-Frame-Options anywhere: it would override this.
+      { source: '/today/panchanga', headers: [{ key: 'Content-Security-Policy', value: "frame-ancestors 'self' https://ss.embodiedphilosophy.com https://*.circle.so" }] },
+    ];
   },
   async redirects() {
     const r = (source, destination) => ({ source, destination, permanent: true });

@@ -209,10 +209,11 @@
   }
 
   // Draw straight into Circle's workspace (like the Library), so the space's header strip is replaced too
+  // Returns true only when it has just put the page in (so callers draw once, not on every change Circle makes)
   function mount() {
-    if (!PAGE.test(location.pathname)) return;
+    if (!PAGE.test(location.pathname)) return false;
     document.documentElement.classList.add(ON);
-    if (root && document.body.contains(root)) return;
+    if (root && document.body.contains(root)) return false;
     var box = document.querySelector(HOST);
     if (!box) return;
     root = document.createElement('div');
@@ -220,6 +221,7 @@
     root.addEventListener('click', onClick);
     box.insertBefore(root, box.firstChild);
     render();
+    return true;
   }
   // Leaving the page: take ours out and give Circle's back
   function unmount() {
@@ -232,7 +234,7 @@
     if (!PAGE.test(location.pathname)) return;
     css(); document.documentElement.classList.add(ON);
     if (!state.data) state.data = cached(); // last visit's schedule shows at once, then refreshes
-    mount(); render();
+    mount(); // draws only when it newly puts the page in; never redraw here, or every redraw would trigger another
     if (started) return;
     started = true;
     signIn().then(load).catch(function () { if (!state.data) state.error = 'Please sign in to Circle to see your schedule.'; }).then(function () { mount(); render(); });
@@ -244,5 +246,9 @@
   ['pushState', 'replaceState'].forEach(function (k) { var f = history[k]; history[k] = function () { var r = f.apply(this, arguments); check(); return r; }; });
   window.addEventListener('popstate', check);
   var t = null;
-  new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; check(); }, 60); }).observe(document.body, { childList: true, subtree: true });
+  new MutationObserver(function (list) {
+    // our own redraws are not a reason to look again
+    if (root && list.every(function (m) { return root.contains(m.target); })) return;
+    if (t) return; t = setTimeout(function () { t = null; check(); }, 60);
+  }).observe(document.body, { childList: true, subtree: true });
 })();

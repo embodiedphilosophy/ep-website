@@ -1,8 +1,8 @@
-/* Embodied Philosophy · Library by department for Circle (ss.embodiedphilosophy.com/c/library)
+/* Embodied Philosophy · Library by topic for Circle (ss.embodiedphilosophy.com/c/library)
    Loaded by public/circle/today.js (no extra Circle snippet needed). Draws the Library into the space, the same way as "This week"
    (no frame). Each member sees the rows their membership opens (the server decides), and can star items; stars are theirs alone.
    Removes itself when the member goes to another page. Data: /api/member/library (lib/library/load.js), /api/member/library/star.
-   The courses come from Circle itself (the spaces of type course the member can open, grouped by Circle space group), plus Ops → Course Library and Settings → Library items. See docs/library-departments.md. */
+   The courses come from Circle itself (the spaces of type course the member can open), filed by topic from the "Library Topics" tab (topic, second topic, format badge, note); plus Ops → Course Library and Settings → Library items. See docs/library-departments.md. */
 (function () {
   if (window.__epLibrary) return; window.__epLibrary = true;
 
@@ -11,7 +11,7 @@
   var SKEY = 'ep_library_session', DKEY = 'ep_library_dept';
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   var LEVELS = ['Foundations', 'Deepening', 'Advanced'];
-  var SHOWN = 4; // department chips before "+ N more departments"
+  var SHOWN = 5; // topic chips before "+ N more topics"
   var state = { session: null, data: null, error: '', dept: store(DKEY) || '', all: false, msg: '' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -75,7 +75,9 @@
       '.elb-stack{display:grid;gap:14px}',
       '.elb-card{position:relative;background:#FAF5EB;border:1px solid #E2D6BE;border-radius:12px;padding:18px 20px;min-height:128px;display:flex;flex-direction:column;gap:12px}',
       '.elb-card:hover{border-color:#A5432A}',
-      '.elb-lab{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#A5432A;padding-right:54px;min-height:16px}',
+      '.elb-lab{padding-right:54px;min-height:24px}',
+      '.elb-fmt{display:inline-block;padding:3px 10px;border-radius:99px;background:#F1E4CC;color:#7A3220;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}',
+      '.elb-note{font-size:12px;color:#5A5346;letter-spacing:.02em}',
       '.elb-t{margin:0;padding-right:48px;font:600 23px/1.2 "Cormorant Garamond",Georgia,serif;color:#1E1A14}',
       '.elb-t a::after{content:"";position:absolute;inset:0;border-radius:12px}',
       '.elb-by{font-size:13px;color:#5A5346;margin-top:auto}',
@@ -97,7 +99,7 @@
 
   function html() {
     function dbg(d) { return /epdebug=1/.test(location.search) ? '<p class="elb-none">Debug: ' + esc(JSON.stringify({ source: d.source, unavailable: d.unavailable })) + '</p>' : ''; }
-    var head = '<p class="elb-eye">Library · By department</p>';
+    var head = '<p class="elb-eye">Library · By topic</p>';
     if (state.error && !state.data) return head + '<h1 class="elb-h1">Library</h1><p class="elb-none">' + esc(state.error) + '</p>';
     var d = state.data;
     if (!d) return head + '<h1 class="elb-h1">Library</h1><div class="elb-cols"><div class="elb-sk"></div><div class="elb-sk"></div><div class="elb-sk"></div></div>';
@@ -106,22 +108,22 @@
     var depts = d.departments.slice();
     if (!d.items.length) return head + '<h1 class="elb-h1">Library</h1><p class="elb-none">The library is being filled in. Check back soon.</p>' + dbg(d);
     var cur = state.dept === STARRED && starred.length ? STARRED : (depts.some(function (x) { return x.name === state.dept; }) ? state.dept : depts[0].name);
-    var items = cur === STARRED ? starred : d.items.filter(function (i) { return i.department === cur; });
+    var items = cur === STARRED ? starred : d.items.filter(function (i) { return (i.topics || [i.department]).indexOf(cur) >= 0; });
 
     // the selected department is always shown, even when it would fall under "+ N more"
     var show = state.all ? depts : depts.slice(0, SHOWN);
     if (!state.all && cur !== STARRED && !show.some(function (x) { return x.name === cur; })) show = show.slice(0, SHOWN - 1).concat(depts.filter(function (x) { return x.name === cur; }));
     var chips = (starred.length ? '<button type="button" class="elb-chip" data-act="dept" data-name="' + STARRED + '" aria-pressed="' + (cur === STARRED) + '">★ Starred <small>' + starred.length + '</small></button>' : '') +
       show.map(function (x) { return '<button type="button" class="elb-chip" data-act="dept" data-name="' + esc(x.name) + '" aria-pressed="' + (x.name === cur) + '">' + esc(x.name) + ' <small>' + x.count + '</small></button>'; }).join('') +
-      (depts.length > SHOWN ? '<button type="button" class="elb-more" data-act="more">' + (state.all ? 'Show fewer' : '+ ' + (depts.length - show.length) + ' more department' + (depts.length - show.length === 1 ? '' : 's')) + '</button>' : '');
+      (depts.length > SHOWN ? '<button type="button" class="elb-more" data-act="more">' + (state.all ? 'Show fewer' : '+ ' + (depts.length - show.length) + ' more topic' + (depts.length - show.length === 1 ? '' : 's')) + '</button>' : '');
 
     var cols = LEVELS.map(function (lv) {
       var here = items.filter(function (i) { return i.level === lv; });
       return '<div class="elb-col"><h2>' + lv + '</h2><div class="elb-stack">' + (here.length ? here.map(function (i) {
         var on = !!stars[i.id];
-        return '<article class="elb-card"><div class="elb-lab">' + esc(i.label) + '</div>' +
+        return '<article class="elb-card"><div class="elb-lab">' + (i.label ? '<span class="elb-fmt">' + esc(i.label) + '</span>' : '') + '</div>' +
           '<button type="button" class="elb-star" data-act="star" data-id="' + esc(i.id) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Remove star from ' : 'Star ') + esc(i.title) + '">' + STAR + '</button>' +
-          '<h3 class="elb-t">' + link(i.url, esc(i.title), '') + '</h3>' + (i.teachers ? '<div class="elb-by">' + esc(i.teachers) + '</div>' : '') + '</article>';
+          '<h3 class="elb-t">' + link(i.url, esc(i.title), '') + '</h3>' + (i.note ? '<div class="elb-note">' + esc(i.note) + '</div>' : '') + (i.teachers ? '<div class="elb-by">' + esc(i.teachers) + '</div>' : '') + '</article>';
       }).join('') : '<p class="elb-none">Nothing here yet.</p>') + '</div></div>';
     }).join('');
     return head + '<h1 class="elb-h1">' + (cur === STARRED ? 'Starred' : esc(cur)) + '</h1>' + (state.msg ? '<p class="elb-err" role="alert">' + esc(state.msg) + '</p>' : '') +

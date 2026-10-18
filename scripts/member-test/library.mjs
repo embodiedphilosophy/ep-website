@@ -51,3 +51,28 @@ console.log('library: ok');
   if (r.length !== 1 || r[0].department !== 'Wisdom School' || r[0].level !== 'Advanced' || !r[0].url) throw new Error('circle rows');
   console.log('library circle rows: ok');
 }
+{
+  // Library Topics: re-file by topic, second topic, format badge, note, hide; stars keep their ids; topic order from the tab
+  const idx = L.topicIndex([
+    { circle_space_id: '11', title: 'Tantra I', topic: 'Kashmir Śaivism & Tantra', topic_2: 'Meditation & Daily Practice', format: 'On-Demand Sādhana', note: 'Sādhana School · Fall 2025', show: 'TRUE' },
+    { circle_space_id: '', title: 'Sit', topic: 'Meditation & Daily Practice', format: 'Live Series', show: 'TRUE' },
+    { circle_space_id: '13', title: 'Workbook', topic: '', show: 'FALSE' },
+  ]);
+  const raw = [
+    { space_id: '11', department: 'Sādhana School Archive', level: 'Deepening', label: 'Course', title: 'Tantra I (renamed in Circle)', url: 'https://ss.embodiedphilosophy.com/c/t' },
+    { space_id: '', department: 'Programmes', level: '', label: 'Course', title: 'Sit', url: 'https://ss.embodiedphilosophy.com/c/s' },
+    { space_id: '13', department: 'Mentorship', title: 'Workbook' },
+    { space_id: '99', department: 'Workshops', title: 'Unfiled thing' },
+  ];
+  const filed = raw.map(r => L.applyTopic(r, idx, r.space_id));
+  const lib = L.shapeLibrary(filed, 'mentee', false, idx.order);
+  assert.deepEqual(lib.departments.map(d => d.name), ['Kashmir Śaivism & Tantra', 'Meditation & Daily Practice', 'Workshops'], 'topics in tab order, unfiled groups after');
+  assert.equal(lib.departments.find(d => d.name === 'Meditation & Daily Practice').count, 2, 'second topic counts too');
+  const t = lib.items.find(i => i.space_id === undefined && i.title.startsWith('Tantra'));
+  assert.equal(t.department, 'Kashmir Śaivism & Tantra'); assert.equal(t.label, 'On-Demand Sādhana'); assert.equal(t.note, 'Sādhana School · Fall 2025'); assert.equal(t.level, 'Deepening');
+  assert.equal(t.id, L.itemId('Sādhana School Archive', 'Tantra I (renamed in Circle)'), 'star id stays tied to the original department');
+  assert.ok(!lib.items.some(i => i.title === 'Workbook'), 'show = FALSE keeps it out');
+  assert.equal(lib.items.find(i => i.title === 'Sit').label, 'Live Series', 'matched by title when there is no id');
+  assert.deepEqual(L.applyTopic(raw[3], idx, '99'), raw[3], 'no topic row: unchanged');
+  console.log('library topics: ok');
+}

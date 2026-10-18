@@ -4,7 +4,7 @@ import { describeDay } from '../../../lib/panchanga/describe.js';
 import { tzOffset, tzParts, fmtTime, relDay } from '../../../lib/panchanga/engine.js';
 import { PLACES } from '../../../lib/panchanga/places.js';
 import { RASHI_EN, ABOUT } from '../../../lib/panchanga/content.js';
-import { moonPath, iconTithi, iconVara, iconNak, iconYoga, iconKarana } from './icons.js';
+import { moonPath, iconTithi, iconVara, iconNak, iconYoga, iconKarana } from '../../../lib/panchanga/icons.js';
 
 const KEY = 'ep-panchanga-place';
 const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch { return null; } };

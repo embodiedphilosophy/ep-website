@@ -14,9 +14,9 @@ const today = new Date().toISOString().slice(0, 10); // the API only trusts a da
 const log = (n, minutes = 20) => practice.logPractice({ uid: 'u' + n, email: `u${n}@example.com`, day: today, minutes, quality: 'Calm', extras: [] });
 
 // Nobody has sat: all parts still come back, count hidden
-let r = await freeToday({ uid: 'u1', today, tz: 'America/New_York' });
+let r = await freeToday({ uid: 'u1', today });
 assert.equal(r.today, today); assert.equal(r.practice.streak, 0); assert.equal(r.practice.loggedToday, false);
-assert.equal(r.practisingToday, null); assert.equal(r.moon.days.length, 7); assert.equal(r.sacred.length > 0, true);
+assert.equal(r.practisingToday, null); assert.equal(r.moon, undefined, 'the pañcāṅga is worked out in the browser'); assert.equal(r.sacred.length > 0, true);
 assert.ok(r.practice.qualities.includes('Calm'));
 
 // Four people: still hidden (nobody should be identifiable). Five: shown.
@@ -41,14 +41,14 @@ assert.deepEqual(await mins(), { minutes: 600, quality: 'Focused' }, 'capped at 
 await practice.logPractice({ uid: 'u6', email: 'u6@example.com', day: today, minutes: 10, quality: 'Calm', extras: [] });
 assert.equal((await mins()).minutes, 10);
 
-// A bad day from the browser falls back to the server's; bad time zone falls back to New York
-r = await freeToday({ uid: 'u1', today: '1999-01-01', tz: 'Not/AZone' });
-assert.equal(r.today, today); assert.equal(r.moon.place.zone, 'America/New_York');
+// A bad day from the browser falls back to the server's
+r = await freeToday({ uid: 'u1', today: '1999-01-01' });
+assert.equal(r.today, today);
 
 // If the log can't be reached, the free parts still come back
 practice._setSql(() => Promise.reject(new Error('down')));
 r = await freeToday({ uid: 'u1', today });
-assert.equal(r.practice, null); assert.equal(r.practisingToday, null); assert.equal(r.moon.days.length, 7);
+assert.equal(r.practice, null); assert.equal(r.practisingToday, null); assert.ok(r.sacred.length > 0);
 // A mentee's "due this week": null until the mentee record is connected, then a count (no assignments in the sheet → 0)
 const T = await import('../../lib/member/today.js');
 assert.equal(await T.dueThisWeek('u1', today).catch(() => 'err'), null);

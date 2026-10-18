@@ -3,15 +3,15 @@ import { sessionFrom, cors } from '@/lib/member/session';
 import { freeToday } from '@/lib/member/today';
 
 // The free layer of Today, the same for every signed-in member and for the practice app: practice summary, the
-// teaching of the week and the day's question, the moon week and tithi, sacred days ahead, and (when five or
-// more people sat today) how many. GET ?today=YYYY-MM-DD&tz=America/New_York[&lat=..&lon=..]. Needs the session
-// from /api/member/session. lat/lon are optional, used for this answer only and never stored.
+// teaching of the week and the day's question, sacred days ahead, and (when five or more people sat today) how many.
+// GET ?today=YYYY-MM-DD. Needs the session from /api/member/session. The pañcāṅga (moon, tithi and the five limbs)
+// depends on where the viewer is: the app asks /api/panchanga?lat=&lon=&tz= for it.
 export async function GET(req) {
   const h = cors(req);
   const s = sessionFrom(req);
   if (!s) return NextResponse.json({ error: 'Please sign in again' }, { status: 401, headers: h });
   const q = new URL(req.url).searchParams;
-  const data = await freeToday({ uid: s.uid, today: q.get('today'), tz: q.get('tz'), lat: q.get('lat'), lon: q.get('lon') });
+  const data = await freeToday({ uid: s.uid, today: q.get('today') });
   return NextResponse.json({ ...data, firstName: s.firstName || '' }, { headers: h });
 }
 

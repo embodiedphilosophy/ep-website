@@ -14,13 +14,13 @@ const b64 = o => Buffer.from(JSON.stringify(o)).toString('base64url');
 const token = (claims, key = privateKey) => { const h = b64({ alg: 'RS256', typ: 'JWT', kid }), p = b64(claims); return `${h}.${p}.${crypto.sign('RSA-SHA256', Buffer.from(`${h}.${p}`), key).toString('base64url')}`; };
 const now = Math.floor(Date.now() / 1000);
 const good = { iss: 'https://circle.so', aud: 'b39d9096', type: 'identity_token', sub: '42', email: 'student@example.com', first_name: 'Asha', iat: now, exp: now + 300, roles: { admin: false } };
-const call = (headers = {}, qs = '') => GET(new Request('https://x.test/api/member/today?tz=America/New_York' + qs, { headers }));
+const call = (headers = {}, qs = '') => GET(new Request('https://x.test/api/member/today?today=2026-10-17' + qs, { headers }));
 
 // first visit: Circle's token alone signs in and loads, in one call
 let r = await call({ 'x-circle-identity': token(good) }); let j = await r.json();
 assert.equal(r.status, 200); assert.equal(j.firstName, 'Asha'); assert.equal(j.tier, 'none'); assert.equal(j.signin.firstName, 'Asha'); assert.equal(j.signin.tier.tier, 'none');
 assert.equal(readSession(j.signin.session).uid, '42'); assert.equal(readSession(j.signin.session).email, 'student@example.com');
-assert.ok(j.moon.days.length === 7 && j.sacred.length > 0 && Array.isArray(j.locked) && j.locked.length === 4);
+assert.ok(j.sacred.length > 0 && Array.isArray(j.locked) && j.locked.length === 4 && j.moon === undefined);
 assert.match(r.headers.get('server-timing'), /signin;dur=\d+, today;dur=\d+/); assert.match(r.headers.get('access-control-expose-headers'), /Server-Timing/);
 assert.match(r.headers.get('access-control-allow-headers'), /X-Circle-Identity/); assert.equal(r.headers.get('cache-control'), 'no-store');
 // next visit: the saved session, no token, no signin block

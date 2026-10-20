@@ -47,6 +47,7 @@ function Card({ it, tz, now, pinned }) {
   const [going, setGoing] = useState(it.rsvped);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  const [playing, setPlaying] = useState(false);
   const live = it.kind === 'event' && !it.ended;
   const href = it.kind === 'event' ? (it.replayUrl || it.pageUrl || it.url) : it.url;
   const opens = live && !joinOpen(it, now) ? 'Live room opens 10 minutes before' : '';
@@ -70,6 +71,11 @@ function Card({ it, tz, now, pinned }) {
         <h2>{href ? <a href={href} target="_top">{it.title}</a> : it.title}{when && <span className="sch-when"> · {when}</span>}</h2>
         <p className="sch-meta">{meta.join(' · ')}</p>
         {err && <p className="sch-err" role="alert">{err}</p>}
+        {it.video && !live && (playing
+          ? <div className="sch-player" style={{ position: 'relative', paddingTop: '56.25%', marginTop: 12, borderRadius: 8, overflow: 'hidden', background: '#000' }}>
+              <iframe src={`${it.video}&autoplay=1`} title={it.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }} />
+            </div>
+          : <button type="button" className="sch-btn ghost" style={{ marginTop: 10 }} onClick={() => setPlaying(true)}>▶ Watch here</button>)}
       </div>
       {live && (
         joinOpen(it, now) && (it.url || it.pageUrl)

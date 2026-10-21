@@ -14,7 +14,7 @@
   // The Sādhana School hub: Circle space slug → the hub's tab. The Circle address's own ?tab= (emails, This week) wins.
   // Confirm both slugs against the real spaces (Circle often adds a short code; those are matched by prefix below).
   var HUBS = { 'sadhana-school': 'home', 'mentorship': 'mentor' };
-  var TABS = { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, mentor: 1 };
+  var TABS = { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, pods: 1, mentor: 1 };
   function hubKey(s) { for (var k in HUBS) if (s === k || s.indexOf(k + '-') === 0) return k; return null; }
   function hubPath(k) {
     var m = location.search.match(/[?&]tab=([a-z]+)/), t = m && TABS[m[1]] ? m[1] : HUBS[k];

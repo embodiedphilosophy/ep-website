@@ -30,13 +30,14 @@ body:has(.sch-root) > :not(main){display:none !important}
 .sch-composer label{font-weight:600;color:var(--pine)}
 .sch-composer input,.sch-composer textarea{width:100%;font:16px var(--font-sans),sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;min-height:44px}
 .sch-composer-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.sch-pod{grid-template-columns:minmax(0,1fr) auto}
 .sch-empty-page,.sch-center{max-width:560px}
 .sch-empty-page p,.sch-center p{font-size:17px;color:var(--ink5)}
 .sch-center{margin:60px auto;padding:0 24px}
 @media (max-width:700px){
   .sch-main{padding:24px 16px 56px}
   .sch-head h1{font-size:34px}
-  .sch-card{grid-template-columns:minmax(0,1fr);gap:8px;padding:16px}
+  .sch-card,.sch-pod{grid-template-columns:minmax(0,1fr);gap:8px;padding:16px}
   .sch-card .sch-btn{width:100%}
 }
 .sk{background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:skshim 1.4s ease-in-out infinite;border-radius:8px}

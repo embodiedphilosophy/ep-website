@@ -98,3 +98,22 @@ assert.equal(H.buildHome(wkWeek, { config, today: '2026-11-17', tz: 'Europe/Lond
 assert.equal(H.buildHome(wkWeek, { config, today: '2026-12-10', tz: 'Europe/London', workbook: wbk }).home.integrate?.n, 2, 'the most recent immersion');
 assert.equal(H.buildHome(wkWeek, { config, today: '2026-11-17', tz: 'Europe/London' }).home.integrate, null, 'no Circle data → nothing shown');
 console.log('workbook: ok');
+
+// Cohort chat sending: the request Circle asked for (rich_text_body, a document of paragraphs), with Circle faked. Never sent for real in tests.
+process.env.CIRCLE_HEADLESS_TOKEN = 'test';
+const CI = await import('../../lib/school/circle.js');
+const sent = []; const f0 = globalThis.fetch;
+globalThis.fetch = async (u, init = {}) => {
+  const url = String(u), ok = b => ({ ok: true, status: 200, text: async () => JSON.stringify(b) });
+  if (url.includes('/headless/auth_token')) return ok({ access_token: 'T', community_member_id: 7 });
+  sent.push({ url, method: init.method || 'GET', body: init.body ? JSON.parse(init.body) : null, auth: init.headers?.Authorization });
+  return ok({ id: 1 });
+};
+const room = 'df53fdc0-302b-405a-9261-f0a83adbe4fb';
+await CI.sendChatMessage('maya@x.com', room, 'Hello cohort\nSecond line');
+const sc = sent.at(-1);
+assert.equal(sc.method, 'POST'); assert.ok(sc.url.endsWith(`/messages/${room}/chat_room_messages`)); assert.equal(sc.auth, 'Bearer T', 'sent as the member, with their own token');
+assert.deepEqual(sc.body, { rich_text_body: { body: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello cohort' }] }, { type: 'paragraph', content: [{ type: 'text', text: 'Second line' }] }] } } });
+await assert.rejects(() => CI.sendChatMessage('maya@x.com', 'not-a-room', 'x'), /Unknown chat room/);
+globalThis.fetch = f0; delete process.env.CIRCLE_HEADLESS_TOKEN;
+console.log('chat send: ok');

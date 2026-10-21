@@ -1,7 +1,7 @@
 import Events from '@/components/Events';
 import Collage from '@/components/Collage';
 import KitForm from '@/components/KitForm';
-import { getEvents } from '@/lib/events';
+import { getEvents, todayET } from '@/lib/events';
 import { getEpisodes } from '@/lib/podcast';
 import { longDate } from '@/lib/dates';
 import { getSite, getTestimonials } from '@/lib/content';
@@ -20,7 +20,12 @@ export default async function Home() {
   const site = await getSite();
   const quotes = (await getTestimonials('home')).slice(0, 3);
   const [events, episodes] = await Promise.all([getEvents(), getEpisodes(5)]);
-  const nextPublic = events.find(e => e.program === 'lrl' || e.program === 'seasonal');
+  // "Next live": the soonest public live event or course on the website — Living Room Lectures,
+  // seasonal immersions, and Sādhana School rows marked Website = TRUE (season starts, weekend workshops).
+  // Events already under way (start date past, end date not yet) show as "Live now".
+  const today = todayET();
+  const nextPublic = events.find(e => ['lrl', 'seasonal', 'sadhana'].includes(e.program));
+  const liveNow = nextPublic && nextPublic.date < today;
   const sadhanaNext = events.filter(e => e.program === 'sadhana').slice(0, 2);
   const wisdomNext = events.filter(e => e.program === 'wisdom').slice(0, 3);
   const [latest, ...older] = episodes;
@@ -41,7 +46,9 @@ export default async function Home() {
             <div className="next-live">
               <span className="dot" />
               {nextPublic
-                ? <>Next live: <a href="/events">{nextPublic.title.split(':')[0]}</a>, {longDate(nextPublic.date)}</>
+                ? liveNow
+                  ? <>Live now: <a href="/events">{nextPublic.title.split(':')[0]}</a>, through {longDate(nextPublic.end_date)}</>
+                  : <>Next live: <a href="/events">{nextPublic.title.split(':')[0]}</a>, {longDate(nextPublic.date)}</>
                 : <a href="/events">See upcoming events</a>}
             </div>
           </div>

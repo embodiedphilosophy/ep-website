@@ -143,7 +143,7 @@
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
       '.esu-cols>*,.esu-c1>*,.esu-c2>*{order:0}',
-      '[data-g=immersion]{order:1}[data-g=books]{order:2}[data-g=assign]{order:3}[data-g=one]{order:4}[data-g=partner]{order:5}[data-g=hours]{order:6}[data-g=feedback]{order:7}[data-g=room]{order:8}',
+      '[data-g=immersion]{order:1}[data-g=assign]{order:2}[data-g=one]{order:3}[data-g=books]{order:4}[data-g=partner]{order:5}[data-g=hours]{order:6}[data-g=feedback]{order:7}[data-g=room]{order:8}',
       '.esu[data-tab=formation] [data-g=room]{display:none}.esu[data-tab=room] [data-g]:not([data-g=room]){display:none}',
       '.esu-steps{grid-template-columns:minmax(0,1fr)}.esu-grid2{grid-template-columns:minmax(0,1fr)}.esu-h3{font-size:30px}}'
     ].join('\n');
@@ -161,10 +161,10 @@
     var bk = w.home.books;
     if (!bk || (!bk.current && !bk.next)) return '';
     var c = bk.current, n = bk.next;
-    var head = c ? 'Book of the month · month ' + c.month + (bk.total ? ' of ' + bk.total : '') : 'Reading list · starts ' + esc(dayFmt(n.starts, { day: 'numeric', month: 'long' }));
+    var head = c ? 'Book of the month' : 'Reading list', sub = c ? 'Month ' + c.month + (bk.total ? ' of ' + bk.total : '') : 'Starts ' + esc(dayFmt(n.starts, { day: 'numeric', month: 'long' }));
     var m = c || n;
-    return '<section class="esu-card" data-g="books"><div class="esu-hd"><span class="esu-eye">' + head + '</span><button type="button" class="esu-lnk" data-act="all-books">See all the books</button></div>' +
-      '<h2 class="esu-h2" style="margin:0 0 10px;font-style:italic">' + esc(m.theme) + '</h2>' +
+    return '<section class="esu-card" data-g="books"><div class="esu-hd"><span class="esu-eye">' + head + '</span><button type="button" class="esu-lnk" style="white-space:nowrap" data-act="all-books">See all the books</button></div>' +
+      '<div class="esu-ba" style="margin:-4px 0 2px">' + sub + '</div><h2 class="esu-h2" style="margin:0 0 10px;font-style:italic">' + esc(m.theme) + '</h2>' +
       (m.required.length ? '<div class="esu-eye" style="color:#5A5346;margin:8px 0 4px">Required · for your monthly reflection</div>' + m.required.map(bookLine).join('') : '') +
       (m.suggested.length ? '<div class="esu-eye" style="color:#5A5346;margin:12px 0 4px">Suggested · for peer articulation (not assessed)</div>' + m.suggested.map(bookLine).join('') : '') +
       (c && n ? '<p class="esu-muted" style="margin-top:12px;font-size:13px">Next, from ' + esc(dayFmt(n.starts, { day: 'numeric', month: 'long' })) + ': ' + esc(n.theme) + '</p>' : '') + '</section>';
@@ -379,7 +379,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      '<div class="esu-cols"><div class="esu-c1">' + pollCards(w) + immersionCard(w) + bookCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
+      '<div class="esu-cols"><div class="esu-c1">' + pollCards(w) + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
   }
 
   var root = null;

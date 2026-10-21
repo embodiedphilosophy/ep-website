@@ -70,3 +70,10 @@ assert.deepEqual(await CAL.bookedFor('ET1', 'Maya@x.com', now), { start: '2026-1
 delete process.env.CALENDLY_TOKEN; assert.deepEqual(await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now + 1), [], 'no token → button only');
 globalThis.fetch = realFetch;
 console.log('calendly: ok');
+
+// Cohort chat: real message shape (body, sent_at, sender.community_admin), newest last, mentor tag for admins/moderators
+const msg = (id, who, at, extra = {}) => ({ id, body: 'Hello ' + id, sent_at: at, sender: { name: who, community_admin: false, moderator: false, ...extra } });
+const lines = H.chatLines([msg(1, 'Jacob', '2026-10-21T07:32:01Z', { community_admin: true }), msg(2, 'Maya', '2026-10-21T08:00:00Z'), { id: 3, body: '', sent_at: '2026-10-21T09:00:00Z', sender: {} }, msg(4, 'Sam', '2026-10-21T09:30:00Z', { moderator: true })]);
+assert.deepEqual(lines.map(l => [l.who, l.mentor]), [['Jacob', true], ['Maya', false], ['Sam', true]], 'empty messages dropped, mentor tag for admins and moderators');
+assert.equal(H.chatLines(Array.from({ length: 40 }, (_, i) => msg(i, 'x', '2026-10-21T07:' + String(i % 60).padStart(2, '0') + ':00Z'))).length, 30);
+console.log('chat: ok');

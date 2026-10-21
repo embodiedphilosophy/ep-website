@@ -68,3 +68,15 @@ await S.saveSubmission(me, { assignmentId: id2, text: 'with my recording', statu
 const kept = await S.submissionsFor('u1'); assert.equal(kept[id2].hasFile, true, 'saving again without a new file keeps the earlier one'); assert.equal(kept[id2].fileName, 'talk.mp4');
 await S.saveSubmission(me, { assignmentId: 'a2222222222bb', text: '', status: 'submitted' }).then(() => assert.fail('empty'), e => assert.match(e.message, /Write a response/));
 console.log('mentee P1b db: ok');
+// ---- returned notes, and taking back a pending entry ----
+const sid = (await S.openSubmissions()).at(-1);
+await S.returnSubmission(sid.id, '  Lovely. Add one example.  ');
+const back = (await S.submissionsFor('u1'))[id2]; assert.equal(back.status, 'returned'); assert.equal(back.note, 'Lovely. Add one example.');
+await S.saveSubmission(me, { assignmentId: id2, text: 'revised', status: 'submitted' }); assert.equal((await S.submissionsFor('u1'))[id2].note, '', 'the note goes away once it is handed in again');
+await F.addPending('maya@x.com', { component: 'observation', hours: 1, day: '2026-11-18' });
+const pe = (await F.formationFor('maya@x.com')).entries.find(e => e.status === 'pending');
+await F.removePending('other@x.com', pe.id); assert.equal((await F.pendingEntries()).length, 1, 'only the owner can take it back');
+const credited = (await F.formationFor('maya@x.com')).entries.find(e => e.status === 'credited');
+await F.removePending('maya@x.com', credited.id); assert.ok((await F.formationFor('maya@x.com')).entries.some(e => e.id === credited.id), 'a credited entry cannot be taken back');
+await F.removePending('maya@x.com', pe.id); assert.equal((await F.pendingEntries()).length, 0);
+console.log('mentee P1c db: ok');

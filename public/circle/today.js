@@ -215,6 +215,7 @@
         state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet';
       }).catch(function (e) { state.error = e.message; state.failed = true; if (e.status === 401) store('ep_today_session', ''); }),
       mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
+      mentorView() ? api('/api/member/submissions').then(function (r) { state.wait = r; }).catch(function (e) { state.waitErr = e.message; }) : null,
       mentorView() ? api('/api/member/portfolio?shared=1&today=' + localToday()).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
     ]);
   }
@@ -274,6 +275,26 @@
     if (!email || (state.fm || {})[email]) return;
     state.fmErr = '';
     api('/api/member/formation?email=' + encodeURIComponent(email)).then(function (f) { (state.fm = state.fm || {})[email] = f; }).catch(function (e) { state.fmErr = e.message; }).then(render);
+  }
+  // Mentor view: hand-ins to read and hours to confirm (what mentees send from the Sahṛdaya Upāya page)
+  function waitingHtml() {
+    var w = state.wait, nm = {};
+    ((state.cohort && state.cohort.rows) || []).forEach(function (r) { nm[r.email] = r.name; });
+    var who = function (e) { return esc(nm[e] || e); };
+    var out = '<section class="ept-card ept-wide" aria-labelledby="ept-wt"><div class="ept-ch"><h2 id="ept-wt" class="ept-h2">Waiting for you</h2><span class="ept-l">Hand-ins and hours</span></div>';
+    if (!w) return out + '<span class="' + (state.waitErr ? 'ept-err' : 'ept-s') + '">' + esc(state.waitErr || 'Loading…') + '</span></section>';
+    if (state.waitMsg) out += '<span class="ept-err">' + esc(state.waitMsg) + '</span>';
+    if (!w.handins.length && !w.hours.length) return out + '<span class="ept-s">Nothing waiting. New hand-ins and logged hours appear here.</span></section>';
+    out += w.hours.map(function (x) {
+      return '<div class="ept-fr"><span><span class="ept-t">' + who(x.email) + ' · ' + esc(x.component) + ' · ' + fmtH(x.hours) + ' hrs</span><span class="ept-s">' + esc(niceDate(x.day)) + (x.detail ? ' · ' + esc(x.detail) : '') + (x.note ? ' · ' + esc(x.note) : '') + '</span></span>' +
+        '<span><button type="button" class="ept-btn" data-wait="confirm:' + esc(x.id) + '">Confirm</button> <button type="button" class="ept-q" data-wait="decline:' + esc(x.id) + '">Decline</button></span></div>';
+    }).join('');
+    out += w.handins.map(function (x) {
+      return '<div class="ept-fr" style="align-items:flex-start"><span><span class="ept-t">' + who(x.email) + ' · ' + esc(x.title) + '</span><span class="ept-s">' + esc(niceDate(String(x.at).slice(0, 10))) + (x.fileLink ? ' · <a href="' + esc(API + x.fileLink) + '" target="_blank" rel="noopener">' + esc(x.fileName || 'Attached file') + '</a>' : '') + '</span>' +
+        (x.text ? '<span class="ept-s" style="white-space:pre-wrap;display:block;margin-top:4px">' + esc(x.text) + '</span>' : '') + '</span>' +
+        '<button type="button" class="ept-q" data-wait="return:' + esc(x.id) + '">Mark returned</button></div>';
+    }).join('');
+    return out + '</section>';
   }
   function cohortHtml() {
     var c = state.cohort;
@@ -725,7 +746,7 @@
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
       heroHtml() + weekHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
-    if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + cohortHtml() + '</div>';
+    if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + waitingHtml() + cohortHtml() + '</div>';
     return out;
   }
 
@@ -837,8 +858,9 @@
   function onClick(e) {
     var pop = e.target.closest && e.target.closest('a[data-pop]');
     if (pop && pageRoot && pageRoot.contains(pop) && !(e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button)) { if (openPop(pop.href)) e.preventDefault(); return; }
-    var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick],[data-fmdel]');
+    var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick],[data-fmdel],[data-wait]');
     if (!t || !e.currentTarget.contains(t)) return;
+    if (t.dataset.wait) { var wp = t.dataset.wait.split(':'); state.waitMsg = ''; api('/api/member/submissions', { method: 'POST', body: { action: wp[0], id: wp[1] } }).then(function (r) { state.wait = r; }).catch(function (er) { state.waitMsg = er.message; }).then(render); return; }
     if (t.dataset.fmdel) { var em = t.dataset.email; api('/api/member/formation?email=' + encodeURIComponent(em) + '&id=' + encodeURIComponent(t.dataset.fmdel), { method: 'DELETE' }).then(function (f) { state.fm[em] = f; state.fmErr = ''; }).catch(function (er) { state.fmErr = er.message; }).then(render); return; }
     if (t.dataset.pick) { state.pick = state.pick === t.dataset.pick ? '' : t.dataset.pick; render(); loadFm(state.pick); return; }
     if (t.dataset.x) { var xs = state.extras || []; var i0 = xs.indexOf(t.dataset.x); state.extras = i0 >= 0 ? xs.filter(function (z) { return z !== t.dataset.x; }) : xs.concat([t.dataset.x]); render(); return; }

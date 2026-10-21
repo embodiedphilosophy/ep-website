@@ -9,7 +9,7 @@
   var API = 'https://www.embodiedphilosophy.com';
   var PAGE = /^\/c\/mentorship\/?$/;
   var SKEY = 'ep_su_session';
-  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat' };
+  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -24,6 +24,12 @@
     var m = function (s) { return dayFmt(s, { month: 'short' }); }, d = function (s) { return dayFmt(s, { day: 'numeric' }); };
     return m(a) === m(b) ? d(a) + '–' + d(b) + ' ' + m(a) : d(a) + ' ' + m(a) + ' – ' + d(b) + ' ' + m(b);
   }
+  var KINDS = {
+    observation: ['Observation', 'Watching a senior teacher lead, with notes. Up to 10 hours.', 'Who and what you observed'],
+    'practice-teaching': ['Practice-teaching', 'Teaching or co-holding a session. Up to 10 hours.', 'Who and what you taught'],
+    peer: ['Peer articulation', 'Partnered or small-group practice between immersions. Up to 8 hours.', 'Who you practised with, and on what'],
+    retreat: ['Retreat practicum', 'The summer retreat, in person or online. Up to 11 hours.', 'Which retreat sessions']
+  };
   // "Mon 23"
   function wd(s) { return dayFmt(s, { weekday: 'short' }) + ' ' + dayFmt(s, { day: 'numeric' }); }
   function setMentee(v) { window.__epMentee = v; }
@@ -117,6 +123,8 @@
       '.esu-tk{flex:none;min-height:36px;padding:0 14px;border-radius:99px;background:#FBF6EE;border:1px solid #E3D8C6;font:600 13px "IBM Plex Sans",system-ui,sans-serif;color:#1E1A14;cursor:pointer}.esu-tk:disabled{opacity:.55}',
       '.esu-tk.on{background:#20302A;color:#fff;border-color:#20302A}',
       '.esu-sk{height:150px;border-radius:8px;background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:esush 1.4s ease-in-out infinite}@keyframes esush{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.esu-sk{animation:none}}',
+      '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
+      '.esu-dlg{background:#FBF6EE;border-radius:8px;padding:22px 24px;width:100%;max-width:560px;margin:auto}',
       '@media (max-width:760px){',
       '.esu{padding:18px 16px 48px}.esu-h1{font-size:36px}.esu-tabs{display:flex;gap:6px;margin:0 0 14px;background:#E3D8C6;border-radius:99px;padding:4px}',
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
@@ -180,8 +188,8 @@
     }).join('') + '</ul>' : '<p class="esu-muted" style="margin-top:14px">Your record starts with your first observation or Practicum.</p>';
     return '<section class="esu-card" data-g="hours">' + hd('Formation hours', '<span class="esu-mono">' + f.total + ' of ' + f.target + '</span>') + '<div class="esu-bar" style="margin:0 0 14px" role="progressbar" aria-valuemin="0" aria-valuemax="' + f.target + '" aria-valuenow="' + f.total + '" aria-label="Formation hours"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div>' +
       comps + rec +
-      '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" disabled aria-disabled="true">Log hours · coming this week</button></div>' +
-      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Observation, practice-teaching and peer articulation will be logged here soon.</p></section>';
+      '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" data-act="open-hours">Log hours</button></div>' +
+      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Log observation, practice-teaching, peer articulation and retreat practicum here.</p></section>';
   }
 
   function feedbackCard(w) {
@@ -196,10 +204,16 @@
     var sub = a ? 'For Immersion ' + a.n + ' · ' + esc(a.title) + '. ' : '';
     var rows = items.length ? '<ul class="esu-rows">' + items.map(function (it) {
       var due = /^\d{4}-\d\d-\d\d$/.test(it.due) ? dayFmt(it.due, { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-      var status = it.done ? 'Read' : (due ? 'Due ' + due : (it.where || ''));
-      var t = safeUrl(it.url) ? ext(it.url, esc(it.title), '') : esc(it.title);
-      return '<li class="' + (it.done ? 'done' : '') + '"><div class="l"><div class="t">' + t + '</div>' + (status ? '<div class="u">' + esc(status) + '</div>' : '') + '</div>' +
-        '<button type="button" class="esu-tk' + (it.done ? ' on' : '') + '" role="checkbox" aria-checked="' + it.done + '" data-act="tick" data-id="' + esc(it.id) + '" data-done="' + (it.done ? '0' : '1') + '"' + (state.busy === 'tick' + it.id ? ' disabled' : '') + '>' + (it.done ? 'Read ✓' : 'Mark read') + '</button></li>';
+      var t = safeUrl(it.url) ? ext(it.url, esc(it.title), '') : esc(it.title), sub = it.submission, status, action;
+      if (it.type === 'handin') {
+        var inn = sub && sub.status !== 'draft';
+        status = !sub ? (due ? 'Due ' + due : (it.where || '')) : sub.status === 'draft' ? 'Draft saved' : sub.status === 'returned' ? 'Returned by Jacob · ' + dayFmt(sub.at.slice(0, 10), { day: 'numeric', month: 'short' }) : 'Handed in · ' + dayFmt(sub.at.slice(0, 10), { day: 'numeric', month: 'short' }) + ' · with Jacob';
+        action = '<button type="button" class="esu-tk' + (inn && sub.status === 'submitted' ? ' on' : '') + '" data-act="open-handin" data-id="' + esc(it.id) + '">' + (!sub ? 'Hand in' : sub.status === 'draft' ? 'Continue' : sub.status === 'returned' ? 'Hand in again' : 'View') + '</button>';
+      } else {
+        status = it.done ? 'Read' : (due ? 'Due ' + due : (it.where || ''));
+        action = '<button type="button" class="esu-tk' + (it.done ? ' on' : '') + '" role="checkbox" aria-checked="' + it.done + '" data-act="tick" data-id="' + esc(it.id) + '" data-done="' + (it.done ? '0' : '1') + '"' + (state.busy === 'tick' + it.id ? ' disabled' : '') + '>' + (it.done ? 'Read ✓' : 'Mark read') + '</button>';
+      }
+      return '<li class="' + (it.done ? 'done' : '') + '"><div class="l"><div class="t">' + t + '</div>' + (status ? '<div class="u">' + esc(status) + '</div>' : '') + '</div>' + action + '</li>';
     }).join('') + '</ul>' : '<p class="esu-muted">Nothing due this week. Start with <em>Start Here</em> in the Workbook: How This Workbook Works, Your Year at a Glance, The Practice &amp; Study Imperative, and Your Monthly 1-on-1 with Jacob.</p>';
     return '<section class="esu-card" data-g="assign">' + hd('Assignments', d.total ? '<span class="esu-mono">' + d.done + ' / ' + d.total + ' IN</span>' : '') +
       '<p class="esu-muted" style="margin:-4px 0 8px;font-size:13px">' + sub + 'Everything you hand in goes to Jacob and into your formation record.</p>' + rows +
@@ -222,6 +236,42 @@
       '<p class="esu-muted" style="margin-bottom:12px">About an hour of articulation before the immersion.</p>' + ext('mailto:' + p.email, 'Message ' + esc(String(p.name).split(' ')[0]), 'esu-btn out') + '</section>';
   }
 
+  var FIELD = 'display:block;width:100%;font:16px IBM Plex Sans,system-ui,sans-serif;padding:10px 12px;border:1px solid #E3D8C6;border-radius:8px;background:#fff;color:#1E1A14;min-height:44px';
+  function field(label, inner, id) { return '<label for="' + id + '" style="display:block;font-weight:600;font-size:13px;margin:12px 0 4px">' + label + '</label>' + inner; }
+  function modal(w) {
+    var m = state.modal, f = state.form;
+    if (!m) return '';
+    var body = '', b = state.busy === 'modal';
+    if (m.type === 'hours') {
+      var k = KINDS[f.kind] || KINDS.observation;
+      body = '<h2 class="esu-h2">Log hours</h2>' +
+        field('What kind of hours', '<select id="esu-kind" data-in="kind" style="' + FIELD + '">' + Object.keys(KINDS).map(function (x) { return '<option value="' + x + '"' + (x === f.kind ? ' selected' : '') + '>' + KINDS[x][0] + '</option>'; }).join('') + '</select>', 'esu-kind') +
+        '<p class="esu-muted" style="font-size:13px;margin-top:4px">' + esc(k[1]) + '</p>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('Date', '<input id="esu-day" type="date" data-in="day" value="' + esc(f.day) + '" max="' + esc(localToday()) + '" style="' + FIELD + '">', 'esu-day') + '</div><div>' +
+        field('Hours', '<input id="esu-hrs" type="number" inputmode="decimal" step="0.25" min="0.25" max="12" data-in="hours" value="' + esc(f.hours) + '" style="' + FIELD + '">', 'esu-hrs') + '</div></div>' +
+        field(esc(k[2]), '<input id="esu-detail" type="text" maxlength="200" data-in="detail" value="' + esc(f.detail) + '" style="' + FIELD + '">', 'esu-detail') +
+        field('Notes (optional)', '<textarea id="esu-notes" rows="3" maxlength="200" data-in="notes" style="' + FIELD + '">' + esc(f.notes) + '</textarea>', 'esu-notes') +
+        '<p class="esu-muted" style="font-size:13px;margin:10px 0 14px">Jacob confirms each entry. It shows as pending until he does, then counts toward your 100 hours.</p>' +
+        '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-hours"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log these hours') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
+    } else {
+      var a = w.due.items.filter(function (x) { return x.id === m.id; })[0];
+      if (!a) return '';
+      var locked = a.submission && a.submission.status === 'submitted';
+      body = '<div class="esu-eye">Hand in · ' + esc(a.where || 'Assignment') + '</div><h2 class="esu-h2" style="margin:4px 0 10px">' + esc(a.title) + '</h2>' +
+        (a.brief ? '<div style="background:#F1E9DC;border-radius:8px;padding:12px 14px;font-size:14px;white-space:pre-wrap">' + esc(a.brief) + '</div>' : '') +
+        (safeUrl(w.home.workbookUrl) ? '<p style="margin:8px 0 0;font-size:13px">' + ext(w.home.workbookUrl, 'Full brief in the Workbook', '') + '</p>' : '') +
+        field('Your response', '<textarea id="esu-text" rows="7" maxlength="20000" data-in="text" style="' + FIELD + '">' + esc(f.text) + '</textarea>', 'esu-text') +
+        (w.home.filesOn ? field('Attach a file, audio or video <span style="font-weight:400;color:#5A5346">(PDF, Word or a recording, up to 500 MB)</span>', '<input id="esu-file" type="file" data-in="file" accept=".pdf,.doc,.docx,.txt,audio/*,video/*,image/jpeg,image/png" style="font:14px \'IBM Plex Sans\',system-ui,sans-serif;max-width:100%">', 'esu-file') +
+          (f.fileName ? '<p class="esu-muted" style="font-size:13px;margin-top:4px">Attached: ' + esc(f.fileName) + '</p>' : '') : '') +
+        (a.hoursComponent && a.hours && !(a.submission && a.submission.status !== 'draft') ? '<label style="display:flex;gap:8px;align-items:center;margin:12px 0 0;font-size:14px"><input type="checkbox" data-in="logHours"' + (f.logHours ? ' checked' : '') + ' style="width:20px;height:20px"> Also log ' + a.hours + ' h of ' + esc((KINDS[a.hoursComponent] || [a.hoursComponent])[0].toLowerCase()) + '</label>' : '') +
+        '<p class="esu-muted" style="font-size:13px;margin:12px 0 14px">Goes to Jacob and into your formation record. Your Inner Travelogue is never part of this.</p>' +
+        (state.progress ? '<p class="esu-muted" role="status" style="margin:0 0 10px">' + esc(state.progress) + '</p>' : '') +
+        '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="submit-handin"' + (b ? ' disabled' : '') + '>' + (b ? 'Working…' : locked ? 'Hand it in again' : 'Hand it in') + '</button>' +
+        (locked ? '' : '<button type="button" class="esu-btn out" data-act="draft-handin"' + (b ? ' disabled' : '') + '>Save draft</button>') + '<button type="button" class="esu-btn out" data-act="close-modal">Close</button></div>';
+    }
+    return '<div class="esu-ov" data-act="close-modal" data-bg="1"><div class="esu-dlg" role="dialog" aria-modal="true">' + (state.msg ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') + body + '</div></div>';
+  }
+
   function html() {
     if (state.error && !state.data) return '<h1 class="esu-h1">Sahṛdaya Upāya</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
     var w = state.data, name = (w && w.greeting.firstName) || state.first;
@@ -232,17 +282,57 @@
     var tot = f ? '<div class="esu-tot"><b>' + f.total + '</b> <span>of ' + f.target + ' hours</span><div class="esu-bar"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div></div>' : '';
     return head(sub, tot) +
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
-      (state.msg ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
+      (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>';
+      '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w);
   }
 
   var root = null;
   function render() { if (root && document.body.contains(root)) { root.setAttribute('data-tab', state.tab); root.innerHTML = html(); } }
+  function onInput(e) {
+    var k = e.target && e.target.dataset && e.target.dataset.in;
+    if (!k) return;
+    if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
+    state.form[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    if (k === 'kind') render();
+  }
+  // File uploads go straight from the browser to a private store: load the small upload helper on first use
+  function loadBlob() {
+    if (window.EPBlob) return Promise.resolve(window.EPBlob);
+    return new Promise(function (res, no) { var s = document.createElement('script'); s.src = API + '/circle/blob-client.js'; s.onload = function () { window.EPBlob ? res(window.EPBlob) : no(new Error('upload')); }; s.onerror = function () { no(new Error('We couldn’t start the upload. Please try again.')); }; document.head.appendChild(s); });
+  }
+  function sendHandIn(status) {
+    var f = state.form, id = state.modal.id, w = state.data;
+    var a = w.due.items.filter(function (x) { return x.id === id; })[0];
+    state.busy = 'modal'; state.msg = ''; state.progress = ''; render();
+    var up = Promise.resolve(null);
+    if (f.file) {
+      up = loadBlob().then(function (B) {
+        var path = 'submissions/' + w.home.uid + '/' + f.file.name.replace(/[^\w.\- ]+/g, '_');
+        return B.upload(path, f.file, { access: 'private', handleUploadUrl: API + '/api/member/this-week/upload', headers: { Authorization: 'Bearer ' + state.session }, multipart: f.file.size > 20 * 1024 * 1024,
+          onUploadProgress: function (p) { state.progress = 'Uploading ' + Math.round(p.percentage) + '%'; var el = root && root.querySelector('[role=status]'); if (el) el.textContent = state.progress; } });
+      }).then(function (r) { return { path: r.pathname, name: f.file.name }; });
+    }
+    return up.then(function (file) {
+      return call('/api/member/this-week/submit', { id: id, text: f.text || '', status: status, logHours: !!f.logHours, filePath: file ? file.path : f.existingPath || '', fileName: file ? file.name : f.existingName || '', today: localToday(), tz: myZone() });
+    }).then(function (d) { state.data = d; keep(d); state.modal = null; state.form = {}; })
+      .catch(function (e) { state.msg = e.message || 'Something went wrong. Please try again.'; })
+      .then(function () { state.busy = ''; state.progress = ''; render(); });
+  }
   function onClick(e) {
     var t = e.target.closest('[data-act]');
     if (!t || !root.contains(t)) return;
     var a = t.dataset.act;
+    if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
+    if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
+    if (a === 'open-handin') { var it = state.data.due.items.filter(function (x) { return x.id === t.dataset.id; })[0]; var sb = it && it.submission; state.modal = { type: 'handin', id: t.dataset.id }; state.msg = ''; state.form = { text: sb ? sb.text : '', logHours: !!(it && it.hoursComponent), existingName: sb && sb.hasFile ? sb.fileName : '', fileName: sb && sb.hasFile ? sb.fileName : '', existingPath: '' }; render(); return; }
+    if (a === 'save-hours') {
+      var f = state.form;
+      act('modal', function () { return call('/api/member/this-week/hours', { component: f.kind, hours: f.hours, day: f.day, detail: f.detail, note: f.notes, today: localToday(), tz: myZone() }).then(function (d) { state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });
+      return;
+    }
+    if (a === 'submit-handin') { sendHandIn('submitted'); return; }
+    if (a === 'draft-handin') { sendHandIn('draft'); return; }
     if (a === 'tab') { state.tab = t.dataset.tab; render(); window.scrollTo && root.scrollIntoView && root.scrollIntoView({ block: 'start' }); }
     else if (a === 'room') { state.room = t.dataset.tab; render(); }
     else if (a === 'tick') {
@@ -268,7 +358,7 @@
     for (var i = 0; i < box.children.length; i++) box.children[i].style.display = 'none';
     root = document.createElement('div'); root.__box = box;
     root.className = 'esu'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'Sahṛdaya Upāya');
-    root.addEventListener('click', onClick);
+    root.addEventListener('click', onClick); root.addEventListener('input', onInput); root.addEventListener('change', onInput);
     box.insertBefore(root, box.firstChild);
     render();
   }

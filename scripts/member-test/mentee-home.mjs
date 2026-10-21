@@ -46,3 +46,27 @@ assert.equal(withAuto(base, []), base);
 const capped = withAuto(base, Array.from({ length: 9 }, (_, i) => ({ id: 'x' + i, component: 'reflections', hours: 1, day: '2026-1' + (i % 3) + '-01', status: 'credited' })));
 assert.equal(capped.components.find(c => c.id === 'reflections').credited, 6, 'capped at the component target');
 console.log('reflections: ok');
+
+// Calendly: open times and the mentee's own booking, with the API faked (live shapes checked against the real API on 21 Oct 2026)
+process.env.CALENDLY_TOKEN = 'test';
+const CAL = await import('../../lib/mentee/calendly.js');
+const realFetch = globalThis.fetch; const urls = [];
+globalThis.fetch = async u => {
+  urls.push(String(u));
+  const json = b => ({ ok: true, status: 200, json: async () => b });
+  if (String(u).includes('/users/me')) return json({ resource: { uri: 'https://api.calendly.com/users/U1' } });
+  if (String(u).includes('/event_type_available_times')) return json({ collection: [
+    { status: 'available', start_time: '2026-11-24T18:00:00Z', scheduling_url: 'https://calendly.com/embodied-philosophy/x/2026-11-24T18:00:00Z' },
+    { status: 'unavailable', start_time: '2026-11-24T19:00:00Z', scheduling_url: 'https://calendly.com/embodied-philosophy/x/b' },
+    { status: 'available', start_time: '2026-11-25T18:00:00Z', scheduling_url: 'https://evil.example/x' }] });
+  if (String(u).includes('/scheduled_events')) return json({ collection: [{ event_type: 'https://api.calendly.com/event_types/ET1', start_time: '2026-11-25T18:00:00Z', location: { join_url: 'https://zoom.us/j/1' } }, { event_type: 'https://api.calendly.com/event_types/OTHER', start_time: '2026-11-20T18:00:00Z' }] });
+  return { ok: false, status: 404 };
+};
+const now = Date.parse('2026-10-21T07:30:00Z');
+const sl = await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now);
+assert.deepEqual(sl.map(s => s.start), ['2026-11-24T18:00:00Z'], 'only available times, only Calendly links');
+const q = new URL(urls.find(u => u.includes('available_times'))); assert.ok(Date.parse(q.searchParams.get('end_time')) - Date.parse(q.searchParams.get('start_time')) <= 7 * 864e5, 'never asks for more than 7 days');
+assert.deepEqual(await CAL.bookedFor('ET1', 'Maya@x.com', now), { start: '2026-11-25T18:00:00Z', url: 'https://zoom.us/j/1' }, 'matches the one-to-one event type only');
+delete process.env.CALENDLY_TOKEN; assert.deepEqual(await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now + 1), [], 'no token → button only');
+globalThis.fetch = realFetch;
+console.log('calendly: ok');

@@ -5,6 +5,7 @@ import { PROGRAMMES, nyDay } from '@/lib/school/config';
 import { hubItems, hubSettings, hubSeasons } from '@/lib/school/hubconfig';
 import { buildHub, hubTabKey, planOf, postSpaces, resolveItems } from '@/lib/school/hub';
 import { seenOf } from '@/lib/school/seen';
+import { podsEnabled } from '@/lib/pods/logic';
 import Shell from '../Shell';
 import HubView from './HubView';
 
@@ -46,6 +47,7 @@ export default async function Page({ params, searchParams }) {
     ]);
     const posts = {}; ids.forEach((id, i) => { if (postLists[i]) posts[id] = postLists[i]; });
     hub = buildHub({ items, seasons, settings, member, spaceUrls, events, posts, seen, today, now });
+    if (!podsEnabled()) hub.tabs = hub.tabs.filter(t => t.key !== 'pods'); // Study pods stay hidden until STUDY_PODS=on
   } catch (e) {
     return notice(title, e.status === 429 ? 'Circle is busy right now. Please try again in a minute.' : 'We could not reach Circle just now. Please try again in a moment.');
   }

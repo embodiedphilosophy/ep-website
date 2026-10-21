@@ -2,6 +2,8 @@
 
 Student-led study groups. Built 21 Oct 2026 for Jacob Kyle.
 
+**Switched off by default.** The Study pods tab and the student API stay hidden until `STUDY_PODS=on` is set in Vercel (then redeploy); the Ops page works before that, so you can approve leaders first.
+
 **The flow**
 1. Any Sādhana School student (a season, the full year, or a mentee; Circle admins too) opens the **Study pods** tab on the Sādhana School dashboard (`/c/sadhana-school?tab=pods`).
 2. A student who wants to lead **asks to lead a pod** (a short note). Staff approve or decline in **Ops → Settings → "study pods"** (`/ops/settings/pods`, Jacob, Irene and Floss). A declined student can ask again.

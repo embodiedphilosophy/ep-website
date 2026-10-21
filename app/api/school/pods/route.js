@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sameOrigin } from '@/lib/school/session';
 import { podMember } from '@/lib/pods/auth';
-import { podsFor, cleanPod, cleanNote, MIN, MAX, LIVE_ROOMS_URL } from '@/lib/pods/logic';
+import { podsFor, cleanPod, cleanNote, podsEnabled, MIN, MAX, LIVE_ROOMS_URL } from '@/lib/pods/logic';
 import { podsAvailable, leaderOf, listPods, apply, createPod, join, leave, cancelPod } from '@/lib/pods/store';
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +13,7 @@ async function payload(me, extra = {}) {
   return { pods: podsFor(pods, membersBy, me), leader: { status: l?.status || '' }, min: MIN, max: MAX, liveRoomsUrl: LIVE_ROOMS_URL, ...extra };
 }
 const gate = async () => {
+  if (!podsEnabled()) return { res: NextResponse.json({ error: 'Study pods are opening soon.' }, { status: 404, headers: NO_STORE }) };
   const { me, error } = await podMember();
   if (me) return { me };
   return { res: NextResponse.json({ error: error === 'tier' ? 'Study pods are for Sādhana School students.' : 'Please sign in again from Circle.', code: error }, { status: error === 'tier' ? 403 : 401, headers: NO_STORE }) };

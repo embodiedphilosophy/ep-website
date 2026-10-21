@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { currentUser } from '@/lib/ops/auth';
 import { canEditSite } from '@/lib/ops/nav';
 import { podsAvailable, leaders, listPods, decideLeader, cancelPod, setChatUrl } from '@/lib/pods/store';
-import { MIN, MAX } from '@/lib/pods/logic';
+import { MIN, MAX, podsEnabled } from '@/lib/pods/logic';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,9 +12,10 @@ export const dynamic = 'force-dynamic';
 const deny = u => !u ? NextResponse.json({ error: 'Please sign in again' }, { status: 401 }) : !canEditSite(u) ? NextResponse.json({ error: 'Only Jacob, Irene and Floss can manage study pods' }, { status: 403 }) : null;
 
 async function state() {
+  const on = podsEnabled();
   const [ls, { pods, membersBy }] = await Promise.all([leaders(), listPods({ all: true })]);
   return {
-    min: MIN, max: MAX,
+    min: MIN, max: MAX, enabled: on,
     leaders: ls.map(l => ({ uid: l.uid, name: l.name, email: l.email, note: l.note, status: l.status, at: l.applied_at })),
     pods: pods.map(p => { const ms = membersBy[String(p.id)] || []; return { id: String(p.id), topic: p.topic, leader: p.leader_name, leaderEmail: p.leader_email, status: p.status, count: ms.length, chatUrl: p.chat_url, needsChat: p.status === 'active' && !p.chat_url, members: ms.map(m => m.name), created: p.created_at }; }),
   };

@@ -1,4 +1,5 @@
 {
+  "enabled": false,
   "min": 5,
   "max": 10,
   "max_open_per_leader": 2,

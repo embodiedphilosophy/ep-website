@@ -34,6 +34,7 @@ export default function PodsAdmin() {
   return (
     <section className="ops-pods">
       <p className="ops-empty">Students on the Sādhana School dashboard (Study pods tab) can ask to lead a study pod. You approve leaders here. A pod begins when {data.min} students have joined (the leader counts) and holds up to {data.max}.</p>
+      {!data.enabled && <p className="ops-empty" role="alert"><strong>Study pods are switched off for students.</strong> You can set things up here first. To open them to students, set <code>STUDY_PODS</code> to <code>on</code> in Vercel (Settings → Environment Variables) and redeploy.</p>}
       {msg?.error && <p className="ops-empty" role="alert">{msg.error}</p>}
       {msg?.ok && <p className="ops-empty" role="status">{msg.ok}</p>}
 

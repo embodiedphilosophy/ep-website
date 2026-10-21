@@ -30,6 +30,7 @@
     peer: ['Peer articulation', 'Partnered or small-group practice between immersions. Up to 8 hours.', 'Who you practised with, and on what'],
     retreat: ['Retreat practicum', 'The summer retreat, in person or online. Up to 11 hours.', 'Which retreat sessions']
   };
+  function fmtTime(iso, opts) { try { return new Date(iso).toLocaleString(undefined, Object.assign({ timeZone: myZone() }, opts)); } catch (e) { return ''; } }
   // "Mon 23"
   function wd(s) { return dayFmt(s, { weekday: 'short' }) + ' ' + dayFmt(s, { day: 'numeric' }); }
   function setMentee(v) { window.__epMentee = v; }
@@ -123,6 +124,9 @@
       '.esu-tk{flex:none;min-height:36px;padding:0 14px;border-radius:99px;background:#FBF6EE;border:1px solid #E3D8C6;font:600 13px "IBM Plex Sans",system-ui,sans-serif;color:#1E1A14;cursor:pointer}.esu-tk:disabled{opacity:.55}',
       '.esu-tk.on{background:#20302A;color:#fff;border-color:#20302A}',
       '.esu-sk{height:150px;border-radius:8px;background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:esush 1.4s ease-in-out infinite}@keyframes esush{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.esu-sk{animation:none}}',
+      '.esu-chat{display:flex;flex-direction:column;gap:12px;margin:0 0 14px;max-height:340px;overflow-y:auto}.esu-msgh{display:flex;gap:8px;align-items:baseline;font-size:13.5px}.esu-msgh .esu-mono{margin-left:auto}.esu-msgb{font-size:14.5px;white-space:pre-wrap;word-break:break-word;margin-top:2px}.esu-tag{font:500 10px IBM Plex Mono,ui-monospace,monospace;letter-spacing:.1em;background:#A5432A;color:#fff;border-radius:99px;padding:1px 8px}',
+      '.esu-slots{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.esu-slot{border:1px solid #E3D8C6;border-radius:99px;padding:7px 14px;font-size:13.5px;font-weight:500;color:#1E1A14!important;text-decoration:none;background:#fff}.esu-slot:hover{border-color:#A5432A}',
+      '.esu-lnk{background:none;border:0;padding:0;color:#5A5346;font:inherit;text-decoration:underline;cursor:pointer}',
       '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
       '.esu-dlg{background:#FBF6EE;border-radius:8px;padding:22px 24px;width:100%;max-width:560px;margin:auto}',
       '@media (max-width:760px){',
@@ -171,7 +175,10 @@
     } else if (tab === 'jacob') {
       body = '<p class="esu-muted" style="margin-bottom:14px">Your direct line to Jacob. Mentees can message him at any time.</p><div class="esu-acts">' + ext(r.messageUrl, 'Message Jacob', 'esu-btn pri') + '</div>';
     } else {
-      body = '<div class="esu-empty">Say hello to your cohort.</div><div class="esu-acts">' + link(r.chatUrl, 'Open the cohort chat', 'esu-btn pri') + '</div>';
+      body = (r.chat && r.chat.length ? '<div class="esu-chat" role="log" aria-label="Latest messages in the cohort chat">' + r.chat.slice(-8).map(function (m) {
+        return '<div class="esu-msg"><div class="esu-msgh"><b>' + esc(m.who) + '</b>' + (m.mentor ? '<span class="esu-tag">MENTOR</span>' : '') + '<span class="esu-mono">' + esc(fmtTime(m.at, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + '</span></div><div class="esu-msgb">' + esc(m.text) + '</div></div>';
+      }).join('') + '</div>' : '<div class="esu-empty">' + (w.pending ? 'Loading…' : 'Say hello to your cohort.') + '</div>') +
+        '<div class="esu-acts">' + link(r.chatUrl, 'Open the cohort chat', 'esu-btn pri') + '</div>';
     }
     return '<section class="esu-card" data-g="room">' + hd('The mentorship room') + '<div class="esu-rt" role="tablist" aria-label="The mentorship room">' + tabs + '</div>' + pinned + body + '</section>';
   }
@@ -184,7 +191,7 @@
     }).join('') + '</div>';
     var recent = w.home.recent, names = {}; f.components.forEach(function (c) { names[c.id] = c.name; });
     var rec = recent.length ? '<div class="esu-eye" style="color:#5A5346;margin:16px 0 4px">Recent entries</div><ul class="esu-rows">' + recent.map(function (e) {
-      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.note ? ' · ' + esc(e.note) : '') + '</div></div><span class="' + (e.state === 'pending' ? '' : 'esu-ok') + '" style="font-size:13px;' + (e.state === 'pending' ? 'color:#A5432A;font-weight:600' : '') + '">' + (e.state === 'pending' ? 'Pending Jacob' : 'Credited') + '</span></li>';
+      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.note ? ' · ' + esc(e.note) : '') + '</div></div><span class="' + (e.state === 'pending' ? '' : 'esu-ok') + '" style="font-size:13px;' + (e.state === 'pending' ? 'color:#A5432A;font-weight:600' : '') + '">' + (e.state === 'pending' ? 'Pending Jacob · <button type="button" class="esu-lnk" data-act="remove-hours" data-id="' + esc(e.id) + '">Remove</button>' : 'Credited') + '</span></li>';
     }).join('') + '</ul>' : '<p class="esu-muted" style="margin-top:14px">Your record starts with your first observation or Practicum.</p>';
     return '<section class="esu-card" data-g="hours">' + hd('Formation hours', '<span class="esu-mono">' + f.total + ' of ' + f.target + '</span>') + '<div class="esu-bar" style="margin:0 0 14px" role="progressbar" aria-valuemin="0" aria-valuemax="' + f.target + '" aria-valuenow="' + f.total + '" aria-label="Formation hours"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div>' +
       comps + rec +
@@ -222,11 +229,21 @@
 
   function oneCard(w) {
     var o = w.home.oneToOne, win = o.window, city = myZone().split('/').pop().replace(/_/g, ' ');
-    var inWindow = win && w.today >= win.from;
-    return '<section class="esu-card" data-g="one">' + hd('One-to-one with Jacob', '<span class="esu-mono">45 MIN</span>') +
-      (win ? '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">' + esc(dayFmt(win.from, { month: 'long' })) + ' window:</b> ' + esc(wd(win.from) + ' – ' + wd(win.to) + ' ' + dayFmt(win.to, { month: 'short' })) + ', UK evenings.<br>Times are shown in your time (' + esc(city) + ').</p>'
-        : '<p class="esu-muted" style="margin-bottom:12px">The next window will be announced here.</p>') +
-      '<div class="esu-acts">' + ext(o.bookingUrl, inWindow ? 'Book your one-to-one' : 'See times', 'esu-btn pri') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div></section>';
+    var inWindow = win && w.today >= win.from, bk = o.booked;
+    var out = hd('One-to-one with Jacob', '<span class="esu-mono">45 MIN</span>');
+    if (bk) {
+      out += '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">Booked:</b> ' + esc(fmtTime(bk.start, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + ' your time. The Zoom link is on the event and in your email.</p>' +
+        '<div class="esu-acts">' + ext(o.bookingUrl, 'Change time', 'esu-btn out') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>';
+      return '<section class="esu-card" data-g="one">' + out + '</section>';
+    }
+    out += win ? '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">' + esc(dayFmt(win.from, { month: 'long' })) + ' window:</b> ' + esc(wd(win.from) + ' – ' + wd(win.to) + ' ' + dayFmt(win.to, { month: 'short' })) + ', UK evenings.<br>Times are shown in your time (' + esc(city) + ').</p>'
+      : '<p class="esu-muted" style="margin-bottom:12px">The next window will be announced here.</p>';
+    if (o.slots && o.slots.length) out += '<div class="esu-slots">' + o.slots.map(function (sl) {
+      return ext(sl.url, esc(fmtTime(sl.start, { weekday: 'short', day: 'numeric', month: 'short' })) + ' · ' + esc(fmtTime(sl.start, { hour: 'numeric', minute: '2-digit' })), 'esu-slot');
+    }).join('') + '</div>';
+    else if (win && inWindow) out += '<p class="esu-muted" style="margin-bottom:12px">No open times are showing right now.</p>';
+    out += '<div class="esu-acts">' + ext(o.bookingUrl, o.slots && o.slots.length ? 'More times' : inWindow ? 'Book your one-to-one' : 'See times', o.slots && o.slots.length ? 'esu-btn out' : 'esu-btn pri') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>';
+    return '<section class="esu-card" data-g="one">' + out + '</section>';
   }
 
   function partnerCard(w) {
@@ -258,6 +275,7 @@
       if (!a) return '';
       var locked = a.submission && a.submission.status === 'submitted';
       body = '<div class="esu-eye">Hand in · ' + esc(a.where || 'Assignment') + '</div><h2 class="esu-h2" style="margin:4px 0 10px">' + esc(a.title) + '</h2>' +
+        (a.submission && a.submission.status === 'returned' ? '<div style="background:#EADDC6;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:14px"><b>Jacob returned this' + (a.submission.note ? ':' : '.') + '</b>' + (a.submission.note ? '<div style="white-space:pre-wrap;margin-top:4px">' + esc(a.submission.note) + '</div>' : '') + '</div>' : '') +
         (a.brief ? '<div style="background:#F1E9DC;border-radius:8px;padding:12px 14px;font-size:14px;white-space:pre-wrap">' + esc(a.brief) + '</div>' : '') +
         (safeUrl(w.home.workbookUrl) ? '<p style="margin:8px 0 0;font-size:13px">' + ext(w.home.workbookUrl, 'Full brief in the Workbook', '') + '</p>' : '') +
         field('Your response', '<textarea id="esu-text" rows="7" maxlength="20000" data-in="text" style="' + FIELD + '">' + esc(f.text) + '</textarea>', 'esu-text') +
@@ -326,6 +344,7 @@
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
     if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
     if (a === 'open-handin') { var it = state.data.due.items.filter(function (x) { return x.id === t.dataset.id; })[0]; var sb = it && it.submission; state.modal = { type: 'handin', id: t.dataset.id }; state.msg = ''; state.form = { text: sb ? sb.text : '', logHours: !!(it && it.hoursComponent), existingName: sb && sb.hasFile ? sb.fileName : '', fileName: sb && sb.hasFile ? sb.fileName : '', existingPath: '' }; render(); return; }
+    if (a === 'remove-hours') { var rid = t.dataset.id; act('hours', function () { return call('/api/member/this-week/hours', { remove: rid, today: localToday(), tz: myZone() }); }); return; }
     if (a === 'save-hours') {
       var f = state.form;
       act('modal', function () { return call('/api/member/this-week/hours', { component: f.kind, hours: f.hours, day: f.day, detail: f.detail, note: f.notes, today: localToday(), tz: myZone() }).then(function (d) { state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });

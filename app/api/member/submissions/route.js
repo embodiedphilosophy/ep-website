@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 // Mentor view (Circle admins only): hand-ins waiting for Jacob and hours waiting to be confirmed.
 //   GET                                   → { handins, hours }
-//   POST { action: 'return', id }          → mark a hand-in returned
+//   POST { action: 'return', id, note }    → mark a hand-in returned, with an optional note the mentee sees
 //   POST { action: 'confirm'|'decline', id } → confirm (counts toward the 100 hours) or remove a pending hours entry
 const methods = 'GET, POST, OPTIONS';
 const fail = (h, msg, status) => NextResponse.json({ error: msg }, { status, headers: h });
@@ -31,7 +31,7 @@ export async function POST(req) {
   if (!s.admin) return fail(h, 'Only mentors can do this', 403);
   const b = await req.json().catch(() => ({}));
   try {
-    if (b.action === 'return') await returnSubmission(b.id);
+    if (b.action === 'return') await returnSubmission(b.id, b.note);
     else if (b.action === 'confirm' || b.action === 'decline') await resolveEntry(b.id, b.action === 'confirm');
     else return fail(h, 'Unknown action', 400);
     return NextResponse.json(await snapshot(), { headers: h });

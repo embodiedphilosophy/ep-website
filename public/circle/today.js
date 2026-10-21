@@ -860,7 +860,7 @@
     if (pop && pageRoot && pageRoot.contains(pop) && !(e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button)) { if (openPop(pop.href)) e.preventDefault(); return; }
     var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick],[data-fmdel],[data-wait]');
     if (!t || !e.currentTarget.contains(t)) return;
-    if (t.dataset.wait) { var wp = t.dataset.wait.split(':'); state.waitMsg = ''; api('/api/member/submissions', { method: 'POST', body: { action: wp[0], id: wp[1] } }).then(function (r) { state.wait = r; }).catch(function (er) { state.waitMsg = er.message; }).then(render); return; }
+    if (t.dataset.wait) { var wp = t.dataset.wait.split(':'), wn = ''; if (wp[0] === 'return') { wn = window.prompt('Add a note for the mentee (optional). They will see it with the returned hand-in.', ''); if (wn === null) return; } state.waitMsg = ''; api('/api/member/submissions', { method: 'POST', body: { action: wp[0], id: wp[1], note: wn } }).then(function (r) { state.wait = r; }).catch(function (er) { state.waitMsg = er.message; }).then(render); return; }
     if (t.dataset.fmdel) { var em = t.dataset.email; api('/api/member/formation?email=' + encodeURIComponent(em) + '&id=' + encodeURIComponent(t.dataset.fmdel), { method: 'DELETE' }).then(function (f) { state.fm[em] = f; state.fmErr = ''; }).catch(function (er) { state.fmErr = er.message; }).then(render); return; }
     if (t.dataset.pick) { state.pick = state.pick === t.dataset.pick ? '' : t.dataset.pick; render(); loadFm(state.pick); return; }
     if (t.dataset.x) { var xs = state.extras || []; var i0 = xs.indexOf(t.dataset.x); state.extras = i0 >= 0 ? xs.filter(function (z) { return z !== t.dataset.x; }) : xs.concat([t.dataset.x]); render(); return; }

@@ -9,7 +9,7 @@
   var API = 'https://www.embodiedphilosophy.com';
   var PAGE = /^\/c\/mentorship\/?$/;
   var SKEY = 'ep_su_session';
-  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {} };
+  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -33,6 +33,12 @@
   function fmtTime(iso, opts) { try { return new Date(iso).toLocaleString(undefined, Object.assign({ timeZone: myZone() }, opts)); } catch (e) { return ''; } }
   // "Mon 23"
   function wd(s) { return dayFmt(s, { weekday: 'short' }) + ' ' + dayFmt(s, { day: 'numeric' }); }
+  // Amazon for the student's country: .co.uk in the UK (by time zone or browser language), otherwise .com (same rule as lib/mentee/books.js)
+  function amazonUrl(b) {
+    var host = /^Europe\/(London|Belfast|Jersey|Guernsey|Isle_of_Man)$/.test(myZone()) || /^en-GB$/i.test((navigator.language || '')) ? 'www.amazon.co.uk' : 'www.amazon.com';
+    return b.asin ? 'https://' + host + '/dp/' + b.asin : 'https://' + host + '/s?k=' + encodeURIComponent(b.search) + '&i=stripbooks';
+  }
+  function amazonLabel() { return /amazon\.co\.uk/.test(amazonUrl({ search: 'x' })) ? 'Amazon.co.uk' : 'Amazon.com'; }
   function setMentee(v) { window.__epMentee = v; }
 
   // ---- sign-in: Circle's identity token → our bearer session (same as This week) ----
@@ -127,6 +133,7 @@
       '.esu-chat{display:flex;flex-direction:column;gap:12px;margin:0 0 14px;max-height:340px;overflow-y:auto}.esu-msgh{display:flex;gap:8px;align-items:baseline;font-size:13.5px}.esu-msgh .esu-mono{margin-left:auto}.esu-msgb{font-size:14.5px;white-space:pre-wrap;word-break:break-word;margin-top:2px}.esu-tag{font:500 10px IBM Plex Mono,ui-monospace,monospace;letter-spacing:.1em;background:#A5432A;color:#fff;border-radius:99px;padding:1px 8px}',
       '.esu-say{display:flex;gap:10px;align-items:flex-end;margin:0 0 8px}.esu-say textarea{flex:1}',
       '.esu-slot.on{background:#20302A;border-color:#20302A;color:#fff!important}.esu-slot{cursor:pointer;font-family:inherit;min-height:40px}',
+      '.esu-book{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0;border-top:1px solid #E3D8C6}.esu-book:first-of-type{border-top:0}.esu-bt{font-weight:600;font-size:16px;line-height:1.3}.esu-ba{font-size:13.5px;color:#5A5346}.esu-bm{padding:14px 0;border-top:1px solid #E3D8C6}.esu-bm.now{background:#F6EFE2;margin:0 -12px;padding:14px 12px;border-radius:8px;border-top:0}',
       '.esu-slots{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.esu-slot{border:1px solid #E3D8C6;border-radius:99px;padding:7px 14px;font-size:13.5px;font-weight:500;color:#1E1A14!important;text-decoration:none;background:#fff}.esu-slot:hover{border-color:#A5432A}',
       '.esu-lnk{background:none;border:0;padding:0;color:#5A5346;font:inherit;text-decoration:underline;cursor:pointer}',
       '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
@@ -136,7 +143,7 @@
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
       '.esu-cols>*,.esu-c1>*,.esu-c2>*{order:0}',
-      '[data-g=immersion]{order:1}[data-g=assign]{order:2}[data-g=one]{order:3}[data-g=partner]{order:4}[data-g=hours]{order:5}[data-g=feedback]{order:6}[data-g=room]{order:7}',
+      '[data-g=immersion]{order:1}[data-g=books]{order:2}[data-g=assign]{order:3}[data-g=one]{order:4}[data-g=partner]{order:5}[data-g=hours]{order:6}[data-g=feedback]{order:7}[data-g=room]{order:8}',
       '.esu[data-tab=formation] [data-g=room]{display:none}.esu[data-tab=room] [data-g]:not([data-g=room]){display:none}',
       '.esu-steps{grid-template-columns:minmax(0,1fr)}.esu-grid2{grid-template-columns:minmax(0,1fr)}.esu-h3{font-size:30px}}'
     ].join('\n');
@@ -144,6 +151,35 @@
   }
 
   function hd(title, right) { return '<div class="esu-hd"><h2 class="esu-h2">' + esc(title) + '</h2>' + (right || '') + '</div>'; }
+
+  // Book of the month: this month's required (and suggested) book, with where to buy it, and a popup with the whole reading list
+  function bookLine(b) {
+    return '<div class="esu-book"><div><div class="esu-bt">' + esc(b.title) + '</div><div class="esu-ba">' + esc(b.author) + (b.audio ? ' · also on ' + esc(b.audio) : '') + '</div>' + (b.note ? '<div class="esu-ba" style="font-style:italic">' + esc(b.note) + '</div>' : '') + '</div>' +
+      ext(amazonUrl(b), 'Buy on ' + amazonLabel(), 'esu-btn out') + '</div>';
+  }
+  function bookCard(w) {
+    var bk = w.home.books;
+    if (!bk || (!bk.current && !bk.next)) return '';
+    var c = bk.current, n = bk.next;
+    var head = c ? 'Book of the month · month ' + c.month + (bk.total ? ' of ' + bk.total : '') : 'Reading list · starts ' + esc(dayFmt(n.starts, { day: 'numeric', month: 'long' }));
+    var m = c || n;
+    return '<section class="esu-card" data-g="books"><div class="esu-hd"><span class="esu-eye">' + head + '</span><button type="button" class="esu-lnk" data-act="all-books">See all the books</button></div>' +
+      '<h2 class="esu-h2" style="margin:0 0 10px;font-style:italic">' + esc(m.theme) + '</h2>' +
+      (m.required.length ? '<div class="esu-eye" style="color:#5A5346;margin:8px 0 4px">Required · for your monthly reflection</div>' + m.required.map(bookLine).join('') : '') +
+      (m.suggested.length ? '<div class="esu-eye" style="color:#5A5346;margin:12px 0 4px">Suggested · for peer articulation (not assessed)</div>' + m.suggested.map(bookLine).join('') : '') +
+      (c && n ? '<p class="esu-muted" style="margin-top:12px;font-size:13px">Next, from ' + esc(dayFmt(n.starts, { day: 'numeric', month: 'long' })) + ': ' + esc(n.theme) + '</p>' : '') + '</section>';
+  }
+  function booksModal(w) {
+    var bk = w.home.books;
+    if (!state.books || !bk || !bk.all.length) return '';
+    var rows = bk.all.map(function (m) {
+      var list = function (arr, label) { return arr.length ? '<div class="esu-ba" style="margin-top:6px"><b>' + label + '</b></div>' + arr.map(bookLine).join('') : ''; };
+      return '<div class="esu-bm' + (m.now ? ' now' : '') + '"><div class="esu-eye" style="color:' + (m.now ? '#A5432A' : '#5A5346') + '">Month ' + m.month + ' · ' + esc(dayFmt(m.starts, { month: 'long', year: 'numeric' })) + (m.now ? ' · this month' : '') + '</div>' +
+        '<h3 class="esu-h2" style="font-size:20px;margin:2px 0 4px;font-style:italic">' + esc(m.theme) + '</h3>' + list(m.required, 'Required') + list(m.suggested, 'Suggested') + '</div>';
+    }).join('');
+    return '<div class="esu-ov" data-act="close-books" data-bg="1"><div class="esu-dlg" role="dialog" aria-modal="true" aria-label="The reading list" style="max-width:680px"><div class="esu-hd"><h2 class="esu-h2">The reading list</h2><button type="button" class="esu-btn out" data-act="close-books">Close</button></div>' +
+      '<p class="esu-muted" style="margin:0 0 6px;font-size:13px">One required book a month feeds your written reflection; the suggested book is for the peer articulation sessions and is not assessed. Buy links go to ' + amazonLabel() + '.</p>' + rows + '</div></div>';
+  }
 
   // A "which time works?" survey (the mentorship orientation), or the confirmed time once Jacob has chosen
   function pollCards(w) {
@@ -343,7 +379,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      '<div class="esu-cols"><div class="esu-c1">' + pollCards(w) + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w);
+      '<div class="esu-cols"><div class="esu-c1">' + pollCards(w) + immersionCard(w) + bookCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
   }
 
   var root = null;
@@ -391,6 +427,8 @@
       act('chat', function () { return call('/api/member/this-week/chat', { text: txt }).then(function (r) { state.say = ''; state.data.home.room.chat = r.chat; return null; }); });
       return;
     }
+    if (a === 'all-books') { state.books = true; render(); return; }
+    if (a === 'close-books') { if (t.dataset.bg && e.target !== t) return; state.books = false; render(); return; }
     if (a === 'pick') {
       var pl = (state.data.home.polls || []).filter(function (x) { return x.id === t.dataset.poll; })[0];
       var cur = (state.picks[t.dataset.poll] || pl.options.filter(function (o) { return o.mine; }).map(function (o) { return o.start; })).slice(), at = cur.indexOf(t.dataset.slot);
@@ -445,6 +483,9 @@
     var box = root.__box; root.remove(); root = null;
     if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = '';
   }
+
+  // Escape closes a popup (the key listener is on the document: the page re-draws itself, so focus can sit outside it)
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root && document.body.contains(root) && (state.books || state.modal)) { state.books = false; state.modal = null; render(); } });
 
   var started = false;
   function start() {

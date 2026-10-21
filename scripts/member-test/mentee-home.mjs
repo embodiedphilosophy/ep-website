@@ -77,3 +77,24 @@ const lines = H.chatLines([msg(1, 'Jacob', '2026-10-21T07:32:01Z', { community_a
 assert.deepEqual(lines.map(l => [l.who, l.mentor]), [['Jacob', true], ['Maya', false], ['Sam', true]], 'empty messages dropped, mentor tag for admins and moderators');
 assert.equal(H.chatLines(Array.from({ length: 40 }, (_, i) => msg(i, 'x', '2026-10-21T07:' + String(i % 60).padStart(2, '0') + ':00Z'))).length, 30);
 console.log('chat: ok');
+
+// Apprentice Workbook: lesson completion on the immersion steps (section/lesson shapes checked against the real course, 21 Oct 2026)
+const sections = [
+  { id: 10, name: 'Start Here', lessons: [{ id: 1, name: 'Welcome: How This Workbook Works', progress: { status: 'complete' } }, { id: 2, name: 'Your Year at a Glance', progress: { status: 'incomplete' } }] },
+  { id: 11, name: '1 · Beneath the Pose · Nov 14–15, 2026', lessons: [{ id: 21, name: 'Prepare: Beneath the Pose', progress: { status: 'complete' } }, { id: 22, name: 'Practicum: Beneath the Pose', progress: { status: 'incomplete' } }, { id: 23, name: 'Integrate: Beneath the Pose', progress: { status: 'incomplete' } }] },
+  { id: 12, name: '2 · Tasting the Real · Dec 5–6, 2026', lessons: [{ id: 31, name: 'Prepare: Tasting the Real', progress: { status: 'incomplete' } }, { id: 33, name: 'Integrate: Tasting the Real', progress: { status: 'incomplete' } }] },
+  { id: 99, name: 'Completion Requirements', lessons: [{ id: 91, name: 'Certification', progress: {} }] },
+];
+const wbk = H.workbookFor(sections, 'https://ss.x/c/apprentice-workbook/');
+assert.deepEqual(Object.keys(wbk.immersions), ['1', '2']); assert.equal(wbk.immersions['1'].prepare.done, true); assert.equal(wbk.immersions['1'].integrate.url, 'https://ss.x/c/apprentice-workbook/sections/11/lessons/23');
+assert.deepEqual(wbk.start.map(l => l.done), [true, false]);
+const wkWeek = { formation: null, due: { items: [] }, sessions: [], oneToOne: null };
+let hh = H.buildHome(wkWeek, { config, today: '2026-11-11', tz: 'Europe/London', workbook: wbk }).home;
+assert.equal(hh.immersion.prepare.done, true); assert.match(hh.immersion.prepare.url, /lessons\/21$/); assert.equal(hh.integrate, null, 'nothing to integrate before the first weekend');
+hh = H.buildHome(wkWeek, { config, today: '2026-11-17', tz: 'Europe/London', workbook: wbk }).home;
+assert.equal(hh.immersion.n, 2); assert.deepEqual([hh.integrate.n, hh.integrate.title], [1, 'Beneath the Pose'], 'after the weekend the Integrate lesson is offered');
+const done = JSON.parse(JSON.stringify(wbk)); done.immersions['1'].integrate.done = true;
+assert.equal(H.buildHome(wkWeek, { config, today: '2026-11-17', tz: 'Europe/London', workbook: done }).home.integrate, null, 'gone once completed');
+assert.equal(H.buildHome(wkWeek, { config, today: '2026-12-10', tz: 'Europe/London', workbook: wbk }).home.integrate?.n, 2, 'the most recent immersion');
+assert.equal(H.buildHome(wkWeek, { config, today: '2026-11-17', tz: 'Europe/London' }).home.integrate, null, 'no Circle data → nothing shown');
+console.log('workbook: ok');

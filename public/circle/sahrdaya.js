@@ -148,16 +148,23 @@
     if (!im) return '<section class="esu-pine" data-g="immersion"><div class="esu-eye">Next immersion</div><p style="margin:8px 0 0">The eight immersions of this year are complete. Thank you for your presence.</p></section>';
     var p = im.prepare, pr = im.practicum;
     var prepOpen = p.open && safeUrl(p.url);
-    var steps = '<div class="esu-step' + (prepOpen ? ' open' : '') + '"><b>PREPARE · ' + (p.open ? 'OPEN' : 'SOON') + '</b>' + (p.open ? 'A Workbook lesson, before Saturday' : 'Opens about two weeks before, on ' + esc(dayFmt(p.opens, { day: 'numeric', month: 'short' }))) + '</div>' +
+    var steps = '<div class="esu-step' + (prepOpen && !p.done ? ' open' : '') + '"><b>PREPARE · ' + (p.done ? 'DONE ✓' : p.open ? 'OPEN' : 'SOON') + '</b>' + (p.done ? 'You have completed the lesson' : p.open ? 'A Workbook lesson, before Saturday' : 'Opens about two weeks before, on ' + esc(dayFmt(p.opens, { day: 'numeric', month: 'short' }))) + '</div>' +
       '<div class="esu-step"><b>SAT · OPEN SESSION</b>With the whole school</div>' +
-      '<div class="esu-step"><b>SUN · PRACTICUM</b>Mentees only, teaching under supervision</div>';
+      '<div class="esu-step"><b>SUN · PRACTICUM' + (im.practicumLesson && im.practicumLesson.done ? ' · LESSON DONE ✓' : '') + '</b>Mentees only, teaching under supervision</div>';
     var rsvp = pr ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-btn lite" style="cursor:default">You’re on the list ✓</span>'
       : '<button type="button" class="esu-btn lite" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP for Sunday’s Practicum</button>') : '';
     var when = im.happening ? 'This weekend' : im.daysTo === 1 ? 'Tomorrow' : 'In ' + im.daysTo + ' days';
     return '<section class="esu-pine" data-g="immersion"><div class="esu-hd"><span class="esu-eye">Next immersion · ' + im.n + ' of ' + im.of + '</span><span class="esu-mono" style="color:#CFC6B4">' + esc(span(im.sat, im.sun)) + '</span></div>' +
       '<h2 class="esu-h3">' + esc(im.title) + '</h2><p style="margin:-6px 0 14px;font-size:13.5px;color:#CFC6B4">' + esc(when) + (p.open ? '' : ' · The Prepare lesson opens about two weeks before') + '</p>' +
       '<div class="esu-steps">' + steps + '</div><div class="esu-acts">' +
-      (prepOpen ? ext(p.url, 'Open the Prepare lesson', 'esu-btn gold') : '') + rsvp + ext(im.allUrl, 'All eight immersions', 'esu-btn lite') + '</div></section>';
+      (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn lite' : 'esu-btn gold') : '') + rsvp + ext(im.allUrl, 'All eight immersions', 'esu-btn lite') + '</div></section>';
+  }
+
+  // After an immersion: the Integrate lesson, until it is completed
+  function integrateCard(w) {
+    var g = w.home.integrate;
+    if (!g) return '';
+    return '<section class="esu-card" data-g="immersion" style="border-color:#D2A65A"><div class="esu-eye">Integrate · Immersion ' + g.n + '</div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px"><div><h2 class="esu-h2">' + esc(g.title) + '</h2><p class="esu-muted" style="margin-top:2px">Take a few quiet minutes to integrate the weekend.</p></div>' + ext(g.url, 'Open the Integrate lesson', 'esu-btn pri') + '</div></section>';
   }
 
   function roomCard(w) {
@@ -221,7 +228,7 @@
         action = '<button type="button" class="esu-tk' + (it.done ? ' on' : '') + '" role="checkbox" aria-checked="' + it.done + '" data-act="tick" data-id="' + esc(it.id) + '" data-done="' + (it.done ? '0' : '1') + '"' + (state.busy === 'tick' + it.id ? ' disabled' : '') + '>' + (it.done ? 'Read ✓' : 'Mark read') + '</button>';
       }
       return '<li class="' + (it.done ? 'done' : '') + '"><div class="l"><div class="t">' + t + '</div>' + (status ? '<div class="u">' + esc(status) + '</div>' : '') + '</div>' + action + '</li>';
-    }).join('') + '</ul>' : '<p class="esu-muted">Nothing due this week. Start with <em>Start Here</em> in the Workbook: How This Workbook Works, Your Year at a Glance, The Practice &amp; Study Imperative, and Your Monthly 1-on-1 with Jacob.</p>';
+    }).join('') + '</ul>' : '<p class="esu-muted">Nothing due this week. Start with <em>Start Here</em> in the Workbook' + (h.startLessons && h.startLessons.length ? ':</p><ul class="esu-rows" style="margin-top:6px">' + h.startLessons.map(function (l) { return '<li class="' + (l.done ? 'done' : '') + '"><div class="l"><div class="t">' + (safeUrl(l.url) ? ext(l.url, esc(l.name), '') : esc(l.name)) + '</div></div>' + (l.done ? '<span class="esu-ok" style="font-size:13px">Done ✓</span>' : '') + '</li>'; }).join('') + '</ul>' : ': How This Workbook Works, Your Year at a Glance, The Practice &amp; Study Imperative, and Your Monthly 1-on-1 with Jacob.</p>');
     return '<section class="esu-card" data-g="assign">' + hd('Assignments', d.total ? '<span class="esu-mono">' + d.done + ' / ' + d.total + ' IN</span>' : '') +
       '<p class="esu-muted" style="margin:-4px 0 8px;font-size:13px">' + sub + 'Everything you hand in goes to Jacob and into your formation record.</p>' + rows +
       (safeUrl(h.workbookUrl) ? '<p style="margin:12px 0 0;font-size:13px">' + ext(h.workbookUrl, 'Programme expectations and full briefs, in the Workbook.', '') + '</p>' : '') + '</section>';
@@ -302,7 +309,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w);
+      '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w);
   }
 
   var root = null;

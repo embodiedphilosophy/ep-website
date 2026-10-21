@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Pods from './Pods';
 
 const when = (iso, tz) => iso ? new Intl.DateTimeFormat('en-US', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZoneName: 'short', timeZone: tz }).format(new Date(iso)) : '';
 const day = (iso, tz) => iso ? new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', timeZone: tz }).format(new Date(iso)) : '';
@@ -56,7 +57,7 @@ export default function HubView({ hub, initialTab }) {
         </section>
       )}
 
-      {cards.length === 0
+      {tab === 'pods' ? <Pods /> : cards.length === 0
         ? <p className="sch-empty">Nothing here yet. Check back soon.</p>
         : <ul className="sch-list">{cards.map(c => <HubCard key={c.key} c={c} tz={tz} fresh={n(c)} onOpen={() => opened(c.spaceId)} />)}</ul>}
 

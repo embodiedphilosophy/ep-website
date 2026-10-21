@@ -80,3 +80,13 @@ const credited = (await F.formationFor('maya@x.com')).entries.find(e => e.status
 await F.removePending('maya@x.com', credited.id); assert.ok((await F.formationFor('maya@x.com')).entries.some(e => e.id === credited.id), 'a credited entry cannot be taken back');
 await F.removePending('maya@x.com', pe.id); assert.equal((await F.pendingEntries()).length, 0);
 console.log('mentee P1c db: ok');
+
+// ---- polls: picks are per member, replaced on each save ----
+const sl = ['2026-10-24T14:00:00.000Z', '2026-10-24T18:00:00.000Z', '2026-10-25T14:00:00.000Z'];
+await S.setVotes({ uid: 'u1', email: 'Maya@x.com' }, 'orientation', [sl[0], sl[2]]); await S.setVotes({ uid: 'u2', email: 'sam@x.com' }, 'orientation', [sl[0]]);
+assert.deepEqual((await S.votesFor('u1')).orientation, [sl[0], sl[2]]); assert.deepEqual((await S.votesFor('u2')).orientation, [sl[0]], 'picks belong to one member');
+await S.setVotes({ uid: 'u1', email: 'Maya@x.com' }, 'orientation', [sl[1]]); assert.deepEqual((await S.votesFor('u1')).orientation, [sl[1]], 'saving again replaces the earlier picks');
+const pv = await S.pollVotes('orientation'); assert.deepEqual(pv.map(v => [v.email, v.slot]), [['sam@x.com', sl[0]], ['maya@x.com', sl[1]]].sort((a, b) => a[1].localeCompare(b[1])), 'mentor view: every pick, with the email');
+await S.setVotes({ uid: 'u1', email: 'maya@x.com' }, 'orientation', []); assert.equal((await S.votesFor('u1')).orientation, undefined, 'an empty save clears the picks');
+assert.equal((await S.pollVotes('another')).length, 0);
+console.log('polls db: ok');

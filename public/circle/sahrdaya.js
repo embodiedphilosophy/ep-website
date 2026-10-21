@@ -9,7 +9,7 @@
   var API = 'https://www.embodiedphilosophy.com';
   var PAGE = /^\/c\/mentorship\/?$/;
   var SKEY = 'ep_su_session';
-  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '' };
+  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {} };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -126,6 +126,7 @@
       '.esu-sk{height:150px;border-radius:8px;background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:esush 1.4s ease-in-out infinite}@keyframes esush{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.esu-sk{animation:none}}',
       '.esu-chat{display:flex;flex-direction:column;gap:12px;margin:0 0 14px;max-height:340px;overflow-y:auto}.esu-msgh{display:flex;gap:8px;align-items:baseline;font-size:13.5px}.esu-msgh .esu-mono{margin-left:auto}.esu-msgb{font-size:14.5px;white-space:pre-wrap;word-break:break-word;margin-top:2px}.esu-tag{font:500 10px IBM Plex Mono,ui-monospace,monospace;letter-spacing:.1em;background:#A5432A;color:#fff;border-radius:99px;padding:1px 8px}',
       '.esu-say{display:flex;gap:10px;align-items:flex-end;margin:0 0 8px}.esu-say textarea{flex:1}',
+      '.esu-slot.on{background:#20302A;border-color:#20302A;color:#fff!important}.esu-slot{cursor:pointer;font-family:inherit;min-height:40px}',
       '.esu-slots{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.esu-slot{border:1px solid #E3D8C6;border-radius:99px;padding:7px 14px;font-size:13.5px;font-weight:500;color:#1E1A14!important;text-decoration:none;background:#fff}.esu-slot:hover{border-color:#A5432A}',
       '.esu-lnk{background:none;border:0;padding:0;color:#5A5346;font:inherit;text-decoration:underline;cursor:pointer}',
       '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
@@ -143,6 +144,33 @@
   }
 
   function hd(title, right) { return '<div class="esu-hd"><h2 class="esu-h2">' + esc(title) + '</h2>' + (right || '') + '</div>'; }
+
+  // A "which time works?" survey (the mentorship orientation), or the confirmed time once Jacob has chosen
+  function pollCards(w) {
+    return (w.home.polls || []).map(function (p) {
+      if (p.final) {
+        return '<section class="esu-card esu-poll" data-g="immersion" style="border-color:#D2A65A"><div class="esu-eye">' + esc(p.title) + '</div><h2 class="esu-h2" style="margin:4px 0 6px">' +
+          esc(fmtTime(p.final.start, { weekday: 'long', day: 'numeric', month: 'long' })) + ' · ' + esc(fmtTime(p.final.start, { hour: 'numeric', minute: '2-digit' })) + '</h2>' +
+          '<p class="esu-muted" style="margin-bottom:12px">Confirmed, in your time (' + esc(myZone().split('/').pop().replace(/_/g, ' ')) + ').' + (p.note ? ' ' + esc(p.note) : '') + '</p>' +
+          (p.final.link ? '<div class="esu-acts">' + ext(p.final.link, 'Open the meeting link', 'esu-btn pri') + '</div>' : '') + '</section>';
+      }
+      var chosen = state.picks[p.id] || p.options.filter(function (o) { return o.mine; }).map(function (o) { return o.start; });
+      var days = [], by = {};
+      p.options.forEach(function (o) { var d = fmtTime(o.start, { weekday: 'long', day: 'numeric', month: 'long' }); if (!by[d]) { by[d] = []; days.push(d); } by[d].push(o); });
+      var saved = p.options.filter(function (o) { return o.mine; }).map(function (o) { return o.start; }), dirty = chosen.slice().sort().join() !== saved.slice().sort().join();
+      return '<section class="esu-card esu-poll" data-g="immersion" style="border-color:#D2A65A"><div class="esu-eye">Quick question for you</div><h2 class="esu-h2" style="margin:4px 0 4px">' + esc(p.title) + '</h2>' +
+        '<p class="esu-muted" style="margin-bottom:10px">Which of these times could you join? Choose every one that works. Times are in your time (' + esc(myZone().split('/').pop().replace(/_/g, ' ')) + ').' + (p.note ? ' ' + esc(p.note) : '') + '</p>' +
+        days.map(function (d) {
+          return '<div class="esu-eye" style="color:#5A5346;margin:10px 0 6px">' + esc(d) + '</div><div class="esu-slots" role="group" aria-label="' + esc(d) + '">' + by[d].map(function (o) {
+            var on = chosen.indexOf(o.start) >= 0;
+            return '<button type="button" class="esu-slot' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="pick" data-poll="' + esc(p.id) + '" data-slot="' + esc(o.start) + '">' + (on ? '✓ ' : '') + esc(fmtTime(o.start, { hour: 'numeric', minute: '2-digit' })) + '</button>';
+          }).join('') + '</div>';
+        }).join('') +
+        '<div class="esu-acts" style="margin-top:12px"><button type="button" class="esu-btn pri" data-act="save-poll" data-poll="' + esc(p.id) + '"' + (!dirty || state.busy === 'poll' ? ' disabled' : '') + '>' + (state.busy === 'poll' ? 'Saving…' : saved.length && !dirty ? 'Saved ✓' : 'Save my times') + '</button></div>' +
+        (saved.length && !dirty ? '<p class="esu-muted" style="margin-top:8px;font-size:13px">Thank you. Jacob will confirm the time here. You can change your answer until then.</p>' : '') +
+        (state.msg && state.msgFor === 'poll' ? '<p class="esu-err" role="alert" style="margin-top:8px">' + esc(state.msg) + '</p>' : '') + '</section>';
+    }).join('');
+  }
 
   function immersionCard(w) {
     var im = w.home.immersion;
@@ -315,7 +343,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w);
+      '<div class="esu-cols"><div class="esu-c1">' + pollCards(w) + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w);
   }
 
   var root = null;
@@ -361,6 +389,18 @@
     if (a === 'send-chat') {
       var txt = state.say;
       act('chat', function () { return call('/api/member/this-week/chat', { text: txt }).then(function (r) { state.say = ''; state.data.home.room.chat = r.chat; return null; }); });
+      return;
+    }
+    if (a === 'pick') {
+      var pl = (state.data.home.polls || []).filter(function (x) { return x.id === t.dataset.poll; })[0];
+      var cur = (state.picks[t.dataset.poll] || pl.options.filter(function (o) { return o.mine; }).map(function (o) { return o.start; })).slice(), at = cur.indexOf(t.dataset.slot);
+      if (at >= 0) cur.splice(at, 1); else cur.push(t.dataset.slot);
+      state.picks[t.dataset.poll] = cur; render(); return;
+    }
+    if (a === 'save-poll') {
+      var pid = t.dataset.poll, picked = state.picks[pid] || [];
+      state.msgFor = 'poll';
+      act('poll', function () { return call('/api/member/this-week/poll', { poll: pid, slots: picked, today: localToday(), tz: myZone() }).then(function (d) { delete state.picks[pid]; return d; }); });
       return;
     }
     if (a === 'remove-hours') { var rid = t.dataset.id; act('hours', function () { return call('/api/member/this-week/hours', { remove: rid, today: localToday(), tz: myZone() }); }); return; }

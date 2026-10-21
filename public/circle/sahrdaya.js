@@ -260,8 +260,10 @@
   function partnerCard(w) {
     var p = w.home.partner;
     if (!p) return '';
-    return '<section class="esu-card" data-g="partner"><div class="esu-eye" style="color:#5A5346">Your peer partner · ' + esc(p.month.toUpperCase()) + '</div><h2 class="esu-h2" style="margin:6px 0 2px">' + esc(p.name) + '</h2>' +
-      '<p class="esu-muted" style="margin-bottom:12px">About an hour of articulation before the immersion.</p>' + ext('mailto:' + p.email, 'Message ' + esc(String(p.name).split(' ')[0]), 'esu-btn out') + '</section>';
+    var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email }], many = list.length > 1;
+    return '<section class="esu-card" data-g="partner"><div class="esu-eye" style="color:#5A5346">Your peer ' + (many ? 'group' : 'partner') + ' · ' + esc(p.month.toUpperCase()) + '</div><h2 class="esu-h2" style="margin:6px 0 2px">' + esc(p.name) + '</h2>' +
+      '<p class="esu-muted" style="margin-bottom:12px">' + (many ? 'The three of you: about an hour of articulation together before the immersion.' : 'About an hour of articulation before the immersion.') + '</p><div class="esu-acts">' +
+      list.map(function (x) { return ext('mailto:' + x.email, 'Message ' + esc(String(x.name).split(' ')[0]), 'esu-btn out'); }).join('') + '</div></section>';
   }
 
   var FIELD = 'display:block;width:100%;font:16px IBM Plex Sans,system-ui,sans-serif;padding:10px 12px;border:1px solid #E3D8C6;border-radius:8px;background:#fff;color:#1E1A14;min-height:44px';

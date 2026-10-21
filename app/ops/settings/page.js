@@ -18,6 +18,7 @@ export default async function Settings({ searchParams }) {
   const initial = ok ? t.key : user.director ? 'templates' : 'links';
   return (
     <Shell user={user} current="settings" eyebrow="Every table the dashboard and the website read" title="Settings">
+      <p className="ops-empty">Sahṛdaya Upāya: <a href="/ops/settings/partners">set this month’s peer partners →</a></p>
       <SiteEditor scope="settings" director={!!user.director} initial={initial} base="/ops/settings?" />
     </Shell>
   );

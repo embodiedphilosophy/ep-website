@@ -27,7 +27,7 @@ const rows = [
   { season: 'fall-2026', month: 'December', email_a: 'maya@x.com', email_b: 'lee@x.com' },
   { season: 'fall-2026', month: '2026-11', email_a: 'hide@x.com', email_b: 'z@x.com', publish: 'FALSE' },
 ];
-assert.deepEqual(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-11-03'), { month: 'november', name: 'Sam', email: 'sam@x.com' });
+assert.deepEqual(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-11-03'), { month: 'november', name: 'Sam', email: 'sam@x.com', partners: [{ name: 'Sam', email: 'sam@x.com' }] });
 assert.equal(C.partnerFor(rows, 'sam@x.com', 'fall-2026', '2026-11-03').email, 'maya@x.com');
 assert.equal(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-10-21'), null, 'nothing set for October → card hidden');
 assert.equal(C.partnerFor(rows, 'hide@x.com', 'fall-2026', '2026-11-03'), null);

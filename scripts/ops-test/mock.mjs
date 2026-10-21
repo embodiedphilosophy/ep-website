@@ -209,6 +209,7 @@ http.createServer(async (req, res) => {
     if (p.startsWith('/kit/')) {
       if (req.method !== 'GET') { log('BLOCKED kit', req.method, p); return send(res, 403, { error: 'writes blocked' }); }
       if (p.endsWith('/tags')) return send(res, 200, { tags: [{ id: 1, name: 'Navaratri 2026' }], pagination: {} });
+      if (/\/tags\/\d+\/subscribers/.test(p)) return send(res, 200, { subscribers: ['Maya', 'Sam', 'Lee', 'Priya', 'Noor', 'Tomas', 'Wen'].map((n, i) => ({ id: 100 + i, first_name: n, email_address: n.toLowerCase() + '@mentee.test' })), pagination: { has_next_page: false } });
       if (p.endsWith('/broadcasts')) return send(res, 200, { broadcasts: [
         { id: 11, subject: '[E002] Promo #1: the Goddess', send_at: new Date(Date.now() + 2 * 864e5).toISOString() },
         { id: 12, subject: '[E002] Promo #2', published_at: new Date(Date.now() - 864e5).toISOString() },

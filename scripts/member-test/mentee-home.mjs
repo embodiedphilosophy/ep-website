@@ -32,3 +32,17 @@ assert.equal(C.partnerFor(rows, 'sam@x.com', 'fall-2026', '2026-11-03').email, '
 assert.equal(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-10-21'), null, 'nothing set for October → card hidden');
 assert.equal(C.partnerFor(rows, 'hide@x.com', 'fall-2026', '2026-11-03'), null);
 console.log('mentee home: ok');
+
+// Reflections posted in the Mentorship Circle count automatically: one hour per calendar month, only the member's own posts
+const post = (id, day) => ({ author: { community_member_id: id }, created_at: day + 'T10:00:00.000Z' });
+const rr = H.reflectionRows([post(7, '2026-11-03'), post(7, '2026-11-20'), post(9, '2026-11-04'), post(7, '2026-12-02'), post(7, '2026-09-01'), { author: {}, created_at: '2026-11-05T00:00:00Z' }], 7, '2026-10-21');
+assert.deepEqual(rr.map(r => r.day), ['2026-11-03', '2026-12-02'], 'one per month, earliest post, own posts only, nothing before the season');
+assert.equal(H.reflectionRows([post(7, '2026-11-03')], null, '').length, 0, 'no member id → nothing counted');
+const { summarise, withAuto } = await import('../../lib/member/formation.js');
+const base = { ...summarise([{ component: 'immersions', hours: 6 }]), entries: [{ id: '1', component: 'immersions', hours: 6, day: '2026-11-15', status: 'credited' }] };
+const merged = withAuto(base, rr);
+assert.equal(merged.total, 8); assert.equal(merged.components.find(c => c.id === 'reflections').credited, 2); assert.equal(merged.entries.length, 3);
+assert.equal(withAuto(base, []), base);
+const capped = withAuto(base, Array.from({ length: 9 }, (_, i) => ({ id: 'x' + i, component: 'reflections', hours: 1, day: '2026-1' + (i % 3) + '-01', status: 'credited' })));
+assert.equal(capped.components.find(c => c.id === 'reflections').credited, 6, 'capped at the component target');
+console.log('reflections: ok');

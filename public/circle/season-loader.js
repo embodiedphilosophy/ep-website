@@ -129,6 +129,12 @@
     queued = false;
     var m = location.pathname.match(/^\/c\/([^\/]+)/), hk = m && hubKey(m[1]), hp = hk && hubPath(hk);
     var slug = m && (hk ? 'hub:' + hk : pageKey(m[1]) || SEASONS[m[1]]); // the hub's identity ignores ?tab=, which Circle may change while it draws the space
+    // Sahṛdaya Upāya (/c/mentorship) is drawn natively by sahrdaya.js for mentees. Everyone else keeps the hub's mentor tab.
+    // Until sahrdaya.js has checked who is signed in we hold back (up to 12 seconds) so the hub never flashes up for a mentee.
+    if (hk === 'mentorship' && /^\/c\/mentorship\/?$/.test(location.pathname)) {
+      if (window.__epMentee === 'yes') slug = null;
+      else if (window.__epMentee !== 'no' && !state.stopped) { state.mentorWait = state.mentorWait || Date.now(); if (Date.now() - state.mentorWait < 12000) slug = null; }
+    } else state.mentorWait = 0;
     var host = document.querySelector(HOST), frame = frameEl();
     if (user()) warm();
     // Leaving the page (or asking for Circle's own view) removes the frame. Circle briefly losing its content area or the

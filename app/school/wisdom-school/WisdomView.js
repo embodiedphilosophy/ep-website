@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 // Times show in the member's own time zone: formatted in the browser once it is up (New York until then)
 const parts = (iso, tz, o) => Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, ...o }).formatToParts(new Date(iso)).map(p => [p.type, p.value]));
 const dateOf = (iso, tz) => { if (!iso) return ''; const p = parts(iso, tz, { weekday: 'short', day: 'numeric', month: 'short' }); return `${p.weekday} ${p.day} ${p.month}`; };
-const timeOf = (iso, tz) => (iso ? new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short', timeZone: tz }).format(new Date(iso)) : '');
+// "4:00 PM EDT". Outside the US the US style gives "GMT+1"; the UK style names it (BST, CEST) where it can
+const timeOf = (iso, tz) => {
+  if (!iso) return '';
+  const d = new Date(iso), us = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short', timeZone: tz }).format(d);
+  if (!/GMT[+-]/.test(us)) return us;
+  const name = new Intl.DateTimeFormat('en-GB', { timeZoneName: 'short', timeZone: tz }).formatToParts(d).find(p => p.type === 'timeZoneName')?.value || '';
+  return /^GMT[+-]/.test(name) ? us.replace(/GMT\+0$/, 'GMT') : us.replace(/GMT[+-]\d+(:\d+)?$/, name);
+};
 const whenOf = (iso, tz) => `${dateOf(iso, tz)} · ${timeOf(iso, tz)}`;
 
 // A calendar file for one session (downloaded in the browser; nothing is sent anywhere)

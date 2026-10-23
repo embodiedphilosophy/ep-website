@@ -29,11 +29,13 @@ body:has(.wsh){background:#F2E8D6}
 .wsh-hero .sch-btn{background:#FAF5EB;color:#20302A;border-color:#FAF5EB}
 .wsh-hero .sch-btn.ghost{background:transparent;color:#FAF5EB;border-color:#EADDC6}
 .wsh .sch-sub{margin:0 0 10px}
-.wsh-up3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.wsh-up3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 .wsh-ev{display:flex;flex-direction:column;gap:2px;padding:16px;border:1px solid #D8C9AE;border-radius:10px;background:#FAF5EB}
 .wsh-ev h3{font-family:var(--font-serif),serif;font-weight:600;font-size:21px;line-height:1.2;margin:6px 0 2px;color:#1E1A14}
 .wsh-ev h3 a:hover{text-decoration:underline}
-.wsh-ev .sch-btn{margin-top:auto;align-self:flex-start;min-height:44px}
+.wsh-ev{min-width:0}
+.wsh-ev h3{overflow-wrap:anywhere}
+.wsh-ev .sch-btn{margin-top:auto;align-self:stretch;width:100%;min-width:0;padding:0 12px;min-height:44px;white-space:normal;text-align:center;box-sizing:border-box}
 .wsh-ev .sch-meta{margin-bottom:10px}
 .wsh-evd{font:600 12px var(--font-sans),sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#A5432A}
 .wsh-evt{font-size:14px;color:#5A5346;font-variant-numeric:tabular-nums}
@@ -102,3 +104,8 @@ a.wsh-tile.past:hover,a.wsh-tile.current:hover{box-shadow:0 0 0 2px #20302A inse
 /* Sit against the left edge of Circle's content area instead of centred in it */
 .sch-main:has(.wsh){margin:0;max-width:1120px;padding-left:32px;padding-right:32px}
 @media (max-width:700px){.sch-main:has(.wsh){padding-left:16px;padding-right:16px}}
+
+/* The month column is narrower than the window (the side card takes 290px): four tiles across until there is room for six */
+@media (max-width:1100px){.wsh-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.wsh-tile span{display:-webkit-box}}
+@media (max-width:700px){.wsh-tile span{display:none}}
+.wsh-row .sch-btn,.wsh-banner .sch-btn,.wsh-side .sch-btn{box-sizing:border-box;max-width:100%;white-space:normal;text-align:center}

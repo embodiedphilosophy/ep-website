@@ -207,12 +207,32 @@
     document.addEventListener('visibilitychange', function () { if (!document.hidden && state.pn) { pnCompute(); render(); } });
   }
   function zone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } }
+  // The Wisdom School card's hero and "Up next" come from the hub's own endpoint, so Today and /c/wisdom-school never disagree.
+  // Fetched after Today has drawn; if it fails the card keeps the lines Today already has.
+  function loadWisdomHub(d) {
+    if (!(d.cards || []).some(function (c) { return c.key === 'wisdom'; })) return;
+    var as = state.tier === 'wisdom_plus' ? 'plus' : state.tier === 'wisdom' ? 'ws' : '';
+    api('/api/hub/wisdom-school' + (as && isAdmin() && /[?&]as=/.test(location.search) ? '?as=' + as : '')).then(function (h) { state.hubWs = h; render(); }).catch(function () {});
+  }
+  function wisdomCard(c) {
+    var h = state.hubWs, m = h && h.month;
+    if (!m || !m.name || h.plan === 'none') return c;
+    var first = (h.upNext || [])[0];
+    var out = {}; for (var k in c) out[k] = c[k];
+    out.nextLine = m.name + ' · ' + (m.theme || 'The Pilgrimage Project'); out.next = null;
+    out.sub = m.question || (m.lessonUrl ? '' : 'Recording coming after the lecture');
+    out.primary = m.lessonUrl ? { label: 'Watch this month’s lecture', href: m.lessonUrl } : { label: 'Open Wisdom School', href: '/c/wisdom-school' };
+    out.links = [{ label: 'Open the hub', href: '/c/wisdom-school' }];
+    out.upNext = (h.upNext || []).slice(0, 3);
+    return out;
+  }
   function loadData() {
     return Promise.all([
       api('/api/member/today?today=' + localToday() + asParam(), { identity: true }).then(function (d) {
         if (d.signin) applySignin(d.signin);
         if (d.tier) state.tier = d.tier === 'course' ? 'none' : d.tier; // the tier the server worked the page out for (an admin's ?as= preview included)
         state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet';
+        loadWisdomHub(d);
       }).catch(function (e) { state.error = e.message; state.failed = true; if (e.status === 401) store('ep_today_session', ''); }),
       mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
       mentorView() ? api('/api/member/submissions').then(function (r) { state.wait = r; }).catch(function (e) { state.waitErr = e.message; }) : null,
@@ -455,6 +475,7 @@
       '.etd-sdn{display:flex;flex-direction:column}.etd-away{font-size:12px;color:#A5432A;white-space:nowrap}',
       '.etd-none{margin:0;color:#3A342B;font-size:14px}',
       '.etd-next{font-size:14px}.etd-subl{color:#3A342B}.etd-links{display:flex;flex-wrap:wrap;gap:8px}',
+      '.etd-ws3{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:13px;color:#5A5346}.etd-ws3 b{color:#1E1A14;font-weight:600}',
       '.etd-b{min-height:44px;padding:0 16px}',
       '.etd-morel{margin:0 0 8px}.etd-lg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}',
       '.etd-lock{border:1px dashed #D8C9AE;border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:#6B6152;min-height:44px}.etd-lt{display:flex;align-items:center;gap:8px;font-weight:600;color:#1E1A14}.etd-op{color:#A5432A;font-size:12.5px}',
@@ -683,11 +704,13 @@
     return c.nextLine || '';
   }
   function cardHtml(c) {
+    if (c.key === 'wisdom') c = wisdomCard(c);
     var live = false, n = c.next;
     if (c.primary.live && n && n.start) { var now = Date.now(), st = new Date(n.start).getTime(), en = n.end ? new Date(n.end).getTime() : st + 3600000; live = now >= st - 600000 && now <= en; }
     var ext = c.primary.external ? ' target="_blank" rel="noopener"' : '';
     return '<section class="ept-card etd-card" aria-label="' + esc(c.title) + '"><div class="ept-ch"><h2 class="ept-h2">' + esc(c.title) + '</h2><span class="ept-l">' + esc(c.tag || '') + '</span></div>' +
       '<strong class="etd-next">' + (live ? 'Live now · ' : '') + esc(nextText(c)) + '</strong>' + (c.sub ? '<span class="etd-subl">' + esc(c.sub) + '</span>' : '') +
+      (c.upNext && c.upNext.length ? '<ul class="etd-ws3" aria-label="Up next">' + c.upNext.map(function (e) { return '<li><b>' + esc(dayLong(e.startsAt)) + ' · ' + esc(clock(e.startsAt)) + '</b> ' + esc(e.title) + '</li>'; }).join('') + '</ul>' : '') +
       '<div class="etd-links"><a class="ept-btn etd-b" href="' + esc(c.primary.href) + '"' + ext + '>' + esc(live && c.primary.liveLabel ? c.primary.liveLabel : c.primary.label) + '</a>' +
       (c.links || []).map(function (l) { return '<a class="ept-q etd-b" href="' + esc(l.href) + '">' + esc(l.label) + '</a>'; }).join('') + '</div></section>';
   }

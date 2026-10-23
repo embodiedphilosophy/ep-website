@@ -1,0 +1,9 @@
+[
+  { "order": "1", "name": "Meditation for Real Life", "teacher": "", "space_id": "2897437", "section_id": "", "ce_hours": "14", "plan": "ws", "ws_chip": "Starter · included", "note": "", "publish": "TRUE" },
+  { "order": "2", "name": "Hellenism & Neoplatonism", "teacher": "Dr. Athena Potari", "space_id": "2897436", "section_id": "1223514", "ce_hours": "", "plan": "ws", "ws_chip": "", "note": "Inside The Pilgrimage Project", "publish": "TRUE" },
+  { "order": "3", "name": "Classical Yoga & the Yoga Sūtras", "teacher": "", "space_id": "2897811", "section_id": "", "ce_hours": "56", "plan": "plus", "ws_chip": "", "note": "", "publish": "TRUE" },
+  { "order": "4", "name": "The Subtle Body", "teacher": "", "space_id": "2897812", "section_id": "", "ce_hours": "19.5", "plan": "plus", "ws_chip": "", "note": "", "publish": "TRUE" },
+  { "order": "5", "name": "Death, Dreams & the Luminous Mind", "teacher": "", "space_id": "2897814", "section_id": "", "ce_hours": "12", "plan": "plus", "ws_chip": "", "note": "", "publish": "TRUE" },
+  { "order": "6", "name": "Myth, Shadow & the Inner Journey", "teacher": "", "space_id": "2897815", "section_id": "", "ce_hours": "10", "plan": "plus", "ws_chip": "", "note": "", "publish": "TRUE" },
+  { "order": "7", "name": "Sound, Mantra & Sacred Speech", "teacher": "", "space_id": "2897813", "section_id": "", "ce_hours": "3.5", "plan": "plus", "ws_chip": "", "note": "", "publish": "TRUE" }
+]

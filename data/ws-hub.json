@@ -1,0 +1,87 @@
+{
+  "settings": {
+    "kicker": "2026 · The Pilgrimage Project",
+    "year": 2026,
+    "join_url": "https://ss.embodiedphilosophy.com/checkout/wisdom-school",
+    "plus_checkout_url": "https://ss.embodiedphilosophy.com/checkout/wisdom-school-plus?price_id=382926",
+    "plus_learn_url": "https://www.embodiedphilosophy.com/wisdom-school",
+    "sample_url": "",
+    "library_url": "https://ss.embodiedphilosophy.com/c/library",
+    "ce_url": "https://ss.embodiedphilosophy.com/c/ce-credits",
+    "join_price": "$27/mo or $297/yr",
+    "plus_price": "$497/yr",
+    "next_year": "Coming in 2027: The Attention Project, twelve months from The Scattered Mind to The Attentive Life."
+  },
+  "circle": {
+    "hub_space_id": 2913549,
+    "live_space_id": 2897428,
+    "meditation_space_id": 2897425,
+    "year_course_id": 2897436,
+    "announcements_space_id": 2897427,
+    "ce_space_id": 2910160,
+    "library_space_id": 2912717,
+    "starter_course_id": 2897437,
+    "month_sections": [1212912, 1212914, 1212915, 1212916, 1212917, 1212918, 1212919, 1212920, 1212921, 1212922, 1212923, 1212924],
+    "book_club_section_id": 1212925,
+    "workshops_section_id": 1223513,
+    "hellenism_section_id": 1223514,
+    "certificates": [
+      { "key": "yoga-philosophy", "title": "Yoga Philosophy", "space_id": 2900101 },
+      { "key": "embodied-yoga-therapy", "title": "Embodied Yoga Therapy", "space_id": 2900102 },
+      { "key": "buddhist-psychology", "title": "Buddhist Psychology", "space_id": 2900103 },
+      { "key": "awakened-body", "title": "Awakened Body", "space_id": 2900104 }
+    ]
+  },
+  "free_month": 1,
+  "live": [
+    {
+      "key": "meditation-mondays",
+      "chip": "Weekly",
+      "title": "Meditation Mondays",
+      "cadence": "Every Monday at 12pm ET",
+      "description": "A live sit with EP faculty, in five streams.",
+      "source": "meditation",
+      "streams": [
+        { "name": "Mystical", "teacher": "Mary Reilly Nichols" },
+        { "name": "Metta", "teacher": "Oneika Mays" },
+        { "name": "Tantrik", "teacher": "Nataraj Chaitanya" },
+        { "name": "Somatic", "teacher": "Floss Harry" },
+        { "name": "Neuroscience & Yoga", "teacher": "Dr. Abha Rajbhandari" }
+      ]
+    },
+    {
+      "key": "monthly-lecture",
+      "chip": "Monthly",
+      "title": "The monthly lecture",
+      "cadence": "Tuesdays at 6pm ET",
+      "description": "The month’s teaching, live, with questions.",
+      "source": "live",
+      "match": "^(?!.*(workshop|book club)).*$"
+    },
+    {
+      "key": "workshops",
+      "chip": "Quarterly",
+      "title": "Quarterly workshops",
+      "cadence": "2.5 hours, once a quarter",
+      "description": "A longer, hands-on session on the quarter’s theme.",
+      "source": "live",
+      "match": "workshop"
+    },
+    {
+      "key": "book-club",
+      "chip": "Quarterly",
+      "title": "Book club meet-ups",
+      "cadence": "Once a quarter",
+      "description": "We meet to talk through the quarter’s book.",
+      "source": "live",
+      "match": "book club"
+    }
+  ],
+  "library_departments": [
+    { "key": "yoga-philosophy", "title": "Yoga philosophy", "line": "The classical sources and the traditions that read them." },
+    { "key": "somatics-embodiment", "title": "Somatics & embodiment", "line": "Practices that begin in the body." },
+    { "key": "contemplative-practice", "title": "Contemplative practice", "line": "Meditation, ritual and the inner life." },
+    { "key": "esoteric-philosophy", "title": "Esoteric philosophy", "line": "Neoplatonism, Gnosis and the hidden currents." }
+  ],
+  "book_fallback": { "title": "Pilgrimage: Past and Present in the World Religions", "quarter": "This quarter" }
+}

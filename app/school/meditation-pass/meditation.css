@@ -1,0 +1,70 @@
+/* Meditation Pass hub, drawn inside Circle. Builds on school.css (.sch-*) and wisdom.css (.wsh-*): the same header, pill tabs,
+   Pine hero, cards and rows as the Wisdom School hub. Only what is new lives here.
+   Brand: Terra #A5432A, Pine #20302A, Ivory #FAF5EB, Sand #EADDC6, Line #D8C9AE, Sage #5B6343, ground #F2E8D6. */
+.mmh-when{margin:0 0 18px;font:600 18px var(--font-sans),sans-serif;color:#EADDC6;font-variant-numeric:tabular-nums}
+.mmh-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mmh-btns .sch-btn{min-height:44px}
+.mmh-only{font:600 13px var(--font-sans),sans-serif;color:#EADDC6;border:1px dashed rgba(234,221,198,.55);border-radius:99px;padding:9px 14px}
+.mmh-hint{margin:12px 0 0;font-size:14px;color:#EADDC6}
+.mmh-note{margin:0 0 14px;padding:10px 14px;border:1px dashed #A5432A;border-radius:8px;font-size:14px;color:#83341F;background:#FAF5EB}
+.mmh .wsh-hero h2{font-size:38px}
+.mmh-gap{margin-top:14px}
+.mmh-act{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;flex:none}
+.mmh-act .mmh-only{color:#8a8478;border-color:#A5432A}
+.mmh .wsh-row.locked .mmh-only{color:#8a8478}
+.mmh .sch-badge.new{margin-left:10px;vertical-align:middle}
+.mmh-four .sch-card-main{min-width:0}
+
+/* streams */
+.mmh-streams{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.mmh-stream{width:100%;min-height:76px;display:flex;flex-direction:column;justify-content:center;gap:2px;text-align:left;padding:10px 12px;border-radius:8px;border:1px solid #D8C9AE;background:#FAF5EB;color:#20302A;cursor:pointer;font:inherit}
+.mmh-stream b{font-family:var(--font-serif),serif;font-weight:600;font-size:18px;line-height:1.1}
+.mmh-stream span{font-size:12px;color:#5A5346;line-height:1.25}
+.mmh-stream:hover,.mmh-stream:focus-visible{box-shadow:0 0 0 2px #20302A inset}
+
+/* replay filter chips */
+.mmh-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.mmh-chip{min-height:44px;padding:0 16px;border-radius:99px;border:1px solid #D8C9AE;background:#FAF5EB;color:#20302A;font:600 14px var(--font-sans),sans-serif;cursor:pointer}
+.mmh-chip.on{background:#20302A;border-color:#20302A;color:#FAF5EB}
+
+/* replay cards: the course's own thumbnail, or the sage Meditation Mondays Library artwork */
+.mmh-grid,.mmh-one{list-style:none;margin:0;padding:0}
+.mmh-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mmh-card{display:flex;flex-direction:column;border:1px solid #D8C9AE;border-radius:10px;background:#FAF5EB;overflow:hidden;min-width:0}
+.mmh-card-a{display:flex;flex-direction:column;flex:1;color:inherit;text-decoration:none}
+.mmh-card-a:hover b,.mmh-card-a:focus-visible b{text-decoration:underline}
+.mmh-thumb{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#5B6343}
+.mmh-thumb.sage{display:flex;align-items:flex-end;padding:12px 14px;background:linear-gradient(160deg,#6B7550,#4B5336);color:#F2E8D6}
+.mmh-thumb.sage i{font:italic 600 15px var(--font-serif),serif;opacity:.9}
+.mmh-ct{display:flex;flex-direction:column;gap:3px;padding:12px 14px 14px;flex:1}
+.mmh-ct b{font-family:var(--font-serif),serif;font-weight:600;font-size:19px;line-height:1.2;color:#1E1A14}
+.mmh-ct .sch-meta{margin:0}
+.mmh-lock{font:600 12px var(--font-sans),sans-serif;letter-spacing:.04em;color:#83341F;margin-top:2px}
+.mmh-done{font:600 12px var(--font-sans),sans-serif;color:#2E5A4B;margin-top:2px}
+.mmh-card.locked{border:1px dashed #A5432A;background:transparent}
+.mmh-card.locked .mmh-ct b,.mmh-card.locked .sch-meta{color:#8a8478}
+.mmh-card.locked .mmh-thumb{filter:saturate(.6) opacity(.75)}
+.mmh-card.locked .sch-btn{margin:0 14px 14px;align-self:flex-start;min-height:44px}
+.mmh-one .mmh-card.big{flex-direction:row}
+.mmh-one .mmh-card.big .mmh-card-a{flex-direction:row}
+.mmh-one .mmh-card.big .mmh-thumb{width:260px;aspect-ratio:16/9;flex:none;height:auto}
+.mmh-one .mmh-card.big .mmh-ct{justify-content:center}
+.mmh-one .mmh-card.big.locked{align-items:stretch}
+
+@media (max-width:900px){
+  .mmh-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mmh-streams{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:700px){
+  .mmh .wsh-hero h2{font-size:30px}
+  .mmh-btns{flex-direction:column;align-items:stretch}
+  .mmh-btns .sch-btn,.mmh-only{width:100%;text-align:center;justify-content:center}
+  .mmh-grid{grid-template-columns:minmax(0,1fr)}
+  .mmh-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;margin-right:-16px;padding-right:16px}
+  .mmh-chip{flex:none}
+  .mmh-one .mmh-card.big,.mmh-one .mmh-card.big .mmh-card-a{flex-direction:column}
+  .mmh-one .mmh-card.big .mmh-thumb{width:100%}
+  .mmh-act{justify-content:stretch}
+  .mmh-act .sch-btn{width:100%}
+  .mmh-card.locked .sch-btn{width:calc(100% - 28px)}
+}

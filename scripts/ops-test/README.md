@@ -16,6 +16,7 @@ before merging.
 | `courses.cjs` | Course Library click-through (filters, live counts, toggle-off chips, Clear all, list view, empty state, phone filter sheet, offering page, buy links). Screenshots in `out/courses-*.png`. |
 | `wisdom-hub.mjs` | No network: the Wisdom School hub's rules (`lib/hub/wisdom.js`) with synthetic Circle data and the real config and seed files: plan, locks, October as the current month, Up next, pathways, library, CE, the year, book club, new-since counts. `node scripts/ops-test/wisdom-hub.mjs` |
 | `wisdom-hub.cjs` | The hub page in a browser (`/school/wisdom-school`) for each plan, every tab, desktop and phone width, the upgrade pop-up and the phone layout. Needs `circle-mock.mjs` as Circle, the app on :3200 with `DATABASE_URL` unset and an admin `ep_school` cookie in `out/ws-cookie.txt` (docs/wisdom-hub.md). |
+| `meditation-hub.mjs` / `.cjs` | The Meditation Pass hub (`docs/meditation-hub.md`): `.mjs` is the rules with no network; `.cjs` is the page in a browser for each plan at desktop and phone width (needs `circle-mock.mjs` and the sheet mock, app on :3200, see the doc). |
 | `ws-pathways.cjs` | Settings → "Wisdom School hub: pathways": Create it (fills the seven 2026 pathways), add a pathway. Writes go to the mock. |
 | `site-check.sh` | The merge gate. Builds origin/main and this checkout with the **real** environment (live sheet, read only) and runs `scripts/compare-site.py` on every public page. The bar: `15 pages compared, 0 differ`. |
 | `out/` | Logs, cookie, screenshots (git-ignored). |

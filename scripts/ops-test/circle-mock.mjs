@@ -44,6 +44,25 @@ const wsPosts = [{ id: 31, name: 'The Circle Reopens: details', created_at: day(
 const wsSpaces = [2913549, 2897428, 2897425, 2897427, 2897436, 2897437];
 const wsPlus = [...wsSpaces, 2897811, 2897812, 2897813, 2897814, 2897815, 2900101, 2900102, 2900103, 2900104, 2910160, 2912717];
 Object.assign(spacesFor, { 'wsmember@test': wsSpaces, 'wsplus@test': wsPlus, 'wsnone@test': [] });
+
+// ---- Meditation Pass hub (docs/meditation-hub.md): the replay course 2897426 and the live space 2897425.
+// Members mmpass@test (the Pass), mmdrop@test (a one-week drop-in: the live space only), mmnone@test (nothing), mmadmin@test (both; use with ?as=).
+const mmLes = (id, name, at, o = {}) => ({ id, name, url: `https://ss.example.test/c/meditation-pass/sections/1/lessons/${id}`, status: 'incomplete', created_at: at, ...o });
+const mmCourse = [
+  { id: 1212933, name: 'Start here', lessons: [mmLes(6001, 'Welcome to the Meditation Mondays Library', '2026-01-02T10:00:00Z'), mmLes(6002, 'How to sit', '2026-01-02T10:00:00Z')] },
+  { id: 1212934, name: 'October 2026', lessons: [
+    mmLes(6110, 'Mon 5 Oct · Mystical with Mary Reilly Nichols', '2026-10-06T10:00:00Z', { status: 'complete', duration_in_seconds: 2820 }),
+    mmLes(6111, 'Mon 12 Oct', '2026-10-13T10:00:00Z', { duration_in_seconds: 2700 }),
+    mmLes(6112, 'Mon 19 Oct · Mystical with Mary Reilly Nichols', '2026-10-20T10:00:00Z', { duration_in_seconds: 3000 })] },
+  { id: 1212935, name: 'November 2026', lessons: [] }, { id: 1212936, name: 'December 2026', lessons: [] },
+  { id: 1223518, name: 'Archive · January 2026', lessons: [mmLes(6201, 'Mon 5 Jan · Somatic with Floss Harry', '2026-01-06T10:00:00Z', { duration_in_seconds: 2400 })] },
+  { id: 1223525, name: 'Archive · August 2026', lessons: [mmLes(6301, 'Mon 3 Aug · Metta with Oneika Mays', '2026-08-04T10:00:00Z', { duration_in_seconds: 2400 })] },
+  { id: 1223529, name: 'Archive · September 2026', lessons: [mmLes(6401, 'Mon 14 Sep · Metta with Oneika Mays', '2026-09-15T10:00:00Z', { duration_in_seconds: 2640 }), mmLes(6402, 'Mon 21 Sep', '2026-09-22T10:00:00Z', { duration_in_seconds: 2580 })] },
+];
+const mmNoon = (y, m, d) => { const dst = Date.UTC(y, m - 1, d) < Date.UTC(2026, 10, 1); return new Date(Date.UTC(y, m - 1, d, dst ? 16 : 17)); };
+const mmEvents = Array.from({ length: 20 }, (_, k) => { const d = new Date(Date.UTC(2026, 9, 26 + 7 * k)); const st = mmNoon(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()); return { id: 9000 + k, name: 'Meditation Mondays', space_id: 2897425, starts_at: st.toISOString(), duration_in_seconds: 3600, url: `https://ss.example.test/c/meditation-mondays-live/events/${9000 + k}`, host: { name: 'Jacob Kyle' } }; });
+wsCourses[2897426] = mmCourse;
+Object.assign(spacesFor, { 'mmpass@test': [2897426, 2897425], 'mmdrop@test': [2897425], 'mmnone@test': [], 'mmadmin@test': [2897426, 2897425] });
 const tokens = new Map();
 const log = [];
 http.createServer(async (req, res) => {
@@ -59,7 +78,7 @@ http.createServer(async (req, res) => {
   if (!who) return send({ error: 'unauthorised' }, 401);
   const p = url.pathname.replace('/api/headless/v1', '');
   if (p === '/spaces') return send({ records: spacesFor[who].map(id => ({ id, url: `https://ss.example.test/c/space-${id}` })), has_next_page: false });
-  if (p === '/community_events') return send({ records: [...events, ...hubEvents, ...wsEvents].filter(e => spacesFor[who].includes(e.space_id)), has_next_page: false });
+  if (p === '/community_events') return send({ records: (who.startsWith('mm') ? mmEvents : [...events, ...hubEvents, ...wsEvents]).filter(e => spacesFor[who].includes(e.space_id)), has_next_page: false });
   let m;
   if ((m = p.match(/^\/courses\/(\d+)\/sections$/))) return spacesFor[who].includes(Number(m[1])) || (m[1] === '2897436' && who === 'wsnone@test') ? send(wsCourses[m[1]] || [], 200) : send({ error: 'forbidden' }, 403);
   if ((m = p.match(/^\/spaces\/(\d+)\/posts$/))) {

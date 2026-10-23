@@ -16,13 +16,20 @@
   var HUBS = {
     'sadhana-school': { path: '/school/sadhana-school', title: 'Sādhana School', def: 'home', home: 'home', tabs: { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, pods: 1, mentor: 1 } },
     'mentorship': { path: '/school/sadhana-school', title: 'Sādhana School', def: 'mentor', home: 'home', tabs: { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, pods: 1, mentor: 1 } },
-    'wisdom-school': { path: '/school/wisdom-school', title: 'Wisdom School', def: 'month', home: 'month', tabs: { month: 1, live: 1, year: 1, book: 1, pathways: 1, library: 1, ce: 1 } }
+    'wisdom-school': { path: '/school/wisdom-school', title: 'Wisdom School', def: 'month', home: 'month', tabs: { month: 1, live: 1, year: 1, book: 1, pathways: 1, library: 1, ce: 1 } },
+    // Meditation Mondays: the course's landing page only. Lesson pages (/c/meditation-pass/sections/…/lessons/…) stay Circle's own, so
+    // replays play in Circle's player with its completion tracking. "stream" passes through so Replays can open filtered.
+    'meditation-pass': { path: '/school/meditation-pass', title: 'Meditation Mondays', def: 'week', home: 'week', tabs: { week: 1, replays: 1, upcoming: 1, teachers: 1 }, keep: ['stream'], landingOnly: true }
   };
   function hubKey(s) { for (var k in HUBS) if (s === k || s.indexOf(k + '-') === 0) return k; return null; }
   function hubPath(k) {
     var h = HUBS[k], m = location.search.match(/[?&]tab=([a-z]+)/), t = m && h.tabs[m[1]] ? m[1] : h.def;
-    return h.path + (t === h.home ? '' : '?tab=' + t);
+    var q = t === h.home ? '' : '?tab=' + t;
+    (h.keep || []).forEach(function (k) { var v = location.search.match(new RegExp('[?&]' + k + '=([a-z0-9-]+)')); if (v && q) q += '&' + k + '=' + v[1]; });
+    return h.path + q;
   }
+  // A hub that only owns its landing page (/c/meditation-pass, plus the short code Circle may add), never a lesson under it
+  function onLanding(k) { return !HUBS[k].landingOnly || new RegExp('^/c/' + k + '(-[a-z0-9]+)?/?$').test(location.pathname); }
   // Pages that are not a season: Circle space slug → our page. "This Week" is a Secret space, so only mentees ever see it;
   // the page checks the mentee tag again on its own.
   // "This week" is drawn natively by public/circle/this-week.js now (like the Schedule page); the frame route is switched off.
@@ -116,7 +123,7 @@
     var overlay = !!PAGES[slug] || !!hubPathOf;
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
-    frame.id = hubPathOf ? 'ep-hub-frame' : 'ep-season-frame'; frame.name = frame.id; frame.title = hubPathOf ? (hubPathOf.indexOf('wisdom-school') > 0 ? 'Wisdom School' : 'Sādhana School') : overlay ? 'This week' : 'Season view';
+    frame.id = hubPathOf ? 'ep-hub-frame' : 'ep-season-frame'; frame.name = frame.id; frame.title = hubPathOf ? (hubPathOf.indexOf('wisdom-school') > 0 ? 'Wisdom School' : hubPathOf.indexOf('meditation-pass') > 0 ? 'Meditation Mondays' : 'Sādhana School') : overlay ? 'This week' : 'Season view';
     frame.setAttribute('data-slug', slug); frame.setAttribute('data-path', path);
     if (overlay) { frame.setAttribute('data-overlay', '1'); frame.style.cssText = 'position:fixed;z-index:20;border:0;background:#F2E8D6'; }
     else frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;z-index:20;background:#F0E8D8';
@@ -130,7 +137,9 @@
 
   function tick() {
     queued = false;
-    var m = location.pathname.match(/^\/c\/([^\/]+)/), hk = m && hubKey(m[1]), hp = hk && hubPath(hk);
+    var m = location.pathname.match(/^\/c\/([^\/]+)/), hk = m && hubKey(m[1]);
+    if (hk && !onLanding(hk)) hk = null;
+    var hp = hk && hubPath(hk);
     var slug = m && (hk ? 'hub:' + hk : pageKey(m[1]) || SEASONS[m[1]]); // the hub's identity ignores ?tab=, which Circle may change while it draws the space
     // Sahṛdaya Upāya (/c/mentorship) is drawn natively by sahrdaya.js for mentees. Everyone else keeps the hub's mentor tab.
     // Until sahrdaya.js has checked who is signed in we hold back (up to 12 seconds) so the hub never flashes up for a mentee.

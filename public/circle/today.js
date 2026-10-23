@@ -226,6 +226,23 @@
     out.upNext = (h.upNext || []).slice(0, 3);
     return out;
   }
+  // The Meditation Mondays card's hero and "Up next" come from the Meditation Pass hub's endpoint too, so Today and /c/meditation-pass
+  // never disagree: the next session with its stream and teacher, and the three after it. If the call fails the card keeps its old lines.
+  function loadMeditationHub(d) {
+    if (!(d.cards || []).some(function (c) { return c.key === 'mondays'; })) return;
+    api('/api/hub/meditation').then(function (h) { state.hubMm = h; render(); }).catch(function () {});
+  }
+  function mondaysCard(c) {
+    var h = state.hubMm, n = h && h.plan === 'pass' && h.next;
+    if (!n) return c;
+    var out = {}; for (var k in c) out[k] = c[k];
+    out.next = { start: n.startsAt, end: n.endsAt, date: n.date }; out.nextLine = '';
+    out.sub = n.title;
+    out.primary = { label: 'Join on Monday', liveLabel: 'Join now', href: n.url || '/c/meditation-pass', live: !!n.url };
+    out.links = [{ label: 'Open the hub', href: '/c/meditation-pass' }, { label: 'Replays', href: '/c/meditation-pass?tab=replays' }];
+    out.upNext = (h.nextFour || []).slice(0, 3);
+    return out;
+  }
   function loadData() {
     return Promise.all([
       api('/api/member/today?today=' + localToday() + asParam(), { identity: true }).then(function (d) {
@@ -233,6 +250,7 @@
         if (d.tier) state.tier = d.tier === 'course' ? 'none' : d.tier; // the tier the server worked the page out for (an admin's ?as= preview included)
         state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet';
         loadWisdomHub(d);
+        loadMeditationHub(d);
       }).catch(function (e) { state.error = e.message; state.failed = true; if (e.status === 401) store('ep_today_session', ''); }),
       mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
       mentorView() ? api('/api/member/submissions').then(function (r) { state.wait = r; }).catch(function (e) { state.waitErr = e.message; }) : null,
@@ -705,6 +723,7 @@
   }
   function cardHtml(c) {
     if (c.key === 'wisdom') c = wisdomCard(c);
+    if (c.key === 'mondays') c = mondaysCard(c);
     var live = false, n = c.next;
     if (c.primary.live && n && n.start) { var now = Date.now(), st = new Date(n.start).getTime(), en = n.end ? new Date(n.end).getTime() : st + 3600000; live = now >= st - 600000 && now <= en; }
     var ext = c.primary.external ? ' target="_blank" rel="noopener"' : '';

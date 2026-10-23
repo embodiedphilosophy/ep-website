@@ -1,0 +1,21 @@
+{
+  "circle": {
+    "course_space_id": 2897426,
+    "live_space_id": 2897425,
+    "start_section_id": 1212933,
+    "slug": "meditation-pass"
+  },
+  "session": { "minutes": 60, "join_before_minutes": 15, "series": "meditation-mondays", "kicker": "Meditation Pass · Every Monday, 12pm ET" },
+  "links": {
+    "pass_checkout": "https://ss.embodiedphilosophy.com/checkout/meditation-pass",
+    "pass_yearly": "$99 a year",
+    "pass_monthly": "$9.99/mo",
+    "pass_learn": "https://www.embodiedphilosophy.com/meditation-pass",
+    "ws_checkout": "https://ss.embodiedphilosophy.com/checkout/wisdom-school",
+    "ws_price": "$297 a year",
+    "ws_learn": "https://www.embodiedphilosophy.com/wisdom-school",
+    "ws_hub": "/c/wisdom-school",
+    "preview": "https://www.embodiedphilosophy.com/meditation-pass#replays",
+    "schedule": "/c/schedule"
+  }
+}

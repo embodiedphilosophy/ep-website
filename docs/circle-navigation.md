@@ -9,8 +9,10 @@ From the design handoff of 17 Oct 2026 (Today · Calendar · Practice · Library
 
 **Wisdom School hub (`/c/wisdom-school`):** built, see `docs/wisdom-hub.md`. It also feeds the Wisdom School card on Today.
 
+**Meditation Pass hub (`/c/meditation-pass`):** built, see `docs/meditation-hub.md`. It also feeds the Meditation Mondays card on Today.
+
 ## Not built yet
-Programme hubs (Sādhana School exists at `/school/sadhana-school`, Wisdom School at `/school/wisdom-school`; Meditation Mondays and Sahṛdaya Upāya hubs), Calendar, Practice, Library, and the shared plan call. Several of those pages already exist as pages drawn inside Circle spaces (`public/circle/*.js`).
+Programme hubs (Sādhana School exists at `/school/sadhana-school`, Wisdom School at `/school/wisdom-school`, Meditation Mondays at `/school/meditation-pass`; Sahṛdaya Upāya hub), Calendar, Practice, Library, and the shared plan call. Several of those pages already exist as pages drawn inside Circle spaces (`public/circle/*.js`).
 
 ## Circle questions that decide the wiring (answer in Circle's admin)
 1. Can a Private space's lock screen point to an outside address, or only a Circle landing page?

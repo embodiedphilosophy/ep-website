@@ -57,6 +57,8 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
     if (path === '/api/member/today') { todayHeaders.push(r.request().headers()); if (delay) await new Promise(x => setTimeout(x, delay)); return j(r.request().headers()['x-circle-identity'] ? { ...body, signin: { session: 's', tier: { tier, seasons }, firstName: 'Maya', offer, admin } } : body); }
     if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: [], logged: post.minutes }); }
+    if (path === '/api/hub/wisdom-school') return j({ plan: tier === 'wisdom_plus' ? 'plus' : 'ws', month: { index: 10, of: 12, name: 'October', theme: 'The Return with Wisdom', question: 'What are you carrying home?', lessonUrl: HOST + '/lessons/1', hasLesson: true },
+      upNext: [{ id: 'a', startsAt: '2026-10-26T16:00:00Z', title: 'Meditation Monday: Somatic', teacher: 'Floss Harry', url: '' }, { id: 'b', startsAt: '2026-11-03T23:00:00Z', title: 'The Circle Reopens', teacher: 'Jacob Kyle', url: '' }] });
     if (path === '/api/member/cohort') return j({ today: TODAY, rows: [{ name: 'Carolyn', email: 'c@example.com', streak: 0, weekCount: 0, days8w: 0, minutes8w: 0, last: null, daysSince: null, grid: [] }], attention: [{ email: 'c@example.com', name: 'Carolyn', why: 'Hasn’t logged any practice yet' }] });
     if (path === '/api/member/portfolio') return j({ pages: [] });
     if (path === '/api/member/travelogue') return j({ travelogue: m === 'POST' ? [{ id: '1', day: TODAY, text: JSON.parse(r.request().postData()).text }] : [] });
@@ -122,6 +124,13 @@ console.log('enrolments: ok');
   await y.p.locator('[data-act=dismiss]').click(); assert.equal(await y.p.locator('.ept-nudge').count(), 0);
   await y.ctx.close();
   const wp = await open('wisdom_plus'); assert.match(await wp.p.locator('.etd-main').innerText(), /6 of 30 hours this Yoga Alliance cycle/); await wp.ctx.close();
+  // The Wisdom School card takes its hero and Up next from /api/hub/wisdom-school, the same call as the hub, so the two never disagree
+  const wh = await open('wisdom'); await wh.p.waitForSelector('.etd-ws3');
+  const wc = await wh.p.locator('section[aria-label="Wisdom School"]').innerText();
+  assert.match(wc, /October · The Return with Wisdom/); assert.match(wc, /What are you carrying home\?/); assert.match(wc, /Meditation Monday: Somatic/); assert.match(wc, /The Circle Reopens/); assert.match(wc, /Watch this month’s lecture/);
+  assert.ok(wh.calls.some(c => c === 'GET /api/hub/wisdom-school'), 'Today called the hub endpoint');
+  assert.equal(await wh.p.locator('section[aria-label="Wisdom School"] a[href="/c/wisdom-school"]').count() >= 1, true, 'and links to the hub');
+  await wh.ctx.close();
 }
 console.log('cards, suggestion: ok');
 

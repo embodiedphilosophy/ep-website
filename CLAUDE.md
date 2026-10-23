@@ -28,7 +28,7 @@ order. This file adds the safety rules and how to test.
 ## Systems and sheets
 - **EP-Programming-Calendar** (`CALENDAR_SHEET_ID`): Schedule + Event Details (header row 4, IDs `E###`) feed the
   Master Schedule formula view; also Team, Task Templates (with `done_when`), Track Defaults, Circle Groups,
-  Resources, Teachers, Course Pages, Weekly Scaffolding, Site * tabs (website content), Change Log.
+  Resources, Teachers, Course Pages, Weekly Scaffolding, Site * tabs (website content), WS Pathways (the Wisdom School hub in Circle, `docs/wisdom-hub.md`), Change Log.
 - **EP Social Engine** (`1IWmlLqZNPgmMuPgdM9HkVQagQNwPylAd0zi4YcUtEIM`): Weekly Plan, Image Library, Quote
   Library, Caption Bank, Rules… Make scenario "EP Social: Publish approved posts" publishes `Approved` rows at
   their time, downloading the picture **from Drive** (image_url must be an lh3 Drive link). New pictures (uploads,

@@ -1,0 +1,100 @@
+/* Wisdom School hub, drawn inside Circle. Builds on school.css (.sch-*), the same pieces as the Sādhana School hub.
+   Brand: Terra #A5432A, Pine #20302A, Ivory #FAF5EB, Sand #EADDC6, Line #D8C9AE, ground #F2E8D6, Ochre #B98A3E. */
+body:has(.wsh){background:#F2E8D6}
+.sch-root:has(.wsh){background:#F2E8D6}
+.wsh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.wsh-headr{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.wsh-pill{display:inline-flex;align-items:center;height:34px;padding:0 16px;border-radius:99px;font:600 13px var(--font-sans),sans-serif;border:1px solid #D8C9AE;background:#EADDC6;color:#20302A;white-space:nowrap}
+.wsh-pill.plus{background:#20302A;border-color:#20302A;color:#FAF5EB}
+.wsh-pill.none{background:transparent;border:1px dashed #A5432A;color:#83341F}
+.wsh-as{font-size:13px;color:#5A5346;display:flex;align-items:center;gap:8px}
+.wsh-as select{min-height:36px;border:1px solid #D8C9AE;border-radius:6px;background:#FAF5EB;font:14px var(--font-sans),sans-serif;padding:0 8px;color:#20302A}
+.wsh .sch-tabs{scrollbar-width:thin}
+
+/* banners */
+.wsh-banner{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 26px;border-radius:10px;margin-bottom:18px;background:#EADDC6;border:1px solid #D8C9AE}
+.wsh-banner h2{font-family:var(--font-serif),serif;font-weight:600;font-size:24px;line-height:1.2;margin:0 0 4px;color:#1E1A14}
+.wsh-banner p{margin:0;color:#5A5346}
+.wsh-banner.preview{border:1px dashed #A5432A;background:#FAF5EB}
+.wsh-actions{display:flex;gap:10px;flex-wrap:wrap;flex:none}
+
+/* this month */
+.wsh-cols{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:22px;align-items:start}
+.wsh-main{display:grid;gap:22px;min-width:0}
+.wsh-hero{background:#20302A;color:#FAF5EB;border-radius:10px;padding:28px 30px}
+.wsh-kick{margin:0 0 8px;font:600 12px var(--font-sans),sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#EADDC6}
+.wsh-hero h2{font-family:var(--font-serif),serif;font-weight:600;font-size:42px;line-height:1.05;margin:0 0 12px;color:#FAF5EB}
+.wsh-q{font-family:var(--font-serif),serif;font-style:italic;font-size:22px;line-height:1.35;margin:0 0 18px;color:#EADDC6;max-width:640px}
+.wsh-soon{margin:0;font-size:15px;color:#EADDC6;border:1px dashed rgba(234,221,198,.55);display:inline-block;padding:10px 16px;border-radius:6px}
+.wsh-hero .sch-btn{background:#FAF5EB;color:#20302A;border-color:#FAF5EB}
+.wsh-hero .sch-btn.ghost{background:transparent;color:#FAF5EB;border-color:#EADDC6}
+.wsh .sch-sub{margin:0 0 10px}
+.wsh-up3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.wsh-ev{display:flex;flex-direction:column;gap:2px;padding:16px;border:1px solid #D8C9AE;border-radius:10px;background:#FAF5EB}
+.wsh-ev h3{font-family:var(--font-serif),serif;font-weight:600;font-size:21px;line-height:1.2;margin:6px 0 2px;color:#1E1A14}
+.wsh-ev h3 a:hover{text-decoration:underline}
+.wsh-ev .sch-btn{margin-top:auto;align-self:flex-start;min-height:44px}
+.wsh-ev .sch-meta{margin-bottom:10px}
+.wsh-evd{font:600 12px var(--font-sans),sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#A5432A}
+.wsh-evt{font-size:14px;color:#5A5346;font-variant-numeric:tabular-nums}
+.wsh-ev.locked{border:1px dashed #A5432A;background:transparent}
+.wsh-ev.locked h3,.wsh-ev.locked .wsh-evt,.wsh-ev.locked .sch-meta{color:#8a8478}
+.wsh-ev.locked .sch-badge{margin-left:8px;vertical-align:middle}
+.wsh-none{grid-column:1/-1;color:#5A5346;padding:6px 2px}
+.wsh-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.wsh-tile{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:68px;padding:8px 10px;border-radius:8px;border:1px solid #D8C9AE;color:#20302A;text-decoration:none;overflow:hidden}
+.wsh-tile b{font-family:var(--font-serif),serif;font-weight:600;font-size:20px;line-height:1}
+.wsh-tile span{font-size:11px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.wsh-tile.past{background:#EADDC6}
+a.wsh-tile.past:hover,a.wsh-tile.current:hover{box-shadow:0 0 0 2px #20302A inset}
+.wsh-tile.current{background:#A5432A;border-color:#A5432A;color:#FAF5EB}
+.wsh-tile.future{background:transparent;color:#5A5346}
+.wsh-tile.locked{border:1px dashed #A5432A;background:transparent;color:#8a8478}
+.wsh-coming{margin:12px 0 0;font-size:14px;color:#5A5346}
+.wsh-side{padding:22px;border-radius:10px;background:#EADDC6;border:1px solid #D8C9AE;display:grid;gap:10px;align-content:start}
+.wsh-side h2{font-family:var(--font-serif),serif;font-weight:600;font-size:26px;line-height:1.15;margin:0;color:#1E1A14}
+.wsh-side .sch-meta{margin:0}
+.wsh-side .sch-btn{justify-self:start}
+.wsh-bar{height:8px;border-radius:99px;background:#FAF5EB;overflow:hidden}
+.wsh-bar i{display:block;height:100%;background:#B98A3E}
+
+/* rows */
+.wsh-row .sch-card-main{min-width:0}
+.wsh-row .sch-badge.lock{margin-left:10px;vertical-align:middle}
+.wsh-row.locked .sch-meta,.wsh-row.locked h2,.wsh-row.locked .wsh-streams{color:#8a8478}
+.wsh-streams{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:#5A5346}
+.wsh-streams b{color:#20302A;font-weight:600}
+.wsh-nextt{margin-top:4px}
+.wsh .wsh-gap{margin-top:22px}
+.wsh-row .sch-chip{max-width:128px;overflow:hidden;text-overflow:ellipsis}
+
+/* the upgrade pop-up, styled like the pañcāṅga explainer */
+.wsh-modal{position:fixed;inset:0;z-index:2147483000;background:rgba(22,20,15,.55);display:flex;align-items:center;justify-content:center;padding:16px;font:14px/1.5 var(--font-sans),sans-serif}
+.wsh-modal-c{width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#FBF6EE;color:#1E1A14;border-radius:8px;padding:26px 28px;display:flex;flex-direction:column;gap:10px;outline:0}
+.wsh-modal-c h2{margin:0;font:600 30px/1.1 var(--font-serif),Georgia,serif}
+.wsh-modal-c p{margin:0;font-size:15px}
+.wsh-go{align-self:flex-start;margin-top:6px}
+.wsh-learn{align-self:flex-start;color:#83341F;text-decoration:underline;font-size:15px;min-height:32px;display:inline-flex;align-items:center}
+.wsh-x{align-self:flex-start;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:#1E1A14;color:#F4EDE0;font:600 14px var(--font-sans),sans-serif;cursor:pointer;margin-top:4px}
+
+@media (max-width:900px){
+  .wsh-cols{grid-template-columns:minmax(0,1fr)}
+  .wsh-up3{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:700px){
+  .wsh-head{align-items:flex-start}
+  .wsh-headr{align-items:flex-start}
+  .wsh-banner{flex-direction:column;align-items:stretch;padding:18px}
+  .wsh-banner .sch-btn{width:100%}
+  .wsh-actions{flex-direction:column}
+  .wsh-hero{padding:22px 20px}
+  .wsh-hero h2{font-size:32px}
+  .wsh-q{font-size:19px}
+  .wsh-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .wsh-tile{min-height:60px;padding:8px}
+  .wsh-tile span{display:none}
+  .wsh-row .sch-chip{max-width:none}
+  .wsh-row .sch-btn{width:100%}
+  .wsh-modal-c{padding:22px 20px}
+  .wsh-go{align-self:stretch}
+}

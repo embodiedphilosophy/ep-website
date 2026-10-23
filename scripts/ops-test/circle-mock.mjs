@@ -18,6 +18,32 @@ const core = [101, 102, 103, 104, 105, 106, 107];
 const spacesFor = { 'annual@test': [22, 11, 32, 31], 'fall@test': [22, 11], 'nobody@test': [],
   'hubterm@test': [...core, 2911545, 2911531], 'hubfull@test': [...core, 108, 2911545, 2911552, 2911553, 2911554, 2911531],
   'hubmentee@test': [...core, 108, 109, 110, 111, 2911545, 2911552, 2911553, 2911554, 2911531] };
+
+// ---- Wisdom School hub (docs/wisdom-hub.md): the Pilgrimage Project course, pathways, live events. Members wsplus@test and wsmember@test.
+const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const MTHEME = ['The Call to Depth', 'Refusal and Resistance', 'Crossing the Threshold', 'The Descent', 'The Abyss', 'The Return of the Light', 'The Companion', 'The Gift', 'Tantric Buddhism: Inner and Outer Pilgrimage', 'The Return with Wisdom', 'Gratitude', 'Rest'];
+const MSEC = [1212912, 1212914, 1212915, 1212916, 1212917, 1212918, 1212919, 1212920, 1212921, 1212922, 1212923, 1212924];
+const les = (id, name, o = {}) => ({ id, name, url: `https://ss.example.test/lessons/${id}`, status: 'incomplete', created_at: day(-3), ...o });
+const wsYear = [
+  ...MSEC.map((id, k) => ({ id, name: k === 8 ? MTHEME[k] : `${MON[k]} · ${MTHEME[k]}`, lessons: k >= 10 ? [] : [les(id * 10, `${MON[k]} lecture`, { status: k < 9 ? 'complete' : 'incomplete', body: k === 9 ? '<p>What are you carrying home from the road?</p>' : `<p>Question for ${MON[k]}</p>` })] })),
+  { id: 1212925, name: 'Book club', lessons: [les(9001, 'Q1 · Pilgrimage in the Ancient World', { created_at: day(-200) }), les(9002, 'Pilgrimage: Past and Present in the World Religions', { created_at: day(-10) })] },
+  { id: 1223514, name: 'Hellenism & Neoplatonism', lessons: [les(9101, 'The One', { status: 'complete' }), les(9102, 'Nous', { status: 'complete' }), les(9103, 'Soul'), les(9104, 'Return')] },
+];
+const lessonsOf = (n, done) => [{ id: 1, name: 'Course', lessons: Array.from({ length: n }, (_, i) => les(700 + i, `Lesson ${i + 1}`, { status: i < done ? 'complete' : 'incomplete' })) }];
+const wsCourses = { 2897436: wsYear, 2897437: lessonsOf(4, 2), 2897811: lessonsOf(10, 0), 2897812: lessonsOf(5, 5), 2897813: lessonsOf(3, 0), 2897814: lessonsOf(3, 0), 2897815: lessonsOf(3, 0), 2900101: lessonsOf(6, 1), 2900102: lessonsOf(6, 0), 2900103: lessonsOf(6, 0), 2900104: lessonsOf(6, 0) };
+const monday = () => { const d = new Date(); d.setUTCDate(d.getUTCDate() + ((8 - d.getUTCDay()) % 7 || 7)); d.setUTCHours(16, 0, 0, 0); return d; };
+const tue = n => new Date(Date.now() + n * 86400e3);
+const wsEvents = [
+  { id: 801, name: 'Meditation Monday: Somatic', space_id: 2897425, starts_at: monday().toISOString(), ends_at: new Date(+monday() + 2700e3).toISOString(), host: { name: 'Floss Harry' } },
+  { id: 802, name: 'The Circle Reopens', space_id: 2897428, starts_at: tue(11).toISOString(), ends_at: new Date(+tue(11) + 5400e3).toISOString(), host: { name: 'Jacob Kyle' } },
+  { id: 803, name: 'Meditation Monday: Metta', space_id: 2897425, starts_at: new Date(+monday() + 7 * 86400e3).toISOString(), ends_at: new Date(+monday() + 7 * 86400e3 + 2700e3).toISOString(), host: { name: 'Oneika Mays' } },
+  { id: 804, name: 'Autumn workshop', space_id: 2897428, starts_at: tue(25).toISOString(), ends_at: new Date(+tue(25) + 9000e3).toISOString(), host: { name: 'Jacob Kyle' } },
+  { id: 805, name: 'Book club meet-up', space_id: 2897428, starts_at: tue(40).toISOString(), ends_at: new Date(+tue(40) + 3600e3).toISOString(), host: { name: 'Jacob Kyle' } },
+];
+const wsPosts = [{ id: 31, name: 'The Circle Reopens: details', created_at: day(-1) }, { id: 32, name: 'Welcome to October', created_at: day(-30) }];
+const wsSpaces = [2913549, 2897428, 2897425, 2897427, 2897436, 2897437];
+const wsPlus = [...wsSpaces, 2897811, 2897812, 2897813, 2897814, 2897815, 2900101, 2900102, 2900103, 2900104, 2910160, 2912717];
+Object.assign(spacesFor, { 'wsmember@test': wsSpaces, 'wsplus@test': wsPlus, 'wsnone@test': [] });
 const tokens = new Map();
 const log = [];
 http.createServer(async (req, res) => {
@@ -33,11 +59,12 @@ http.createServer(async (req, res) => {
   if (!who) return send({ error: 'unauthorised' }, 401);
   const p = url.pathname.replace('/api/headless/v1', '');
   if (p === '/spaces') return send({ records: spacesFor[who].map(id => ({ id, url: `https://ss.example.test/c/space-${id}` })), has_next_page: false });
-  if (p === '/community_events') return send({ records: [...events, ...hubEvents].filter(e => spacesFor[who].includes(e.space_id)), has_next_page: false });
+  if (p === '/community_events') return send({ records: [...events, ...hubEvents, ...wsEvents].filter(e => spacesFor[who].includes(e.space_id)), has_next_page: false });
   let m;
+  if ((m = p.match(/^\/courses\/(\d+)\/sections$/))) return spacesFor[who].includes(Number(m[1])) || (m[1] === '2897436' && who === 'wsnone@test') ? send(wsCourses[m[1]] || [], 200) : send({ error: 'forbidden' }, 403);
   if ((m = p.match(/^\/spaces\/(\d+)\/posts$/))) {
     if (req.method === 'POST') { log.push(`POST post ${body}`); console.log('WROTE post', body); posts.unshift({ id: 99, name: JSON.parse(body).name, topics: JSON.parse(body).topic_ids, created_at: day(0) }); return send({ id: 99 }, 201); }
-    return send({ records: spacesFor[who].includes(Number(m[1])) ? posts : [], has_next_page: false });
+    return send({ records: spacesFor[who].includes(Number(m[1])) ? (Number(m[1]) === 2897427 ? wsPosts : posts) : [], has_next_page: false });
   }
   if ((m = p.match(/^\/events\/(\d+)\/event_attendees$/)) && req.method === 'POST') { console.log('WROTE rsvp', m[1], who); return send({ ok: true }, 201); }
   send({ error: 'not mocked ' + p }, 404);

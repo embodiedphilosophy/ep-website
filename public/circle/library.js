@@ -12,7 +12,9 @@
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   var LEVELS = ['Foundations', 'Deepening', 'Advanced'];
   var SHOWN = 5; // topic chips before "+ N more topics"
-  var state = { session: null, data: null, error: '', dept: store(DKEY) || '', all: false, msg: '', joined: null };
+  // /c/library?dept=Yoga%20philosophy opens that topic (the Wisdom School hub links here); names match without regard to case
+  function urlDept() { var m = /[?&]dept=([^&]+)/.exec(location.search); try { return m ? decodeURIComponent(m[1].replace(/\+/g, ' ')) : ''; } catch (e) { return ''; } }
+  var state = { session: null, data: null, error: '', dept: urlDept() || store(DKEY) || '', all: false, msg: '', joined: null };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -133,6 +135,8 @@
     var starred = d.items.filter(function (i) { return stars[i.id]; });
     var depts = d.departments.slice();
     if (!d.items.length) return head + '<h1 class="elb-h1">Library</h1><p class="elb-none">The library is being filled in. Check back soon.</p>' + dbg(d);
+    var want = String(state.dept).toLowerCase(), hit = depts.filter(function (x) { return x.name.toLowerCase() === want; })[0];
+    if (hit) state.dept = hit.name;
     var cur = state.dept === STARRED && starred.length ? STARRED : (depts.some(function (x) { return x.name === state.dept; }) ? state.dept : depts[0].name);
     var items = cur === STARRED ? starred : d.items.filter(function (i) { return (i.topics || [i.department]).indexOf(cur) >= 0; });
 

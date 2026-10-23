@@ -1,6 +1,6 @@
 /* Embodied Philosophy · Schedule for Circle (ss.embodiedphilosophy.com/c/schedule)
-   Loaded by public/circle/today.js (no extra Circle snippet needed). Draws the member's schedule in place of the
-   space's content: their membership's live sessions and immersions, month by month, in New York time and in
+   Loaded by public/circle/today.js (no extra Circle snippet needed). Draws the Schedule in place of the
+   space's content: every programme's live sessions and immersions (ones the member's membership doesn't open are locked), month by month, in New York time and in
    their own time zone, with "Live now" and a Join button while a session is on; mentees also see the monthly
    one-to-one window with a booking link. "Subscribe in your calendar" gives a private feed for Google, Apple
    or Outlook. Data: /api/member/schedule (lib/member/schedule.js, from the events sheet). */
@@ -93,6 +93,9 @@
       '@keyframes eps-p{0%{box-shadow:0 0 0 0 rgba(165,67,42,.45)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}',
       '@media (prefers-reduced-motion:reduce){.eps-dot{animation:none}}',
       '.eps-title{font-weight:600;font-size:15px}',
+      '.eps-prog{color:#1E1A14;border-color:#BFAE8E}',
+      '.eps-lock{border-style:dashed;border-color:#A5432A;color:#A5432A}',
+      '.eps-lk .eps-title,.eps-lk .eps-when{opacity:.7}',
       '.eps-sub{font-size:13px;color:#5A5346}',
       '.eps-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:4px;font:inherit;font-size:14px;font-weight:600;border:0;background:#A5432A;color:#FAF5EB!important;cursor:pointer;text-decoration:none;white-space:nowrap}',
       '.eps-btn:hover{background:#83341F}',
@@ -111,7 +114,10 @@
     document.head.appendChild(s);
   }
 
-  var GROUPS = [['all', 'All'], ['session', 'Wednesday sessions'], ['immersion', 'Immersions'], ['one', 'One-to-ones'], ['meditation', 'Meditation Mondays'], ['orientation', 'Orientation'], ['event', 'Other events']];
+  // Every programme's sessions show for everyone; ones the member's membership doesn't open are locked (no Join link)
+  var GROUPS = [['all', 'All'], ['mine', 'Mine'], ['ss', 'Sādhana School'], ['wisdom', 'Wisdom School'], ['mondays', 'Meditation Mondays'], ['mentor', 'Sahṛdaya Upāya'], ['other', 'Other events']];
+  function groupOf(it) { var k = it.key || ''; return (k === 'ss' || k === 'wisdom' || k === 'mondays' || k === 'mentor') ? k : 'other'; }
+  function inGroup(it, g) { return g === 'all' || (g === 'mine' ? !it.locked : groupOf(it) === g); }
   function liveNow(it, now) { return it.start && Date.parse(it.start) - 10 * 60000 <= now && now < Date.parse(it.end); }
 
   function rowHtml(it, zone, now) {
@@ -127,18 +133,20 @@
     }
     var live = liveNow(it, now);
     var act = '';
-    if (live && it.live) act = '<a class="eps-btn" href="' + esc(it.live) + '">Join</a>';
+    if (it.locked) act = '<a class="eps-ghost" href="' + esc(it.url || '/c/schedule') + '"' + (/^https?:/.test(it.url || '') ? ' target="_blank" rel="noopener"' : '') + '>Sign up to access</a>';
+    else if (live && it.live) act = '<a class="eps-btn" href="' + esc(it.live) + '">Join</a>';
     else if (it.book) act = '<a class="eps-ghost" href="' + esc(it.book) + '" target="_blank" rel="noopener">Choose a slot</a>';
     else if (it.url && /^https?:/.test(it.url)) act = '<a class="eps-ghost" href="' + esc(it.url) + '" target="_blank" rel="noopener">Details</a>';
-    return '<div class="eps-row"><div class="eps-when">' + when + '</div><div class="eps-what"><div class="eps-tags">' +
-      (live ? '<span class="eps-live"><span class="eps-dot" aria-hidden="true"></span>Live now</span>' : '') +
-      '<span class="eps-tag">' + esc(it.label) + '</span></div><span class="eps-title">' + esc(it.title) + '</span>' + (it.sub ? '<span class="eps-sub">' + esc(it.sub) + '</span>' : '') +
+    return '<div class="eps-row' + (it.locked ? ' eps-lk' : '') + '"><div class="eps-when">' + when + '</div><div class="eps-what"><div class="eps-tags">' +
+      (live && !it.locked ? '<span class="eps-live"><span class="eps-dot" aria-hidden="true"></span>Live now</span>' : '') +
+      (it.programme ? '<span class="eps-tag eps-prog">' + esc(it.programme) + '</span>' : '') +
+      (it.kind === 'meditation' && it.programme ? '' : '<span class="eps-tag">' + esc(it.label) + '</span>') + (it.locked ? '<span class="eps-tag eps-lock">Locked</span>' : '') + '</div><span class="eps-title">' + esc(it.title) + '</span>' + (it.sub ? '<span class="eps-sub">' + esc(it.sub) + '</span>' : '') +
       '</div><div>' + act + '</div></div>';
   }
 
   // Clocks change on different dates in New York and elsewhere, which moves sessions on the member's clock: say when
   function clockNote(items, zone) {
-    var timed = items.filter(function (i) { return i.start && i.kind === 'session'; });
+    var timed = items.filter(function (i) { return i.start && i.kind === 'session' && !i.locked; });
     if (timed.length < 2 || zone === 'America/New_York') return '';
     var at = function (i) { return fmt(i.start, { hour: 'numeric', minute: '2-digit' }, zone); };
     var prev = at(timed[0]), moves = [];
@@ -157,10 +165,11 @@
     if (!d) return '<div class="eps-top"><div><h1 class="eps-h1">Schedule</h1></div></div><div class="eps-sk"></div><div class="eps-sk"></div><div class="eps-sk"></div>';
     var zone = myZone(), now = Date.now(), items = d.items || [];
     var counts = {}; items.forEach(function (i) { counts[i.kind] = (counts[i.kind] || 0) + 1; });
-    var tabs = GROUPS.filter(function (g) { return g[0] === 'all' || counts[g[0]]; });
+    var gcount = {}; GROUPS.forEach(function (g) { gcount[g[0]] = items.filter(function (i) { return inGroup(i, g[0]); }).length; });
+    var tabs = GROUPS.filter(function (g) { return g[0] === 'all' || gcount[g[0]]; });
     if (tabs.length <= 2) tabs = [];
-    if (state.tab !== 'all' && !counts[state.tab]) state.tab = 'all';
-    var shown = items.filter(function (i) { return state.tab === 'all' || i.kind === state.tab; });
+    if (state.tab !== 'all' && !gcount[state.tab]) state.tab = 'all';
+    var shown = items.filter(function (i) { return inGroup(i, state.tab); });
     var out = '<div class="eps-top"><div><span class="eps-eye">' + esc(EYEBROW[d.tier] || 'Embodied Philosophy') + '</span><h1 class="eps-h1">Schedule</h1></div>' +
       '<button type="button" class="eps-ghost" data-act="sub" aria-expanded="' + state.sub + '">Subscribe in your calendar</button></div>';
     if (state.sub) {
@@ -173,7 +182,7 @@
         '<a class="eps-ghost" href="' + esc(webcal) + '">Apple or Outlook</a></div></div>';
     }
     if (tabs.length) out += '<div class="eps-tabs" role="group" aria-label="Show">' + tabs.map(function (g) {
-      return '<button type="button" class="eps-tab" data-tab="' + g[0] + '" aria-pressed="' + (state.tab === g[0]) + '">' + g[1] + '<small>' + (g[0] === 'all' ? items.length : counts[g[0]]) + '</small></button>';
+      return '<button type="button" class="eps-tab" data-tab="' + g[0] + '" aria-pressed="' + (state.tab === g[0]) + '">' + g[1] + '<small>' + gcount[g[0]] + '</small></button>';
     }).join('') + '</div>';
     out += '<div class="eps-cols"><div class="eps-main">';
     if (!shown.length) out += '<div class="eps-empty">Nothing scheduled yet. New sessions appear here as soon as they’re on the calendar.</div>';

@@ -34,7 +34,11 @@ body:has(.sch-root) > :not(main){display:none !important}
 .sch-empty-page,.sch-center{max-width:560px}
 .sch-empty-page p,.sch-center p{font-size:17px;color:var(--ink5)}
 .sch-center{margin:60px auto;padding:0 24px}
+/* The hubs and season views (anything with the pill tabs) sit against the left edge of Circle's content area, with the same
+   margins as the Wisdom School hub and the Sahṛdaya Upāya page (public/circle/sahrdaya.js .esu), not centred in it */
+.sch-main:has(.sch-tabs){margin:0;max-width:1120px;padding-left:32px;padding-right:32px}
 @media (max-width:700px){
+  .sch-main:has(.sch-tabs){padding-left:16px;padding-right:16px}
   .sch-main{padding:24px 16px 56px}
   .sch-head h1{font-size:34px}
   .sch-card,.sch-pod{grid-template-columns:minmax(0,1fr);gap:8px;padding:16px}

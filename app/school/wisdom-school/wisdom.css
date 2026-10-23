@@ -100,12 +100,3 @@ a.wsh-tile.past:hover,a.wsh-tile.current:hover{box-shadow:0 0 0 2px #20302A inse
   .wsh-modal-c{padding:22px 20px}
   .wsh-go{align-self:stretch}
 }
-
-/* Sit against the left edge of Circle's content area instead of centred in it */
-.sch-main:has(.wsh){margin:0;max-width:1120px;padding-left:32px;padding-right:32px}
-@media (max-width:700px){.sch-main:has(.wsh){padding-left:16px;padding-right:16px}}
-
-/* The month column is narrower than the window (the side card takes 290px): four tiles across until there is room for six */
-@media (max-width:1100px){.wsh-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.wsh-tile span{display:-webkit-box}}
-@media (max-width:700px){.wsh-tile span{display:none}}
-.wsh-row .sch-btn,.wsh-banner .sch-btn,.wsh-side .sch-btn{box-sizing:border-box;max-width:100%;white-space:normal;text-align:center}

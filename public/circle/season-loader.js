@@ -56,7 +56,7 @@
     t += 'content area found: ' + (host ? 'yes' : 'NO') + '\n';
     t += 'frame: ' + (f ? 'yes ' + Math.round(r.width) + 'x' + Math.round(r.height) : 'NO') + '\n';
     t += 'frame built: ' + state.built + ' time(s)' + (state.stopped ? '  STOPPED: Circle kept removing it' : '') + '\n';
-    t += 'loader: hub v5 (own frame id)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
+    t += 'loader: hub v6 (brake per page)  waited: ' + (state.waited || 0) + '  last removal: ' + (state.why || 'none') + '\n';
     t += 'removed by: ' + (state.other || '-') + '\nremoved from: ' + (state.mut || '-') + '\n';
     t += 'frame address: ' + (f && f.src ? f.src.replace('https://www.embodiedphilosophy.com', '') : '-') + '\n';
     t += 'frame finished loading: ' + (state.loaded ? 'yes' : 'no') + '\n';
@@ -137,6 +137,10 @@
 
   function tick() {
     queued = false;
+    // The safety brake below only counts rebuilds on the SAME page (Circle tearing the frame out while the member stays put).
+    // Moving to another page starts it afresh: before, clicking between the programme hubs a few times tripped it for good and
+    // Circle's own course page showed through until a reload.
+    if (location.pathname !== state.path) { state.path = location.pathname; builds = []; state.stopped = false; }
     var m = location.pathname.match(/^\/c\/([^\/]+)/), hk = m && hubKey(m[1]);
     if (hk && !onLanding(hk)) hk = null;
     var hp = hk && hubPath(hk);

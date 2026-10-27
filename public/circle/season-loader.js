@@ -128,7 +128,9 @@
   }
   function embed(host, slug, hubPathOf) {
     if (state.stopped || tooMany()) { state.stopped = true; return; }
-    var path = hubPathOf || PAGES[slug] || '/school/sadhana-school/' + slug;
+    // A season opened at one of its tabs (e.g. ?tab=recordings from Today) opens the season view at that tab
+    var stab = (location.search.match(/[?&]tab=([a-z]+)/) || [])[1];
+    var path = hubPathOf || PAGES[slug] || '/school/sadhana-school/' + slug + (stab ? '?tab=' + stab : '');
     // The hub and "This week" sit on the page itself, over Circle's content area, so Circle re-drawing that area cannot tear them down
     var overlay = !!PAGES[slug] || !!hubPathOf || host.id === 'panel';
     host.setAttribute('data-ep-season', '1');

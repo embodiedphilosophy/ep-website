@@ -12,9 +12,13 @@
       "path": "/api/ops/auto",
       "schedule": "*/15 * * * *"
     },
-    {
-      "path": "/api/scaffolding",
-      "schedule": "0 14 * * 4"
-    }
+          {
+         "path": "/api/scaffolding",
+         "schedule": "0 14 * * 4"
+       },
+       {
+         "path": "/api/meditation-reminder",
+         "schedule": "0 12 * * 1"
+       }
   ]
 }

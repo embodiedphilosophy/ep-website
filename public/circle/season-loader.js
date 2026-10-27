@@ -37,6 +37,11 @@
   // Circle often adds a short code to a space's address (this-week-a1b2c3): treat that as the same space
   function pageKey(s) { return PAGES[s] ? s : null; }
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
+  // When the window is narrow (a phone, or a laptop with a side panel open) Circle swaps to its mobile shell, which has no
+  // workspace body. There the page's scrolling panel stands in, and the frame fills the gap between the mobile header and footer.
+  function getHost() {
+    return document.querySelector(HOST) || (document.querySelector('[data-testid="mobile-shell-header"]') && document.getElementById('panel')) || null;
+  }
   var WARM_MS = 10 * 3600 * 1000, warming = null, queued = false;
 
   var st = document.createElement('style');
@@ -49,7 +54,7 @@
     if (!DEBUG || !document.body) return;
     var b = document.getElementById('ep-debug');
     if (!b) { b = document.createElement('div'); b.id = 'ep-debug'; b.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:2147483647;background:#20302A;color:#fff;font:12px/1.5 monospace;padding:10px 12px;border-radius:6px;max-width:340px;white-space:pre-wrap'; document.body.appendChild(b); }
-    var f = frameEl(), host = document.querySelector(HOST), t = '';
+    var f = frameEl(), host = getHost(), t = '';
     var r = f && f.getBoundingClientRect(), top = r && document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(200, r.height / 2));
     t += 'path: ' + location.pathname + '\n';
     t += 'signed in to Circle: ' + (user() ? 'yes' : 'NO') + '\n';
@@ -114,13 +119,18 @@
   function place(frame, host) {
     if (!frame || !host) return;
     var r = host.getBoundingClientRect(), h = Math.max(r.height, window.innerHeight - r.top);
+    if (host.id === 'panel') {
+      var hd = document.querySelector('[data-testid="mobile-shell-header"]'), ft = document.querySelector('[data-testid="mobile-shell-footer"]');
+      var top = hd ? hd.getBoundingClientRect().bottom : 0, bottom = ft && ft.offsetHeight ? ft.getBoundingClientRect().top : window.innerHeight;
+      r = { left: 0, top: top, width: window.innerWidth }; h = Math.max(0, bottom - top);
+    }
     frame.style.left = r.left + 'px'; frame.style.top = r.top + 'px'; frame.style.width = r.width + 'px'; frame.style.height = h + 'px';
   }
   function embed(host, slug, hubPathOf) {
     if (state.stopped || tooMany()) { state.stopped = true; return; }
     var path = hubPathOf || PAGES[slug] || '/school/sadhana-school/' + slug;
     // The hub and "This week" sit on the page itself, over Circle's content area, so Circle re-drawing that area cannot tear them down
-    var overlay = !!PAGES[slug] || !!hubPathOf;
+    var overlay = !!PAGES[slug] || !!hubPathOf || host.id === 'panel';
     host.setAttribute('data-ep-season', '1');
     var frame = document.createElement('iframe');
     frame.id = hubPathOf ? 'ep-hub-frame' : 'ep-season-frame'; frame.name = frame.id; frame.title = hubPathOf ? (hubPathOf.indexOf('wisdom-school') > 0 ? 'Wisdom School' : hubPathOf.indexOf('meditation-pass') > 0 ? 'Meditation Mondays' : 'Sādhana School') : overlay ? 'This week' : 'Season view';
@@ -151,7 +161,7 @@
       if (window.__epMentee === 'yes') slug = null;
       else if (window.__epMentee !== 'no' && !state.stopped) { state.mentorWait = state.mentorWait || Date.now(); if (Date.now() - state.mentorWait < 12000) slug = null; }
     } else state.mentorWait = 0;
-    var host = document.querySelector(HOST), frame = frameEl();
+    var host = getHost(), frame = frameEl();
     if (user()) warm();
     // Leaving the page (or asking for Circle's own view) removes the frame. Circle briefly losing its content area or the
     // signed-in user while it redraws does not: removing the frame then made it rebuild until the loader gave up.
@@ -192,7 +202,7 @@
   function start() {
     new MutationObserver(soon).observe(document.documentElement, { childList: true, subtree: true });
     setInterval(soon, 1500); setInterval(badge, 1000);
-    setInterval(function () { var f = frameEl(); if (f && f.getAttribute('data-overlay')) place(f, document.querySelector(HOST)); }, 300);
+    setInterval(function () { var f = frameEl(); if (f && f.getAttribute('data-overlay')) place(f, getHost()); }, 300);
     soon();
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);

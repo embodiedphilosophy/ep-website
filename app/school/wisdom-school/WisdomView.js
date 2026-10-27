@@ -255,7 +255,13 @@ function Year({ ctx }) {
   );
   return (
     <>
-      <ul className="sch-list">{y.rows.map(row)}</ul>
+      {y.course && (
+        <ul className="sch-list">
+          <Row chip={String(ctx.hub.kicker || '').slice(0, 4) || 'Course'} title={y.course.title} line={y.course.line} locked={y.course.locked} badge={y.course.badge}
+            action={y.course.locked ? <Unlock ctx={ctx} /> : y.course.url ? <a className="sch-btn" href={y.course.url} target="_top">Open the course</a> : null} />
+        </ul>
+      )}
+      <ul className={`sch-list${y.course ? ' wsh-gap' : ''}`}>{y.rows.map(row)}</ul>
       {y.ahead.length > 0 && <><h2 className="sch-sub wsh-gap">Still to come</h2><ul className="sch-list">{y.ahead.map(row)}</ul></>}
       <ul className="sch-list wsh-gap">
         <Row chip="Archive" title={y.archive.title} line={y.archive.line} locked={y.archive.locked} badge={y.archive.badge}

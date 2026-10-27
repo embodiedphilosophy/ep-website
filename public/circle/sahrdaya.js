@@ -232,30 +232,18 @@
     return '<section class="esu-card" data-g="immersion" style="border-color:#D2A65A"><div class="esu-eye">Integrate · Immersion ' + g.n + '</div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px"><div><h2 class="esu-h2">' + esc(g.title) + '</h2><p class="esu-muted" style="margin-top:2px">Take a few quiet minutes to integrate the weekend.</p></div>' + ext(g.url, 'Open the Integrate lesson', 'esu-btn pri') + '</div></section>';
   }
 
+  // The mentorship room is one place: the whole cohort's chat (no separate tabs for the Mentorship Circle or a direct line)
   function roomCard(w) {
-    var r = w.home.room, m = w.mentorship, tab = state.room;
-    var tabs = [['chat', 'Cohort chat'], ['circle', 'Mentorship Circle'], ['jacob', 'Jacob · direct']].map(function (t) {
-      return '<button type="button" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="room" data-tab="' + t[0] + '">' + t[1] + '</button>';
-    }).join('');
+    var r = w.home.room;
     var pinned = r.pinned.length ? '<div class="esu-pin">' + r.pinned.map(function (p) { return ext(p.url, esc(p.label), ''); }).join('<span aria-hidden="true">·</span>') + '</div>' : '';
-    var body;
-    if (tab === 'circle') {
-      body = (m.posts.length ? '<ul class="esu-rows">' + m.posts.map(function (p) {
-        return '<li><div class="l"><div class="t">' + esc(p.title) + (p.replies ? ' · ' + p.replies + (p.replies === 1 ? ' reply' : ' replies') : '') + '</div><div class="u">' + esc(p.who || 'Mentorship Circle') + (p.at ? ' · ' + esc(dayFmt(String(p.at).slice(0, 10), { day: 'numeric', month: 'short' })) : '') + '</div></div>' + (safeUrl(p.url) ? link(p.url, 'Open', 'esu-btn out') : '') + '</li>';
-      }).join('') + '</ul>' : '<div class="esu-empty">' + (w.pending ? 'Loading…' : 'No reflections posted yet. Yours can be the first.') + '</div>') +
-        '<div class="esu-acts">' + link(r.circleUrl, 'Post your ' + esc(dayFmt(w.today, { month: 'long' })) + ' reflection', 'esu-btn pri') + '</div>';
-    } else if (tab === 'jacob') {
-      body = '<p class="esu-muted" style="margin-bottom:14px">Your direct line to Jacob. Mentees can message him at any time.</p><div class="esu-acts">' + ext(r.messageUrl, 'Message Jacob', 'esu-btn pri') + '</div>';
-    } else {
-      body = (r.chat && r.chat.length ? '<div class="esu-chat" role="log" aria-label="Latest messages in the cohort chat">' + r.chat.slice(-8).map(function (m) {
+    var body = (r.chat && r.chat.length ? '<div class="esu-chat" role="log" aria-label="Latest messages in the cohort chat">' + r.chat.slice(-8).map(function (m) {
         return '<div class="esu-msg"><div class="esu-msgh"><b>' + esc(m.who) + '</b>' + (m.mentor ? '<span class="esu-tag">MENTOR</span>' : '') + '<span class="esu-mono">' + esc(fmtTime(m.at, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + '</span></div><div class="esu-msgb">' + esc(m.text) + '</div></div>';
       }).join('') + '</div>' : '<div class="esu-empty">' + (w.pending ? 'Loading…' : 'Say hello to your cohort.') + '</div>') +
         '<div class="esu-say"><label for="esu-say" style="position:absolute;left:-9999px">Write to your cohort</label><textarea id="esu-say" rows="2" maxlength="1500" data-in="say" placeholder="Write to your cohort…" style="' + FIELD + '">' + esc(state.say) + '</textarea>' +
         '<button type="button" class="esu-btn pri" data-act="send-chat"' + (state.busy === 'chat' ? ' disabled' : '') + '>' + (state.busy === 'chat' ? 'Sending…' : 'Send') + '</button></div>' +
         (state.msg && state.room === 'chat' ? '<p class="esu-err" role="alert" style="margin-top:8px">' + esc(state.msg) + '</p>' : '') +
         '<div class="esu-acts" style="margin-top:10px">' + link(r.chatUrl, 'Open the full chat', 'esu-btn out') + '</div>';
-    }
-    return '<section class="esu-card" data-g="room">' + hd('The mentorship room') + '<div class="esu-rt" role="tablist" aria-label="The mentorship room">' + tabs + '</div>' + pinned + body + '</section>';
+    return '<section class="esu-card" data-g="room">' + hd('The mentorship room') + pinned + body + '</section>';
   }
 
   function hoursCard(w) {

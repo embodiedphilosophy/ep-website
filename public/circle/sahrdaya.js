@@ -105,7 +105,7 @@
       '.esu-note{background:#EADDC6;border:1px solid #E3D8C6;border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:14px}.esu-err{color:#9b2c16;font-size:14px;margin:0 0 12px}',
       '.esu-tabs{display:none}',
       '.esu-cols{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}',
-      '.esu-c1{flex:999 1 560px;min-width:0}.esu-c2{flex:1 1 340px;min-width:0}.esu-c1,.esu-c2{display:flex;flex-direction:column;gap:18px}',
+      '.esu-c1{flex:999 1 500px;min-width:0}.esu-c2{flex:1 1 300px;min-width:0}.esu-c1,.esu-c2{display:flex;flex-direction:column;gap:18px}',
       '.esu-card{background:#FBF6EE;border:1px solid #E3D8C6;border-radius:8px;padding:18px 20px;min-width:0}',
       '.esu-pine{background:#20302A;color:#F6EFE2;border-radius:8px;padding:22px 24px;min-width:0}.esu-pine .esu-eye{color:#D2A65A}',
       '.esu-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}',

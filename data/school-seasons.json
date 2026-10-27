@@ -1,6 +1,7 @@
 [
   {
     "slug": "fall-2026",
+    "circle_slug": "fall-heart-of-recognition",
     "programme": "sadhana-school",
     "title": "Fall · The Heart of Recognition",
     "short": "Fall 2026",
@@ -20,6 +21,7 @@
   },
   {
     "slug": "winter-2027",
+    "circle_slug": "winter-poetry-as-philosophy",
     "programme": "sadhana-school",
     "title": "Winter · Poetry as Philosophy",
     "short": "Winter 2027",
@@ -39,6 +41,7 @@
   },
   {
     "slug": "spring-2027",
+    "circle_slug": "spring-many-faces-of-kali",
     "programme": "sadhana-school",
     "title": "Spring · The Many Faces of Kālī",
     "short": "Spring 2027",
@@ -58,6 +61,7 @@
   },
   {
     "slug": "summer-2027",
+    "circle_slug": "summer-being-with-the-heart",
     "programme": "sadhana-school",
     "title": "Summer · Being With the Heart",
     "short": "Summer 2027",

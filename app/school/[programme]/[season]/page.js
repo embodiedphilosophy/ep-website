@@ -3,6 +3,8 @@ import { currentMember, missingReason } from '@/lib/school/session';
 import { headlessConfigured, memberSpaceIds, eventList, spacePosts } from '@/lib/school/circle';
 import { PROGRAMMES, findSeason, isWired } from '@/lib/school/config';
 import { buildItems, tabLists, TABS } from '@/lib/school/tabs';
+import { readingPlan, readingWeek, sessionDatesOf, READINGS_TAB } from '@/lib/school/readings';
+import { readTab } from '@/lib/mentee/content';
 import Shell from '../../Shell';
 import SeasonView from './SeasonView';
 
@@ -44,7 +46,10 @@ export default async function Page({ params, searchParams }) {
     );
   }
 
-  const lists = tabLists(buildItems(season, events, posts));
+  const items = buildItems(season, events, posts);
+  const lists = tabLists(items);
+  // The season's reading assignments (Ops → Settings → Sādhana School → Reading assignments); a missing tab falls back to the seed
+  const readings = readingPlan(await readTab(READINGS_TAB).catch(() => []), season.slug, sessionDatesOf(items));
   const view = TABS.some(t => t.key === tab) ? tab : 'all';
   return (
     <Shell>
@@ -53,7 +58,7 @@ export default async function Page({ params, searchParams }) {
         <h1>{season.title.split(' · ').slice(1).join(' · ') || season.title}</h1>
         {season.cover_image && <img className="sch-cover" src={season.cover_image} alt="" />}
       </header>
-      <SeasonView programme={programme} slug={slug} lists={lists} initialTab={view} canReflect={season.topic_ids?.reflections != null} />
+      <SeasonView programme={programme} slug={slug} lists={lists} initialTab={view} canReflect={season.topic_ids?.reflections != null} readings={readings} readingNow={readingWeek(readings)} />
     </Shell>
   );
 }

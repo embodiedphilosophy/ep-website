@@ -6,7 +6,7 @@ const clock = (iso, tz) => iso ? new Intl.DateTimeFormat('en-US', { weekday: 'sh
 const dateOnly = (iso, tz) => iso ? new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', year: 'numeric', timeZone: tz }).format(new Date(iso)) : '';
 const length = s => { const m = Math.round(Number(s) / 60); return m ? (m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`) : ''; };
 
-export default function SeasonView({ programme, slug, lists, initialTab, canReflect }) {
+export default function SeasonView({ programme, slug, lists, initialTab, canReflect, readings = null, readingNow = null }) {
   const [tab, setTab] = useState(initialTab);
   const [tz, setTz] = useState('America/New_York'); // swapped for the member's own zone once we are in the browser
   const [now, setNow] = useState(Date.now());
@@ -31,13 +31,14 @@ export default function SeasonView({ programme, slug, lists, initialTab, canRefl
       <div className="sch-tabs" role="group" aria-label="Season sections">
         {TABS.map(t => (
           <button key={t.key} type="button" className={`sch-tab${tab === t.key ? ' on' : ''}`} aria-pressed={tab === t.key} onClick={() => pick(t.key)}>
-            {t.label} <span className="sch-count">{lists[t.key].length}</span>
+            {t.label} <span className="sch-count">{lists[t.key].length + (t.key === 'readings' && readings ? readings.weeks.length : 0)}</span>
           </button>
         ))}
       </div>
       {tab === 'reflections' && canReflect && <Composer programme={programme} slug={slug} onPosted={m => setMine(x => [{ ...m, id: `new${x.length}`, at: Date.now() }, ...x])} />}
+      {tab === 'readings' && readings && <ReadingPlan plan={readings} now={readingNow} tz={tz} />}
       {list.length === 0
-        ? <p className="sch-empty">{EMPTY[tab]}</p>
+        ? (tab === 'readings' && readings ? null : <p className="sch-empty">{EMPTY[tab]}</p>)
         : <ul className="sch-list">{list.map((it, i) => <Card key={`${it.kind}${it.id}`} it={it} tz={tz} now={now} pinned={tab === 'all' && i === 0 && it.kind === 'event' && !it.ended} />)}</ul>}
     </>
   );
@@ -108,5 +109,51 @@ function Composer({ programme, slug, onPosted }) {
         {state.msg && <span className={state.ok ? 'sch-ok' : 'sch-err'} role="status">{state.msg}</span>}
       </div>
     </form>
+  );
+}
+
+// The season's reading assignments (lib/school/readings.js), at the top of the Readings tab
+const weekday = (iso, tz) => iso ? new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz }).format(new Date(iso)) : '';
+function ReadingPlan({ plan, now, tz }) {
+  useEffect(() => {
+    if (now) document.getElementById(`week-${now}`)?.scrollIntoView({ block: 'start' });
+  }, [now]);
+  const Item = ({ r }) => (
+    <li>
+      <span className="rd-book">{r.title}</span>
+      {r.detail && <span className="rd-what">{r.detail}</span>}
+      {(r.pages || r.file || r.link) && (
+        <span className="rd-side">
+          {r.pages && <span className="rd-pg">{r.pages}</span>}
+          {r.file && <a className="sch-btn" href={r.file} target="_blank" rel="noopener" download>↓ Download</a>}
+          {r.link && <a className="sch-btn ghost" href={r.link} target="_blank" rel="noopener">Open ↗</a>}
+        </span>
+      )}
+    </li>
+  );
+  return (
+    <div className="rd">
+      {plan.intro && <p className="rd-lead">{plan.intro}</p>}
+      {plan.needs.length > 0 && (
+        <section className="rd-sources" aria-labelledby="rd-src">
+          <h2 id="rd-src">What you’ll need</h2>
+          <ul>{plan.needs.map(n => <Item key={n.title} r={n} />)}</ul>
+        </section>
+      )}
+      <div className="rd-weeks">
+        {plan.weeks.map(w => (
+          <article key={w.session} id={`week-${w.session}`} className={`rd-week${w.session === now ? ' now' : ''}`}>
+            <header>
+              <p className="rd-eye">Week {w.session}{w.at && ` · ${weekday(w.at, tz)}`}{w.session === now && <span className="rd-now">Read for this week</span>}</p>
+              {w.title && <h3>{w.title}</h3>}
+              <p className="rd-meta">{w.focus && <span className="rd-focus">{w.focus}</span>}{w.teacher && <span>Taught by {w.teacher}</span>}{w.time && <span>{w.time}</span>}</p>
+            </header>
+            {w.core.length > 0 && <><h4>Core reading</h4><ul className="rd-core">{w.core.map((r, i) => <Item key={i} r={r} />)}</ul></>}
+            {w.suggested.length > 0 && <><h4>Suggested</h4><ul className="rd-sugg">{w.suggested.map((r, i) => <Item key={i} r={r} />)}</ul></>}
+          </article>
+        ))}
+      </div>
+      {plan.footer && <p className="rd-foot">{plan.footer}</p>}
+    </div>
   );
 }

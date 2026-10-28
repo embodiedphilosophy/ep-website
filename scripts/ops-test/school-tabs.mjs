@@ -46,3 +46,32 @@ const P = tabLists(buildItems(season, past, [], Date.parse('2026-10-29T12:00:00Z
 assert.deepEqual(P.recordings.map(i => i.title), ['Session 2', 'Session 1'], 'past sessions are recordings, newest first');
 assert.equal(P.live.length, 0);
 console.log('school tabs: past sessions ok');
+
+// Reading assignments (lib/school/readings.js): the sheet's rows, else the seed
+const { readingPlan, readingWeek, sessionDatesOf } = await import('../../lib/school/readings.js');
+const seeded = readingPlan([], 'fall-2026', { 2: '2026-10-28T13:00:00Z' });
+assert.equal(seeded.weeks.length, 8, 'the seed gives eight weeks');
+assert.equal(seeded.needs.length, 3);
+assert.equal(seeded.weeks[1].title, 'The self-display of consciousness');
+assert.equal(seeded.weeks[1].focus, 'Sūtras 1–4');
+assert.equal(seeded.weeks[1].at, '2026-10-28T13:00:00Z');
+assert.equal(seeded.weeks[1].core[0].pages, 'the whole handout');
+assert.ok(seeded.intro && seeded.footer);
+const R = (session, kind, title, extra = {}) => ({ season: 'fall-2026', session, kind, title, detail: '', pages: '', ...extra });
+const sheet = readingPlan([
+  R('2', 'session', 'Week two', { detail: 'Sūtras 1–4', teacher: 'Jacob Kyle' }),
+  R('2', 'suggested', 'Later book', { order: '2' }),
+  R('2', 'core', 'Second', { order: '2', file_url: 'https://x.test/a.pdf' }),
+  R('2', 'core', 'First', { order: '1', link_url: 'javascript:alert(1)' }),
+  R('3', 'core', 'Hidden', { publish: 'FALSE' }),
+  R('', 'core', 'No session, so left out'),
+  { season: 'winter-2027', session: '1', kind: 'core', title: 'Other season' },
+], 'fall-2026', { 2: '2026-10-28T13:00:00Z' });
+assert.deepEqual(sheet.weeks.map(w => w.session), [2], 'sheet rows replace the seed; hidden rows and other seasons left out');
+assert.deepEqual(sheet.weeks[0].core.map(r => r.title), ['First', 'Second'], 'readings sorted by order');
+assert.equal(sheet.weeks[0].core[1].file, 'https://x.test/a.pdf');
+assert.equal(sheet.weeks[0].core[0].link, '', 'only https links');
+assert.equal(readingPlan([], 'spring-2027'), null, 'no readings, no plan');
+assert.equal(readingWeek(seeded, Date.parse('2026-10-27T12:00:00Z')), 2, 'the next session is the week to read for');
+assert.deepEqual(sessionDatesOf([{ kind: 'event', title: 'X: Session 3', at: 'a' }, { kind: 'post', title: 'Session 4' }]), { 3: 'a' });
+console.log('school tabs: reading assignments ok');

@@ -44,13 +44,18 @@ const ARC = [
   ['Love', 'What draws us toward it, and what does the encounter do to us?'],
 ];
 
+// Headshots from the ep-media Blob store (the same ones the Teachers page uses).
+const MARY_PHOTO = 'https://nustrh8agxtgmkrb.public.blob.vercel-storage.com/teachers/mary-reilly-nichols.jpg';
+const FLOSS_PHOTO = 'https://nustrh8agxtgmkrb.public.blob.vercel-storage.com/teachers/floss-harry.jpg';
+
 const MARY = [
   'A yoga and meditation teacher for over 40 years, Mary offers yoga instruction emphasizing breath awareness, with insights from neuroscience and evolutionary biology as well as the philosophy of the Upaniṣads, Advaita Vedānta and the Tantric methods of Kashmir Śaivism.',
   'Director of the Nalanda Institute’s yoga teacher training program, she has taught at Tibet House in New York City and the New York Open Center, and has been a keynote speaker at symposia sponsored by the Wonderstruck Webcast and Harvard Divinity School. Mary holds a BA in anthropology from Harvard University and completed five years of residency in meditation ashrams in India and the US.',
 ];
 
 const FLOSS = [
-  'Floss Harry (MPhil, Cambridge) is a Wisdom School teacher at Embodied Philosophy, Sādhana School’s Integration Facilitator, and project manager of Tarka, EP’s journal of philosophy and contemplative practice.',
+  'Floss Harry (MPhil, Cambridge) is a yoga teacher and embodied philosophy facilitator who approaches philosophy as lived practice and a way of life, drawing on the wisdom traditions of East and West.',
+  'At Embodied Philosophy she teaches in Wisdom School, serves as Sādhana School’s Integration Facilitator, and is project manager of Tarka, EP’s journal of philosophy and contemplative practice.',
 ];
 
 const INCLUDES = [
@@ -135,9 +140,9 @@ export default async function ChristianMysticism() {
       <section className="sec"><div className="wrap hs-two">
         <div className="prose">
           <span className="eyebrow">Your teachers</span>
-          <h2>Mary Reilly Nichols</h2>
+          <div className="cm-teacher"><img src={MARY_PHOTO} alt="Mary Reilly Nichols" /><h2>Mary Reilly Nichols</h2></div>
           {MARY.map(p => <p key={p.slice(0, 20)}>{p}</p>)}
-          <h2 style={{ marginTop: 28 }}>Floss Harry</h2>
+          <div className="cm-teacher" style={{ marginTop: 32 }}><img src={FLOSS_PHOTO} alt="Floss Harry" /><h2>Floss Harry</h2></div>
           {FLOSS.map(p => <p key={p.slice(0, 20)}>{p}</p>)}
         </div>
         <div className="prose">

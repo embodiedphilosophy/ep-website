@@ -56,7 +56,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     calls.push(`${m} ${path}${m === 'POST' ? ' ' + r.request().postData() : ''}`); if (path === '/api/member/today') urls.push(u.search);
     if (path === '/api/member/session') return j({ session: 's', tier: { tier, seasons }, firstName: 'Maya', offer: null });
     if (path === '/api/member/today') { todayHeaders.push(r.request().headers()); if (delay) await new Promise(x => setTimeout(x, delay)); return j(r.request().headers()['x-circle-identity'] ? { ...body, signin: { session: 's', tier: { tier, seasons }, firstName: 'Maya', offer, admin } } : body); }
-    if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: [], logged: post.minutes }); }
+    if (path === '/api/member/practice') { const post = JSON.parse(r.request().postData() || '{}'); const day = post.day || u.searchParams.get('day'); return j({ ...body.practice, ...summarise([...days, TODAY], TODAY), qualities: ['Calm'], extras: ['Mantra'], backfillDays: 30, ...(day ? { day, entry: day === '2026-10-15' ? { minutes: 25, quality: 'Calm', extras: ['Mantra'] } : null } : {}), logged: post.minutes }); }
     if (path === '/api/hub/wisdom-school') return j({ plan: tier === 'wisdom_plus' ? 'plus' : 'ws', month: { index: 10, of: 12, name: 'October', theme: 'The Return with Wisdom', question: 'What are you carrying home?', lessonUrl: HOST + '/lessons/1', hasLesson: true },
       upNext: [{ id: 'a', startsAt: '2026-10-26T16:00:00Z', title: 'Meditation Monday: Somatic', teacher: 'Floss Harry', url: '' }, { id: 'b', startsAt: '2026-11-03T23:00:00Z', title: 'The Circle Reopens', teacher: 'Jacob Kyle', url: '' }] });
     if (path === '/api/member/cohort') return j({ today: TODAY, rows: [{ name: 'Carolyn', email: 'c@example.com', streak: 0, weekCount: 0, days8w: 0, minutes8w: 0, last: null, daysSince: null, grid: [] }], attention: [{ email: 'c@example.com', name: 'Carolyn', why: 'Hasn’t logged any practice yet' }] });
@@ -166,7 +166,27 @@ console.log('cards, suggestion: ok');
   assert.match(await p.locator('.etd-big').innerText(), /40/);
   // the quick log
   await p.locator('[data-act=form]').click(); await p.locator('input[name=minutes]').fill('20'); await p.locator('form[data-form=log] button[type=submit]').click(); await p.waitForTimeout(400);
-  assert.ok(calls.some(c => /POST \/api\/member\/practice \{"today":"2026-10-17","minutes":"20"/.test(c)));
+  assert.ok(calls.some(c => /POST \/api\/member\/practice \{"today":"2026-10-17","day":"2026-10-17","minutes":"20"/.test(c)));
+  // an earlier day: "Log an earlier day" opens yesterday
+  await p.locator('[data-act=logday]', { hasText: 'Log an earlier day' }).click();
+  assert.equal(await p.locator('input[name=day]').inputValue(), '2026-10-16');
+  assert.match(await p.locator('form[data-form=log] .ept-l').innerText(), /practice on/i);
+  assert.equal(await p.locator('input[name=day]').getAttribute('min'), '2026-09-17');
+  assert.equal(await p.locator('input[name=day]').getAttribute('max'), '2026-10-17');
+  await p.locator('input[name=minutes]').fill('15'); await p.locator('form[data-form=log] button[type=submit]').click(); await p.waitForTimeout(400);
+  assert.ok(calls.some(c => /POST \/api\/member\/practice \{"today":"2026-10-17","day":"2026-10-16","minutes":"15"/.test(c)), 'logs for the earlier day');
+  assert.match(await p.locator('.etd-lognote').innerText(), /Logged for/);
+  // a day in This week opens that day, filled with what is already logged
+  await p.locator('.etd-daybtn[data-day="2026-10-15"]').click(); await p.waitForTimeout(400);
+  assert.equal(await p.locator('input[name=day]').inputValue(), '2026-10-15');
+  assert.equal(await p.locator('input[name=minutes]').inputValue(), '25', 'filled from the log');
+  assert.equal(await p.locator('.ept-chip[data-q=Calm]').getAttribute('aria-pressed'), 'true');
+  // picking another date in the field moves the form to it
+  await p.locator('input[name=day]').fill('2026-10-01'); await p.waitForTimeout(400);
+  assert.match(await p.locator('form[data-form=log] .ept-l').innerText(), /practice on/i);
+  assert.equal(await p.locator('input[name=minutes]').inputValue(), '');
+  await p.screenshot({ path: `${OUT}/today-log-earlier.png` });
+  assert.equal(await p.locator('.etd-daybtn').count(), 6, 'Mon–Sat are buttons; Sunday is still to come');
   await ctx.close();
 }
 console.log('timer and log: ok');

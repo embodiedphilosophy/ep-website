@@ -66,7 +66,7 @@
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (open to every member)
   var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
-  var state = { pn: null, place: null, pnTried: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
+  var state = { pn: null, place: null, pnTried: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', logDay: '', logNote: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
     none: 'Your practice · Today', meditation: 'Meditation Pass · Today', wisdom: 'Wisdom School · Today',
@@ -480,6 +480,8 @@
       '.etd-ms{border:1px solid #D2A65A;border-radius:6px;padding:12px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;color:#D2A65A}.etd-ms .etd-link{color:#F4EDE0;min-height:36px;padding:0}',
       '.etd-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.etd-week>div{display:flex;flex-direction:column;align-items:center;gap:6px}',
       '.etd-day{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#16140F;box-shadow:inset 0 0 0 1.5px #5B6E64}',
+      '.etd-daybtn{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:4px 2px;margin:-4px -2px;cursor:pointer;color:inherit;font:inherit;border-radius:6px;min-height:44px}.etd-daybtn:hover .etd-day{box-shadow:inset 0 0 0 1.5px #D2A65A}',
+      '.ept-date{width:auto;min-width:150px}.etd-lognote{margin:8px 0 0;font-size:13px}',
       '.etd-day.done{background:#D2A65A;box-shadow:inset 0 0 0 1.5px #D2A65A}.etd-day.today{box-shadow:inset 0 0 0 1.5px #F4EDE0}',
       '.etd-pills{display:flex;flex-wrap:wrap;gap:6px}.etd-pill{font:500 11px/1 "IBM Plex Mono",ui-monospace,monospace;padding:3px 8px;border-radius:999px;border:1px solid #5B6E64;color:#C8BEAC}.etd-pill.on{background:#D2A65A;border-color:#D2A65A;color:#16140F}',
       '.etd-wp{color:#F4EDE0;font-size:12.5px;margin-top:auto}',
@@ -543,7 +545,9 @@
   var LOCK = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
 
   function formHtml(p) {
-    return '<form class="ept-form" data-form="log"><span class="ept-l">Today’s practice</span>' +
+    var today = localToday(), day = state.logDay || today, back = p.backfillDays || 30;
+    return '<form class="ept-form" data-form="log"><span class="ept-l">' + (day === today ? 'Today’s practice' : 'Practice on ' + esc(niceDate(day))) + '</span>' +
+        '<label class="ept-s">Day <input class="ept-in ept-date" name="day" type="date" min="' + addDays(today, -back) + '" max="' + today + '" value="' + esc(day) + '"></label>' +
         '<label class="ept-s">Minutes <input class="ept-in" name="minutes" type="number" min="0" max="600" inputmode="numeric" value="' + esc(state.minutes || '') + '"></label>' +
         '<span class="ept-s">Quality of practice</span><div class="ept-chips" role="group" aria-label="Quality of practice">' + p.qualities.map(function (q) { return '<button type="button" class="ept-chip" data-q="' + esc(q) + '" aria-pressed="' + (state.quality === q) + '">' + esc(q) + '</button>'; }).join('') + '</div>' +
         '<span class="ept-s">Greater body of sādhana</span><div class="ept-chips" role="group" aria-label="Other practices">' + (p.extras || []).map(function (x) { return '<button type="button" class="ept-chip" data-x="' + esc(x) + '" aria-pressed="' + ((state.extras || []).indexOf(x) >= 0) + '">' + esc(x) + '</button>'; }).join('') + '</div>' +
@@ -576,7 +580,8 @@
       '<div class="etd-col"><span class="etd-mono etd-mut">Timer</span><div class="etd-lens" role="group" aria-label="Length">' + [10, 20, 30, 45].map(function (n) {
         return '<button type="button" class="etd-len" data-act="len" data-len="' + n + '" aria-pressed="' + (state.len === n) + '">' + n + 'm</button>'; }).join('') + '</div></div>' +
       '<div class="etd-go"><button type="button" class="etd-begin" data-act="begin"><span class="etd-play" aria-hidden="true"><svg width="12" height="14" viewBox="0 0 12 14"><path d="M1 1l10 6-10 6z" fill="#D2A65A"/></svg></span>Begin · ' + state.len + ' min</button>' +
-      (p ? '<button type="button" class="etd-link" data-act="form" aria-expanded="' + !!state.form + '">' + (p.loggedToday ? 'Logged today · edit' : 'Already sat today? Log it') + '</button>' : '') + '</div>';
+      (p ? '<button type="button" class="etd-link" data-act="form" aria-expanded="' + !!state.form + '">' + (p.loggedToday ? 'Logged today · edit' : 'Already sat today? Log it') + '</button><button type="button" class="etd-link" data-act="logday" data-day="' + addDays(localToday(), -1) + '">Log an earlier day</button>' : '') + '</div>' +
+      (state.logNote && !state.form ? '<p class="etd-mut etd-lognote" role="status">' + esc(state.logNote) + '</p>' : '');
     if (state.form && p) out += '<div class="etd-formwrap">' + formHtml(p) + '</div>';
     out += '</div><div class="etd-rec">';
     if (!p) return out + '<span class="etd-mut">' + esc(state.error || 'Loading…') + '</span></div></section>';
@@ -593,7 +598,11 @@
     var wk = (p.grid && p.grid[p.grid.length - 1]) || [], L = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     out += '<div class="etd-col2"><span class="etd-mono etd-mut">This week</span><div class="etd-week" role="list">' + wk.map(function (c, i) {
       var cls = c.state === 'done' ? 'done' : c.state === 'today' ? 'today' : c.state === 'future' ? 'future' : '';
-      return '<div role="listitem" aria-label="' + (c.state === 'done' ? 'practised' : c.state === 'today' ? 'Today, not yet' : c.state === 'future' ? 'still to come' : 'not practised') + '"><span class="etd-day ' + cls + '" aria-hidden="true">' + (c.state === 'done' ? '✓' : '') + '</span><span class="etd-mono ' + (c.state === 'today' ? 'etd-cream' : 'etd-mut') + '">' + L[i] + '</span></div>';
+      var said = c.state === 'done' ? 'practised' : c.state === 'today' ? 'Today, not yet' : c.state === 'future' ? 'still to come' : 'not practised';
+      var inner = '<span class="etd-day ' + cls + '" aria-hidden="true">' + (c.state === 'done' ? '✓' : '') + '</span><span class="etd-mono ' + (c.state === 'today' ? 'etd-cream' : 'etd-mut') + '">' + L[i] + '</span>';
+      if (c.state === 'future') return '<div role="listitem" aria-label="' + said + '">' + inner + '</div>';
+      // A past day (or today) opens the log for that day, so a missed sit can be added afterwards
+      return '<div role="listitem"><button type="button" class="etd-daybtn" data-act="logday" data-day="' + esc(c.day) + '" aria-label="' + esc(niceDate(c.day)) + ', ' + said + '. ' + (c.state === 'done' ? 'Change it' : 'Log it') + '">' + inner + '</button></div>';
     }).join('') + '</div></div>';
     out += '<div class="etd-pills">' + [7, 21, 40, 108].map(function (m) { return '<span class="etd-pill' + (p.streak >= m ? ' on' : '') + '">' + m + '</span>'; }).join('') + '</div>';
     if (PORTFOLIO_FOR.indexOf(tierName()) >= 0) out += '<a class="etd-wp" href="/c/portfolio">Your whole practice →</a>';
@@ -911,7 +920,8 @@
     if (a === 'pn-about') { openAbout(t); return; }
     if (a === 'len') { state.len = parseInt(t.dataset.len, 10) || 20; local('ep_timer_len', String(state.len)); render(); }
     if (a === 'begin') startTimer();
-    if (a === 'form') { state.form = !state.form; state.error = ''; render(); var i = e.currentTarget.querySelector('input[name=minutes]'); if (i) i.focus(); }
+    if (a === 'logday') { openLog(t.dataset.day); return; }
+    if (a === 'form') { if (!state.form) { openLog(localToday()); return; } state.form = false; state.error = ''; render(); var i = e.currentTarget.querySelector('input[name=minutes]'); if (i) i.focus(); }
     if (a === 'close') { state.form = false; render(); }
     if (a === 'line-open') { state.lineOpen = true; state.lineErr = ''; render(); var ta = pageRoot.querySelector('#etd-line'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center' }); }
       if (!state.lines) api('/api/member/travelogue').then(function (r) { state.lines = r.travelogue || []; render(); }).catch(function () { state.lines = []; }); }
@@ -920,6 +930,20 @@
     if (a === 'offer-hide') { local('ep_offer_' + t.dataset.key, 'hidden'); state.hidNudge = true; render(); }
     if (a === 'why') { state.why = !state.why; render(); }
   }
+  // Open the log form for a day (today or an earlier one) and fill it with what is already logged for that day
+  function openLog(day) {
+    var today = localToday();
+    state.form = true; state.error = ''; state.logNote = ''; state.logDay = day && day <= today ? day : today;
+    state.minutes = ''; state.quality = ''; state.extras = [];
+    render(); focusMinutes();
+    var asked = state.logDay;
+    api('/api/member/practice?today=' + today + '&day=' + asked).then(function (r) {
+      if (state.logDay !== asked || !state.form) return;
+      var en = r.entry;
+      if (en) { state.minutes = String(en.minutes || ''); state.quality = en.quality || ''; state.extras = en.extras || []; render(); focusMinutes(); }
+    }).catch(function () {});
+  }
+  function focusMinutes() { var i = pageRoot && pageRoot.querySelector('input[name=minutes]'); if (i) i.focus(); }
   function onInput(e) {
     if (e.target.name === 'minutes') state.minutes = e.target.value;
     if (e.target.name === 'text') state.line = e.target.value;
@@ -944,9 +968,10 @@
     }
     if (!e.target.matches('[data-form=log]')) return;
     e.preventDefault();
+    var logDay = state.logDay || localToday();
     state.minutes = e.target.minutes.value; state.saving = true; state.error = ''; render();
-    api('/api/member/practice', { method: 'POST', body: { today: localToday(), minutes: state.minutes, quality: state.quality || '', extras: state.extras || [] } })
-      .then(function (p) { state.practice = p; state.form = false; })
+    api('/api/member/practice', { method: 'POST', body: { today: localToday(), day: logDay, minutes: state.minutes, quality: state.quality || '', extras: state.extras || [] } })
+      .then(function (p) { state.practice = p; state.form = false; state.logNote = (p.day || logDay) !== localToday() ? 'Logged for ' + niceDate(p.day || logDay) + '.' : ''; state.logDay = ''; })
       .catch(function (err) { state.error = err.status === 401 ? 'Please refresh the page and try again.' : err.message; if (err.status === 401) store('ep_today_session', ''); })
       .then(function () { state.saving = false; render(); });
   }
@@ -966,7 +991,10 @@
     pageRoot.addEventListener('click', onClick);
     pageRoot.addEventListener('submit', onSubmit);
     pageRoot.addEventListener('input', onInput);
-    pageRoot.addEventListener('change', function (e) { if (e.target.matches && e.target.matches('select[data-pn-place]')) pnChoose(e.target.value); });
+    pageRoot.addEventListener('change', function (e) {
+      if (e.target.matches && e.target.matches('select[data-pn-place]')) pnChoose(e.target.value);
+      if (e.target.matches && e.target.matches('input[name=day]') && /^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) openLog(e.target.value);
+    });
     box.insertBefore(pageRoot, box.firstChild);
     render();
   }

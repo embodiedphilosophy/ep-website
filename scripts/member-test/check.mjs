@@ -6,7 +6,7 @@ import assert from 'assert/strict';
 process.env.MEMBER_SECRET = 'test-secret';
 const { verifyCircleToken, _setTestKeys } = await import('../../lib/member/identity.js');
 const { signSession, readSession } = await import('../../lib/member/session.js');
-const { summarise, cleanToday } = await import('../../lib/member/practice.js');
+const { summarise, cleanToday, cleanDay } = await import('../../lib/member/practice.js');
 
 // ---- identity: sign a token like Circle's with a throwaway key
 const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
@@ -171,3 +171,12 @@ assert.match(ics, /DTSTART;VALUE=DATE:20261025\r\nDTEND;VALUE=DATE:20261101/);
 assert.ok(ics.split('\r\n').every(l => Buffer.byteLength(l) <= 75), 'lines folded');
 assert.match(ics, /SUMMARY:SS Weekend Workshop — Winter on-ramp/);
 console.log('schedule: ok');
+
+// ---- an earlier day can be logged: up to 30 days back, never the future
+assert.equal(cleanDay('2026-10-16', '2026-10-17'), '2026-10-16');
+assert.equal(cleanDay('2026-09-17', '2026-10-17'), '2026-09-17', '30 days back is allowed');
+assert.equal(cleanDay('2026-09-16', '2026-10-17'), '2026-10-17', 'older falls back to today');
+assert.equal(cleanDay('2026-10-18', '2026-10-17'), '2026-10-17', 'the future falls back to today');
+assert.equal(cleanDay('', '2026-10-17'), '2026-10-17');
+assert.equal(cleanDay('16/10/2026', '2026-10-17'), '2026-10-17');
+console.log('earlier days: ok');

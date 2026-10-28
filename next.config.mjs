@@ -50,6 +50,7 @@ const nextConfig = {
       r('/hamsa-sadhana', '/lp/hamsa-sadhana'),
       r('/tibetan-book-of-the-dead', '/lp/tibetan-book-of-the-dead'),
       r('/navaratri', '/lp/navaratri'),
+      r('/christian-mysticism', '/lp/christian-mysticism'),
       // Programs
       r('/wisdom-school-courses', '/wisdom-school'),
       r('/wisdom-school-courses/:path*', '/wisdom-school'),

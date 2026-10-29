@@ -8,5 +8,8 @@ const lp = {
   checkoutKey: 'christianMysticismCheckout',
   // Placeholder until the checkout exists: add a christianMysticismCheckout row to Site Links & Prices.
   checkout: 'https://embodied-philosophy-2.kit.com/products/christian-mysticism',
+  // Payment plan ($47 down + 3 weekly $27): placeholder until it exists; add a christianMysticismPlanCheckout row.
+  planCheckoutKey: 'christianMysticismPlanCheckout',
+  planCheckout: 'https://embodied-philosophy-2.kit.com/products/christian-mysticism-payment-plan',
 };
 export default lp;

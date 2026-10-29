@@ -117,7 +117,7 @@ export default async function ChristianMysticism() {
 
       <section className="sec path"><div className="wrap">
         <div className="sec-head"><span className="eyebrow">What you’ll learn</span><h2>Christianity as a way of knowing</h2>
-          <p>Rather than squeezing “Origen to Merton” into four sessions, we follow a philosophical progression through the tradition, with practice at every step.</p></div>
+          <p>Rather than racing through two thousand years of history, we explore four big questions at the heart of the tradition, with time for contemplative practice in every session.</p></div>
         <div className="cm-outcomes">
           {OUTCOMES.map(([h, p]) => <div key={h} className="tier"><h3>{h}</h3><p>{p}</p></div>)}
         </div>

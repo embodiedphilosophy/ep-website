@@ -6,10 +6,9 @@ const lp = {
   startsAt: '2026-11-12',
   endsAt: '2026-12-10',
   checkoutKey: 'christianMysticismCheckout',
-  // Placeholder until the checkout exists: add a christianMysticismCheckout row to Site Links & Prices.
-  checkout: 'https://embodied-philosophy-2.kit.com/products/christian-mysticism',
-  // Payment plan ($47 down + 3 weekly $27): placeholder until it exists; add a christianMysticismPlanCheckout row.
+  // Circle paywall "Christian Mysticism with Mary Reilly Nichols & Floss Harry" (grants the course space). price_id picks the option.
+  checkout: 'https://ss.embodiedphilosophy.com/checkout/christian-mysticism?price_id=390326', // $127 one-time
   planCheckoutKey: 'christianMysticismPlanCheckout',
-  planCheckout: 'https://embodied-philosophy-2.kit.com/products/christian-mysticism-payment-plan',
+  planCheckout: 'https://ss.embodiedphilosophy.com/checkout/christian-mysticism?price_id=390325', // $47 + 3 weekly $27
 };
 export default lp;

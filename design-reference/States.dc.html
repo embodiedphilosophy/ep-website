@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cyber Week — components and states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#A5432A}a:hover{color:#83341F}
+.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600}
+.lbl{font:600 11px Inter,sans-serif;letter-spacing:0.28em;text-transform:uppercase;color:#5A5346;margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:2px;background:#A5432A;color:#FAF5EB;font:600 13px Inter,sans-serif;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;border:0}
+.btn:hover{background:#83341F;color:#FAF5EB}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1900px; background: #F2E8D6; color: #1E1A14; font-family: Inter, sans-serif; padding: 72px; display: flex; flex-direction: column; gap: 56px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p class="lbl" style="color: #A5432A">Cyber Monday 2026 · design handoff</p>
+<h1 class="serif" style="margin: 0; font-size: 56px; line-height: 1">Components <em style="color: #A5432A">&amp; states</em></h1>
+</div>
+
+<div style="display: flex; gap: 48px; align-items: flex-start">
+<!-- PWYC modal -->
+<div style="flex: 0 0 560px; display: flex; flex-direction: column; gap: 14px">
+<p class="lbl">PWYC selector · modal before checkout</p>
+<div role="dialog" aria-label="Pay what you can" style="background: #FAF5EB; border: 1px solid #D8C9AE; box-shadow: 0 30px 60px rgba(30,26,20,0.18)">
+<div style="display: flex; gap: 20px; padding: 24px; border-bottom: 1px solid #D8C9AE; align-items: center">
+<div style="width: 112px; height: 72px; background: #EADDC6; flex: 0 0 auto; display: flex; align-items: flex-end; padding: 6px; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #5A5346">Course art</div>
+<div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px">
+<span style="font: 600 11px Inter, sans-serif; letter-spacing: 0.26em; text-transform: uppercase; color: #A5432A">Kashmir Śaivism</span>
+<span class="serif" style="font-size: 28px; line-height: 1.05">Śiva Sūtras</span>
+</div>
+<button type="button" aria-label="Close" style="width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; color: #5A5346"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 28px 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><strong style="font-size: 16px">Choose what you can give</strong><span style="font-size: 14px; color: #5A5346">Regular <s>$97</s></span></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<button type="button" style="min-height: 64px; border: 1px solid #D8C9AE; background: #FFFDF8; font: 600 20px Inter, sans-serif; color: #1E1A14; display: flex; flex-direction: column; align-items: center; justify-content: center">$[A]<span style="font-size: 11px; font-weight: 500; color: #5A5346; letter-spacing: 0.06em">Supported</span></button>
+<button type="button" aria-pressed="true" style="min-height: 64px; border: 1px solid #1E1A14; background: #1E1A14; font: 600 20px Inter, sans-serif; color: #FAF5EB; display: flex; flex-direction: column; align-items: center; justify-content: center">$[B]<span style="font-size: 11px; font-weight: 500; color: #D8C9AE; letter-spacing: 0.06em">Most give this</span></button>
+<button type="button" style="min-height: 64px; border: 1px solid #D8C9AE; background: #FFFDF8; font: 600 20px Inter, sans-serif; color: #1E1A14; display: flex; flex-direction: column; align-items: center; justify-content: center">$[C]<span style="font-size: 11px; font-weight: 500; color: #5A5346; letter-spacing: 0.06em">Sustaining</span></button>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5A5346">Or enter your own amount (min $[MIN])
+<span style="display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 14px; border: 1px solid #D8C9AE; background: #FFFDF8"><span style="font-weight: 600">$</span><input type="text" inputmode="decimal" placeholder="0.00" style="border: 0; background: transparent; font: 500 16px Inter, sans-serif; width: 100%; outline: none"></span>
+</label>
+<label style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; background: #F2E8D6; font-size: 14px; cursor: pointer">
+<input type="checkbox" style="accent-color: #A5432A; width: 18px; height: 18px; margin-top: 2px">
+<span><strong>Add a year of the Meditation Pass</strong> for $[CYBER] <s style="color: #5A5346">$99</s><br><span style="color: #5A5346">Meditation Mondays, live every week.</span></span>
+</label>
+<a href="#" class="btn">Continue to checkout · $[B]</a>
+<p style="margin: 0; font-size: 12px; color: #5A5346; text-align: center">Secure checkout in Circle · 30-day refund guarantee</p>
+</div>
+</div>
+</div>
+
+<!-- right column -->
+<div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 44px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<p class="lbl">Countdown · compact (top bar)</p>
+<div style="background: #1E1A14; color: #FAF5EB; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px">
+<span style="display: flex; gap: 10px; align-items: center"><span style="width: 7px; height: 7px; border-radius: 50%; background: #B98A3E"></span><strong>Cyber Week: the Open Library is open</strong></span>
+<span style="display: flex; gap: 18px"><span style="color: #D8C9AE">Certificates &amp; Archive end Wed, Dec 2</span><strong style="color: #E3C07E; font-variant-numeric: tabular-nums">2d · 11h · 59m</strong><a href="#" style="color: #FAF5EB">Jump to offers</a></span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<p class="lbl">Countdown · large (closing band) — days · hours · minutes, no seconds</p>
+<div style="display: flex; gap: 8px">
+<div style="min-width: 96px; padding: 14px; background: #FAF5EB; border: 1px solid #D8C9AE; text-align: center"><div style="font-size: 40px; font-weight: 600; line-height: 1.1">02</div><div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #5A5346">Days</div></div>
+<div style="min-width: 96px; padding: 14px; background: #FAF5EB; border: 1px solid #D8C9AE; text-align: center"><div style="font-size: 40px; font-weight: 600; line-height: 1.1">11</div><div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #5A5346">Hours</div></div>
+<div style="min-width: 96px; padding: 14px; background: #FAF5EB; border: 1px solid #D8C9AE; text-align: center"><div style="font-size: 40px; font-weight: 600; line-height: 1.1">59</div><div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #5A5346">Min</div></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<p class="lbl">Member early-access banner · Nov 27–29</p>
+<div style="background: #B98A3E; color: #1E1A14; padding: 14px 20px; display: flex; gap: 20px; align-items: center; justify-content: center; font-size: 14px"><strong style="letter-spacing: 0.16em; text-transform: uppercase; font-size: 12px">Early access for members</strong><span>You're seeing Cyber prices before Monday. Thank you for studying with us.</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<p class="lbl">Ended state · tiers 2 &amp; 3 from Dec 3</p>
+<div style="background: #FAF5EB; border: 1px solid #D8C9AE; padding: 28px 32px; display: flex; justify-content: space-between; align-items: center; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 4px"><span class="serif" style="font-size: 28px">This offer has ended.</span><span style="color: #5A5346; font-size: 15px">Cyber prices closed Wednesday, Dec 2. Every certificate is still available.</span></div>
+<a href="#" class="btn" style="flex: 0 0 auto">See regular pricing</a>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<p class="lbl">Member upgrade strip · shown only to signed-in or emailed members</p>
+<div style="background: #FAF5EB; border: 1px solid #A5432A; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; gap: 20px">
+<span><strong>You're a Wisdom School member.</strong> <span style="color: #5A5346">Add every certificate and pathway.</span></span>
+<a href="#" class="btn" style="flex: 0 0 auto">Upgrade to Plus · $[TBC]</a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Mobile -->
+<div style="display: flex; flex-direction: column; gap: 14px">
+<p class="lbl">Mobile · 390 wide — stacked navigator and sticky bottom bar</p>
+<div style="display: flex; gap: 40px; align-items: flex-start">
+<div style="width: 390px; height: 640px; background: #FAF5EB; border: 1px solid #D8C9AE; position: relative; overflow: hidden; display: flex; flex-direction: column">
+<div style="background: #20302A; color: #FAF5EB; padding: 32px 20px 72px; display: flex; flex-direction: column; gap: 14px">
+<span style="font: 600 10px Inter, sans-serif; letter-spacing: 0.28em; color: #D3A55A">CYBER WEEK · NOV 30 – DEC 6</span>
+<span class="serif" style="font-size: 40px; line-height: 1">The whole library, <em style="color: #D3A55A">at whatever you can give.</em></span>
+<a href="#" class="btn" style="align-self: flex-start">Enter the Open Library</a>
+</div>
+<div style="margin-top: -48px; padding: 0 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="background: #FAF5EB; border: 1px solid #D8C9AE; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 24px rgba(30,26,20,0.1)"><span><span class="serif" style="font-size: 22px; display: block">The Open Library</span><span style="font-size: 13px; color: #5A5346">Pay what you can · until Dec 6</span></span><span style="color: #A5432A" aria-hidden="true">↓</span></div>
+<div style="background: #EADDC6; border: 1px solid #D8C9AE; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center"><span><span class="serif" style="font-size: 22px; display: block">Certificate Programs</span><span style="font-size: 13px; color: #5A5346">From $147 · until Dec 2</span></span><span style="color: #A5432A" aria-hidden="true">↓</span></div>
+<div style="background: #20302A; color: #FAF5EB; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center"><span><span class="serif" style="font-size: 22px; display: block">Sādhana School Archive</span><span style="font-size: 13px; color: #CFC3AC">From $197 · until Dec 2</span></span><span style="color: #D3A55A" aria-hidden="true">↓</span></div>
+</div>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; background: #1E1A14; color: #FAF5EB; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="display: flex; flex-direction: column; font-size: 12px; line-height: 1.35"><span style="color: #D8C9AE">Next deadline · Wed, Dec 2</span><strong style="color: #E3C07E; font-size: 15px">2d · 11h · 59m</strong></span>
+<a href="#" class="btn" style="min-height: 44px; padding: 0 16px; font-size: 12px">See offers</a>
+</div>
+</div>
+<div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 16px; max-width: 520px; padding-top: 8px">
+<p style="margin: 0; font-size: 15px; color: #5A5346"><strong style="color: #1E1A14">Evergreen state (from Dec 7):</strong> top bar, timers and the closing band disappear; tiers 2 and 3 show their ended cards; the hero eyebrow becomes "The Open Library". Preview it with the Page state tweak on the main artboard.</p>
+<p style="margin: 0; font-size: 15px; color: #5A5346"><strong style="color: #1E1A14">Imagery:</strong> dashed frames mark where the site's Kalighat cut-outs (yogi-shiva, woman-music) and each course's existing art go.</p>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

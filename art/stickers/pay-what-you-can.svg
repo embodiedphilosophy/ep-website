@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Pay what you can, all week">
+<defs><path id="ring-pwyc" d="M70 70 m-50 0 a50 50 0 1 1 100 0 a50 50 0 1 1 -100 0"/></defs>
+<circle cx="70" cy="70" r="68" fill="#A5432A"/>
+<circle cx="70" cy="70" r="62" fill="none" stroke="#FAF5EB" stroke-width="1" stroke-dasharray="1 4"/>
+<text font-family="Inter, sans-serif" font-size="11.5" font-weight="700" letter-spacing="2.5" fill="#FAF5EB"><textPath href="#ring-pwyc">PAY WHAT YOU CAN · ALL WEEK ·</textPath></text>
+<path transform="translate(70 70) scale(1.5)" d="M0 -16 C2 -2 2 -2 16 0 C2 2 2 2 0 16 C-2 2 -2 2 -16 0 C-2 -2 -2 -2 0 -16Z" fill="#D3A55A"/>
+</svg>

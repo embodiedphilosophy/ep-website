@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 580" role="img" aria-label="Collage of a sun, a crescent moon and an open eye around an arched window" data-kalighat-slot="x:150 y:192 w:180 h:356">
+<g fill="#B98A3E" opacity="0.55"><rect x="234.0" y="40" width="12" height="420" transform="rotate(0.0 240 250)"/><rect x="234.0" y="40" width="12" height="420" transform="rotate(22.5 240 250)"/><rect x="234.0" y="40" width="12" height="420" transform="rotate(45.0 240 250)"/><rect x="234.0" y="40" width="12" height="420" transform="rotate(67.5 240 250)"/><rect x="234.0" y="40" width="12" height="420" transform="rotate(90.0 240 250)"/><rect x="234.0" y="40" width="12" height="420" transform="rotate(112.5 240 250)"/><rect x="234.0" y="40" width="12" height="420" transform="rotate(135.0 240 250)"/><rect x="234.0" y="40" width="12" height="420" transform="rotate(157.5 240 250)"/></g>
+<circle cx="240" cy="250" r="176" fill="none" stroke="#D3A55A" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"/>
+<circle cx="240" cy="250" r="150" fill="#B98A3E"/>
+<path d="M150 548 V282 A90 90 0 0 1 330 282 V548 Z" fill="#EADDC6"/>
+<path d="M96 572 Q240 512 384 572 Z" fill="#B98A3E"/>
+<circle cx="72" cy="84" r="44" fill="#FAF5EB"/><circle cx="92" cy="70" r="38" fill="#20302A"/>
+<path d="M352 74 Q402 30 452 74 Q402 118 352 74 Z" fill="#FAF5EB"/>
+<circle cx="402" cy="74" r="17" fill="#A5432A"/><circle cx="402" cy="74" r="7" fill="#20302A"/>
+<path d="M366 52 l-8 -12 M402 40 v-15 M438 52 l8 -12" stroke="#FAF5EB" stroke-width="4" stroke-linecap="round"/>
+<path d="M18 392 q20 -22 40 0 t40 0 t40 0" stroke="#D3A55A" stroke-width="5" fill="none" stroke-linecap="round"/>
+<path transform="translate(440 330)" d="M0 -16 C2 -2 2 -2 16 0 C2 2 2 2 0 16 C-2 2 -2 2 -16 0 C-2 -2 -2 -2 0 -16Z" fill="#FAF5EB"/>
+<path transform="translate(60 250) scale(0.7)" d="M0 -16 C2 -2 2 -2 16 0 C2 2 2 2 0 16 C-2 2 -2 2 -16 0 C-2 -2 -2 -2 0 -16Z" fill="#D3A55A"/>
+<path transform="translate(372 168) scale(0.55)" d="M0 -16 C2 -2 2 -2 16 0 C2 2 2 2 0 16 C-2 2 -2 2 -16 0 C-2 -2 -2 -2 0 -16Z" fill="#FAF5EB"/>
+<path transform="translate(420 470) scale(0.8)" d="M0 -16 C2 -2 2 -2 16 0 C2 2 2 2 0 16 C-2 2 -2 2 -16 0 C-2 -2 -2 -2 0 -16Z" fill="#D3A55A"/>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" aria-hidden="true" data-note="Inner crescent is filled pine #20302A to match the pull-quote band; change it if the background changes">
+<circle cx="100" cy="100" r="56" fill="#FAF5EB"/><circle cx="124" cy="84" r="50" fill="#20302A"/>
+<path transform="translate(160 150)" d="M0 -16 C2 -2 2 -2 16 0 C2 2 2 2 0 16 C-2 2 -2 2 -16 0 C-2 -2 -2 -2 0 -16Z" fill="#D3A55A"/>
+<path transform="translate(40 40) scale(0.6)" d="M0 -16 C2 -2 2 -2 16 0 C2 2 2 2 0 16 C-2 2 -2 2 -16 0 C-2 -2 -2 -2 0 -16Z" fill="#FAF5EB"/>
+</svg>

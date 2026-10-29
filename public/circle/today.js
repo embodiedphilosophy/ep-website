@@ -14,7 +14,7 @@
   // background once Today is showing, so moving between pages stays instant. The chat restyle works on every page and loads at once.
   var BASE = 'https://www.embodiedphilosophy.com/circle/';
   var LAZY = [
-    [/^\/c\/ce-credits\/?$/, 'ce'], [/^\/c\/portfolio\/?$/, 'portfolio'], [/^\/c\/schedule\/?$/, 'schedule'],
+    [/^\/c\/ce-credits\/?$/, 'ce'], [/^\/c\/portfolio\/?$/, 'portfolio'], [/^\/c\/daily-practice\/?$/, 'practice'], [/^\/c\/schedule\/?$/, 'schedule'],
     [/^\/c\/my-practice(-[a-z0-9]{3,10})?\/?$/, 'my-practice'], [/^\/c\/library(-[a-z0-9]{3,10})?\/?$/, 'library'], [/^\/c\/this-week(-[a-z0-9]{3,10})?\/?$/, 'this-week'],
     [/^\/c\/mentorship\/?$/, 'sahrdaya']
   ];
@@ -65,7 +65,8 @@
   // Upgrades and seasonal credits come worked out from the server (lib/member/pricing.js): state.offer.
   var BOOKING = 'https://calendly.com/embodied-philosophy/sah-daya-upaya-monthly-1-1-mentorship';
   var PAGE = /^\/c\/today\/?$/; // the "Today" space in Circle (open to every member)
-  var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio)
+  var PORTFOLIO_FOR = ['ss_season', 'ss_year', 'mentee']; // who keeps a Practice Portfolio (/c/portfolio) and the Diary on the Practice page (/c/daily-practice)
+  function ssDiary() { return PORTFOLIO_FOR.indexOf(tierName()) >= 0; } // their "write a line" shortcut opens the Practice page's diary
   var state = { pn: null, place: null, pnTried: false, geoErr: '', session: null, tier: null, seasons: [], first: '', practice: null, data: null, form: false, len: 20, timer: null, line: '', lineOpen: false, lineBusy: false, lineErr: '', lines: null, saving: false, error: '', logDay: '', logNote: '', why: false, offer: null, preview: false, cohort: null, cohortErr: '', pick: '' };
 
   var EYEBROW = {
@@ -487,7 +488,7 @@
       '.etd-wp{color:#F4EDE0;font-size:12.5px;margin-top:auto}',
       '.etd-skt{margin:0;font:italic 500 24px/1.25 "Cormorant Garamond",Georgia,serif}.etd-tr{margin:0;color:#3A342B}',
       '.etd-q{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid #E3D8C6}.etd-qt{font:19px/1.3 "Cormorant Garamond",Georgia,serif}',
-      '.etd-quiet{background:transparent;border:1px solid #D8C9AE;border-radius:4px;min-height:44px;padding:0 14px;font-size:13px;color:#1E1A14;cursor:pointer}.etd-quiet:hover{border-color:#1E1A14}',
+      '.etd-quiet{background:transparent;border:1px solid #D8C9AE;border-radius:4px;min-height:44px;padding:0 14px;font-size:13px;color:#1E1A14;cursor:pointer}.etd-quiet:hover{border-color:#1E1A14}a.etd-quiet{display:inline-flex;align-items:center;text-decoration:none}',
       '.etd-lineform{display:flex;flex-direction:column;gap:8px}.etd-ta{width:100%;border:1px solid #D8C9AE;border-radius:4px;padding:10px;background:#fff;font:inherit;resize:vertical}',
       '.etd-lines{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}.etd-lines li{display:flex;justify-content:space-between;gap:12px;padding-top:6px;border-top:1px solid #E3D8C6}.etd-lines b{font:500 11px "IBM Plex Mono",ui-monospace,monospace;color:#6B6152;white-space:nowrap}',
       '.etd-sdr{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding-top:8px;border-top:1px solid #E3D8C6}.etd-sdl{display:flex;flex-direction:column;gap:2px;min-width:0}',
@@ -590,7 +591,7 @@
     var left = target - p.streak;
     out += '<div class="etd-row"><span class="etd-big">' + p.streak + '</span><span class="etd-mut">day' + (p.streak === 1 ? '' : 's') + ' in a row</span></div>';
     if (p.reached && MS_TEXT[p.reached]) {
-      out += '<div class="etd-ms" role="status"><strong>' + MS_TEXT[p.reached] + '</strong><button type="button" class="etd-link" data-act="line-open">Write to the Travelogue</button></div>';
+      out += '<div class="etd-ms" role="status"><strong>' + MS_TEXT[p.reached] + '</strong>' + (ssDiary() ? '<a class="etd-link" href="/c/daily-practice#diary">Write in your diary</a>' : '<button type="button" class="etd-link" data-act="line-open">Write to the Travelogue</button>') + '</div>';
     } else {
       out += '<div class="etd-col2"><div class="etd-between"><span>' + left + (left === 1 ? ' day' : ' days') + ' to ' + target + '</span><span class="etd-mono etd-mut">' + Math.min(p.streak, target) + ' / ' + target + '</span></div>' +
         '<div class="etd-beads" role="img" aria-label="' + p.streak + ' of ' + target + ' days toward the next milestone">' + beads + '</div></div>';
@@ -605,7 +606,7 @@
       return '<div role="listitem"><button type="button" class="etd-daybtn" data-act="logday" data-day="' + esc(c.day) + '" aria-label="' + esc(niceDate(c.day)) + ', ' + said + '. ' + (c.state === 'done' ? 'Change it' : 'Log it') + '">' + inner + '</button></div>';
     }).join('') + '</div></div>';
     out += '<div class="etd-pills">' + [7, 21, 40, 108].map(function (m) { return '<span class="etd-pill' + (p.streak >= m ? ' on' : '') + '">' + m + '</span>'; }).join('') + '</div>';
-    if (PORTFOLIO_FOR.indexOf(tierName()) >= 0) out += '<a class="etd-wp" href="/c/portfolio">Your whole practice →</a>';
+    if (PORTFOLIO_FOR.indexOf(tierName()) >= 0) out += '<a class="etd-wp" href="/c/daily-practice">Your whole practice →</a>';
     return out + '</div></section>';
   }
 
@@ -648,7 +649,8 @@
         (t.sanskrit ? '<p class="etd-skt">' + esc(t.sanskrit) + '</p>' : '') + (t.translation ? '<p class="etd-tr">' + esc(t.translation) + '</p>' : '');
     } else out += '<div class="ept-ch"><h2 id="etd-teach" class="ept-h2">Your Inner Travelogue</h2><span class="ept-l">Private</span></div>';
     out += '<div class="etd-q"><span class="ept-l">' + (t && t.question ? 'A question to carry' : 'A line for the day') + '</span>' + (t && t.question ? '<span class="etd-qt">' + esc(t.question) + '</span>' : '');
-    if (!state.lineOpen) out += '<div><button type="button" class="etd-quiet" data-act="line-open">Write in your Travelogue · private</button></div>';
+    if (ssDiary()) out += '<div><a class="etd-quiet" href="/c/daily-practice#diary">Write in your diary · private</a></div>';
+    else if (!state.lineOpen) out += '<div><button type="button" class="etd-quiet" data-act="line-open">Write in your Travelogue · private</button></div>';
     else {
       out += '<form data-form="line" class="etd-lineform"><label class="ept-s" for="etd-line">One line, or two. Only you can see it.</label><textarea id="etd-line" name="text" rows="3" maxlength="1000" class="etd-ta">' + esc(state.line) + '</textarea>' +
         '<div class="ept-row"><button class="ept-btn etd-b" type="submit"' + (state.lineBusy ? ' disabled' : '') + '>' + (state.lineBusy ? 'Saving…' : 'Save privately') + '</button><button type="button" class="ept-q etd-b" data-act="line-close">Close</button></div>' + (state.lineErr ? '<span class="ept-err">' + esc(state.lineErr) + '</span>' : '') + '</form>';
@@ -1023,7 +1025,7 @@
       '<div class="ept108-in"><div><div class="ept108-n">108</div><h1 class="ept108-h">One hundred and eight days of <em>sādhana</em>.</h1>' +
       '<p>A full turn of the mālā, one bead a day, since ' + esc(longDate(addDays(p.today, -107))) + '.</p></div>' +
       '<div class="ept108-g" role="img" aria-label="108 squares, every one filled">' + beads + '</div>' +
-      '<div class="ept108-b"><a class="ept108-p" href="/c/portfolio" data-close>Write to the Travelogue</a><button type="button" class="ept108-q" data-close>Back to today</button></div></div>';
+      '<div class="ept108-b"><a class="ept108-p" href="' + (PORTFOLIO_FOR.indexOf(tierName()) >= 0 ? '/c/daily-practice#diary' : '/c/portfolio') + '" data-close>Write to the Travelogue</a><button type="button" class="ept108-q" data-close>Back to today</button></div></div>';
     function close() { if (!preview) local('ep_ms108_' + p.today, 'seen'); o.remove(); document.removeEventListener('keydown', key); }
     function key(e) { if (e.key === 'Escape') close(); }
     o.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) close(); });

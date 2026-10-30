@@ -52,15 +52,15 @@ export const certificates = {
   titles: ['Yoga Philosophy', 'Awakened Body', 'Buddhist Psychology', 'Embodied Yoga Therapy'],
   // TODO: Circle paywall URL for each certificate AT THE CYBER PRICE (a separate paywall/price, not a code)
   singleCheckout: {
-    'Yoga Philosophy': 'TODO',
-    'Awakened Body': 'TODO',
-    'Buddhist Psychology': 'TODO',
-    'Embodied Yoga Therapy': 'TODO',
+    'Yoga Philosophy': 'https://ss.embodiedphilosophy.com/checkout/cyber26-yoga-philosophy-certificate',
+    'Awakened Body': 'https://ss.embodiedphilosophy.com/checkout/cyber26-awakened-body-certificate',
+    'Buddhist Psychology': 'https://ss.embodiedphilosophy.com/checkout/cyber26-buddhist-psychology-certificate',
+    'Embodied Yoga Therapy': 'https://ss.embodiedphilosophy.com/checkout/cyber26-embodied-yoga-therapy-certificate',
   },
   plus: {
     regular: 497,
     cyberFirstYear: 297, // TODO confirm
-    checkout: 'TODO', // Plus annual Circle paywall with the $297 first-year price
+    checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-wisdom-school-plus', // Plus annual Circle paywall with the $297 first-year price
     includes: [
       'All four certificate programs',
       'Every Learning Pathway',

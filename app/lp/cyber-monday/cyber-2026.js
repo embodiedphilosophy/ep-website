@@ -20,6 +20,9 @@ export const campaign = {
     'For one week, every Embodied Philosophy course opens on a pay-what-you-can basis. Certificates and past Sādhana School seasons at Cyber prices.',
   utmCampaign: 'cyber-2026',
   regularCoursePrice: 97,
+  // Early sharing: while set, everyone who opens the page sees this state, whatever the date, and search engines are told
+  // not to list it. Set to null before launch so the page follows the dates above.
+  forceState: 'live',
 };
 
 // ---------- Tier 1 — The Open Library ----------

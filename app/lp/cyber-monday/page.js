@@ -21,6 +21,7 @@ export const metadata = {
   alternates: { canonical: campaign.path },
   openGraph: { title: campaign.title, description: campaign.description, url: campaign.path, type: 'website' },
   twitter: { card: 'summary_large_image', title: campaign.title, description: campaign.description },
+  ...(campaign.forceState ? { robots: { index: false, follow: false } } : {}),
 };
 
 const KIT_LETTER = process.env.NEXT_PUBLIC_KIT_FORM_LETTER;

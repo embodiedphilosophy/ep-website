@@ -1,4 +1,4 @@
-import { dates, cookies } from './cyber-2026';
+import { dates, cookies, campaign } from './cyber-2026';
 
 // The page state, resolved on the server from the real clock (all deadlines are US Eastern instants in cyber-2026.js).
 export const STATES = ['prelaunch', 'early', 'live', 'libraryOnly', 'evergreen'];
@@ -29,7 +29,7 @@ export function readRequest(params, jar) {
   const forced = first(params.preview);
   const allowed = STATES.includes(forced) && previewAllowed({ token: first(params.token) });
   const now = Date.now();
-  const state = allowed ? forced : resolveState(now, access);
+  const state = allowed ? forced : campaign.forceState || resolveState(now, access);
   return { state, now, member, access, forced: allowed };
 }
 

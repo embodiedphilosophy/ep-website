@@ -319,7 +319,7 @@ export default async function CyberMonday({ searchParams }) {
                   <div className="cm-strip">
                     <div><span>Single past season</span><p><strong>{money(archive.prices.season.cyber)}</strong><s>{money(archive.prices.season.regular)}</s></p></div>
                     <div><span>Past summer retreat (online)</span><p><strong>{money(archive.prices.retreat.cyber)}</strong><s>{money(archive.prices.retreat.regular)}</s></p></div>
-                    <div><span className="best">Complete past year · 3 seasons + retreat</span><p><strong>{money(archive.prices.fullYear.cyber)}</strong><small>best value</small></p></div>
+                    <div><span className="best">Complete past year · every program in it</span><p><strong>{money(archive.prices.fullYear.cyber)}</strong><small>best value</small></p></div>
                   </div>
                   {archive.years.map(y => (
                     <div className="cm-year" key={y.label}>
@@ -358,7 +358,7 @@ export default async function CyberMonday({ searchParams }) {
               )}
 
               <div className="cm-cur">
-                <p>{copy.tier3.currentYearNote} <span>{archive.currentYear.years} · {archive.currentYear.title} · from ${archive.prices.season.regular} a season.</span></p>
+                <p>{copy.tier3.currentYearNote} <span>{archive.currentYear.years} · {archive.currentYear.title} · from ${archive.currentYear.fromPrice} a season.</span></p>
                 <a className="cm-link" style={{ color: 'var(--cm-gold)' }} href={archive.currentYear.href}>See Sādhana School {archive.currentYear.years}</a>
               </div>
             </div>

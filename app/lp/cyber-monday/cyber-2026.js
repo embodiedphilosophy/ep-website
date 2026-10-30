@@ -26,7 +26,7 @@ export const campaign = {
 export const pwyc = {
   suggested: [null, null, null], // TODO: three amounts matching the PWYC ad tiers; index 1 is pre-selected
   suggestedLabels: ['Supported', 'Most give this', 'Sustaining'],
-  minimum: null, // TODO
+  minimum: 1, // Kit pay-what-you-can minimum; Kit takes one suggested amount per product, so the three amounts stay unset
   meditationPassAddOn: { regular: 99, cyber: null }, // TODO: Cyber price; see HANDOFF.md §6.4
 };
 
@@ -60,7 +60,7 @@ export const certificates = {
   plus: {
     regular: 497,
     cyberFirstYear: 297, // TODO confirm
-    checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-wisdom-school-plus', // Plus annual Circle paywall with the $297 first-year price
+    checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-wisdom-school-plus?coupon_code=CYBER26PLUS', // Plus annual Circle paywall with the $297 first-year price
     includes: [
       'All four certificate programs',
       'Every Learning Pathway',
@@ -78,35 +78,32 @@ export const certificates = {
 // ---------- Tier 3 — Sādhana School Archive ----------
 export const archive = {
   prices: {
-    season: { regular: 497, cyber: 197 },
-    retreat: { regular: 797, cyber: 297 },
+    season: { regular: 297, cyber: 197 },
+    retreat: { regular: 297, cyber: 197 },
     fullYear: { cyber: 497 },
   },
   credit: { cap: 197, deadline: 'TODO January date' }, // TODO confirm both
-  currentYear: { title: 'The Path of Recognition', years: '2026–27', href: '/sadhana-school' },
+  currentYear: { title: 'The Path of Recognition', years: '2026–27', href: '/sadhana-school', fromPrice: 497 },
   years: [
     {
       label: '2024–25',
       subtitle: null,
-      fullYearCheckout: 'TODO',
+      fullYearCheckout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-2024-25-complete-year',
       seasons: [
-        { season: 'Fall 2024', title: 'Spiritual Technology', line: 'A pluralistic odyssey through yoga philosophy.', text: null, kind: 'season', motif: 'mandala', checkout: 'TODO' },
-        { season: 'Winter 2025', title: 'The Logic of Prāṇa', line: 'TODO one-line theme', text: null, kind: 'season', motif: 'resonance', checkout: 'TODO' },
-        { season: 'Spring 2025', title: 'Rasa Theory', line: 'TODO one-line theme', text: null, kind: 'season', motif: 'sun-face', checkout: 'TODO' },
-        // TODO name: 2025 Cyber page says "Kuṇḍalinī & Radical Yogic Embodiment"; the 2025–26 enrolment page says "Kuṇḍalinī & Subtle Embodiment Retreat" (Jul 10–16, 2025)
-        { season: 'Summer retreat 2025', title: 'Kuṇḍalinī & Radical Yogic Embodiment', line: 'Online retreat recordings.', text: null, kind: 'retreat', motif: 'lotus', checkout: 'TODO' },
+        { season: 'Fall 2024', title: 'Foundations of Yoga Philosophy', line: 'TODO one-line theme', text: null, kind: 'season', motif: 'mandala', checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-fall-2024' },
+        { season: 'Winter 2025', title: 'The Tantric Breath', line: 'A Prāṇa Sādhana.', text: null, kind: 'season', motif: 'resonance', checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-winter-2025' },
+        { season: 'Spring 2025', title: 'Rasa Theory', line: 'Emotions and imagination for meditation and self-realization.', text: null, kind: 'season', motif: 'sun-face', checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-spring-2025' },
+        { season: 'Summer retreat 2025', title: 'Kuṇḍalinī & Subtle Embodiment Retreat', line: 'Online retreat recordings.', text: null, kind: 'retreat', motif: 'lotus', checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-summer-retreat-2025' },
       ],
     },
     {
       label: '2025–26',
       subtitle: 'Ancient Texts, Living Paths',
-      fullYearCheckout: 'TODO',
-      // TODO: season mapping — the enrolment page lists four sādhanas but only names Fall, Winter, Spring
+      fullYearCheckout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-2025-26-complete-year',
       seasons: [
-        { season: 'Fall 2025', title: 'Invisible Life', line: 'Vibration, meditation and the cultivation of dynamic awareness.', text: 'Spanda Kārikās', kind: 'season', motif: 'resonance', checkout: 'TODO' },
-        { season: 'Winter 2026', title: 'The Power of Speech', line: 'Language, vibration and the silent word within.', text: 'Parātriṃśikā Vivaraṇa', kind: 'season', motif: 'lotus', checkout: 'TODO' },
-        { season: 'Spring 2026', title: 'The Third Eye', line: 'Perception and the subtle yoga of non-dual vision.', text: 'Netra Tantra', kind: 'season', motif: 'eye', checkout: 'TODO' },
-        { season: 'TODO 2026', title: 'The Heart of the Yoginī', line: 'Embodying the cosmic maṇḍala of Śakti.', text: 'Yoginī Hṛdaya', kind: 'season', motif: 'sri-cakra', checkout: 'TODO' },
+        { season: 'Fall 2025', title: 'The Tantrik Science of Awareness', line: 'TODO one-line theme', text: null, kind: 'season', motif: 'resonance', checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-fall-2025' },
+        { season: 'Winter 2026', title: 'Mātṛkā Śakti', line: 'TODO one-line theme', text: null, kind: 'season', motif: 'lotus', checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-winter-2026' },
+        { season: 'Spring 2026', title: 'The Third Eye', line: 'Perception and the subtle yoga of non-dual vision.', text: 'Netra Tantra', kind: 'season', motif: 'eye', checkout: 'https://ss.embodiedphilosophy.com/checkout/cyber26-ss-spring-2026' },
       ],
     },
   ],

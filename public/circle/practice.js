@@ -299,9 +299,34 @@
     root = document.createElement('div'); root.className = 'epq'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'Practice');
     root.addEventListener('click', onClick); root.addEventListener('input', onInput); root.addEventListener('submit', onSubmit); root.addEventListener('focusout', onFocusOut);
     box.insertBefore(root, box.firstChild);
-    render();
+    render(); hideBanner();
     if (location.hash === '#diary') setTimeout(function () { var el = root && root.querySelector('#diary'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
   }
+
+  // Circle puts the space's own banner ("Daily practice" and its New post button) above the page. Like Today, the Practice page
+  // is a dashboard, so it goes: found by its "New post" button (or the space title), then the largest banner-sized block around it in
+  // the content column that doesn't hold our page. Put back when the member moves to another space (Circle reuses it there).
+  var hidden = [];
+  function bannerOf(el, box) {
+    var n = el;
+    while (n.parentElement && n.parentElement !== document.body && !n.parentElement.contains(root)) n = n.parentElement;
+    if (!n || n.contains(root) || n === document.body) return null;
+    var r = n.getBoundingClientRect(), b = box.getBoundingClientRect();
+    if (r.height < 20 || r.height > 220 || r.width > b.width + 120 || r.width < 200 || r.left < b.left - 120 || r.right > b.right + 120) return null;
+    return n;
+  }
+  function hideBanner() {
+    if (!root || !document.body.contains(root) || !root.parentElement) return;
+    var box = root.parentElement, title = String(document.title || '').split(/\s[·|–—-]\s/)[0].trim();
+    var c = document.querySelectorAll('button, a, h1, h2');
+    for (var i = 0; i < c.length; i++) {
+      var el = c[i], t = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (root.contains(el) || !(t === 'New post' || (title && t === title && /^H[12]$/.test(el.tagName)))) continue;
+      var n = bannerOf(el, box);
+      if (n && n.style.display !== 'none') { n.style.display = 'none'; hidden.push(n); }
+    }
+  }
+  function restoreBanner() { while (hidden.length) hidden.pop().style.display = ''; }
 
   var started = false;
   function start() {
@@ -312,5 +337,5 @@
   start();
   // Circle is a single-page app: mount when someone navigates to the page
   var t = null;
-  new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; start(); if (started) mount(); }, 300); }).observe(document.body, { childList: true, subtree: true });
+  new MutationObserver(function () { if (t) return; t = setTimeout(function () { t = null; start(); if (started) mount(); if (PAGE.test(location.pathname)) hideBanner(); else restoreBanner(); }, 300); }).observe(document.body, { childList: true, subtree: true });
 })();

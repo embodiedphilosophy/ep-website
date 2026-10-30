@@ -40,6 +40,14 @@ assert.deepEqual(p.readings.map(r => r.id), ['f1a', 'f1b']); assert.equal(p.read
 assert.equal(R.weekPlan(rows, 'fall-2026', '2026-11-04', 3).week, 2, 'a hidden week is skipped: the last published week stays');
 assert.equal(R.weekPlan([], 'fall-2026', '2026-10-29', 2), null);
 assert.equal(R.readingsOf(rows, 'fall-2026').length, 3);
+// with no SS Weekly rows, the season dashboard's own readings (Season Readings tab, else its seed) fill the week: Week 2 = Session 2
+const sr = R.rowsFromSeasonReadings([], 'fall-2026');
+p = R.weekPlan(sr, 'fall-2026', '2026-10-29', 2);
+assert.equal(p.week, 2); assert.ok(p.readings.some(r => /Week 2 handout/.test(r.title)), 'the handout from the dashboard');
+assert.equal(p.readings[0].kind, 'CORE READING'); assert.ok(p.readings.some(r => r.kind === 'SUGGESTED'));
+assert.deepEqual(R.rowsFromSeasonReadings([], 'fall-2026').map(r => r.reading_id), sr.map(r => r.reading_id), 'stable ids');
+const own = R.rowsFromSeasonReadings([{ season: 'fall-2026', session: '2', kind: 'core', title: 'Text', detail: 'Sūtra 1', publish: 'TRUE' }, { season: 'fall-2026', session: '2', kind: 'prompt', detail: 'Where did you meet the Lord?', publish: 'TRUE' }], 'fall-2026');
+assert.equal(own.length, 1, 'a prompt row is not a reading'); assert.equal(R.weekPlan(own, 'fall-2026', '2026-10-29', 2).prompt, 'Where did you meet the Lord?');
 
 // ---- posting title
 const t = P.postTitle('Dear Lord, today I sat with the breath for a long long time and nothing happened at all, which was perfect', '2026-10-29T10:00:00Z');

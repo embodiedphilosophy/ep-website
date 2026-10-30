@@ -24,7 +24,7 @@ async function open({ ss, vw = 1280, sharing = true }) {
     readings: [{ id: 'r1', kind: 'PRIMARY TEXT', title: 'Sūtra 2', meta: '12 min', url: 'https://x.test/2', action: 'Read', read: false }, { id: 'r2', kind: 'RECORDING', title: 'Talk', meta: '', url: 'https://x.test/3', action: 'Listen', read: true }] };
   const view = () => ({ isSS: ss, today: TODAY, season, week: 2, sit: st.sit, join, totals: ss ? { sits: 3, hours: 1.5, readingsDone: st.readings.filter(r => r.read).length, readingsTotal: 6, diary: st.entries.length } : { sits: 3, hours: 1.5 },
     ...(ss ? { plan: { week: 2, readings: st.readings, done: st.readings.filter(r => r.read).length, prompt: 'What is it that is aware?' }, draft: st.draft, entries: st.entries, sharing } : {}) });
-  await p.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><div class="container-type:inline-size bg-secondary" style="width:100%"><div id="orig">Circle’s own page</div></div><script>window.circleUser={signedIn:true,identityToken:"t"}</script><script src="https://www.embodiedphilosophy.com/circle/practice.js"></script></body>' }));
+  await p.route(HOST + '/**', r => r.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><body style="margin:0"><div id="banner" style="height:64px;display:flex;justify-content:space-between"><h1>Daily practice</h1><button>New post</button></div><div class="container-type:inline-size bg-secondary" style="width:100%"><div id="orig">Circle’s own page</div></div><script>window.circleUser={signedIn:true,identityToken:"t"}</script><script src="https://www.embodiedphilosophy.com/circle/practice.js"></script></body>' }));
   await p.route('https://www.embodiedphilosophy.com/**', async r => {
     const u = new URL(r.request().url()), m = r.request().method(), path = u.pathname, body = JSON.parse(r.request().postData() || '{}');
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
@@ -51,6 +51,7 @@ const noSideways = p => p.evaluate(() => document.documentElement.scrollWidth <=
   const { p, ctx } = await open({ ss: false });
   assert.equal(await p.locator('#orig').isHidden(), true, 'Circle’s own page is hidden');
   assert.match(await p.locator('.epq-h1').innerText(), /Your practice\./);
+  await p.waitForFunction(() => document.getElementById('banner').style.display === 'none'); // Circle's "Daily practice · New post" banner is hidden
   assert.equal(await p.locator('#epq-text').count(), 0); assert.equal(await p.locator('.epq-rd').count(), 0);
   assert.equal(await p.locator('.epq-lock').count(), 1);
   assert.match(await p.locator('.epq-side').innerText(), /Sits logged[\s\S]*3/); assert.doesNotMatch(await p.locator('.epq-side').innerText(), /Readings done|Diary entries/);
@@ -78,7 +79,8 @@ const noSideways = p => p.evaluate(() => document.documentElement.scrollWidth <=
   assert.equal(calls.filter(c => c.startsWith('PUT /api/practice/diary/draft')).length, 1); assert.equal(st.draft.body, 'Dear Lord, today I sat.');
   assert.equal(await p.inputValue('#epq-text'), 'Dear Lord, today I sat.', 'typing is never wiped by a re-draw');
   // save privately → top of the list, marked Private
-  await p.click('text=Save to my diary'); await p.waitForSelector('.epq-ent >> nth=0 >> text=Private');
+  await p.click('text=Save to my diary'); await p.waitForSelector('.epq-ent >> nth=0 >> text=Dear Lord, today I sat.'); // the new entry, not the older private one already listed
+  assert.match(await p.locator('.epq-ent').first().innerText(), /Private/i);
   assert.match(await p.locator('.epq-ent').first().innerText(), /Dear Lord, today I sat\./); assert.equal(await p.inputValue('#epq-text'), '');
   // save & post → shared with a link
   await p.fill('#epq-text', 'Second line'); await p.click('text=Save & post to SS Reflections'); await p.waitForSelector('.epq-ent >> nth=0 >> text=Shared in SS Reflections');

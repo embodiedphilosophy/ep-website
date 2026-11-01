@@ -69,9 +69,9 @@
         });
       });
   }
-  var DKEY = function () { return 'ep_su_data_' + ((window.circleUser && window.circleUser.email) || ''); };
+  var DKEY = function () { return 'ep_su_data_v2_' + ((window.circleUser && window.circleUser.email) || ''); }; // v2: round 2 added fields to the page data; an older saved copy must not be drawn
   function keep(d) { if (d && d.home && !d.pending) store(DKEY(), JSON.stringify({ day: localToday(), d: d })); }
-  function cached() { try { var c = JSON.parse(store(DKEY()) || 'null'); return c && c.day === localToday() ? c.d : null; } catch (e) { return null; } }
+  function cached() { try { var c = JSON.parse(store(DKEY()) || 'null'); return c && c.day === localToday() && c.d && c.d.home && c.d.home.articulation && c.d.home.hours ? c.d : null; } catch (e) { return null; } }
   var tzq = function () { return 'today=' + localToday() + '&tz=' + encodeURIComponent(myZone()); };
   // Fast answer first (hours, ticks, assignments, partner), then the full one (Practicum event, Mentorship Circle posts)
   function load() {

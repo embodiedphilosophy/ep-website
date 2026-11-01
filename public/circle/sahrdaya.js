@@ -298,13 +298,13 @@
   function roomCard(w) {
     var r = w.home.room, p = w.home.partner;
     var pinned = r.pinned.length ? '<div class="esu-pin">' + r.pinned.map(function (x) { return ext(x.url, esc(x.label), ''); }).join('<span aria-hidden="true">·</span>') + '</div>' : '';
-    var tabs = [['chat', 'Cohort chat'], ['pair', 'Pair chat'], ['cues', 'Cue bank'], ['circle', 'Mentorship Circle'], ['jacob', 'Jacob · direct']];
+    var tabs = [['chat', 'Cohort Chat'], ['pair', 'Articulation Buddy'], ['jacob', 'Message Jacob']];
     var bar = '<div class="esu-rt" role="tablist">' + tabs.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (state.room === t[0]) + '" data-act="room" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>';
     var body;
     if (state.room === 'pair') {
       body = r.pairChatUrl
-        ? '<p class="esu-muted" style="margin-bottom:12px">Your own chat with ' + esc(p && p.name ? p.name : 'your partner') + ' for this rotation. Use it to find a time and to share what you are working on.</p><div class="esu-acts">' + ext(r.pairChatUrl, 'Open your pair chat', 'esu-btn pri') + '</div>'
-        : '<div class="esu-empty">' + (p ? 'Your pair chat will appear here once Jacob has opened it for this rotation.' : 'You’ll see your pair chat here once you have a partner.') + '</div>';
+        ? '<p class="esu-muted" style="margin-bottom:12px">Your own chat with ' + esc(p && p.name ? p.name : 'your partner') + ' for this rotation. Use it to find a time and to share what you are working on.</p><div class="esu-acts">' + ext(r.pairChatUrl, 'Open your articulation chat', 'esu-btn pri') + '</div>'
+        : '<div class="esu-empty">' + (p ? 'Your articulation chat will appear here once Jacob has opened it for this rotation.' : 'You’ll see your articulation chat here once you have a partner.') + '</div>';
     } else if (state.room === 'cues') {
       body = '<p class="esu-muted" style="margin-bottom:10px">Every instruction line the cohort has rewritten in an articulation session, newest first. Add yours from the articulation card.</p>' +
         (r.cues && r.cues.length ? '<div class="esu-cues">' + r.cues.map(function (c) {

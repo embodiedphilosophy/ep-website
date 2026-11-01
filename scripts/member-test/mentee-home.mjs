@@ -59,15 +59,22 @@ globalThis.fetch = async u => {
     { status: 'available', start_time: '2026-11-24T18:00:00Z', scheduling_url: 'https://calendly.com/embodied-philosophy/x/2026-11-24T18:00:00Z' },
     { status: 'unavailable', start_time: '2026-11-24T19:00:00Z', scheduling_url: 'https://calendly.com/embodied-philosophy/x/b' },
     { status: 'available', start_time: '2026-11-25T18:00:00Z', scheduling_url: 'https://evil.example/x' }] });
-  if (String(u).includes('/scheduled_events')) return json({ collection: [{ event_type: 'https://api.calendly.com/event_types/ET1', start_time: '2026-11-25T18:00:00Z', location: { join_url: 'https://zoom.us/j/1' } }, { event_type: 'https://api.calendly.com/event_types/OTHER', start_time: '2026-11-20T18:00:00Z' }] });
+  if (/\/scheduled_events\/[^/?]+\/invitees/.test(String(u))) {
+    const id = /scheduled_events\/([^/?]+)\/invitees/.exec(String(u))[1];
+    return json({ collection: id === 'EV1' ? [{ name: 'Maya R', email: 'Maya@x.com', questions_and_answers: [{ question: 'Where I am on the offering', answer: 'Group named.', position: 1 }, { question: 'What I want to work on', answer: 'Task language in my cueing.', position: 0 }, { question: 'Attached (optional)', answer: '', position: 2 }] }] : [{ name: 'Sam T', email: 'sam@x.com', questions_and_answers: [] }] });
+  }
+  if (String(u).includes('/scheduled_events')) return json({ collection: [{ uri: 'https://api.calendly.com/scheduled_events/EV1', event_type: 'https://api.calendly.com/event_types/ET1', start_time: '2026-11-25T18:00:00Z', end_time: '2026-11-25T18:45:00Z', location: { join_url: 'https://zoom.us/j/1' } }, { uri: 'https://api.calendly.com/scheduled_events/EV2', event_type: 'https://api.calendly.com/event_types/ET1', start_time: '2026-11-26T18:00:00Z', location: { join_url: 'https://zoom.us/j/2' } }, { uri: 'https://api.calendly.com/scheduled_events/EV3', event_type: 'https://api.calendly.com/event_types/OTHER', start_time: '2026-11-27T18:00:00Z' }] });
   return { ok: false, status: 404 };
 };
 const now = Date.parse('2026-10-21T07:30:00Z');
 const sl = await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now);
 assert.deepEqual(sl.map(s => s.start), ['2026-11-24T18:00:00Z'], 'only available times, only Calendly links');
 const q = new URL(urls.find(u => u.includes('available_times'))); assert.ok(Date.parse(q.searchParams.get('end_time')) - Date.parse(q.searchParams.get('start_time')) <= 7 * 864e5, 'never asks for more than 7 days');
-assert.deepEqual(await CAL.bookedFor('ET1', 'Maya@x.com', now), { start: '2026-11-25T18:00:00Z', url: 'https://zoom.us/j/1' }, 'matches the one-to-one event type only');
-delete process.env.CALENDLY_TOKEN; assert.deepEqual(await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now + 1), [], 'no token → button only');
+assert.deepEqual(await CAL.bookedFor('ET1', 'Maya@x.com', now), { start: '2026-11-25T18:00:00Z', url: 'https://zoom.us/j/1', uuid: 'EV1', answers: [{ q: 'What I want to work on', a: 'Task language in my cueing.' }, { q: 'Where I am on the offering', a: 'Group named.' }] }, 'matches the one-to-one event type only; what the mentee wrote comes with it, in the order asked, blanks left out');
+const up = await CAL.upcomingBookings('ET1', { now });
+assert.deepEqual(up.map(x => [x.uuid, x.name, x.answers.length]), [['EV1', 'Maya R', 2], ['EV2', 'Sam T', 0]], 'the one-to-one event type only, soonest first, with who booked and what they wrote');
+assert.deepEqual(CAL.summaryOf([{ question: 'b', answer: ' two ', position: 1 }, { question: 'a', answer: 'one', position: 0 }, { question: 'c', answer: '  ' }]), [{ q: 'a', a: 'one' }, { q: 'b', a: 'two' }]);
+delete process.env.CALENDLY_TOKEN; assert.deepEqual(await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now + 1), [], 'no token → button only'); assert.deepEqual(await CAL.upcomingBookings('ET1', { now }), []);
 globalThis.fetch = realFetch;
 console.log('calendly: ok');
 

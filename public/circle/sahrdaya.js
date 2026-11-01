@@ -102,7 +102,7 @@
       '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}.esu-tot span{font-size:13px;color:#5A5346}',
       '.esu-ever{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
       '.esu-ever .esu-poll{grid-column:1/-1}',
-      '.esu-win{background:#F1E9DC;border-radius:8px;padding:10px 14px;margin-bottom:6px}.esu-win b{display:block;font-size:15px}.esu-cues{display:grid;gap:10px;max-height:340px;overflow-y:auto}.esu-cue{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:10px 12px;background:#F6EFE2;border-radius:8px;font-size:14.5px}.esu-cue .esu-eye{margin:0 0 2px}.esu-cuew{grid-column:1/-1;color:#5A5346}.esu-who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}.esu-who label{display:inline-flex;gap:6px;align-items:center;border:1px solid #E3D8C6;border-radius:99px;padding:6px 12px;background:#fff;font-size:14px}.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
+      '.esu-sum{margin-top:14px;padding-top:10px;border-top:1px solid #E3D8C6}.esu-win{background:#F1E9DC;border-radius:8px;padding:10px 14px;margin-bottom:6px}.esu-win b{display:block;font-size:15px}.esu-cues{display:grid;gap:10px;max-height:340px;overflow-y:auto}.esu-cue{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:10px 12px;background:#F6EFE2;border-radius:8px;font-size:14.5px}.esu-cue .esu-eye{margin:0 0 2px}.esu-cuew{grid-column:1/-1;color:#5A5346}.esu-who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}.esu-who label{display:inline-flex;gap:6px;align-items:center;border:1px solid #E3D8C6;border-radius:99px;padding:6px 12px;background:#fff;font-size:14px}.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
       '.esu-q{padding:8px 0;border-top:1px solid #E3D8C6;font-size:14px;line-height:1.35}.esu-q a{color:#1E1A14;text-decoration:none;font-weight:500}.esu-q small{display:block;font-size:12px;color:#5A5346;margin-top:2px}.esu-q small b{color:#2E5A4B;font-weight:600}',
       '.esu-bar{height:6px;background:#E3D8C6;border-radius:99px;overflow:hidden;margin-top:6px}.esu-bar i{display:block;height:100%;background:#A5432A;min-width:0}',
       '.esu-bar.sm{height:4px;margin-top:5px}',
@@ -347,15 +347,23 @@
       (safeUrl(h.workbookUrl) ? '<p style="margin:12px 0 0;font-size:13px">' + ext(h.workbookUrl, 'Programme expectations and full briefs, in the Workbook.', '') + '</p>' : '') + '</section>';
   }
 
+  // After booking: what the mentee sent for Jacob, or a box to add it if the booking has none
+  function summaryBlock(bk) {
+    if (bk.summary && bk.summary.length) return '<div class="esu-sum"><div class="esu-eye" style="color:#2E5A4B">Sent to Jacob ✓</div>' + bk.summary.map(function (x) { return '<p style="margin:4px 0;font-size:13.5px"><span class="esu-muted">' + esc(x.q) + '</span><br>' + esc(x.a) + '</p>'; }).join('') + '</div>';
+    return '<div class="esu-sum"><div class="esu-eye">Add a few lines for Jacob</div><p class="esu-muted" style="font-size:13px;margin:2px 0 6px">What you’d like to work on, discuss, or are finding hard. He reads it before you meet.</p>' +
+      '<textarea id="esu-note" rows="3" maxlength="3000" data-in="note" aria-label="What you want to work on" style="' + FIELD + '">' + esc(state.note || '') + '</textarea>' +
+      '<div class="esu-acts" style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="save-note"' + (state.busy === 'note' ? ' disabled' : '') + '>' + (state.busy === 'note' ? 'Sending…' : 'Send to Jacob') + '</button></div>' + (state.msg && state.msgFor === 'note' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') + '</div>';
+  }
   function oneCard(w) {
     var o = w.home.oneToOne, win = o.window, city = myZone().split('/').pop().replace(/_/g, ' ');
     var inWindow = win && w.today >= win.from, bk = o.booked;
     var out = hd('One-to-one with Jacob', '<span class="esu-mono">45 MIN</span>');
     if (bk) {
       out += '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">Booked:</b> ' + esc(fmtTime(bk.start, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + ' your time. The Zoom link is on the event and in your email.</p>' +
-        '<div class="esu-acts">' + ext(o.bookingUrl, 'Change time', 'esu-btn out') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>';
+        '<div class="esu-acts">' + ext(o.bookingUrl, 'Change time', 'esu-btn out') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>' + summaryBlock(bk);
       return '<section class="esu-card" data-g="one">' + out + '</section>';
     }
+    out += '<p class="esu-muted" style="margin-bottom:10px;font-size:13px">When you book, Calendly asks what you’d like to work on, discuss, or are finding hard. A few lines helps Jacob prepare before you meet.</p>';
     out += win ? '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">' + esc(dayFmt(win.from, { month: 'long' })) + ' window:</b> ' + esc(wd(win.from) + ' – ' + wd(win.to) + ' ' + dayFmt(win.to, { month: 'short' })) + ', UK evenings.<br>Times are shown in your time (' + esc(city) + ').</p>'
       : '<p class="esu-muted" style="margin-bottom:12px">The next window will be announced here.</p>';
     if (o.slots && o.slots.length) out += '<div class="esu-slots">' + o.slots.map(function (sl) {
@@ -459,6 +467,7 @@
     if (!k) return;
     if (k === 'say') { state.say = e.target.value; return; }
     if (k === 'ask') { state.ask = e.target.value; return; }
+    if (k === 'note') { state.note = e.target.value; return; }
     if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
     if (k.indexOf('with:') === 0) { (state.form.with = state.form.with || {})[k.slice(5)] = e.target.checked; render(); return; }
     if (k.indexOf('term:') === 0) { (state.form.terms = state.form.terms || {})[k.slice(5)] = e.target.value; return; }
@@ -514,6 +523,7 @@
       act('ask', function () { return call('/api/member/this-week/question', { text: qt }).then(function (r) { state.ask = ''; state.questions = r.questions; return null; }); });
       return;
     }
+    if (a === 'save-note') { var nt = state.note; state.msgFor = 'note'; act('note', function () { return call('/api/member/this-week/booking-note', { note: nt, today: localToday(), tz: myZone() }).then(function (d) { state.note = ''; return d; }); }); return; }
     if (a === 'all-books') { state.books = true; render(); return; }
     if (a === 'close-books') { if (t.dataset.bg && e.target !== t) return; state.books = false; render(); return; }
     if (a === 'pick') {

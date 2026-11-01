@@ -1,5 +1,12 @@
 # Season spaces (/school/[programme]/[season])
 
+> **One page per season (Nov 2026).** The hub is gone: the Sādhana School sidebar row opens the current season, with six tabs (This week · Sessions · Readings · Reflections · Kula · Resources) and a Season menu. `/school/sadhana-school` redirects to the season the member is in that is running now (else the next, else the last; a member in none gets the one running now, which explains how to join). `?tab=` takes `week` (default) `sessions` `readings` `reflections` `kula` `resources`; the old hub and five-tab names map to the nearest one. Logic in `lib/school/season.js` (tested by `scripts/ops-test/school-season.mjs`), page `app/school/[programme]/[season]/`. The text below about the five old tabs is out of date and is rewritten in the clean-up PR.
+> - **Sessions** is one date-ordered list: the Wednesday sessions (recording attached to its row) and the season's Saturday Open Sessions. A term student's Circle feed has none of the weekend events, so those rows come from `immersions` in `data/mentee.json` (date and title, no time) and show "Full year only"; a full-year student's row uses the real event when Circle has one.
+> - **Week number** is the session coming up. **Reflect this week** uses the `prompt` readings row for that week (Ops → Reading assignments), else asks about the week's sūtras.
+> - **Counts** on Reflections and Kula come from `school_seen` (needs `DATABASE_URL`). Reflections has its own key, `refl-<season space id>`, written when the tab is opened.
+> - **Resources** are the rows tagged `resources` in `data/school-hub.json`. Sourcebook and Song of Sādhana have no Circle space id yet, so their cards stay hidden until the ids are filled in.
+> - **Times** are shown in the viewer's own time zone.
+
 One sidebar row per Sādhana School season; each opens a page with the tabs All · Live Sessions · Recordings · Readings · Reflections. Built from the Circle handoff of 16 Oct 2026. Do the Circle setup steps in that handoff first: the code reads the same spaces and topics.
 
 ## Wiring a season

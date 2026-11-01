@@ -80,7 +80,8 @@
       "key": "announcements",
       "tabs": [
         "home",
-        "kula"
+        "kula",
+        "announcements"
       ],
       "kind": "space",
       "title": "Announcements",
@@ -95,7 +96,8 @@
       "key": "welcome-orientation",
       "tabs": [
         "home",
-        "practice"
+        "practice",
+        "resources"
       ],
       "kind": "space",
       "title": "Welcome & Orientation",
@@ -137,7 +139,8 @@
     {
       "key": "practice-resources",
       "tabs": [
-        "practice"
+        "practice",
+        "resources"
       ],
       "kind": "space",
       "title": "Practice Resources",
@@ -151,7 +154,8 @@
     {
       "key": "practice-portfolio",
       "tabs": [
-        "practice"
+        "practice",
+        "resources"
       ],
       "kind": "space",
       "title": "Practice Portfolio",
@@ -270,6 +274,30 @@
       "cta_label": "Learn about formation",
       "cta_url": "",
       "order": 53
+    },
+    {
+      "key": "sourcebook",
+      "tabs": [
+        "resources"
+      ],
+      "kind": "space",
+      "title": "The Sādhaka's Sourcebook",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "The year's readings, in one place.",
+      "order": 54
+    },
+    {
+      "key": "song-of-sadhana",
+      "tabs": [
+        "resources"
+      ],
+      "kind": "space",
+      "title": "Song of Sādhana",
+      "circle_space_ids": [],
+      "audience_note": "Sādhana School",
+      "description": "The chantbook and recordings.",
+      "order": 55
     }
   ]
 }

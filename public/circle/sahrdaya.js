@@ -246,9 +246,9 @@
   // The evergreen row: this month's reflection, Articulation, Practicum Pods, and a survey while one is open
   function articulationCard(w) {
     var a = w.home.articulation, r = a.rotation;
-    var eye = 'Articulation' + (r ? ' · Rotation ' + r.n + ' · ' + r.weeksLeft + (r.weeksLeft === 1 ? ' week' : ' weeks') + ' left' : '');
+    var eye = 'Articulation Practice'; // the rotation and weeks left are in the line with the dots below
     var dots = ''; for (var i = 0; i < a.target; i++) dots += '<span class="esu-dot' + (i < a.sessions ? ' on' : '') + '"></span>';
-    return '<section class="esu-card" data-g="ever"><div class="esu-eye">' + esc(eye) + '</div><h2 class="esu-h2">Articulation Practice</h2>' +
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">' + esc(eye) + '</div><h2 class="esu-h2">Log a Session with your Articulation Buddy</h2>' +
       '<p class="esu-muted" style="font-size:13.5px">Choose a concept or an idea from what you’ve learned in Sādhana School and demonstrate your understanding by explaining the ideas and refining if your buddy doesn’t quite follow.</p>' +
       '<div class="esu-dots" aria-hidden="true">' + dots + '<span class="esu-muted" style="margin-left:6px;font-size:13.5px">' + Math.min(a.sessions, a.target) + ' of ' + a.target + ' this rotation · ' + a.hours + ' of ' + a.hoursTarget + ' hrs for the year</span></div>' +
       '<div class="esu-btm"><button type="button" class="esu-btn pri" data-act="open-articulation">Log an articulation session</button></div></section>';

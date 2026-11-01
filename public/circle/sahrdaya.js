@@ -50,15 +50,16 @@
     if (tries <= 0) return Promise.reject(new Error('not signed in'));
     return new Promise(function (res) { setTimeout(res, 400); }).then(function () { return waitForUser(tries - 1); });
   }
+  // The saved session belongs to one Circle member: when the signed-in member changes (e.g. an admin using Circle's "View as"), sign in again
   function signIn() {
-    var saved = store(SKEY);
-    if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now()) { state.session = s.session; state.first = s.first || ''; state.ok = !!s.ok; return Promise.resolve(); } } catch (e) {} }
     return waitForUser(25).then(function (u) {
-      return fetch(API + '/api/member/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identityToken: u.identityToken }) }).then(function (r) { return r.json(); });
-    }).then(function (r) {
-      if (!r.session) throw new Error('not signed in');
-      state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee')); state.admin = !!r.admin;
-      store(SKEY, JSON.stringify({ session: r.session, first: state.first, ok: state.ok, admin: state.admin, until: Date.now() + 11 * 3600 * 1000 }));
+      var who = String(u.email || '').toLowerCase(), saved = store(SKEY);
+      if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now() && s.who === who) { state.session = s.session; state.first = s.first || ''; state.ok = !!s.ok; state.admin = !!s.admin; return; } } catch (e) {} }
+      return fetch(API + '/api/member/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identityToken: u.identityToken }) }).then(function (r) { return r.json(); }).then(function (r) {
+        if (!r.session) throw new Error('not signed in');
+        state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee')); state.admin = !!r.admin;
+        store(SKEY, JSON.stringify({ who: who, session: r.session, first: state.first, ok: state.ok, admin: state.admin, until: Date.now() + 11 * 3600 * 1000 }));
+      });
     });
   }
   function call(path, body, again) {
@@ -1050,7 +1051,7 @@
     started = true; css();
     state.data = cached();
     // A mentee seen before this session: take the space at once so the hub doesn't flash up first
-    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now()) { state.admin = !!s.admin; setMentee(s.ok ? 'yes' : 'no'); } } catch (e) {} }
+    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now() && s.who === String((window.circleUser && window.circleUser.email) || '').toLowerCase()) { state.admin = !!s.admin; setMentee(s.ok ? 'yes' : 'no'); } } catch (e) {} }
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }

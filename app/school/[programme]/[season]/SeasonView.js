@@ -36,16 +36,16 @@ export default function SeasonView({ programme, slug, page, readings, initialTab
     if (key === 'week') u.searchParams.delete('tab'); else u.searchParams.set('tab', key);
     u.searchParams.delete('write');
     window.history.replaceState(null, '', u);
-    if (key === 'reflections' && page.reflections.count && !cleared[`refl-${seasonId}`]) markSeen(`refl-${seasonId}`);
+    if (key === 'reflections' && page.reflections.count && !cleared[page.reflections.seenKey]) markSeen(page.reflections.seenKey);
   };
-  useEffect(() => { if (initialTab === 'reflections' && page.reflections.count) markSeen(`refl-${seasonId}`); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (initialTab === 'reflections' && page.reflections.count) markSeen(page.reflections.seenKey); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const h = page.header;
   const firstWed = page.rows.find(r => r.kind === 'session');
   const rhythm = firstWed ? `${fmt(firstWed.at, tz, { weekday: 'long' })}s ${clock(firstWed.at, tz)} your time` : '';
   const sub = [h.short, h.subtitle, h.started ? (h.ended ? 'season complete' : `week ${h.week} of ${h.of}`) : `starts ${fmt(`${h.startsOn}T12:00:00Z`, 'UTC', { day: 'numeric', month: 'long' })}`, rhythm].filter(Boolean).join(' · ');
   const tabs = [...page.tabs, ...extraTabs.map(k => ({ key: k, label: 'Study pods', count: 0 }))];
-  const count = t => (t.key === 'reflections' && cleared[`refl-${seasonId}`] ? 0 : t.key === 'kula' ? page.kula.cards.reduce((n, c) => n + (cleared[c.spaceId] ? 0 : c.newCount), 0) : t.count);
+  const count = t => (t.key === 'reflections' && cleared[page.reflections.seenKey] ? 0 : t.key === 'kula' ? page.kula.cards.reduce((n, c) => n + (cleared[c.spaceId] ? 0 : c.newCount), 0) : t.count);
   const ctx = { page, tz, now, pick, markSeen, cleared };
 
   return (
@@ -172,7 +172,7 @@ function WeekTab({ page, tz, now, pick, markSeen, cleared }) {
           <section className="ss-card">
             <div className="ss-hd"><h2>New in Reflections</h2><button type="button" className="ss-link" onClick={() => pick('reflections')}>All</button></div>
             {page.reflections.latest.length === 0 ? <p className="sch-meta">Be the first to share a reflection.</p> : page.reflections.latest.map(p => (
-              <div key={p.id} className="ss-mini"><b>{p.who}</b>{p.mentee && <span className="ss-mchip small">Sahṛdaya Upāya mentee</span>}<h3>{p.title}</h3><span className="sch-meta">{p.replies ? `${p.replies} ${p.replies === 1 ? 'reply' : 'replies'}` : 'No replies yet'}</span></div>
+              <div key={p.id} className="ss-mini"><b>{p.who}</b><Role role={p.role} small /><h3>{p.title}</h3><span className="sch-meta">{p.replies ? `${p.replies} ${p.replies === 1 ? 'reply' : 'replies'}` : 'No replies yet'}</span></div>
             ))}
           </section>
           {page.kula.cards.length > 0 && (() => {
@@ -213,8 +213,7 @@ function SessionsTab({ page, tz, now }) {
                 <div className="ss-when"><b>{r.tbd ? dayShort(r.at, 'UTC') : dayShort(r.at, tz)}</b><span>{r.tbd ? 'Weekend' : [clock(r.at, tz), hrs(r.minutes)].filter(Boolean).join(' · ')}</span></div>
                 <div className="ss-what">
                   <b>{r.kind === 'weekend' ? r.title : `Session ${r.n || ''}`.trim()}{r.focus ? ` · ${r.focus}` : ''}</b>
-                  {r.tag && <span className="ss-tag">{r.tag}</span>}
-                  <span>{r.kind === 'weekend' ? 'Immersion weekend' : r.teacher ? `With ${r.teacher}` : ''}</span>
+                                  <span>{r.kind === 'weekend' ? 'Immersion weekend' : r.teacher ? `With ${r.teacher}` : ''}</span>
                 </div>
                 <div className="ss-act">{act}</div>
               </li>
@@ -253,9 +252,10 @@ function ResourcesTab({ page }) {
       {page.resources.map(c => (
         <section key={c.key} className={`ss-card${c.state === 'locked' ? ' dashed' : ''}`}>
           <span className="ss-eye">{c.eyebrow}</span>
-          <h2>{c.href && c.state !== 'locked' ? <a href={c.href} target="_top">{c.title}</a> : c.title}</h2>
+          <h2>{c.href && c.state !== 'locked' ? <a href={c.href} target={c.file ? '_blank' : '_top'} rel={c.file ? 'noopener' : undefined}>{c.title}</a> : c.title}</h2>
           <p>{c.line}</p>
           {c.state === 'locked' && <p className="sch-meta">Not open to you yet.</p>}
+          {c.file && <a className="sch-btn ghost" href={c.href} target="_blank" rel="noopener">Open the PDF</a>}
         </section>
       ))}
     </div>
@@ -264,11 +264,13 @@ function ResourcesTab({ page }) {
 
 // Reflections: anyone in the season can post one and reply in a thread. Reflections posted from the Sahṛdaya Upāya page carry the mentee badge.
 const FILTERS = [['all', 'All'], ['mentees', 'From the mentees'], ['mine', 'Mine']];
+// A badge for teachers and for mentees, wherever they write
+const Role = ({ role, small }) => (role === 'teacher' ? <span className={`ss-mchip teacher${small ? ' small' : ''}`}>Teacher</span> : role === 'mentee' ? <span className={`ss-mchip${small ? ' small' : ''}`}>{small ? 'Mentee' : 'Sahṛdaya Upāya mentee'}</span> : null);
 function ReflectionsTab({ page, tz, programme, slug, composer, setComposer, mine, setMine }) {
   const [filter, setFilter] = useState('all');
-  const fresh = mine.map(m => ({ id: m.id, title: m.title, who: 'You', authorId: page.reflections.memberId, at: new Date(m.at).toISOString(), week: 0, replies: 0, url: '', excerpt: m.body || '', mentee: false, mine: true, justPosted: true }));
+  const fresh = mine.map(m => ({ id: m.id, title: m.title, who: 'You', authorId: page.reflections.memberId, at: new Date(m.at).toISOString(), week: 0, replies: 0, url: '', excerpt: m.body || '', role: '', fromCohort: false, mine: true, justPosted: true }));
   const all = [...fresh, ...page.reflections.list];
-  const list = filter === 'mentees' ? all.filter(p => p.mentee) : filter === 'mine' ? all.filter(p => p.mine) : all;
+  const list = filter === 'mentees' ? all.filter(p => p.role === 'mentee') : filter === 'mine' ? all.filter(p => p.mine) : all;
   return (
     <div className="ss-cols">
       <div>
@@ -286,7 +288,7 @@ function ReflectionsTab({ page, tz, programme, slug, composer, setComposer, mine
       <aside className="ss-card ss-about">
         <span className="ss-eye">About reflections</span>
         <p>Anyone in the season can post a reflection on the week’s reading or practice, and reply to others in a thread.</p>
-        <p>Posts marked <span className="ss-mchip">Sahṛdaya Upāya mentee</span> come from students in teacher formation. They’ve already been through a round of feedback in their cohort, and they’d value yours.</p>
+        <p>Posts marked <span className="ss-mchip teacher">Teacher</span> come from the school’s teachers. Posts marked <span className="ss-mchip">Sahṛdaya Upāya mentee</span> come from students in teacher formation. They’ve already been through a round of feedback in their cohort, and they’d value yours.</p>
       </aside>
     </div>
   );
@@ -304,7 +306,7 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
   const [to, setTo] = useState(null); // the comment being answered, or null for the post
   const [text, setText] = useState('');
   const [busy, setBusy] = useState('');
-  const base = `programme=${encodeURIComponent(programme)}&season=${encodeURIComponent(slug)}&post=${encodeURIComponent(p.id)}`;
+  const base = `post=${encodeURIComponent(p.id)}`;
 
   async function load() {
     setErr('');
@@ -317,7 +319,7 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
   async function send(e) {
     e.preventDefault();
     setBusy('send'); setErr('');
-    const r = await fetch('/api/school/reflection/reply', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ programme, season: slug, post: p.id, parent: to?.id || '', text }) }).catch(() => null);
+    const r = await fetch('/api/school/reflection/reply', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ post: p.id, parent: to?.id || '', text }) }).catch(() => null);
     const j = await r?.json().catch(() => ({}));
     setBusy('');
     if (r?.ok) { setTh(j); setText(''); setTo(null); } else setErr(j?.error || 'We could not post your reply. Please try again.');
@@ -328,24 +330,24 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
     <div className={`ss-cm${nested ? ' nested' : ''}`}>
       <Avatar name={c.who} k={c.authorId || c.who} />
       <div>
-        <p className="ss-cmh"><b>{c.who}</b>{c.mentee && <span className="ss-mchip small">Mentee</span>}<span>{dayShort(c.at, tz)}</span></p>
+        <p className="ss-cmh"><b>{c.who}</b><Role role={c.role} small /><span>{dayShort(c.at, tz)}</span></p>
         <p className="ss-cmb">{c.to && <span className="ss-to">@{c.to} </span>}{c.text}</p>
         <button type="button" className="ss-link plain" onClick={() => { setTo(c); document.getElementById(`ss-r-${p.id}`)?.focus(); }}>Reply</button>
       </div>
     </div>
   );
   return (
-    <li className={`ss-rcard${p.mentee ? ' mentee' : ''}`}>
+    <li className={`ss-rcard${p.role === 'mentee' ? ' mentee' : ''}`}>
       <div className="ss-rhead">
         <Avatar name={p.who} k={p.authorId || p.who} />
         <div>
-          <p className="ss-rname"><b>{p.who}</b>{p.mentee && <span className="ss-mchip">Sahṛdaya Upāya mentee</span>}</p>
-          <p className="sch-meta">{[dayShort(p.at, tz), p.week ? `week ${p.week}` : '', p.mentee ? 'posted from the Sahṛdaya Upāya cohort' : ''].filter(Boolean).join(' · ')}</p>
+          <p className="ss-rname"><b>{p.who}</b><Role role={p.role} /></p>
+          <p className="sch-meta">{[dayShort(p.at, tz), p.week ? `week ${p.week}` : '', p.fromCohort ? 'posted from the Sahṛdaya Upāya cohort' : ''].filter(Boolean).join(' · ')}</p>
         </div>
       </div>
       <h3>{p.title}</h3>
       {p.excerpt && <p className="ss-ex">{p.excerpt}</p>}
-      {p.mentee && <p className="ss-shaped">Shaped with feedback from the Sahṛdaya Upāya cohort before it was posted here</p>}
+      {p.fromCohort && <p className="ss-shaped">Shaped with feedback from the Sahṛdaya Upāya cohort before it was posted here</p>}
       {!p.justPosted && <p className="ss-tg"><button type="button" className="ss-link plain" onClick={toggle} aria-expanded={open}>{label}</button>{p.url && <> · <a className="ss-quiet" href={p.url} target="_top">Open in Circle</a></>}</p>}
       {p.justPosted && <p className="sch-meta">Posted just now. It is in Circle too.</p>}
       {open && (

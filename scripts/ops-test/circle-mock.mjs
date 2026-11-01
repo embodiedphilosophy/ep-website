@@ -12,6 +12,7 @@ const posts = [
   { id: 11, name: 'Reading: Introduction', topics: [1], created_at: day(-10), position: 2 },
   { id: 12, name: 'What I noticed after Session 1', topics: [2], created_at: day(-5), comments_count: 3, user: { name: 'Maya R.' }, author: { community_member_id: 501, name: 'Maya R.' }, body: '<p>For years I taught Triangle as a shape to arrive at. Reading the first sūtra this month, I began to wonder what it would mean to teach it as something consciousness does, rather than something a body achieves, and what would change for the person on the mat.</p><p>Second paragraph.</p>' },
   { id: 14, name: 'Where the breath already goes', topics: [2], created_at: day(-3), comments_count: 0, author: { community_member_id: 502, name: 'Mentee D' }, body: '<p>When I teach breathing, I have always started by sending the breath somewhere.</p>' },
+  { id: 16, name: 'A note from the teacher on the first week', topics: [2], created_at: day(-2), comments_count: 0, author: { community_member_id: 1, name: 'Jacob Kyle', community_admin: true }, body: '<p>Welcome, everyone.</p>' },
   { id: 15, name: 'Svatantrā, and my to-do list', topics: [2], created_at: day(-4), comments_count: 1, author: { community_member_id: 503, name: 'Student Q' }, body: 'Freedom as the cause of everything is a strange thing to read on a Monday morning.' },
   { id: 13, name: 'Session 1 replay notes', topics: [3], created_at: day(-6), duration: 5400 },
 ];
@@ -79,6 +80,8 @@ http.createServer(async (req, res) => {
   const send = (o, s = 200) => { res.writeHead(s, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(o)); };
   const url = new URL(req.url, 'http://x');
   const who = tokens.get((req.headers.authorization || '').replace('Bearer ', ''));
+  // Admin API: the members of a space (who is a mentee). Space 2896670 (the Mentorship Circle) holds Mentee D (502).
+  if (url.pathname === '/api/admin/v2/space_members') return send({ records: url.searchParams.get('space_id') === '2896670' ? [{ community_member_id: 502 }] : [], has_next_page: false });
   if (url.pathname === '/api/v1/headless/auth_token') {
     const email = JSON.parse(body || '{}').email;
     if (!spacesFor[email]) return send({ error: 'No such member' }, 404);

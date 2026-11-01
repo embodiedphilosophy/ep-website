@@ -1,4 +1,7 @@
-import data from '@/data/mentee-year.json';
+import raw from '@/data/mentee-year.json';
+import { applyOverrides, CONTENT_TAB } from '@/lib/mentee/yearcontent';
+import { readTab, TABS } from '@/lib/mentee/content';
+import { scheduleFrom, monthFrom } from '@/lib/mentee/year';
 import { segments, nextSteps, currentMonth, daysUntil, PROJECTS } from '@/lib/ops/menteeyear';
 import { todayET } from '@/lib/events';
 import { front as manualFront, partParam, updated as manualUpdated } from '@/lib/school/manual';
@@ -41,7 +44,11 @@ export default async function MenteeYearPage({ searchParams }) {
       </Shell>
     );
   }
-  const today = todayET(), month = currentMonth(data.months, today), next = nextSteps(data.steps, today, 3);
+  // Staff edit the steps, each month's theme and focus, and the wording in Ops → Mentee year; those edits live in sheet tabs and are laid over data/mentee-year.json
+  const [textRows, schedRows, monthRows] = await Promise.all([readTab(CONTENT_TAB).catch(() => []), readTab(TABS.schedule).catch(() => []), readTab(TABS.months).catch(() => [])]);
+  const data = applyOverrides(raw, textRows), steps = scheduleFrom(schedRows).steps;
+  data.months = data.months.map(m => { const f = monthFrom(monthRows, m.id); return f ? { ...m, theme: f.theme, focus: f.focus } : m; });
+  const today = todayET(), month = currentMonth(data.months, today), next = nextSteps(steps, today, 3);
   return (
     <Shell>
       <div className="sch-my" id="top">
@@ -65,12 +72,12 @@ export default async function MenteeYearPage({ searchParams }) {
               <header><div><h3>{m.title}</h3><p className="theme">{m.theme}</p></div>{m.tag && <span className="tag">{m.tag}</span>}</header>
               <p className="focus">{m.focus}</p>
               <ul>{m.items.map((t, i) => <li key={i}><Rich text={t} /></li>)}</ul>
-              {m.steps.length > 0 && <><h4>Project steps due this month</h4><ul className="steps">{m.steps.map((s, i) => <li key={i}><span className="d">{dayFmt(s.date)}</span> <Proj p={s.project} /> {s.text}</li>)}</ul></>}
+              {steps.some(s => s.date.slice(0, 7) === m.id) && <><h4>Project steps due this month</h4><ul className="steps">{steps.filter(s => s.date.slice(0, 7) === m.id).map(s => <li key={s.id}><span className="d">{dayFmt(s.date)}</span> <Proj p={s.project} /> {s.title}</li>)}</ul></>}
             </article>))}</div></section>
 
         <section id="projects"><h2>Final projects, built from November</h2><p className="sch-my-sub">Two separate pieces, prepared side by side. The talk tests you as a teacher; the offering is what certifies you to teach Sahṛdaya Meditation. Each step is small and dated so nothing waits for July.</p>
           <p className="sch-my-note">{data.spacing}</p>
-          <ul className="sch-my-steplist">{data.steps.map((s, i) => <li key={i} className={s.date < today ? 'past' : ''}><span className="d">{dayFmt(s.date)} {s.date.slice(0, 4)}</span><span><Proj p={s.project} /><b>{s.title}</b><span className="det">{s.detail}</span><span className="ev">Evidence: {s.evidence}</span></span></li>)}</ul></section>
+          <ul className="sch-my-steplist">{steps.map((s, i) => <li key={i} className={s.date < today ? 'past' : ''}><span className="d">{dayFmt(s.date)} {s.date.slice(0, 4)}</span><span><Proj p={s.project} /><b>{s.title}</b><span className="det">{s.detail}</span><span className="ev">Evidence: {s.evidence}</span></span></li>)}</ul></section>
 
         <section id="one-to-ones"><h2>One-to-ones</h2>
           <div className="sch-my-weeks two"><div className="sch-my-card"><h3>How to book</h3><ol>{data.oneToOne.howTo.map((t, i) => <li key={i}><Rich text={t} /></li>)}</ol></div>

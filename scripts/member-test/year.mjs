@@ -109,3 +109,11 @@ assert.ok(dl.some(l => /^Steps overdue: 1 \(Maya Rao · Gather first ideas for b
 assert.ok(dl.some(l => /^Due this week, not yet ticked: 'Longlist three possible talk topics': 0 of 2/.test(l)) === false, '31 Dec is more than a week away');
 dl = Y.digestLines({ schedule: [], mentees: m2, statusRows: [], bookings: [], today: '2026-12-16' }); assert.ok(dl.some(l => /^Not booked for December yet: 2/.test(l)));
 console.log('year: ok');
+// edits staff make in Ops (Mentee Year Content tab) are laid over the data file; blank, unknown and non-editable paths are ignored
+{
+  const { applyOverrides, isEditablePath } = await import('../../lib/mentee/yearcontent.js');
+  const o = applyOverrides(data, [{ path: 'lede', value: ' New. ' }, { path: 'oneToOne.howTo.0', value: '' }, { path: 'months.99.focus', value: 'x' }, { path: 'steps.0.title', value: 'x' }]);
+  assert.equal(o.lede, 'New.'); assert.equal(o.oneToOne.howTo[0], data.oneToOne.howTo[0]); assert.notEqual(data.lede, o.lede); assert.equal(o.steps[0].title, data.steps[0].title);
+  assert.ok(isEditablePath('months.1.items.0') && !isEditablePath('months.1.steps.0.text'));
+}
+console.log('year content: ok');

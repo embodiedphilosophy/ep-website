@@ -121,7 +121,7 @@ delete siteTabs['Site Teachers']; delete siteTabs['Site Testimonials'];
 const csvRows = t => { const rows = []; let row = [], c = '', q = false; for (let i = 0; i < t.length; i++) { const ch = t[i]; if (q) { if (ch === '"' && t[i + 1] === '"') { c += '"'; i++; } else if (ch === '"') q = false; else c += ch; } else if (ch === '"') q = true; else if (ch === ',') { row.push(c); c = ''; } else if (ch === '\n') { row.push(c); rows.push(row); row = []; c = ''; } else c += ch; } return rows; };
 siteTabs['catalog'] = csvRows(fs.readFileSync(new URL('../../data/catalog-seed.csv', import.meta.url), 'utf8'));
 const sheetIds = {}; let nextSheet = 5000;
-// Mentee Step Status: a few ticks by the synthetic mentees (the Mentee Schedule tab is left out on purpose: the page then uses the seed in data/mentee-year.json)
+// Mentee Step Status: a few ticks by the synthetic mentees (the Mentee Schedule tab is left out on purpose: the page then uses the seed in data/mentee-year.json). The step id is frozen (it was derived from the old title "Start your project notebook"; the title is now "Gather first ideas for both projects").
 const stepStatus = [['email', 'circle_member_id', 'step_id', 'status', 'done_at', 'note', 'updated_by', 'updated_at'],
   ...['maya', 'sam', 'lee'].map(n => [n + '@mentee.test', '', 's-2026-11-start-your-project-notebook', 'done', '2026-11-27T19:00:00Z', '', 'mentee', '2026-11-27T19:00:00Z']),
   ['priya@mentee.test', '', 'r-q1-1', 'done', '2026-11-20T10:00:00Z', '', 'mentee', '2026-11-20T10:00:00Z'],

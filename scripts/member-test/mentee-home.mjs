@@ -136,6 +136,13 @@ const form = { total: 0.5, target: 100, components: [{ id: 'peer', target: 8 }],
   { component: 'observation', hours: 1.5, day: '2026-10-28', status: 'pending' }] };
 const art = H.articulationFor(form, cfg, '2026-11-01');
 assert.deepEqual([art.sessions, art.target, art.hours, art.hoursTarget], [1, 2, 2.5, 8], 'one session in this rotation; 2.5 hrs logged for the year');
+const peerForm = { entries: [{ component: 'peer', day: '2027-02-03', hours: 1 }, { component: 'peer', day: '2027-02-06', hours: 1 }, { component: 'peer', day: '2027-01-30', hours: 1 }], components: [] };
+assert.deepEqual(H.articulationFor(peerForm, cfg, '2027-02-08').month, { sessions: 2, last: '2027-02-06' }, 'this calendar month: two sessions, and the day of the latest for the "Done" row');
+assert.deepEqual(art.month, { sessions: 0, last: '' }, 'none logged in November');
+// the month of the formation: from the mentee's own start, else the cohort's first immersion; n = months since + 1
+const imms = [{ sat: '2026-11-14' }, { sat: '2026-12-05' }];
+assert.deepEqual([['', '2026-11-01'], ['', '2026-12-20'], ['', '2027-07-30'], ['', '2026-10-10'], ['2027-01', '2027-01-15'], ['2027-01', '2027-03-02'], ['bad', '2026-11-30']].map(([st, d]) => H.formationMonth(st, imms, d).n), [1, 2, 9, 0, 1, 3, 1]);
+assert.equal(H.formationMonth('', [], '2026-11-01').n, 0, 'no start and no immersions: not counted');
 assert.deepEqual(H.hoursSplit(form), { confirmed: 0.5, pending: 2.5, target: 100 });
 assert.deepEqual(H.hoursSplit(null), { confirmed: 0, pending: 0, target: 100 });
 const hq = H.buildHome({ formation: form, due: { items: [] }, sessions: [], oneToOne: null }, { config: cfg, today: '2026-11-01', tz: 'UTC', partner: null, questions: [{ id: '1', title: 'Q1' }, { id: '2', title: 'Q2' }, { id: '3', title: 'Q3' }] }).home;
@@ -145,8 +152,8 @@ assert.equal(H.questionsFor([], config, 123).on, true, 'a space found by its add
 console.log('evergreen row: ok');
 
 // Rotations (two-month blocks), where people live, the pair chat, and the cohort for "add a third"
-const prof = C.profilesFrom([{ email: 'Sam@x.com', name: 'Sam', city: 'Milan', tz: 'Europe/Rome' }, { email: 'bad@x.com', city: 'Nowhere', tz: 'Not/AZone' }, { email: '', city: 'x', tz: 'Europe/Rome' }]);
-assert.deepEqual(prof, { 'sam@x.com': { name: 'Sam', city: 'Milan', tz: 'Europe/Rome' }, 'bad@x.com': { name: '', city: 'Nowhere', tz: '' } }, 'a made-up zone is dropped, a blank email skipped');
+const prof = C.profilesFrom([{ email: 'Sam@x.com', name: 'Sam', city: 'Milan', tz: 'Europe/Rome', start: '2027-01' }, { email: 'bad@x.com', city: 'Nowhere', tz: 'Not/AZone' }, { email: '', city: 'x', tz: 'Europe/Rome' }]);
+assert.deepEqual(prof, { 'sam@x.com': { name: 'Sam', city: 'Milan', tz: 'Europe/Rome', start: '2027-01' }, 'bad@x.com': { name: '', city: 'Nowhere', tz: '', start: '' } }, 'a made-up zone is dropped, a blank email skipped');
 const rrows = [
   { season: 'fall-2026', month: '', rotation: '1', email_a: 'maya@x.com', email_b: 'sam@x.com', name_b: 'Sam', chat_url: 'https://ss.x/chat/1' },
   { season: 'fall-2026', month: 'December', rotation: '2', email_a: 'maya@x.com', email_b: 'lee@x.com' },

@@ -970,13 +970,17 @@
   function startRefl() { var m = /[?&]post=(\d+)/.exec(location.search); return loadRefl(m ? m[1] : '').then(function () { if (m && state.rf.detail && state.rf.detail.mine && state.rf.detail.status === 'shared') { state.rf.post = true; render(); } }); }
   start();
   // Circle is a single-page app: draw when someone navigates here, give Circle's own page back when they leave
-  var timer = null;
-  new MutationObserver(function () {
+  // Our own redraws are ignored, and the page is only redrawn when the address changes (mentorship <-> reflections):
+  // redrawing on every change re-triggered itself every 250 ms and threw the cursor out of text boxes.
+  var timer = null, lastPath = location.pathname;
+  new MutationObserver(function (muts) {
+    if (root && muts.every(function (m) { return root.contains(m.target); })) return;
     if (timer) return;
     timer = setTimeout(function () {
       timer = null;
       if (!PAGE.test(location.pathname)) { unmount(); return; }
-      if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root && isMentor() && state.mt.data === null && !state.mt.err) loadMentor().then(render); else if (root) render(); }
+      var moved = location.pathname !== lastPath; lastPath = location.pathname;
+      if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root && isMentor() && state.mt.data === null && !state.mt.err) loadMentor().then(render); else if (root && moved) render(); }
     }, 250);
   }).observe(document.body, { childList: true, subtree: true });
   window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) unmount(); });

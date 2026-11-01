@@ -7,9 +7,11 @@
   if (window.__epSahrdaya) return; window.__epSahrdaya = true;
 
   var API = 'https://www.embodiedphilosophy.com';
-  var PAGE = /^\/c\/mentorship\/?$/;
+  var PAGE = /^\/c\/(mentorship|reflections)\/?$/;
+  var isRefl = function () { return /^\/c\/reflections\/?$/.test(location.pathname); };
+  var isMentor = function () { return /^\/c\/mentorship\/?$/.test(location.pathname) && /[?&]view=mentor/.test(location.search) && state.admin === true; };
   var SKEY = 'ep_su_session';
-  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '' };
+  var state = { admin: null, mt: { data: null, err: '', filter: 'all', open: '', busy: '', msg: '' }, session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '', rf: { list: null, meta: null, detail: null, id: '', filter: 'cohort', mode: 'read', form: { title: '', body: '' }, vn: 0, ckind: 'landed', ctext: '', replyTo: '', reply: '', ticked: {}, post: false, busy: '', err: '' } };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -55,8 +57,8 @@
       return fetch(API + '/api/member/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identityToken: u.identityToken }) }).then(function (r) { return r.json(); });
     }).then(function (r) {
       if (!r.session) throw new Error('not signed in');
-      state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee'));
-      store(SKEY, JSON.stringify({ session: r.session, first: state.first, ok: state.ok, until: Date.now() + 11 * 3600 * 1000 }));
+      state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee')); state.admin = !!r.admin;
+      store(SKEY, JSON.stringify({ session: r.session, first: state.first, ok: state.ok, admin: state.admin, until: Date.now() + 11 * 3600 * 1000 }));
     });
   }
   function call(path, body, again) {
@@ -102,7 +104,21 @@
       '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}.esu-tot span{font-size:13px;color:#5A5346}',
       '.esu-ever{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
       '.esu-ever .esu-poll{grid-column:1/-1}',
-      '.esu-win{background:#F1E9DC;border-radius:8px;padding:10px 14px;margin-bottom:6px}.esu-win b{display:block;font-size:15px}.esu-cues{display:grid;gap:10px;max-height:340px;overflow-y:auto}.esu-cue{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:10px 12px;background:#F6EFE2;border-radius:8px;font-size:14.5px}.esu-cue .esu-eye{margin:0 0 2px}.esu-cuew{grid-column:1/-1;color:#5A5346}.esu-who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}.esu-who label{display:inline-flex;gap:6px;align-items:center;border:1px solid #E3D8C6;border-radius:99px;padding:6px 12px;background:#fff;font-size:14px}.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
+      '.esu-steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;margin:0 0 18px;overflow:hidden}.esu-st4{padding:12px 14px;font-size:13.5px;color:#5A5346;border-left:1px solid #E3D8C6}.esu-st4:first-child{border-left:0}.esu-st4 b{display:block;font:500 11px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.12em;color:#A5432A;margin-bottom:2px}.esu-st4.on{background:#F6EEDA;color:#1E1A14}',
+      '.esu-rcols{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}.esu-rfl{display:grid;gap:10px}.esu-chips{display:flex;gap:8px;flex-wrap:wrap}',
+      '.esu-mq{display:grid;gap:0;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;overflow:hidden}.esu-mqi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 16px;border-top:1px solid #E3D8C6}.esu-mqi:first-child{border-top:0}.esu-mqi b{font-weight:600}.esu-age{font:500 12px "IBM Plex Mono",monospace;color:#5A5346;white-space:nowrap}.esu-age.old{color:#A5432A;font-weight:500}.esu-mqd{grid-column:1/-1;white-space:pre-wrap;color:#3a342b;font-size:14px}.esu-mt{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:8px 0 22px}.esu-tile{border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;padding:14px 16px}.esu-tile.behind{border-color:#A5432A}.esu-dots{display:flex;gap:6px;margin:8px 0 4px}.esu-dots i{width:12px;height:12px;border-radius:50%;border:1.5px solid #5B6343}.esu-dots i.f{background:#5B6343}',
+      '.esu-chip{min-height:40px;padding:0 16px;border-radius:99px;border:1px solid #E3D8C6;background:#FBF6EE;color:#1E1A14;font:500 14px "IBM Plex Sans",system-ui,sans-serif;cursor:pointer}.esu-chip.on{background:#1E1A14;border-color:#1E1A14;color:#FBF6EE}',
+      '.esu-ri{display:grid;gap:4px;text-align:left;padding:14px 16px;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;cursor:pointer;font:inherit;color:#1E1A14}.esu-ri.on{border-color:#A5432A}.esu-ri b{font:600 19px/1.2 "Cormorant Garamond",Georgia,serif}.esu-rim{display:flex;justify-content:space-between;gap:8px}.esu-rist{font-size:12.5px;color:#7A5A2E;font-weight:600;display:inline-flex;gap:6px;align-items:center}.esu-dotn{width:8px;height:8px;border-radius:50%;background:#A5432A;display:inline-block}',
+      '.esu-rpane{background:#FBF6EE;border:1px solid #E3D8C6;border-radius:8px;padding:22px 26px;min-width:0}.esu-rt1{margin:2px 0 0;font:600 34px/1.1 "Cormorant Garamond",Georgia,serif}.esu-rbody{margin:16px 0}.esu-rbody p{font:400 19.5px/1.55 "Cormorant Garamond",Georgia,serif;margin:0 0 12px;padding:2px 0;max-width:660px}.esu-rbody p.ch{background:#F6EEDA;margin-left:-8px;margin-right:-8px;padding:4px 8px;border-radius:4px}',
+      '.esu-obar{background:#F1E9DC;border-radius:8px;padding:14px 16px;margin:6px 0 18px}.esu-fb{border-top:1px solid #E3D8C6;padding-top:16px}.esu-cmt{display:flex;gap:12px;margin:14px 0}.esu-cmt.nested{margin:10px 0 0 6px}.esu-av{display:inline-flex;flex:none;width:34px;height:34px;border-radius:50%;align-items:center;justify-content:center;color:#fff;font:600 12px "IBM Plex Sans",system-ui,sans-serif}.esu-cmh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:14px}.esu-cmb{font-size:15px;white-space:pre-wrap;word-break:break-word;margin:2px 0}.esu-cma{display:flex;gap:14px;align-items:center}',
+      '.esu-kind{font:500 10px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;border-radius:3px;padding:1px 6px}.esu-offer{margin-top:18px;padding-top:14px;border-top:1px dashed #E3D8C6}',
+      '.esu-ed2{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start}.esu-aside{display:grid;gap:8px}.esu-fbc{display:flex;gap:10px;background:#EADDC6;border-radius:8px;padding:10px 12px;font-size:13.5px;cursor:pointer}.esu-fbc input{width:20px;height:20px;flex:none;margin-top:2px}',
+      '.esu-prev{border:1px solid #E3D8C6;border-radius:8px;padding:14px 16px;background:#fff}.esu-rhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.esu-mchip{background:#20302A;color:#F6EFE2;border-radius:4px;padding:2px 8px;font:500 10px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em}',
+      '.esu-bar2{display:flex;overflow:hidden}.esu-bar2 i{display:block;height:100%}.esu-bar2 i.c,.esu-leg i.c{background:#A5432A}.esu-bar2 i.p,.esu-leg i.p{background:#D2A65A}.esu-leg{display:inline-flex;gap:14px;font-size:12.5px;color:#5A5346}.esu-leg span{display:inline-flex;gap:6px;align-items:center}.esu-leg i{width:10px;height:10px;border-radius:2px;display:inline-block}.esu-how{font-size:12.5px;color:#5A5346;margin-top:3px}',
+      '.esu-mc{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px}.esu-mcd{width:22px;height:22px;border-radius:50%;border:1px solid #C9B79A;display:inline-flex;align-items:center;justify-content:center;font:500 10px "IBM Plex Mono",ui-monospace,monospace;color:#5A5346}.esu-mcd.on{background:#A5432A;border-color:#A5432A;color:#fff}.esu-mcd.now{box-shadow:0 0 0 2px #FBF6EE,0 0 0 3px #A5432A}',
+      '.esu-rnote{background:#F4E4DC;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:13.5px}.esu-co{padding:6px 0;border-top:1px solid #E3D8C6}.esu-co:first-of-type{border-top:0}',
+      '.esu-ccs{display:flex;gap:8px;flex-wrap:wrap}.esu-cc{min-height:40px;padding:0 14px;border-radius:99px;border:1px solid #E3D8C6;background:#fff;color:#1E1A14;font:500 13.5px "IBM Plex Sans",system-ui,sans-serif;cursor:pointer}.esu-cc.on{background:#20302A;border-color:#20302A;color:#fff}',
+      '.esu-sum{margin-top:14px;padding-top:10px;border-top:1px solid #E3D8C6}.esu-win{background:#F1E9DC;border-radius:8px;padding:10px 14px;margin-bottom:6px}.esu-win b{display:block;font-size:15px}.esu-cues{display:grid;gap:10px;max-height:340px;overflow-y:auto}.esu-cue{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:10px 12px;background:#F6EFE2;border-radius:8px;font-size:14.5px}.esu-cue .esu-eye{margin:0 0 2px}.esu-cuew{grid-column:1/-1;color:#5A5346}.esu-who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}.esu-who label{display:inline-flex;gap:6px;align-items:center;border:1px solid #E3D8C6;border-radius:99px;padding:6px 12px;background:#fff;font-size:14px}.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
       '.esu-q{padding:8px 0;border-top:1px solid #E3D8C6;font-size:14px;line-height:1.35}.esu-q a{color:#1E1A14;text-decoration:none;font-weight:500}.esu-q small{display:block;font-size:12px;color:#5A5346;margin-top:2px}.esu-q small b{color:#2E5A4B;font-weight:600}',
       '.esu-bar{height:6px;background:#E3D8C6;border-radius:99px;overflow:hidden;margin-top:6px}.esu-bar i{display:block;height:100%;background:#A5432A;min-width:0}',
       '.esu-bar.sm{height:4px;margin-top:5px}',
@@ -143,7 +159,7 @@
       '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
       '.esu-dlg{background:#FBF6EE;border-radius:8px;padding:22px 24px;width:100%;max-width:560px;margin:auto}',
       '@media (max-width:760px){',
-      '.esu-cue{grid-template-columns:minmax(0,1fr)}',
+      '.esu-cue{grid-template-columns:minmax(0,1fr)}.esu-steps4{grid-template-columns:repeat(2,minmax(0,1fr))}.esu-rcols,.esu-ed2{grid-template-columns:minmax(0,1fr)}.esu-rpane{padding:16px}.esu-rt1{font-size:28px}',
       '.esu{padding:24px 16px 56px}.esu-h1{font-size:36px}.esu-tabs{display:flex;gap:6px;margin:0 0 14px;background:#E3D8C6;border-radius:99px;padding:4px}',
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
@@ -237,10 +253,11 @@
       (state.msg && state.msgFor === 'ask' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') + '</section>';
   }
   function reflectionCard(w) {
-    var r = w.home.reflection, month = dayFmt(r.month + '-01', { month: 'long' });
-    return '<section class="esu-card" data-g="ever"><div class="esu-eye">Your ' + esc(month) + ' reflection</div><h2 class="esu-h2">Write your ' + esc(month) + ' reflection</h2>' +
-      '<p class="esu-muted" style="font-size:13.5px">Write it, share it with the cohort, and revise it from what they say.</p>' +
-      (safeUrl(r.url) ? '<div class="esu-btm esu-acts">' + link(r.url, 'Open Reflections', 'esu-btn pri') + '</div>' : '<p class="esu-muted esu-btm" style="font-size:13px">Reflections opens here soon.</p>') + '</section>';
+    var r = w.home.reflection, month = dayFmt(r.month + '-01', { month: 'long' }), m = r.mine;
+    var body = m ? '<h2 class="esu-h2">' + esc(m.title) + '</h2><p class="esu-muted" style="font-size:13.5px">' + esc(r.line) + '</p>' : '<h2 class="esu-h2">Write your ' + esc(month) + ' reflection</h2><p class="esu-muted" style="font-size:13.5px">Write it, share it with the cohort, and revise it from what they say.</p>';
+    var fresh = r.unread ? '<p class="esu-muted" style="font-size:13.5px">New in the cohort: ' + r.unread + (r.unread === 1 ? ' reflection' : ' reflections') + ' you haven’t read</p>' : '';
+    var btns = safeUrl(r.url) ? '<div class="esu-btm esu-acts">' + link(r.url, 'Open Reflections', 'esu-btn pri') + (m && m.status === 'shared' ? link(r.url + (r.url.indexOf('?') < 0 ? '?' : '&') + 'post=' + encodeURIComponent(m.id), 'Post to SS', 'esu-btn out') : '') + '</div>' : '<p class="esu-muted esu-btm" style="font-size:13px">Reflections opens here soon.</p>';
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">Your ' + esc(month) + ' reflection</div>' + body + fresh + btns + '</section>';
   }
   function evergreen(w) { return '<div class="esu-ever">' + articulationCard(w) + questionsCard(w) + reflectionCard(w) + pollCards(w) + '</div>'; }
 
@@ -303,20 +320,43 @@
     return '<section class="esu-card" data-g="room">' + hd('The mentorship room') + bar + pinned + body + '</section>';
   }
 
+  var COMPS = [['genealogy', 'Genealogy & diagnosis'], ['attunement', 'Subtle attunement'], ['speech', 'Ethical speech'], ['transmission', 'Experience-based transmission'], ['curriculum', 'Curriculum design'], ['lineage', 'Lineage & creativity']];
+  var HOW = { immersions: 'Added for you from the Zoom attendance report', 'one-to-ones': 'Added for you when a booking is held', observation: 'You log it, with competencies · Jacob confirms', 'practice-teaching': 'You log it · a partner co-signs · Jacob confirms', peer: 'One of the pair logs a session · both are credited', reflections: 'Counted for you from Reflections · 9 posts', retreat: 'Summer retreat · added for you', assessment: 'Hand-in, assessed against the rubric · revisable once', report: 'Hand-in', competency: 'Open-book quiz' };
+  function compNames(ids) { return (ids || []).map(function (id) { var c = COMPS.filter(function (x) { return x[0] === id; })[0]; return c ? c[1] : ''; }).filter(Boolean).join(', '); }
+  function n2(v) { return Math.round(v * 100) / 100; }
+
+  // Entries waiting for the mentee's own answer: a partner asks them to confirm a class they watched
+  function cosignCard(w) {
+    var list = w.home.cosign || [];
+    if (!list.length) return '';
+    return '<section class="esu-card" data-g="cosign" style="border-color:#D2A65A"><div class="esu-eye">To confirm</div>' + list.map(function (c) {
+      return '<div class="esu-co"><p style="margin:6px 0"><b>' + esc(c.who) + '</b> says you watched their class on ' + esc(dayFmt(c.day, { day: 'numeric', month: 'long' })) + ' for ' + c.hours + (c.hours === 1 ? ' hr' : ' hrs') + '. Confirm?</p><div class="esu-acts"><button type="button" class="esu-btn pri" data-act="cosign" data-id="' + esc(c.id) + '" data-ok="1"' + (state.busy === 'hours' ? ' disabled' : '') + '>Confirm</button><button type="button" class="esu-btn out" data-act="cosign" data-id="' + esc(c.id) + '" data-ok="0"' + (state.busy === 'hours' ? ' disabled' : '') + '>That’s not right</button></div></div>';
+    }).join('') + '</section>';
+  }
+
   function hoursCard(w) {
     var f = w.formation;
     if (!f) return '<section class="esu-card" data-g="hours">' + hd('Formation hours') + '<p class="esu-muted">Your hours record isn’t available just now.</p></section>';
+    var rm = w.home.reflectionMonths, rurl = w.home.reflection && w.home.reflection.url;
     var comps = '<div class="esu-grid2">' + f.components.map(function (c) {
-      return '<div><div class="esu-comp"><span>' + esc(c.name) + '</span><span class="esu-mono">' + c.credited + ' / ' + c.target + '</span></div><div class="esu-bar sm"><i style="width:' + Math.min(100, Math.round(c.credited / c.target * 100)) + '%"></i></div></div>';
+      var conf = Math.min(100, Math.round(c.credited / c.target * 100)), pend = Math.min(100 - conf, Math.round((c.pending || 0) / c.target * 100));
+      var circles = c.id === 'reflections' && rm && rm.months.length ? '<div class="esu-mc" aria-label="Months with a reflection counted">' + rm.months.map(function (m) { return '<span class="esu-mcd' + (m.filled ? ' on' : '') + (m.now ? ' now' : '') + '" title="' + esc(m.ym) + '">' + esc(m.label) + '</span>'; }).join('') + (safeUrl(rurl) ? ' <a href="' + esc(rurl) + '" target="_top" style="font-size:12.5px">Reflections</a>' : '') + '</div>' : '';
+      return '<div><div class="esu-comp"><span>' + esc(c.name) + '</span><span class="esu-mono">' + (c.pending ? c.credited + ' + ' + n2(c.pending) : c.credited) + ' / ' + c.target + '</span></div><div class="esu-bar sm esu-bar2" role="img" aria-label="' + esc(c.name) + ': ' + c.credited + ' confirmed, ' + n2(c.pending || 0) + ' pending, of ' + c.target + '"><i class="c" style="width:' + conf + '%"></i><i class="p" style="width:' + pend + '%"></i></div><div class="esu-how">' + esc(HOW[c.id] || '') + '</div>' + circles + '</div>';
     }).join('') + '</div>';
     var recent = w.home.recent, names = {}; f.components.forEach(function (c) { names[c.id] = c.name; });
     var rec = recent.length ? '<div class="esu-eye" style="color:#5A5346;margin:16px 0 4px">Recent entries</div><ul class="esu-rows">' + recent.map(function (e) {
-      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.note ? ' · ' + esc(e.note) : '') + '</div></div><span class="' + (e.state === 'pending' ? '' : 'esu-ok') + '" style="font-size:13px;' + (e.state === 'pending' ? 'color:#A5432A;font-weight:600' : '') + '">' + (e.state === 'pending' ? 'Pending Jacob · <button type="button" class="esu-lnk" data-act="remove-hours" data-id="' + esc(e.id) + '">Remove</button>' : 'Credited' + (/^articulation:/.test(e.detail || '') ? ' · <button type="button" class="esu-lnk" data-act="take-back" data-id="' + esc(String(e.detail).split(':')[1]) + '">Take back</button>' : '')) + '</span></li>';
+      var st = e.state, tail = st === 'credited' ? '<span class="esu-ok" style="font-size:13px">' + (e.auto ? 'Counted' : 'Credited') + '</span>'
+        : st === 'returned' ? '<span style="font-size:13px;color:#A5432A;font-weight:600">Returned</span>'
+        : '<span style="font-size:13px;color:#7A5A2E;font-weight:600">' + (st === 'awaiting' ? 'Waiting for co-sign' : 'Pending Jacob') + ' · <button type="button" class="esu-lnk" data-act="remove-hours" data-id="' + esc(e.id) + '">Take back</button></span>';
+      var cn = compNames(e.competencies);
+      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.detail ? ' · ' + esc(e.detail) : e.note ? ' · ' + esc(e.note) : '') + (cn ? ' · ' + esc(cn) : '') + '</div>' +
+        (st === 'returned' ? '<div class="esu-rnote">' + (e.returnNote ? esc(e.returnNote) : 'Please check this entry and send it again.') + '</div><button type="button" class="esu-tk" style="margin-top:6px" data-act="resend-hours" data-id="' + esc(e.id) + '">Edit and resend</button>' : '') + '</div>' + tail + '</li>';
     }).join('') + '</ul>' : '<p class="esu-muted" style="margin-top:14px">Your record starts with your first observation or Practicum.</p>';
-    return '<section class="esu-card" data-g="hours">' + hd('Formation hours', '<span class="esu-mono">' + f.total + ' of ' + f.target + '</span>') + '<div class="esu-bar" style="margin:0 0 14px" role="progressbar" aria-valuemin="0" aria-valuemax="' + f.target + '" aria-valuenow="' + f.total + '" aria-label="Formation hours"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div>' +
-      comps + rec +
-      '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" data-act="open-hours">Log hours</button></div>' +
-      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Log observation, practice-teaching and retreat practicum here. Peer articulation has its own card.</p></section>';
+    var hs = w.home.hours;
+    return '<section class="esu-card" data-g="hours">' + hd('Formation hours', '<span class="esu-leg"><span><i class="c"></i>Confirmed</span><span><i class="p"></i>Pending Jacob</span></span>') +
+      '<p class="esu-muted" style="margin:-6px 0 10px;font-size:13px">' + hs.confirmed + ' confirmed · ' + hs.pending + ' pending · of ' + f.target + ' hrs</p>' + comps + rec +
+      '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="open-hours">Log hours</button><button type="button" class="esu-btn out" data-act="open-articulation">Log an articulation session</button></div>' +
+      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Log observation, practice-teaching and retreat practicum here.</p></section>';
   }
 
   function feedbackCard(w) {
@@ -335,27 +375,35 @@
       if (it.type === 'handin') {
         var inn = sub && sub.status !== 'draft';
         status = !sub ? (due ? 'Due ' + due : (it.where || '')) : sub.status === 'draft' ? 'Draft saved' : sub.status === 'returned' ? 'Returned by Jacob · ' + dayFmt(sub.at.slice(0, 10), { day: 'numeric', month: 'short' }) : 'Handed in · ' + dayFmt(sub.at.slice(0, 10), { day: 'numeric', month: 'short' }) + ' · with Jacob';
-        action = '<button type="button" class="esu-tk' + (inn && sub.status === 'submitted' ? ' on' : '') + '" data-act="open-handin" data-id="' + esc(it.id) + '">' + (!sub ? 'Hand in' : sub.status === 'draft' ? 'Continue' : sub.status === 'returned' ? 'Hand in again' : 'View') + '</button>';
+        action = '<button type="button" class="esu-tk' + (inn && sub.status === 'submitted' ? ' on' : '') + '" data-act="open-handin" data-id="' + esc(it.id) + '">' + (!sub ? 'Hand in' : sub.status === 'draft' ? 'Continue' : sub.status === 'returned' ? 'Edit and resend' : 'View') + '</button>';
       } else {
         status = it.done ? 'Read' : (due ? 'Due ' + due : (it.where || ''));
         action = '<button type="button" class="esu-tk' + (it.done ? ' on' : '') + '" role="checkbox" aria-checked="' + it.done + '" data-act="tick" data-id="' + esc(it.id) + '" data-done="' + (it.done ? '0' : '1') + '"' + (state.busy === 'tick' + it.id ? ' disabled' : '') + '>' + (it.done ? 'Read ✓' : 'Mark read') + '</button>';
       }
-      return '<li class="' + (it.done ? 'done' : '') + '"><div class="l"><div class="t">' + t + '</div>' + (status ? '<div class="u">' + esc(status) + '</div>' : '') + '</div>' + action + '</li>';
+      return '<li class="' + (it.done ? 'done' : '') + '"><div class="l"><div class="t">' + t + '</div>' + (status ? '<div class="u"' + (sub && sub.status === 'returned' ? ' style="color:#A5432A"' : '') + '>' + esc(status) + '</div>' : '') + (sub && sub.status === 'returned' && sub.note ? '<div class="esu-rnote"><b>Jacob:</b> ' + esc(sub.note) + '</div>' : '') + '</div>' + action + '</li>';
     }).join('') + '</ul>' : '<p class="esu-muted">Nothing due this week. Start with <em>Start Here</em> in the Workbook' + (h.startLessons && h.startLessons.length ? ':</p><ul class="esu-rows" style="margin-top:6px">' + h.startLessons.map(function (l) { return '<li class="' + (l.done ? 'done' : '') + '"><div class="l"><div class="t">' + (safeUrl(l.url) ? ext(l.url, esc(l.name), '') : esc(l.name)) + '</div></div>' + (l.done ? '<span class="esu-ok" style="font-size:13px">Done ✓</span>' : '') + '</li>'; }).join('') + '</ul>' : ': How This Workbook Works, Your Year at a Glance, The Practice &amp; Study Imperative, and Your Monthly 1-on-1 with Jacob.</p>');
     return '<section class="esu-card" data-g="assign">' + hd('Assignments', d.total ? '<span class="esu-mono">' + d.done + ' / ' + d.total + ' IN</span>' : '') +
       '<p class="esu-muted" style="margin:-4px 0 8px;font-size:13px">' + sub + 'Everything you hand in goes to Jacob and into your formation record.</p>' + rows +
       (safeUrl(h.workbookUrl) ? '<p style="margin:12px 0 0;font-size:13px">' + ext(h.workbookUrl, 'Programme expectations and full briefs, in the Workbook.', '') + '</p>' : '') + '</section>';
   }
 
+  // After booking: what the mentee sent for Jacob, or a box to add it if the booking has none
+  function summaryBlock(bk) {
+    if (bk.summary && bk.summary.length) return '<div class="esu-sum"><div class="esu-eye" style="color:#2E5A4B">Sent to Jacob ✓</div>' + bk.summary.map(function (x) { return '<p style="margin:4px 0;font-size:13.5px"><span class="esu-muted">' + esc(x.q) + '</span><br>' + esc(x.a) + '</p>'; }).join('') + '</div>';
+    return '<div class="esu-sum"><div class="esu-eye">Add a few lines for Jacob</div><p class="esu-muted" style="font-size:13px;margin:2px 0 6px">What you’d like to work on, discuss, or are finding hard. He reads it before you meet.</p>' +
+      '<textarea id="esu-note" rows="3" maxlength="3000" data-in="note" aria-label="What you want to work on" style="' + FIELD + '">' + esc(state.note || '') + '</textarea>' +
+      '<div class="esu-acts" style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="save-note"' + (state.busy === 'note' ? ' disabled' : '') + '>' + (state.busy === 'note' ? 'Sending…' : 'Send to Jacob') + '</button></div>' + (state.msg && state.msgFor === 'note' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') + '</div>';
+  }
   function oneCard(w) {
     var o = w.home.oneToOne, win = o.window, city = myZone().split('/').pop().replace(/_/g, ' ');
     var inWindow = win && w.today >= win.from, bk = o.booked;
     var out = hd('One-to-one with Jacob', '<span class="esu-mono">45 MIN</span>');
     if (bk) {
       out += '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">Booked:</b> ' + esc(fmtTime(bk.start, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + ' your time. The Zoom link is on the event and in your email.</p>' +
-        '<div class="esu-acts">' + ext(o.bookingUrl, 'Change time', 'esu-btn out') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>';
+        '<div class="esu-acts">' + ext(o.bookingUrl, 'Change time', 'esu-btn out') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>' + summaryBlock(bk);
       return '<section class="esu-card" data-g="one">' + out + '</section>';
     }
+    out += '<p class="esu-muted" style="margin-bottom:10px;font-size:13px">When you book, Calendly asks what you’d like to work on, discuss, or are finding hard. A few lines helps Jacob prepare before you meet.</p>';
     out += win ? '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">' + esc(dayFmt(win.from, { month: 'long' })) + ' window:</b> ' + esc(wd(win.from) + ' – ' + wd(win.to) + ' ' + dayFmt(win.to, { month: 'short' })) + ', UK evenings.<br>Times are shown in your time (' + esc(city) + ').</p>'
       : '<p class="esu-muted" style="margin-bottom:12px">The next window will be announced here.</p>';
     if (o.slots && o.slots.length) out += '<div class="esu-slots">' + o.slots.map(function (sl) {
@@ -390,15 +438,17 @@
     var body = '', b = state.busy === 'modal';
     if (m.type === 'hours') {
       var k = KINDS[f.kind] || KINDS.observation;
-      body = '<h2 class="esu-h2">Log hours</h2>' +
+      body = '<h2 class="esu-h2">' + (m.resend ? 'Edit and resend' : 'Log hours') + '</h2>' + (m.resend && f.returnNote ? '<div class="esu-rnote" style="margin-top:8px">' + esc(f.returnNote) + '</div>' : '') +
         field('What kind of hours', '<select id="esu-kind" data-in="kind" style="' + FIELD + '">' + Object.keys(KINDS).filter(function (x) { return x !== 'peer'; }).map(function (x) { return '<option value="' + x + '"' + (x === f.kind ? ' selected' : '') + '>' + KINDS[x][0] + '</option>'; }).join('') + '</select>', 'esu-kind') +
         '<p class="esu-muted" style="font-size:13px;margin-top:4px">' + esc(k[1]) + '</p>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('Date', '<input id="esu-day" type="date" data-in="day" value="' + esc(f.day) + '" max="' + esc(localToday()) + '" style="' + FIELD + '">', 'esu-day') + '</div><div>' +
         field('Hours', '<input id="esu-hrs" type="number" inputmode="decimal" step="0.25" min="0.25" max="12" data-in="hours" value="' + esc(f.hours) + '" style="' + FIELD + '">', 'esu-hrs') + '</div></div>' +
         field(esc(k[2]), '<input id="esu-detail" type="text" maxlength="200" data-in="detail" value="' + esc(f.detail) + '" style="' + FIELD + '">', 'esu-detail') +
+        (f.kind === 'observation' || f.kind === 'practice-teaching' ? '<div class="esu-eye" style="color:#5A5346;margin:14px 0 6px">Which competencies did you see?' + (f.kind === 'observation' ? ' <span style="text-transform:none;letter-spacing:0">(choose at least one)</span>' : '') + '</div><div class="esu-ccs" role="group" aria-label="Competencies">' + COMPS.map(function (c) { var on = (f.competencies || []).indexOf(c[0]) >= 0; return '<button type="button" class="esu-cc' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="toggle-comp" data-c="' + c[0] + '">' + esc(c[1]) + '</button>'; }).join('') + '</div>' : '') +
+        (f.kind === 'practice-teaching' ? field('Who watched?', '<select id="esu-watch" data-in="watcher" style="' + FIELD + '"><option value="">Choose…</option>' + ((w.home.partner && w.home.partner.partners) || []).map(function (q) { return '<option value="' + esc(q.email) + '"' + (f.watcher === q.email ? ' selected' : '') + '>' + esc(String(q.name).split(' ')[0]) + ' (your partner)</option>'; }).join('') + '<option value="nobody"' + (f.watcher === 'nobody' ? ' selected' : '') + '>Nobody</option></select><p class="esu-muted" style="font-size:13px;margin-top:4px">A partner who watched is asked to confirm it before it goes to Jacob.</p>', 'esu-watch') : '') +
         field('Notes (optional)', '<textarea id="esu-notes" rows="3" maxlength="200" data-in="notes" style="' + FIELD + '">' + esc(f.notes) + '</textarea>', 'esu-notes') +
         '<p class="esu-muted" style="font-size:13px;margin:10px 0 14px">Jacob confirms each entry. It shows as pending until he does, then counts toward your 100 hours.</p>' +
-        '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-hours"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log these hours') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
+        '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-hours"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : m.resend ? 'Send again' : 'Log these hours') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else if (m.type === 'articulation') {
       var p = w.home.partner, partners = (p && p.partners) || [], cohort = w.home.cohort || [], art = w.home.articulation, who = f.with || {};
       var nameOf = function (e) { var x = partners.concat(cohort).filter(function (q) { return q.email === e; })[0]; return x ? String(x.name).split(' ')[0] : 'your partner'; };
@@ -438,6 +488,8 @@
   }
 
   function html() {
+    if (isRefl()) return reflHtml();
+    if (isMentor()) return mentorHtml();
     if (state.error && !state.data) return '<h1 class="esu-h1">Sahṛdaya Upāya</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
     var w = state.data, name = (w && w.greeting.firstName) || state.first;
     var head = function (sub, right) { return '<div class="esu-eye">Sahṛdaya Upāya · Teacher formation in SLBT</div><div class="esu-head"><div><h1 class="esu-h1">Your formation' + (name ? ', <em>' + esc(name) + '</em>' : '') + '.</h1>' + (sub ? '<div class="esu-sub">' + sub + '</div>' : '') + '</div>' + (right || '') + '</div>'; };
@@ -449,7 +501,52 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
+  }
+
+
+  // ---- Jacob's view (Circle admins, /c/mentorship?view=mentor): the review queue, pair health, worth a word ----
+  var MT_KIND = { hours: 'Hours', handin: 'Hand-ins', reflection: 'Reflections' };
+  function mentorHtml() {
+    var m = state.mt, d = m.data;
+    var head = '<div class="esu-eye">Sahṛdaya Upāya · Mentor view</div><div class="esu-head"><div><h1 class="esu-h1">Your <em>review</em> queue.</h1><div class="esu-sub">' + (d ? esc(dayFmt(d.today, { weekday: 'long', day: 'numeric', month: 'long' })) + (d.rotation ? ' · rotation ' + d.rotation.n + ' ends ' + esc(dayFmt(d.rotation.to, { day: 'numeric', month: 'short' })) : '') : 'Opening…') + '</div></div><a class="esu-btn out" href="/c/mentorship">Back to my page</a></div>';
+    if (m.err && !d) return head + '<p class="esu-err" role="alert">' + esc(m.err) + '</p>';
+    if (!d) return head + '<div class="esu-sk"></div><div class="esu-sk"></div>';
+    var c = d.counts, tabs = [['all', 'All', c.all], ['hours', 'Hours', c.hours], ['handin', 'Hand-ins', c.handin], ['reflection', 'Reflections', c.reflection]];
+    var chips = '<div class="esu-chips" role="group" aria-label="Filter the queue">' + tabs.map(function (t) { return '<button type="button" class="esu-chip' + (m.filter === t[0] ? ' on' : '') + '" aria-pressed="' + (m.filter === t[0]) + '" data-act="mt-filter" data-f="' + t[0] + '">' + t[1] + ' · ' + t[2] + '</button>'; }).join('') + '</div>';
+    var list = d.queue.filter(function (x) { return m.filter === 'all' || x.kind === m.filter; });
+    var b = m.busy;
+    var rows = list.map(function (x) {
+      var btns = x.kind === 'hours' ? '<button type="button" class="esu-btn pri" data-act="mt-do" data-do="confirm" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Confirm</button> <button type="button" class="esu-btn out" data-act="mt-do" data-do="return-hours" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Return</button> <button type="button" class="esu-lnk" data-act="mt-do" data-do="decline" data-id="' + esc(x.id) + '">Decline</button>'
+        : x.kind === 'handin' ? '<button type="button" class="esu-btn out" data-act="mt-open" data-ref="' + esc(x.ref) + '">' + (m.open === x.ref ? 'Hide' : 'Read') + '</button> <button type="button" class="esu-btn pri" data-act="mt-do" data-do="return" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Return with notes</button>'
+        : '<a class="esu-btn out" href="/c/reflections">Read</a> <button type="button" class="esu-btn pri" data-act="mt-replied" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Mark replied</button>';
+      var detail = x.kind === 'handin' && m.open === x.ref ? '<div class="esu-mqd">' + esc(x.fullText || x.detail) + (x.fileLink ? '\n' : '') + '</div>' + (x.fileLink ? '<div class="esu-mqd"><a href="' + esc(API + x.fileLink) + '" target="_blank" rel="noopener">Open the attached file</a></div>' : '') : '';
+      return '<li class="esu-mqi"><div><span class="esu-eye" style="color:#5A5346">' + esc(MT_KIND[x.kind === 'handin' ? 'handin' : x.kind]) + '</span><div><b>' + esc(x.mentee) + '</b> · ' + esc(x.item) + '</div>' + (x.kind !== 'handin' || m.open !== x.ref ? '<div class="esu-muted" style="font-size:13.5px">' + esc(x.detail) + '</div>' : '') + '</div><div style="text-align:right"><div class="esu-age' + (x.stale ? ' old' : '') + '">' + (x.age === 0 ? 'today' : x.age + (x.age === 1 ? ' day' : ' days')) + (x.stale ? ' · waiting' : '') + '</div></div>' + detail + '<div class="esu-acts" style="grid-column:1/-1">' + btns + '</div></li>';
+    }).join('');
+    var queue = '<section class="esu-card"><div class="esu-hd"><span class="esu-eye">Waiting for you</span></div>' + chips + (rows ? '<ul class="esu-mq" style="list-style:none;margin:12px 0 0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:14px 0 0">Nothing is waiting. New hours, hand-ins and shared reflections appear here, oldest first.</p>') + '</section>';
+    var tiles = d.tiles.length ? '<div class="esu-mt">' + d.tiles.map(function (t) {
+      return '<div class="esu-tile' + (t.state === 'behind' ? ' behind' : '') + '"><b>' + t.people.map(function (p) { return esc(p.name); }).join(' + ') + '</b><div class="esu-muted" style="font-size:13px">' + t.people.map(function (p) { return p.city ? esc(p.city) : ''; }).filter(Boolean).join(' · ') + '</div><div class="esu-dots" aria-hidden="true">' + Array.apply(null, Array(t.target)).map(function (_, i) { return '<i class="' + (i < t.count ? 'f' : '') + '"></i>'; }).join('') + '</div><div style="font-size:13.5px;color:' + (t.state === 'behind' ? '#A5432A' : '#5A5346') + '">' + esc(t.line) + '</div></div>';
+    }).join('') + '</div>' : '<p class="esu-muted">No pairs are set for this rotation yet.</p>';
+    var pairs = '<section class="esu-card" style="margin-top:18px"><div class="esu-hd"><span class="esu-eye">Pair health' + (d.rotation ? ' · rotation ' + d.rotation.n : '') + '</span>' + (d.nudges ? '<span class="esu-muted" style="font-size:12.5px">Gentle reminders are on</span>' : '<span class="esu-muted" style="font-size:12.5px">Gentle reminders are off</span>') + '</div>' + tiles + '</section>';
+    var words = '<section class="esu-card" style="margin-top:18px"><div class="esu-hd"><span class="esu-eye">Worth a word</span></div>' + (d.words.length ? '<ul style="list-style:none;margin:10px 0 0;padding:0">' + d.words.map(function (x) { return '<li style="padding:8px 0;border-top:1px solid #E3D8C6"><b>' + esc(x.name) + '</b> <span class="esu-muted">· ' + esc(x.why) + '</span></li>'; }).join('') + '</ul>' : '<p class="esu-muted" style="margin:10px 0 0">No one needs a word right now.</p>') + '</section>';
+    return head + (m.msg ? '<p class="esu-err" role="alert">' + esc(m.msg) + '</p>' : '') + queue + pairs + words;
+  }
+  function loadMentor() {
+    var mt = state.mt;
+    return call('/api/member/mentor?today=' + localToday()).then(function (d) { mt.data = d; mt.err = ''; }).catch(function (e) { mt.err = e.status === 403 ? 'This view is for mentors.' : e.message; });
+  }
+  function mentorClick(a, t) {
+    var mt = state.mt;
+    if (a === 'mt-filter') { mt.filter = t.dataset.f; render(); return; }
+    if (a === 'mt-open') { mt.open = mt.open === t.dataset.ref ? '' : t.dataset.ref; render(); return; }
+    var run = function (fn) { mt.busy = 'x'; mt.msg = ''; render(); return fn().then(function () { return loadMentor(); }).catch(function (e) { mt.msg = e.message; }).then(function () { mt.busy = ''; render(); }); };
+    if (a === 'mt-replied') { run(function () { return call('/api/member/mentor', { action: 'replied', id: t.dataset.id, today: localToday() }); }); return; }
+    if (a === 'mt-do') {
+      var what = t.dataset['do'], id = t.dataset.id, note = '';
+      if (what === 'decline' && !window.confirm('Decline this entry? It is removed and the mentee is not credited.')) return;
+      if (what === 'return-hours' || what === 'return') { note = window.prompt(what === 'return' ? 'A note for the mentee (optional):' : 'What should they check? They will see this and can send it again.', ''); if (note === null) return; }
+      run(function () { return call('/api/member/submissions', { action: what, id: id, note: note }); });
+    }
   }
 
   var root = null;
@@ -457,8 +554,10 @@
   function onInput(e) {
     var k = e.target && e.target.dataset && e.target.dataset.in;
     if (!k) return;
+    if (k.indexOf('rf-') === 0) { var q = state.rf; if (k === 'rf-title') q.form.title = e.target.value; else if (k === 'rf-body') q.form.body = e.target.value; else if (k === 'rf-ctext') q.ctext = e.target.value; else if (k === 'rf-reply') q.reply = e.target.value; else if (k.indexOf('rf-tick:') === 0) q.ticked[k.slice(8)] = e.target.checked; return; }
     if (k === 'say') { state.say = e.target.value; return; }
     if (k === 'ask') { state.ask = e.target.value; return; }
+    if (k === 'note') { state.note = e.target.value; return; }
     if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
     if (k.indexOf('with:') === 0) { (state.form.with = state.form.with || {})[k.slice(5)] = e.target.checked; render(); return; }
     if (k.indexOf('term:') === 0) { (state.form.terms = state.form.terms || {})[k.slice(5)] = e.target.value; return; }
@@ -492,8 +591,10 @@
     var t = e.target.closest('[data-act]');
     if (!t || !root.contains(t)) return;
     var a = t.dataset.act;
+    if (a.indexOf('mt-') === 0) { mentorClick(a, t); return; }
+    if (a.indexOf('rf-') === 0) { if (a === 'rf-post-close' && t.dataset.bg && e.target !== t) return; rfClick(a, t); return; }
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
-    if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
+    if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '', competencies: [], watcher: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
     if (a === 'open-handin') { var it = state.data.due.items.filter(function (x) { return x.id === t.dataset.id; })[0]; var sb = it && it.submission; state.modal = { type: 'handin', id: t.dataset.id }; state.msg = ''; state.form = { text: sb ? sb.text : '', logHours: !!(it && it.hoursComponent), existingName: sb && sb.hasFile ? sb.fileName : '', fileName: sb && sb.hasFile ? sb.fileName : '', existingPath: '' }; render(); return; }
     if (a === 'send-chat') {
       var txt = state.say;
@@ -514,6 +615,7 @@
       act('ask', function () { return call('/api/member/this-week/question', { text: qt }).then(function (r) { state.ask = ''; state.questions = r.questions; return null; }); });
       return;
     }
+    if (a === 'save-note') { var nt = state.note; state.msgFor = 'note'; act('note', function () { return call('/api/member/this-week/booking-note', { note: nt, today: localToday(), tz: myZone() }).then(function (d) { state.note = ''; return d; }); }); return; }
     if (a === 'all-books') { state.books = true; render(); return; }
     if (a === 'close-books') { if (t.dataset.bg && e.target !== t) return; state.books = false; render(); return; }
     if (a === 'pick') {
@@ -529,10 +631,16 @@
       act('poll', function () { return call('/api/member/this-week/poll', { poll: pid, slots: picked, today: localToday(), tz: myZone() }).then(function (d) { delete state.picks[pid]; return d; }); });
       return;
     }
+    if (a === 'toggle-comp') { var cs = state.form.competencies || [], ci = cs.indexOf(t.dataset.c); if (ci >= 0) cs.splice(ci, 1); else cs.push(t.dataset.c); state.form.competencies = cs; render(); return; }
+    if (a === 'cosign') { var cid = t.dataset.id, cok = t.dataset.ok === '1'; act('hours', function () { return call('/api/member/this-week/hours', { cosign: cid, ok: cok, today: localToday(), tz: myZone() }); }); return; }
+    if (a === 'resend-hours') { var re = (state.data.home.recent || []).filter(function (x) { return x.id === t.dataset.id; })[0]; if (!re) return; state.modal = { type: 'hours', resend: re.id }; state.msg = ''; state.form = { kind: re.component, day: re.day, hours: String(re.hours), detail: re.detail || '', notes: re.note && !re.detail ? re.note : '', competencies: (re.competencies || []).slice(), watcher: '', returnNote: re.returnNote || '' }; render(); return; }
     if (a === 'remove-hours') { var rid = t.dataset.id; act('hours', function () { return call('/api/member/this-week/hours', { remove: rid, today: localToday(), tz: myZone() }); }); return; }
     if (a === 'save-hours') {
       var f = state.form;
-      act('modal', function () { return call('/api/member/this-week/hours', { component: f.kind, hours: f.hours, day: f.day, detail: f.detail, note: f.notes, today: localToday(), tz: myZone() }).then(function (d) { state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });
+      var body = { component: f.kind, hours: f.hours, day: f.day, detail: f.detail, note: f.notes, competencies: f.competencies || [], today: localToday(), tz: myZone() };
+      if (f.kind === 'practice-teaching') body.watcher = f.watcher || '';
+      if (state.modal && state.modal.resend) body.resend = state.modal.resend;
+      act('modal', function () { return call('/api/member/this-week/hours', body).then(function (d) { state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });
       return;
     }
     if (a === 'submit-handin') { sendHandIn('submitted'); return; }
@@ -545,6 +653,132 @@
       var id = t.dataset.id;
       act('rsvp', function () { return call('/api/member/this-week/rsvp', { eventId: id }).then(function () { state.going[id] = true; }); });
     }
+  }
+
+
+  // ---- Reflections (/c/reflections): write, share with the cohort, revise from their feedback, post to Sādhana School ----
+  var RK = { landed: ['What landed', 'Quote a line that stayed with you, and say why.', '#2E5A4B', '#E3EEE7'], question: ['A question', 'Ask what you’d want to know more about.', '#3E4C7A', '#E4E8F3'], suggestion: ['A suggestion', 'One thing the next version could try.', '#A5432A', '#F4E4DC'] };
+  function rfFlash() { return state.rf.err ? '<p class="esu-err" role="alert">' + esc(state.rf.err) + '</p>' : ''; }
+  function rfApply(d) { var r = state.rf; r.list = d.list || r.list; r.meta = d.meta || r.meta; if ('detail' in d) { r.detail = d.detail; if (d.detail) { r.id = d.detail.id; r.vn = d.detail.versions.length ? d.detail.versions[d.detail.versions.length - 1].n : 0; } else { r.id = ''; } } }
+  function loadRefl(id) {
+    return call('/api/member/reflections?' + tzq() + (id ? '&id=' + encodeURIComponent(id) : '')).then(function (d) { state.rf.err = ''; rfApply(d); }).catch(function (e) { state.rf.err = e.message; }).then(render);
+  }
+  function rfAct(action, extra) {
+    var r = state.rf; r.busy = action; r.err = ''; render();
+    return call('/api/member/reflections', Object.assign({ action: action, id: r.id, today: localToday(), tz: myZone() }, extra || {})).then(function (d) { rfApply(d); return d; })
+      .catch(function (e) { r.err = e.message; }).then(function (d) { r.busy = ''; render(); return d; });
+  }
+  function rfMonth(m) { return dayFmt(m + '-01', { month: 'long' }); }
+  function statusLabel(x) { return x.status === 'posted' ? 'Posted to SS' : x.status === 'draft' ? 'Draft' : x.sharedVersions > 1 ? 'Revised · v' + x.version : 'Shared · v' + x.version; }
+  function rfSteps() {
+    var d = state.rf.detail, step = d && d.mine ? d.step : 0, S = (state.rf.meta && state.rf.meta.steps) || [];
+    return '<div class="esu-steps4">' + S.map(function (x, i) { return '<div class="esu-st4' + (step === i + 1 ? ' on' : '') + '"><b>' + (i + 1) + ' · ' + esc(x[0].toUpperCase()) + '</b>' + esc(x[1]) + '</div>'; }).join('') + '</div>';
+  }
+  function rfList() {
+    var r = state.rf, L = r.list || [], m = r.meta ? r.meta.month : '';
+    var shown = L.filter(function (x) { return r.filter === 'mine' ? x.mine : r.filter === 'posted' ? x.status === 'posted' : x.month === m; });
+    var chips = [['cohort', (m ? rfMonth(m) : 'This month') + ' · cohort'], ['mine', 'Mine'], ['posted', 'Posted to SS']].map(function (c) { return '<button type="button" class="esu-chip' + (r.filter === c[0] ? ' on' : '') + '" aria-pressed="' + (r.filter === c[0]) + '" data-act="rf-filter" data-f="' + c[0] + '">' + c[1] + '</button>'; }).join('');
+    return '<div class="esu-rfl"><div class="esu-chips">' + chips + '</div>' + (shown.length ? shown.map(function (x) {
+      return '<button type="button" class="esu-ri' + (x.id === r.id ? ' on' : '') + '" data-act="rf-open" data-id="' + esc(x.id) + '"><span class="esu-rim"><span class="esu-eye" style="color:#5A5346">' + esc(rfMonth(x.month)) + '</span><span class="esu-rist">' + (x.unread ? '<i class="esu-dotn" aria-label="New"></i>' : '') + esc(statusLabel(x)) + '</span></span><b>' + esc(x.title || 'Untitled') + '</b><span class="esu-muted" style="font-size:13px">' + esc(x.mine ? 'You' : x.author) + ' · ' + (x.comments ? x.comments + (x.comments === 1 ? ' comment' : ' comments') : 'no comments yet') + '</span></button>';
+    }).join('') : '<p class="esu-muted" style="margin:10px 0">' + (r.list ? (r.filter === 'mine' ? 'You haven’t written one yet.' : r.filter === 'posted' ? 'Nothing posted to Sādhana School yet.' : 'No reflections from the cohort this month yet.') : 'Loading…') + '</p>') + '</div>';
+  }
+  function rfComment(c, d, all) {
+    var k = RK[c.kind], mine = d.mine, replies = all.filter(function (x) { return x.parent === c.id; });
+    var out = '<div class="esu-cmt"><span class="esu-av" style="background:#' + (c.byAuthor ? 'A5432A' : '3E4C7A') + '">' + esc(String(c.who).split(' ').map(function (x) { return x[0]; }).join('').slice(0, 2).toUpperCase()) + '</span><div><div class="esu-cmh"><b>' + esc(c.who) + '</b> <span class="esu-muted">' + esc(fmtTime(c.at, { weekday: 'short', day: 'numeric', month: 'short' })) + '</span>' + (k ? ' <span class="esu-kind" style="color:' + k[2] + ';background:' + k[3] + '">' + esc(k[0].toUpperCase()) + '</span>' : '') + '</div><div class="esu-cmb">' + esc(c.body) + '</div>' +
+      '<div class="esu-cma"><button type="button" class="esu-lnk" data-act="rf-replyto" data-id="' + esc(c.id) + '">Reply</button>' + (c.addressedIn ? '<span class="esu-ok" style="font-size:13px">Addressed in version ' + c.addressedIn + '</span>' : '') + '</div>' +
+      replies.map(function (x) { return '<div class="esu-cmt nested"><span class="esu-av" style="background:#' + (x.byAuthor ? 'A5432A' : '3E4C7A') + '">' + esc(String(x.who).split(' ').map(function (y) { return y[0]; }).join('').slice(0, 2).toUpperCase()) + '</span><div><div class="esu-cmh"><b>' + esc(x.who) + '</b> <span class="esu-muted">' + esc(fmtTime(x.at, { weekday: 'short', day: 'numeric', month: 'short' })) + '</span></div><div class="esu-cmb">' + esc(x.body) + '</div></div></div>'; }).join('') +
+      (state.rf.replyTo === c.id ? '<div class="esu-say" style="margin-top:8px"><input id="esu-rr" type="text" maxlength="3000" data-in="rf-reply" placeholder="Respond to ' + esc(String(c.who).split(' ')[0]) + '…" value="' + esc(state.rf.reply) + '" style="' + FIELD + '"><button type="button" class="esu-btn pri" data-act="rf-reply-send"' + (state.rf.busy ? ' disabled' : '') + '>Reply</button></div>' : '') + '</div></div>';
+    return out;
+  }
+  function rfReader() {
+    var r = state.rf, d = r.detail;
+    if (!d) return '<div class="esu-rpane"><div class="esu-empty">' + (r.list ? 'Choose a reflection to read, or write your own.' : 'Loading…') + '</div></div>';
+    var v = d.versions.filter(function (x) { return x.n === r.vn; })[0] || d.versions[d.versions.length - 1];
+    var chips = d.versions.map(function (x) { return '<button type="button" class="esu-chip' + (x.n === v.n ? ' on' : '') + '" aria-pressed="' + (x.n === v.n) + '" data-act="rf-ver" data-n="' + x.n + '">Version ' + x.n + (x.shared ? '' : ' · draft') + '</button>'; }).join('');
+    var hl = v.n > 1 ? '<span class="esu-muted" style="font-size:13px">Highlighted: changed since version ' + (v.n - 1) + '</span>' : '';
+    var meta = (d.mine ? 'You' : d.author) + (d.sharedAt ? ' · shared with the cohort ' + fmtTime(d.sharedAt, { weekday: 'short', day: 'numeric', month: 'short' }) : '') + (d.versions.filter(function (x) { return x.shared; }).length > 1 ? ' · revised ' + fmtTime(d.versions.filter(function (x) { return x.shared; }).pop().sharedAt, { weekday: 'short', day: 'numeric', month: 'short' }) : '') + (d.mine ? ' · counts toward your monthly reflections once posted' : '');
+    var bar = '';
+    if (d.mine) {
+      var hasDraft = d.workingN && d.workingN === (d.versions[d.versions.length - 1] || {}).n && !d.versions[d.versions.length - 1].shared;
+      bar = '<div class="esu-obar"><div class="esu-acts">' + (hasDraft ? '<button type="button" class="esu-btn pri" data-act="rf-edit">Continue your draft</button>' : d.status !== 'draft' ? '<button type="button" class="esu-btn out" data-act="rf-revise">Revise</button>' : '') +
+        (d.status === 'shared' ? '<button type="button" class="esu-btn pri" data-act="rf-post-open">Post to Sādhana School</button>' : '') +
+        (d.status === 'posted' ? '<span class="esu-ok">Posted to Sādhana School · ' + esc(fmtTime(d.postedAt, { day: 'numeric', month: 'short' })) + ' ✓</span>' + (safeUrl(d.postedUrl) ? ext(d.postedUrl, 'View the post', 'esu-btn out') : '') + '<button type="button" class="esu-lnk" data-act="rf-takedown">Take it down</button>' : '') +
+        (d.status === 'draft' ? '<button type="button" class="esu-btn out" data-act="rf-discard">Delete this draft</button>' : '') + '</div>' +
+        '<p class="esu-muted" style="font-size:13px;margin-top:8px">' + (d.status === 'shared' ? 'Posts version ' + d.versions.filter(function (x) { return x.shared; }).length + ' to the Reflections in Sādhana School. The cohort’s comments stay here.' : d.status === 'posted' ? 'The cohort’s feedback and your earlier versions stay here. You can take the post down from Sādhana School at any time.' : 'Only you can see this draft until you share it with the cohort.') + '</p></div>';
+    }
+    var top = d.comments.filter(function (c) { return !c.parent; });
+    var fb = d.status === 'draft' ? '' : '<div class="esu-fb"><div class="esu-hd"><h3 class="esu-h2" style="font-size:22px">Feedback from the cohort</h3><span class="esu-muted" style="font-size:13px">' + top.length + (top.length === 1 ? ' comment' : ' comments') + ' · only Sahṛdaya Upāya mentees and Jacob see this</span></div>' +
+      (top.length ? top.map(function (c) { return rfComment(c, d, d.comments); }).join('') : '<p class="esu-muted">' + (d.mine ? 'No feedback yet.' : 'Be the first to offer feedback.') + '</p>');
+    if (d.status !== 'draft' && !d.mine) {
+      var k = RK[r.ckind];
+      fb += '<div class="esu-offer"><div class="esu-eye" style="color:#5A5346">Offer feedback</div><div class="esu-chips">' + Object.keys(RK).map(function (x) { return '<button type="button" class="esu-chip' + (r.ckind === x ? ' on' : '') + '" aria-pressed="' + (r.ckind === x) + '" data-act="rf-kind" data-k="' + x + '">' + RK[x][0] + '</button>'; }).join('') + '</div><p class="esu-muted" style="font-size:13.5px;margin:6px 0">' + esc(k[1]) + '</p>' +
+        '<textarea id="esu-cm" rows="3" maxlength="3000" data-in="rf-ctext" aria-label="Your feedback" style="' + FIELD + '">' + esc(r.ctext) + '</textarea><div class="esu-acts" style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="rf-comment"' + (r.busy ? ' disabled' : '') + '>Send feedback</button></div><p class="esu-muted" style="font-size:12.5px;margin-top:6px">Be specific and kind. Speak to the writing, not the person.</p></div>';
+    }
+    fb += '</div>';
+    return '<div class="esu-rpane"><div class="esu-eye">' + esc(rfMonth(d.month)) + (d.topic ? ' · ' + esc(d.topic) : '') + '</div><h2 class="esu-rt1">' + esc(v.title) + '</h2><p class="esu-muted" style="font-size:13px;margin:2px 0 10px">' + esc(meta) + '</p>' +
+      '<div class="esu-chips" style="align-items:center">' + chips + hl + '</div><div class="esu-rbody">' + v.paragraphs.map(function (p) { return '<p class="' + (p.changed ? 'ch' : '') + '">' + esc(p.text) + '</p>'; }).join('') + '</div>' + bar + rfFlash() + fb + '</div>';
+  }
+  function rfEditor() {
+    var r = state.rf, d = r.detail, f = r.form, n = d && d.workingN ? d.workingN : 1, revising = n > 1;
+    var aside = revising ? '<aside class="esu-aside"><div class="esu-eye" style="color:#5A5346">Feedback to work from</div>' + d.comments.filter(function (c) { return !c.parent; }).map(function (c) {
+      var k = RK[c.kind], on = r.ticked[c.id] != null ? r.ticked[c.id] : c.addressedIn === n;
+      return '<label class="esu-fbc"><input type="checkbox" data-in="rf-tick:' + esc(c.id) + '"' + (on ? ' checked' : '') + '><span><b>' + esc(c.who) + '</b> · ' + (k ? '<span style="color:' + k[2] + '">' + esc(k[0].toUpperCase()) + '</span>' : '') + '<br>' + esc(c.body) + '</span></label>';
+    }).join('') + '<p class="esu-muted" style="font-size:12.5px">Tick what you’ve addressed. The commenter sees “addressed in version ' + n + '”.</p></aside>' : '';
+    return '<div class="esu-rpane"><div class="esu-hd"><h2 class="esu-rt1" style="font-size:26px">' + (revising ? 'Revising · version ' + n : d ? 'Your draft' : 'Write ' + (r.meta ? rfMonth(r.meta.month) : 'this month') + '’s reflection') + '</h2><span class="esu-muted" style="font-size:13px">' + (revising ? 'Version ' + (n - 1) + ' stays as it was; the cohort sees what changed' : 'Only you can see it until you share it') + '</span></div>' +
+      '<div class="' + (revising ? 'esu-ed2' : '') + '"><div>' + field('Title', '<input id="esu-rtitle" type="text" maxlength="120" data-in="rf-title" value="' + esc(f.title) + '" style="' + FIELD + ';font-family:Cormorant Garamond,Georgia,serif;font-size:20px">', 'esu-rtitle') +
+      field('Your reflection', '<textarea id="esu-rbody" rows="14" maxlength="20000" data-in="rf-body" style="' + FIELD + ';font-family:Cormorant Garamond,Georgia,serif;font-size:19px;line-height:1.5">' + esc(f.body) + '</textarea>', 'esu-rbody') + '</div>' + aside + '</div>' + rfFlash() +
+      '<div class="esu-acts" style="margin-top:12px"><button type="button" class="esu-btn pri" data-act="rf-share"' + (r.busy ? ' disabled' : '') + '>' + (revising ? 'Share version ' + n + ' with the cohort' : 'Share with the cohort') + '</button><button type="button" class="esu-btn out" data-act="rf-save"' + (r.busy ? ' disabled' : '') + '>Save as draft</button><button type="button" class="esu-btn out" data-act="rf-cancel">Cancel</button></div></div>';
+  }
+  function rfPostModal() {
+    var r = state.rf, d = r.detail;
+    if (!r.post || !d) return '';
+    var v = d.versions.filter(function (x) { return x.shared; }).pop(), name = (state.first || (state.data && state.data.greeting && state.data.greeting.firstName) || 'You');
+    var excerpt = v.body.length > 240 ? v.body.slice(0, 240).replace(/\s+\S*$/, '') + '…' : v.body;
+    return '<div class="esu-ov" data-act="rf-post-close" data-bg="1"><div class="esu-dlg" role="dialog" aria-modal="true" aria-label="Post to Sādhana School"><h2 class="esu-h2">Post to Sādhana School?</h2>' +
+      '<p class="esu-muted" style="margin:8px 0 12px">Version ' + v.n + ' goes to <b>Reflections</b> in Sādhana School, where the whole school can read it and reply. This is how it will look:</p>' +
+      '<div class="esu-prev"><div class="esu-rhead"><span class="esu-av" style="background:#A5432A">' + esc(String(name).slice(0, 2).toUpperCase()) + '</span><b>' + esc(name) + '</b><span class="esu-muted" style="font-size:13px">in Reflections</span><span class="esu-mchip">FROM THE SAHṚDAYA UPĀYA COHORT</span></div><h3 class="esu-rt1" style="font-size:22px;margin:8px 0 4px">' + esc(v.title) + '</h3><p style="font-size:15px;line-height:1.45;margin:0">' + esc(excerpt) + '</p></div>' +
+      '<p class="esu-muted" style="font-size:13px;margin:12px 0">The cohort’s feedback and your earlier versions stay here. You can take the post down from Sādhana School at any time.</p>' + rfFlash() +
+      '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="rf-post-confirm"' + (r.busy ? ' disabled' : '') + '>' + (r.busy === 'post' ? 'Posting…' : 'Post to Sādhana School') + '</button><button type="button" class="esu-btn out" data-act="rf-post-close">Not yet</button></div></div></div>';
+  }
+  function reflHtml() {
+    var r = state.rf, m = r.meta ? rfMonth(r.meta.month) : 'this month', mineNow = (r.list || []).filter(function (x) { return x.mine && r.meta && x.month === r.meta.month; })[0];
+    if (state.error && !r.list) return '<h1 class="esu-h1">Reflections</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
+    return '<div class="esu-eye">Sahṛdaya Upāya · The cohort’s reflections</div><div class="esu-head"><div><h1 class="esu-h1">Reflections</h1><div class="esu-sub">Write, share it with the cohort, revise from their feedback, then post it to Sādhana School.</div></div>' +
+      (mineNow ? '<button type="button" class="esu-btn pri" data-act="rf-open" data-id="' + esc(mineNow.id) + '">Open your ' + esc(m) + ' reflection</button>' : '<button type="button" class="esu-btn pri" data-act="rf-new">Write ' + esc(m) + '’s reflection</button>') + '</div>' +
+      rfSteps() + (r.list === null && r.err ? rfFlash() : '') + '<div class="esu-rcols">' + rfList() + (r.mode === 'edit' ? rfEditor() : rfReader()) + '</div>' + rfPostModal();
+  }
+  function rfClick(a, t) {
+    var r = state.rf;
+    if (a === 'rf-filter') { r.filter = t.dataset.f; render(); return true; }
+    if (a === 'rf-new') { r.detail = null; r.id = ''; r.mode = 'edit'; r.form = { title: '', body: '' }; r.err = ''; r.ticked = {}; render(); return true; }
+    if (a === 'rf-open') { r.mode = 'read'; r.err = ''; r.replyTo = ''; loadRefl(t.dataset.id); return true; }
+    if (a === 'rf-ver') { r.vn = Number(t.dataset.n); render(); return true; }
+    if (a === 'rf-cancel') { r.mode = 'read'; r.err = ''; render(); return true; }
+    if (a === 'rf-edit') { var v = r.detail.versions[r.detail.versions.length - 1]; r.form = { title: v.title, body: v.body }; r.mode = 'edit'; r.ticked = {}; render(); return true; }
+    if (a === 'rf-revise') { rfAct('revise').then(function () { var d = state.rf.detail; if (d) { var v2 = d.versions[d.versions.length - 1]; state.rf.form = { title: v2.title, body: v2.body }; state.rf.mode = 'edit'; state.rf.ticked = {}; render(); } }); return true; }
+    if (a === 'rf-save' || a === 'rf-share') {
+      var f = r.form, share = a === 'rf-share', n = r.detail && r.detail.workingN ? r.detail.workingN : 1;
+      rfAct('save', { title: f.title, body: f.body }).then(function (d) {
+        if (!d || !d.ok) return;
+        var go = share ? rfAct('share') : Promise.resolve(d);
+        return go.then(function (d2) {
+          if (!d2 || !d2.ok) return;
+          var ids = Object.keys(state.rf.ticked).filter(function (k) { return state.rf.ticked[k]; });
+          return (n > 1 ? rfAct('address', { comments: ids, n: n }) : Promise.resolve()).then(function () { if (!state.rf.err) { state.rf.mode = 'read'; render(); } });
+        });
+      });
+      return true;
+    }
+    if (a === 'rf-discard') { if (window.confirm('Delete this draft?')) rfAct('discard').then(function () { state.rf.mode = 'read'; render(); }); return true; }
+    if (a === 'rf-kind') { r.ckind = t.dataset.k; render(); return true; }
+    if (a === 'rf-comment') { rfAct('comment', { kind: r.ckind, body: r.ctext }).then(function (d) { if (d && d.ok && !state.rf.err) { state.rf.ctext = ''; render(); } }); return true; }
+    if (a === 'rf-replyto') { r.replyTo = r.replyTo === t.dataset.id ? '' : t.dataset.id; r.reply = ''; render(); var inp = root.querySelector('#esu-rr'); if (inp) inp.focus(); return true; }
+    if (a === 'rf-reply-send') { rfAct('comment', { parentId: r.replyTo, body: r.reply }).then(function (d) { if (d && d.ok && !state.rf.err) { state.rf.reply = ''; state.rf.replyTo = ''; render(); } }); return true; }
+    if (a === 'rf-post-open') { r.post = true; r.err = ''; render(); return true; }
+    if (a === 'rf-post-close') { r.post = false; r.err = ''; render(); return true; }
+    if (a === 'rf-post-confirm') { rfAct('post').then(function () { if (!state.rf.err) { state.rf.post = false; render(); } }); return true; }
+    if (a === 'rf-takedown') { if (window.confirm('Take this reflection down from Sādhana School? It stays here, with the cohort’s feedback.')) rfAct('takedown'); return true; }
+    return false;
   }
 
   // The page area Circle draws a space into (same lookup as the Schedule and This week pages)
@@ -573,7 +807,7 @@
   }
 
   // Escape closes a popup (the key listener is on the document: the page re-draws itself, so focus can sit outside it)
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root && document.body.contains(root) && (state.books || state.modal)) { state.books = false; state.modal = null; render(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root && document.body.contains(root) && (state.books || state.modal || state.rf.post)) { state.books = false; state.modal = null; state.rf.post = false; render(); } });
 
   var started = false;
   function start() {
@@ -581,14 +815,15 @@
     started = true; css();
     state.data = cached();
     // A mentee seen before this session: take the space at once so the hub doesn't flash up first
-    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now()) setMentee(s.ok ? 'yes' : 'no'); } catch (e) {} }
+    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now()) { state.admin = !!s.admin; setMentee(s.ok ? 'yes' : 'no'); } } catch (e) {} }
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
-      mount(); render(); return load();
+      mount(); render(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
     }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
       .then(function () { mount(); render(); });
   }
+  function startRefl() { var m = /[?&]post=(\d+)/.exec(location.search); return loadRefl(m ? m[1] : '').then(function () { if (m && state.rf.detail && state.rf.detail.mine && state.rf.detail.status === 'shared') { state.rf.post = true; render(); } }); }
   start();
   // Circle is a single-page app: draw when someone navigates here, give Circle's own page back when they leave
   var timer = null;
@@ -597,7 +832,7 @@
     timer = setTimeout(function () {
       timer = null;
       if (!PAGE.test(location.pathname)) { unmount(); return; }
-      if (!started) start(); else mount();
+      if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root && isMentor() && state.mt.data === null && !state.mt.err) loadMentor().then(render); else if (root) render(); }
     }, 250);
   }).observe(document.body, { childList: true, subtree: true });
   window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) unmount(); });

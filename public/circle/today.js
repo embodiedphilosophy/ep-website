@@ -16,7 +16,7 @@
   var LAZY = [
     [/^\/c\/ce-credits\/?$/, 'ce'], [/^\/c\/portfolio\/?$/, 'portfolio'], [/^\/c\/daily-practice\/?$/, 'practice'], [/^\/c\/schedule\/?$/, 'schedule'],
     [/^\/c\/my-practice(-[a-z0-9]{3,10})?\/?$/, 'my-practice'], [/^\/c\/library(-[a-z0-9]{3,10})?\/?$/, 'library'], [/^\/c\/this-week(-[a-z0-9]{3,10})?\/?$/, 'this-week'],
-    [/^\/c\/mentorship\/?$/, 'sahrdaya']
+    [/^\/c\/mentorship\/?$/, 'sahrdaya'], [/^\/c\/reflections\/?$/, 'sahrdaya']
   ];
   var added = {};
   function addScript(name) { if (added[name]) return; added[name] = true; var el = document.createElement('script'); el.src = BASE + name + '.js'; el.defer = true; document.head.appendChild(el); }
@@ -320,13 +320,13 @@
     var w = state.wait, nm = {};
     ((state.cohort && state.cohort.rows) || []).forEach(function (r) { nm[r.email] = r.name; });
     var who = function (e) { return esc(nm[e] || e); };
-    var out = '<section class="ept-card ept-wide" aria-labelledby="ept-wt"><div class="ept-ch"><h2 id="ept-wt" class="ept-h2">Waiting for you</h2><span class="ept-l">Hand-ins and hours</span></div>';
+    var out = '<section class="ept-card ept-wide" aria-labelledby="ept-wt"><div class="ept-ch"><h2 id="ept-wt" class="ept-h2">Waiting for you</h2><a class="ept-l" href="/c/mentorship?view=mentor">Open the review queue →</a></div>';
     if (!w) return out + '<span class="' + (state.waitErr ? 'ept-err' : 'ept-s') + '">' + esc(state.waitErr || 'Loading…') + '</span></section>';
     if (state.waitMsg) out += '<span class="ept-err">' + esc(state.waitMsg) + '</span>';
     if (!w.handins.length && !w.hours.length) return out + '<span class="ept-s">Nothing waiting. New hand-ins and logged hours appear here.</span></section>';
     out += w.hours.map(function (x) {
-      return '<div class="ept-fr"><span><span class="ept-t">' + who(x.email) + ' · ' + esc(x.component) + ' · ' + fmtH(x.hours) + ' hrs</span><span class="ept-s">' + esc(niceDate(x.day)) + (x.detail ? ' · ' + esc(x.detail) : '') + (x.note ? ' · ' + esc(x.note) : '') + '</span></span>' +
-        '<span><button type="button" class="ept-btn" data-wait="confirm:' + esc(x.id) + '">Confirm</button> <button type="button" class="ept-q" data-wait="decline:' + esc(x.id) + '">Decline</button></span></div>';
+      return '<div class="ept-fr"><span><span class="ept-t">' + who(x.email) + ' · ' + esc(x.component) + ' · ' + fmtH(x.hours) + ' hrs</span><span class="ept-s">' + esc(niceDate(x.day)) + (x.detail ? ' · ' + esc(x.detail) : '') + (x.note ? ' · ' + esc(x.note) : '') + ((x.competencies || []).length ? ' · ' + esc(x.competencies.join(', ')) : '') + (x.cosigned ? ' · partner confirmed' : '') + '</span></span>' +
+        '<span><button type="button" class="ept-btn" data-wait="confirm:' + esc(x.id) + '">Confirm</button> <button type="button" class="ept-q" data-wait="return-hours:' + esc(x.id) + '">Return</button> <button type="button" class="ept-q" data-wait="decline:' + esc(x.id) + '">Decline</button></span></div>';
     }).join('');
     out += w.handins.map(function (x) {
       return '<div class="ept-fr" style="align-items:flex-start"><span><span class="ept-t">' + who(x.email) + ' · ' + esc(x.title) + '</span><span class="ept-s">' + esc(niceDate(String(x.at).slice(0, 10))) + (x.fileLink ? ' · <a href="' + esc(API + x.fileLink) + '" target="_blank" rel="noopener">' + esc(x.fileName || 'Attached file') + '</a>' : '') + '</span>' +
@@ -913,7 +913,7 @@
     if (pop && pageRoot && pageRoot.contains(pop) && !(e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button)) { if (openPop(pop.href)) e.preventDefault(); return; }
     var t = e.target.closest('[data-act],[data-q],[data-x],[data-pick],[data-fmdel],[data-wait]');
     if (!t || !e.currentTarget.contains(t)) return;
-    if (t.dataset.wait) { var wp = t.dataset.wait.split(':'), wn = ''; if (wp[0] === 'return') { wn = window.prompt('Add a note for the mentee (optional). They will see it with the returned hand-in.', ''); if (wn === null) return; } state.waitMsg = ''; api('/api/member/submissions', { method: 'POST', body: { action: wp[0], id: wp[1], note: wn } }).then(function (r) { state.wait = r; }).catch(function (er) { state.waitMsg = er.message; }).then(render); return; }
+    if (t.dataset.wait) { var wp = t.dataset.wait.split(':'), wn = ''; if (wp[0] === 'return' || wp[0] === 'return-hours') { wn = window.prompt(wp[0] === 'return' ? 'Add a note for the mentee (optional). They will see it with the returned hand-in.' : 'A note for the mentee (they will see it on their page, and can edit and resend):', ''); if (wn === null) return; } state.waitMsg = ''; api('/api/member/submissions', { method: 'POST', body: { action: wp[0], id: wp[1], note: wn } }).then(function (r) { state.wait = r; }).catch(function (er) { state.waitMsg = er.message; }).then(render); return; }
     if (t.dataset.fmdel) { var em = t.dataset.email; api('/api/member/formation?email=' + encodeURIComponent(em) + '&id=' + encodeURIComponent(t.dataset.fmdel), { method: 'DELETE' }).then(function (f) { state.fm[em] = f; state.fmErr = ''; }).catch(function (er) { state.fmErr = er.message; }).then(render); return; }
     if (t.dataset.pick) { state.pick = state.pick === t.dataset.pick ? '' : t.dataset.pick; render(); loadFm(state.pick); return; }
     if (t.dataset.x) { var xs = state.extras || []; var i0 = xs.indexOf(t.dataset.x); state.extras = i0 >= 0 ? xs.filter(function (z) { return z !== t.dataset.x; }) : xs.concat([t.dataset.x]); render(); return; }

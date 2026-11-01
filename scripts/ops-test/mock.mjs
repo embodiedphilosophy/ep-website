@@ -182,6 +182,16 @@ http.createServer(async (req, res) => {
   const p = url.pathname;
   try {
     if (p === '/token' && req.method === 'POST') return send(res, 200, { access_token: 'mock', expires_in: 3600 });
+    // Calendly (read only): the one-to-one bookings and what each invitee wrote (lib/mentee/calendly.js, CALENDLY_API_BASE=$M/calendly)
+    if (p.startsWith('/calendly/')) {
+      const iso = h => new Date(Date.now() + h * 3600e3).toISOString();
+      const ET = 'http://localhost:' + PORT + '/calendly/event_types/d1488024-05b7-4573-bd2f-24fe13a83e43'; // the app builds this from CALENDLY_API_BASE
+      if (p === '/calendly/users/me') return send(res, 200, { resource: { uri: 'https://api.calendly.com/users/U1' } });
+      const inv = p.match(/^\/calendly\/scheduled_events\/([^/]+)\/invitees$/);
+      if (inv) return send(res, 200, { collection: [inv[1] === 'MOCKEV1' ? { name: 'Maya Rose', email: 'maya@example.test', questions_and_answers: [{ question: 'What would you like to work on, discuss, or what are you struggling with?', answer: 'I keep tasking my students ("relax your belly"). I want to rewrite three cues and bring them. Also: how to choose a talk topic.', position: 0 }] } : inv[1] === 'MOCKEV2' ? { name: 'Sam Tolliver', email: 'sam@example.test', questions_and_answers: [] } : { name: 'Priya Nair', email: 'priya@example.test', questions_and_answers: [{ question: 'What would you like to work on, discuss, or what are you struggling with?', answer: 'The group for my offering: a studio has said yes but wants a different weekend.', position: 0 }] }] });
+      if (p === '/calendly/scheduled_events') return send(res, 200, { collection: [['MOCKEV1', 30], ['MOCKEV2', 54], ['MOCKEV3', 120]].map(([id, h]) => ({ uri: 'https://api.calendly.com/scheduled_events/' + id, event_type: ET, start_time: iso(h), end_time: iso(h + 0.75), location: { join_url: 'https://zoom.example/j/' + id } })) });
+      return send(res, 404, {});
+    }
     if (p.startsWith('/v4/spreadsheets/')) {
       if (process.env.MOCK_READONLY && req.method !== 'GET') { log('BLOCKED sheet write', req.method, decodeURIComponent(p)); return send(res, 403, { error: 'writes blocked' }); }
       if (req.method === 'GET' && !p.includes('/values')) { const names = Object.keys(tabs).filter(t => tabs[t]); return send(res, 200, { sheets: names.map((t, i) => ({ properties: { sheetId: 900 + i, title: t, gridProperties: { rowCount: (grid[t] ??= tabs[t].length) } } })) }); }

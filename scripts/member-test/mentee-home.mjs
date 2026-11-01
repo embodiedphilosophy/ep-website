@@ -33,18 +33,17 @@ assert.equal(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-10-21'), null, 
 assert.equal(C.partnerFor(rows, 'hide@x.com', 'fall-2026', '2026-11-03'), null);
 console.log('mentee home: ok');
 
-// Reflections posted in the Mentorship Circle count automatically: one hour per calendar month, only the member's own posts
-const post = (id, day) => ({ author: { community_member_id: id }, created_at: day + 'T10:00:00.000Z' });
-const rr = H.reflectionRows([post(7, '2026-11-03'), post(7, '2026-11-20'), post(9, '2026-11-04'), post(7, '2026-12-02'), post(7, '2026-09-01'), { author: {}, created_at: '2026-11-05T00:00:00Z' }], 7, '2026-10-21');
-assert.deepEqual(rr.map(r => r.day), ['2026-11-03', '2026-12-02'], 'one per month, earliest post, own posts only, nothing before the season');
-assert.equal(H.reflectionRows([post(7, '2026-11-03')], null, '').length, 0, 'no member id → nothing counted');
+// Reflections count toward the 9 once they are posted to Sādhana School (Jacob, 1 Nov 2026): one automatic line each, nothing before the season
+const { reflectionRows } = await import('../../lib/mentee/reflections.js');
+const rr = reflectionRows([{ id: 1, title: 'A', day: '2026-11-03' }, { id: 2, title: 'B', day: '2026-12-02' }, { id: 3, title: 'Old', day: '2026-09-01' }], '2026-10-21');
+assert.deepEqual(rr.map(r => [r.day, r.hours]), [['2026-11-03', 0.67], ['2026-12-02', 0.67]], 'each posted reflection is 6 hours / 9');
 const { summarise, withAuto } = await import('../../lib/member/formation.js');
 const base = { ...summarise([{ component: 'immersions', hours: 6 }]), entries: [{ id: '1', component: 'immersions', hours: 6, day: '2026-11-15', status: 'credited' }] };
 const merged = withAuto(base, rr);
-assert.equal(merged.total, 8); assert.equal(merged.components.find(c => c.id === 'reflections').credited, 2); assert.equal(merged.entries.length, 3);
+assert.equal(merged.total, 7.34); assert.equal(merged.components.find(c => c.id === 'reflections').credited, 1.34); assert.equal(merged.entries.length, 3);
 assert.equal(withAuto(base, []), base);
-const capped = withAuto(base, Array.from({ length: 9 }, (_, i) => ({ id: 'x' + i, component: 'reflections', hours: 1, day: '2026-1' + (i % 3) + '-01', status: 'credited' })));
-assert.equal(capped.components.find(c => c.id === 'reflections').credited, 6, 'capped at the component target');
+const capped = withAuto(base, reflectionRows(Array.from({ length: 9 }, (_, i) => ({ id: i, title: 't', day: '2026-11-0' + (i + 1) })), ''));
+assert.equal(capped.components.find(c => c.id === 'reflections').credited, 6, 'nine reflections fill the 6 hours (capped at the component target)');
 console.log('reflections: ok');
 
 // Calendly: open times and the mentee's own booking, with the API faked (live shapes checked against the real API on 21 Oct 2026)
@@ -59,15 +58,22 @@ globalThis.fetch = async u => {
     { status: 'available', start_time: '2026-11-24T18:00:00Z', scheduling_url: 'https://calendly.com/embodied-philosophy/x/2026-11-24T18:00:00Z' },
     { status: 'unavailable', start_time: '2026-11-24T19:00:00Z', scheduling_url: 'https://calendly.com/embodied-philosophy/x/b' },
     { status: 'available', start_time: '2026-11-25T18:00:00Z', scheduling_url: 'https://evil.example/x' }] });
-  if (String(u).includes('/scheduled_events')) return json({ collection: [{ event_type: 'https://api.calendly.com/event_types/ET1', start_time: '2026-11-25T18:00:00Z', location: { join_url: 'https://zoom.us/j/1' } }, { event_type: 'https://api.calendly.com/event_types/OTHER', start_time: '2026-11-20T18:00:00Z' }] });
+  if (/\/scheduled_events\/[^/?]+\/invitees/.test(String(u))) {
+    const id = /scheduled_events\/([^/?]+)\/invitees/.exec(String(u))[1];
+    return json({ collection: id === 'EV1' ? [{ name: 'Maya R', email: 'Maya@x.com', questions_and_answers: [{ question: 'Where I am on the offering', answer: 'Group named.', position: 1 }, { question: 'What I want to work on', answer: 'Task language in my cueing.', position: 0 }, { question: 'Attached (optional)', answer: '', position: 2 }] }] : [{ name: 'Sam T', email: 'sam@x.com', questions_and_answers: [] }] });
+  }
+  if (String(u).includes('/scheduled_events')) return json({ collection: [{ uri: 'https://api.calendly.com/scheduled_events/EV1', event_type: 'https://api.calendly.com/event_types/ET1', start_time: '2026-11-25T18:00:00Z', end_time: '2026-11-25T18:45:00Z', location: { join_url: 'https://zoom.us/j/1' } }, { uri: 'https://api.calendly.com/scheduled_events/EV2', event_type: 'https://api.calendly.com/event_types/ET1', start_time: '2026-11-26T18:00:00Z', location: { join_url: 'https://zoom.us/j/2' } }, { uri: 'https://api.calendly.com/scheduled_events/EV3', event_type: 'https://api.calendly.com/event_types/OTHER', start_time: '2026-11-27T18:00:00Z' }] });
   return { ok: false, status: 404 };
 };
 const now = Date.parse('2026-10-21T07:30:00Z');
 const sl = await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now);
 assert.deepEqual(sl.map(s => s.start), ['2026-11-24T18:00:00Z'], 'only available times, only Calendly links');
 const q = new URL(urls.find(u => u.includes('available_times'))); assert.ok(Date.parse(q.searchParams.get('end_time')) - Date.parse(q.searchParams.get('start_time')) <= 7 * 864e5, 'never asks for more than 7 days');
-assert.deepEqual(await CAL.bookedFor('ET1', 'Maya@x.com', now), { start: '2026-11-25T18:00:00Z', url: 'https://zoom.us/j/1' }, 'matches the one-to-one event type only');
-delete process.env.CALENDLY_TOKEN; assert.deepEqual(await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now + 1), [], 'no token → button only');
+assert.deepEqual(await CAL.bookedFor('ET1', 'Maya@x.com', now), { start: '2026-11-25T18:00:00Z', url: 'https://zoom.us/j/1', uuid: 'EV1', answers: [{ q: 'What I want to work on', a: 'Task language in my cueing.' }, { q: 'Where I am on the offering', a: 'Group named.' }] }, 'matches the one-to-one event type only; what the mentee wrote comes with it, in the order asked, blanks left out');
+const up = await CAL.upcomingBookings('ET1', { now });
+assert.deepEqual(up.map(x => [x.uuid, x.name, x.answers.length]), [['EV1', 'Maya R', 2], ['EV2', 'Sam T', 0]], 'the one-to-one event type only, soonest first, with who booked and what they wrote');
+assert.deepEqual(CAL.summaryOf([{ question: 'b', answer: ' two ', position: 1 }, { question: 'a', answer: 'one', position: 0 }, { question: 'c', answer: '  ' }]), [{ q: 'a', a: 'one' }, { q: 'b', a: 'two' }]);
+delete process.env.CALENDLY_TOKEN; assert.deepEqual(await CAL.openSlots('ET1', '2026-11-23', '2026-11-27', now + 1), [], 'no token → button only'); assert.deepEqual(await CAL.upcomingBookings('ET1', { now }), []);
 globalThis.fetch = realFetch;
 console.log('calendly: ok');
 
@@ -153,3 +159,17 @@ assert.equal(C.partnerFor(rrows, 'maya@x.com', 'fall-2026', '2026-12-03', { rota
 assert.equal(C.partnerFor([{ ...rrows[0], chat_url: 'http://insecure' }], 'maya@x.com', 'fall-2026', '2026-11-03', { rotation: 1 }).chatUrl, '', 'only https chat links');
 assert.deepEqual(C.cohortFrom(rrows, 'fall-2026', 'maya@x.com', ['sam@x.com']).map(c => c.email), ['cy@x.com', 'di@x.com', 'lee@x.com'], 'the cohort without me or my partner; hidden rows left out')
 console.log('rotations: ok');
+
+// Round 2 · hours: pending includes entries waiting for a co-sign; recent entries carry their state; the reflection month circles
+const hf = { total: 1, target: 100, components: [{ id: 'observation', target: 10, credited: 1, pending: 1.5 }], entries: [
+  { id: '1', component: 'observation', hours: 1.5, day: '2026-10-28', status: 'pending', competencies: ['attunement'] },
+  { id: '2', component: 'practice-teaching', hours: 2, day: '2026-10-29', status: 'awaiting_cosign', cosigner: 'bo@x.com' },
+  { id: '3', component: 'observation', hours: 1, day: '2026-10-20', status: 'returned', returnNote: 'Which session?' },
+  { id: '4', component: 'observation', hours: 1, day: '2026-10-10', status: 'credited' }] };
+assert.deepEqual(H.hoursSplit(hf), { confirmed: 1, pending: 3.5, target: 100 }, 'pending = waiting for Jacob + waiting for the partner; returned entries are neither');
+const hr = H.buildHome({ formation: hf, due: { items: [] }, sessions: [], oneToOne: null }, { config, today: '2026-11-03', tz: 'UTC', partner: null }).home.recent;
+assert.deepEqual(hr.map(r => r.state), ['pending', 'awaiting', 'returned', 'credited']); assert.equal(hr[2].returnNote, 'Which session?'); assert.deepEqual(hr[0].competencies, ['attunement']);
+const rmo = H.reflectionMonths({ all: [{ starts: '2026-10-21' }, { starts: '2026-11-01' }, { starts: '2026-12-01' }] }, [{ day: '2026-10-30' }], '2026-11-03');
+assert.deepEqual(rmo.months.map(m => [m.label, m.filled, m.now]), [['O', true, false], ['N', false, true], ['D', false, false]]); assert.equal(rmo.counted, 1); assert.equal(rmo.target, 9);
+assert.deepEqual(H.reflectionMonths(null, null, '2026-11-03'), { counted: 0, target: 9, months: [] });
+console.log('hours card data: ok');

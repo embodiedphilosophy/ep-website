@@ -106,6 +106,7 @@ http.createServer(async (req, res) => {
     }
     return send({ records: comments[m[1]] || [], has_next_page: false });
   }
+  if ((m = p.match(/^\/posts\/(\d+)$/)) && req.method === 'DELETE') { console.log('WROTE delete post', m[1], who); return send({}, 200); }
   if ((m = p.match(/^\/events\/(\d+)\/event_attendees$/)) && req.method === 'POST') { console.log('WROTE rsvp', m[1], who); return send({ ok: true }, 201); }
   send({ error: 'not mocked ' + p }, 404);
 }).listen(4600, () => console.log('circle mock on 4600'));

@@ -133,5 +133,9 @@
     }
   ],
   "questions_space_url": "https://ss.embodiedphilosophy.com/c/mentee-questions",
-  "questions_space_slug": "mentee-questions"
+  "questions_space_slug": "mentee-questions",
+  "reflections_space_id": 2896660,
+  "mentor_emails": [
+    "jacob@embodiedphilosophy.com"
+  ]
 }

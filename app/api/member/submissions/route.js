@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sessionFrom, cors } from '@/lib/member/session';
 import { openSubmissions, returnSubmission, menteeAvailable } from '@/lib/mentee/store';
-import { formationAvailable, pendingEntries, resolveEntry } from '@/lib/member/formation';
+import { formationAvailable, pendingEntries, resolveEntry, returnEntry } from '@/lib/member/formation';
 import { fileLink } from '@/lib/mentee/filelink';
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 //   GET                                   → { handins, hours }
 //   POST { action: 'return', id, note }    → mark a hand-in returned, with an optional note the mentee sees
 //   POST { action: 'confirm'|'decline', id } → confirm (counts toward the 100 hours) or remove a pending hours entry
+//   POST { action: 'return-hours', id, note } → send a pending hours entry back with a note; the mentee edits and resends it
 const methods = 'GET, POST, OPTIONS';
 const fail = (h, msg, status) => NextResponse.json({ error: msg }, { status, headers: h });
 
@@ -32,6 +33,7 @@ export async function POST(req) {
   const b = await req.json().catch(() => ({}));
   try {
     if (b.action === 'return') await returnSubmission(b.id, b.note);
+    else if (b.action === 'return-hours') await returnEntry(b.id, b.note);
     else if (b.action === 'confirm' || b.action === 'decline') await resolveEntry(b.id, b.action === 'confirm');
     else return fail(h, 'Unknown action', 400);
     return NextResponse.json(await snapshot(), { headers: h });

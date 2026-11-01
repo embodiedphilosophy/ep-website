@@ -444,3 +444,11 @@
   .ops-shell .ops-my-step, .ops-shell .ops-my-steps.compact .ops-my-step { grid-template-columns: minmax(0, 1fr); gap: 4px }
 }
 @media (max-width: 480px) { .ops-shell .ops-my-weeks { grid-template-columns: minmax(0, 1fr) } }
+/* One-to-ones: who booked and what they wrote for Jacob */
+.ops-shell .ops-o2o { list-style: none; margin: 0; padding: 0; display: grid; gap: 0 }
+.ops-shell .ops-o2o li { padding: 14px 0; border-bottom: 1px solid var(--hair); font-size: 14px }
+.ops-shell .ops-o2o .h { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap }
+.ops-shell .ops-o2o .h span { color: var(--muted, #6B6259); font-size: 13px }
+.ops-shell .ops-o2o p { margin: 6px 0 0; max-width: 70ch; white-space: pre-wrap; word-break: break-word }
+.ops-shell .ops-o2o em { color: var(--muted, #6B6259); font-style: normal; font-size: 12.5px }
+.ops-shell .ops-o2o li.none p { color: var(--risk, #A5432A) }

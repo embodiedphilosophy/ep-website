@@ -14,8 +14,9 @@
   // The hubs: Circle space slug → our page, its tabs and the tab it opens on. The Circle address's own ?tab= (emails, This week,
   // Today) wins. Confirm the slugs against the real spaces (Circle often adds a short code; those are matched by prefix below).
   var HUBS = {
-    'sadhana-school': { path: '/school/sadhana-school', title: 'Sādhana School', def: 'home', home: 'home', tabs: { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, pods: 1, mentor: 1 } },
-    'mentorship': { path: '/school/sadhana-school', title: 'Sādhana School', def: 'mentor', home: 'home', tabs: { home: 1, seasons: 1, kula: 1, practice: 1, workshops: 1, pods: 1, mentor: 1 } },
+    // Sādhana School: the sidebar row opens the current season (the site page redirects to it, by the seasons the member is in).
+    // Old tab names (home, seasons, practice…) are still accepted and land on the nearest new tab.
+    'sadhana-school': { path: '/school/sadhana-school', title: 'Sādhana School', def: 'week', home: 'week', tabs: { week: 1, sessions: 1, readings: 1, reflections: 1, kula: 1, resources: 1, pods: 1, home: 1, seasons: 1, practice: 1, workshops: 1 } },
     'wisdom-school': { path: '/school/wisdom-school', title: 'Wisdom School', def: 'month', home: 'month', tabs: { month: 1, live: 1, year: 1, book: 1, pathways: 1, library: 1, ce: 1 } },
     // Meditation Mondays: the course's landing page only. Lesson pages (/c/meditation-pass/sections/…/lessons/…) stay Circle's own, so
     // replays play in Circle's player with its completion tracking. "stream" passes through so Replays can open filtered.
@@ -157,12 +158,7 @@
     if (hk && !onLanding(hk)) hk = null;
     var hp = hk && hubPath(hk);
     var slug = m && (hk ? 'hub:' + hk : pageKey(m[1]) || SEASONS[m[1]]); // the hub's identity ignores ?tab=, which Circle may change while it draws the space
-    // Sahṛdaya Upāya (/c/mentorship) is drawn natively by sahrdaya.js for mentees. Everyone else keeps the hub's mentor tab.
-    // Until sahrdaya.js has checked who is signed in we hold back (up to 12 seconds) so the hub never flashes up for a mentee.
-    if (hk === 'mentorship' && /^\/c\/mentorship\/?$/.test(location.pathname)) {
-      if (window.__epMentee === 'yes') slug = null;
-      else if (window.__epMentee !== 'no' && !state.stopped) { state.mentorWait = state.mentorWait || Date.now(); if (Date.now() - state.mentorWait < 12000) slug = null; }
-    } else state.mentorWait = 0;
+    // Sahṛdaya Upāya (/c/mentorship) is drawn natively by sahrdaya.js for mentees; for everyone else it stays Circle's own page (it is no longer a tab of Sādhana School).
     var host = getHost(), frame = frameEl();
     if (user()) warm();
     // Leaving the page (or asking for Circle's own view) removes the frame. Circle briefly losing its content area or the

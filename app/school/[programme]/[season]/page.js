@@ -1,18 +1,24 @@
 import { redirect, notFound } from 'next/navigation';
 import { currentMember, missingReason } from '@/lib/school/session';
-import { headlessConfigured, memberSpaceIds, eventList, spacePosts } from '@/lib/school/circle';
-import { PROGRAMMES, findSeason, isWired } from '@/lib/school/config';
-import { buildItems, tabLists, TABS } from '@/lib/school/tabs';
-import { readingPlan, readingWeek, sessionDatesOf, READINGS_TAB } from '@/lib/school/readings';
+import { headlessConfigured, joinedSpaces, eventList, spacePosts, latestPosts } from '@/lib/school/circle';
+import { PROGRAMMES, findSeason, isWired, nyDay } from '@/lib/school/config';
+import { hubItems, hubSettings, hubSeasons } from '@/lib/school/hubconfig';
+import { readingPlan, sessionDatesOf, READINGS_TAB } from '@/lib/school/readings';
+import { buildItems } from '@/lib/school/tabs';
+import { buildSeasonPage, seasonTabKey, wantedSpaces } from '@/lib/school/season';
+import { seenOf } from '@/lib/school/seen';
+import { podsEnabled } from '@/lib/pods/logic';
 import { readTab } from '@/lib/mentee/content';
+import mentee from '@/data/mentee.json';
 import Shell from '../../Shell';
 import SeasonView from './SeasonView';
 
 export const dynamic = 'force-dynamic';
 
+// One page per season: the sidebar row opens the current one, the Season menu moves between them (docs/school-seasons.md).
 export default async function Page({ params, searchParams }) {
   const { programme, season: slug } = await params;
-  const { tab } = await searchParams;
+  const { tab, write } = await searchParams;
   const season = findSeason(programme, slug);
   if (!PROGRAMMES[programme] || !season) notFound();
   const me = await currentMember();
@@ -25,15 +31,18 @@ export default async function Page({ params, searchParams }) {
   );
   if (!headlessConfigured() || !isWired(season)) return notice(season.title, 'This season space is being set up. It will open here soon.');
 
-  let spaces, events, posts;
+  const items = hubItems(), seasons = hubSeasons(), settings = hubSettings(), today = nyDay(), now = Date.now();
+  let member, spaceUrls, events, posts;
   try {
-    spaces = await memberSpaceIds(me.email);
-    if (spaces.has(String(season.hub_space_id))) [events, posts] = await Promise.all([eventList(me.email), spacePosts(me.email, season.hub_space_id)]);
+    const recs = await joinedSpaces(me.email);
+    member = new Set(recs.map(s => String(s.id)));
+    spaceUrls = Object.fromEntries(recs.filter(s => s.url).map(s => [String(s.id), s.url]));
+    if (member.has(String(season.hub_space_id))) [events, posts] = await Promise.all([eventList(me.email), spacePosts(me.email, season.hub_space_id)]);
   } catch (e) {
     return notice(season.title, e.status === 429 ? 'Circle is busy right now. Please try again in a minute.' : 'We could not reach Circle just now. Please try again in a moment.');
   }
 
-  if (!spaces.has(String(season.hub_space_id))) {
+  if (!member.has(String(season.hub_space_id))) {
     return (
       <Shell>
         <div className="sch-empty-page">
@@ -46,19 +55,22 @@ export default async function Page({ params, searchParams }) {
     );
   }
 
-  const items = buildItems(season, events, posts);
-  const lists = tabLists(items);
-  // The season's reading assignments (Ops → Settings → Sādhana School → Reading assignments); a missing tab falls back to the seed
-  const readings = readingPlan(await readTab(READINGS_TAB).catch(() => []), season.slug, sessionDatesOf(items));
-  const view = TABS.some(t => t.key === tab) ? tab : 'all';
+  // The latest posts of the spaces behind the announcement line, Kula and Resources: one read each, and one that fails only blanks its card
+  const ids = wantedSpaces(items, seasons, member, today);
+  const [lists, seen, rows] = await Promise.all([
+    Promise.all(ids.map(id => latestPosts(me.email, id).catch(() => undefined))),
+    seenOf(me.email),
+    readTab(READINGS_TAB).catch(() => []),
+  ]);
+  const byId = {}; ids.forEach((id, i) => { if (lists[i]) byId[id] = lists[i]; });
+  const readings = readingPlan(rows, season.slug, sessionDatesOf(buildItems(season, events, posts, now)));
+  const page = buildSeasonPage({ season, seasons, items, settings, member, spaceUrls, events, posts, spacePosts: byId, seen, readings, weekends: (mentee.immersions || []).map(i => ({ day: i.sat, title: i.title })), today, now });
+
+  const extra = podsEnabled() ? ['pods'] : [];
+  const view = seasonTabKey(tab, extra);
   return (
     <Shell>
-      <header className="sch-head">
-        <p className="sch-eyebrow">{season.short}{season.subtitle ? ` · ${season.subtitle}` : ''}</p>
-        <h1>{season.title.split(' · ').slice(1).join(' · ') || season.title}</h1>
-        {season.cover_image && <img className="sch-cover" src={season.cover_image} alt="" />}
-      </header>
-      <SeasonView programme={programme} slug={slug} lists={lists} initialTab={view} canReflect={season.topic_ids?.reflections != null} readings={readings} readingNow={readingWeek(readings)} />
+      <SeasonView programme={programme} slug={slug} page={page} readings={readings} initialTab={view} extraTabs={extra} openComposer={write === '1'} seasonId={season.hub_space_id} />
     </Shell>
   );
 }

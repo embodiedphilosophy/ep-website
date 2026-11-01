@@ -16,7 +16,7 @@
   var LAZY = [
     [/^\/c\/ce-credits\/?$/, 'ce'], [/^\/c\/portfolio\/?$/, 'portfolio'], [/^\/c\/daily-practice\/?$/, 'practice'], [/^\/c\/schedule\/?$/, 'schedule'],
     [/^\/c\/my-practice(-[a-z0-9]{3,10})?\/?$/, 'my-practice'], [/^\/c\/library(-[a-z0-9]{3,10})?\/?$/, 'library'], [/^\/c\/this-week(-[a-z0-9]{3,10})?\/?$/, 'this-week'],
-    [/^\/c\/mentorship\/?$/, 'sahrdaya'], [/^\/c\/reflections\/?$/, 'sahrdaya']
+    [/^\/c\/mentorship\/?$/, 'sahrdaya'], [/^\/c\/reflections\/?$/, 'sahrdaya'], [/^\/c\/apprentice-workbook(\/.*)?$/, 'sahrdaya']
   ];
   var added = {};
   function addScript(name) { if (added[name]) return; added[name] = true; var el = document.createElement('script'); el.src = BASE + name + '.js'; el.defer = true; document.head.appendChild(el); }
@@ -24,9 +24,9 @@
   // Sahṛdaya Upāya (/c/mentorship, /c/reflections): hide Circle's own space page until sahrdaya.js has drawn the mentee page or
   // found the member isn't a mentee (window.__epMentee = 'no'), so Circle's feed doesn't flash up first. sahrdaya.js removes it;
   // a 12-second fallback gives Circle's page back if anything goes wrong.
-  var SU = /^\/c\/(mentorship|reflections)\/?$/, suT = null;
+  var SU = /^\/c\/(mentorship|reflections|apprentice-workbook)\/?$/, suT = null; // (the Workbook's own lesson pages stay Circle's, so they are not cloaked)
   function suCloak(path) {
-    var el = document.getElementById('ep-su-cloak'), on = SU.test(path) && window.__epMentee !== 'no';
+    var el = document.getElementById('ep-su-cloak'), on = SU.test(path) && window.__epMentee !== 'no' && !/[?&]native=1/.test(location.search);
     if (on && !el) {
       el = document.createElement('style'); el.id = 'ep-su-cloak';
       el.textContent = '[data-testid="circle-ai-shell-workspace-body"] > :not(.esu), div[class*="container-type:inline-size"][class*="bg-secondary"] > :not(.esu){visibility:hidden!important}';

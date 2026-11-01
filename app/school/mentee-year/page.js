@@ -1,10 +1,15 @@
 import data from '@/data/mentee-year.json';
 import { segments, nextSteps, currentMonth, daysUntil, PROJECTS } from '@/lib/ops/menteeyear';
 import { todayET } from '@/lib/events';
+import { front as manualFront, partParam, updated as manualUpdated } from '@/lib/school/manual';
 import Shell from '../Shell';
+import Manual from './Manual';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'The mentee year · Sahṛdaya Upāya', robots: { index: false, follow: false } };
+export async function generateMetadata({ searchParams }) {
+  const sp = await searchParams;
+  return { title: sp?.tab === 'manual' ? 'The formation manual · Sahṛdaya Upāya' : 'The mentee year · Sahṛdaya Upāya', robots: { index: false, follow: false } };
+}
 
 const CIRCLE = 'https://ss.embodiedphilosophy.com/c/mentorship';
 const dayFmt = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(',', '');
@@ -14,15 +19,37 @@ const Back = () => <a className="sch-btn ghost" href={CIRCLE} target="_top">← 
 
 // The mentee year as a plain page (not drawn inside Circle): the rhythm, a typical month, month by month, the dated steps, one-to-ones.
 // Anyone with the link can read it: it holds no personal data (your partners and your ticks are on your page in Circle).
-export default function MenteeYearPage() {
+const PDF = '/school/sahrdaya-upaya-formation-manual.pdf';
+const upd = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const Download = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 8 }}><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16" /></svg>;
+const Tabs = ({ tab }) => <nav className="sch-tabs" aria-label="Page sections"><a href="?tab=year" aria-current={tab === 'year' ? 'page' : undefined}>The mentee year</a><a href="?tab=manual" aria-current={tab === 'manual' ? 'page' : undefined}>The formation manual</a></nav>;
+
+export default async function MenteeYearPage({ searchParams }) {
+  const sp = await searchParams, tab = sp?.tab === 'manual' ? 'manual' : 'year';
+  if (tab === 'manual') {
+    return (
+      <Shell>
+        <div className="sch-my" id="top">
+          <p className="sch-eyebrow">Sahṛdaya Upāya · 2026–27 cohort</p>
+          <h1>The formation manual</h1>
+          <p className="sch-my-lede">The working handbook for apprentices and mentors: the program, the year, the ajapā-haṃsa practice, the three-session process and certification, with the Sanskrit sources on haṃsa in full.</p>
+          <p className="mn-meta">{manualFront.edition.replace('First Edition', 'First edition')} · a first draft{manualUpdated ? ` · Updated ${upd(manualUpdated)}` : ''}</p>
+          <div className="mn-acts" id="pdf"><Back /><a className="sch-btn" href={PDF} download><Download />Download the PDF</a><span className="mn-pdfnote">PDF · first edition, Nov 2026</span></div>
+          <Tabs tab={tab} />
+          <Manual part={partParam(sp?.part)} />
+        </div>
+      </Shell>
+    );
+  }
   const today = todayET(), month = currentMonth(data.months, today), next = nextSteps(data.steps, today, 3);
   return (
     <Shell>
-      <div className="sch-my">
+      <div className="sch-my" id="top">
         <p className="sch-eyebrow">Sahṛdaya Upāya · 2026–27 cohort</p>
         <h1>The mentee year</h1>
         <p className="sch-my-lede">{data.lede}</p>
         <p><Back /></p>
+        <Tabs tab={tab} />
         <nav className="sch-my-toc" aria-label="Sections"><a href="#rhythm">The rhythm</a><a href="#week">A typical month</a><a href="#months">Month by month</a><a href="#projects">Final projects</a><a href="#one-to-ones">One-to-ones</a></nav>
         {next.length > 0 && <div className="sch-my-now"><b>Next three project steps</b><ul>{next.map((s, i) => <li key={i}><span className="d">{dayFmt(s.date)}</span> <Proj p={s.project} /> {s.title} <small>({daysUntil(s.date, today) === 0 ? 'today' : `in ${daysUntil(s.date, today)} days`})</small></li>)}</ul><p><small>Tick them off on your page in Circle.</small></p></div>}
 
@@ -50,7 +77,7 @@ export default function MenteeYearPage() {
             <div className="sch-my-card"><h3>Booking summary</h3><pre className="sch-my-tpl">{data.oneToOne.template.join('\n')}</pre><p className="sch-my-sub">{data.oneToOne.note}</p></div></div></section>
 
         <p><Back /></p>
-        <p className="sch-my-sub">{data.footer}</p>
+        <p className="sch-my-sub">{data.footer.split('Sahṛdaya Upāya Training Manual (draft)').flatMap((x, i, a) => (i < a.length - 1 ? [x, <a key={i} href="?tab=manual">Sahṛdaya Upāya Training Manual (draft)</a>] : [x]))}</p>
       </div>
     </Shell>
   );

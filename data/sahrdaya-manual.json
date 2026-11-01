@@ -1,0 +1,3626 @@
+{
+ "source": "Google Doc 1u9O7F59dnj0I6mo0u0wIZ_SVjfbIMRZpcIsVzpnYuOw",
+ "revision": "AHj4eMSdJrrgBQYfihrBCJLqQtvmH__5UBZ84SssHT_ZpC0sGN5gz8lLA0TC6xZTCdmdl5RGtyzUzmr7oM89t5LXmlwtHsE3zXlcWrHK-oI",
+ "updated": "2026-11-01",
+ "front": {
+  "eyebrow": "TEACHER FORMATION · SUBTLE LIBERATION-BASED TEACHING",
+  "title": "Sahṛdaya Upāya Formation Manual",
+  "subtitle": "The Path of Recognition · Sādhana School 2026–27",
+  "edition": "First Edition · November 2026 · Jacob Kyle"
+ },
+ "chapters": [
+  {
+   "id": "how-to-use-this-manual",
+   "label": "",
+   "title": "How to use this manual",
+   "kind": "front",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "This manual is the working handbook for apprentices and mentors in Sahṛdaya Upāya, the 100-hour SLBT teacher formation of Sādhana School, October 2026 to August 2027. It gathers in one place everything you need to know about the program, from what’s expected to what’s at your discretion. It also includes translations of Sanskrit sources that speak directly to the teachings on _haṃsa_."
+    },
+    {
+     "t": "p",
+     "s": "It is a first draft. Parts I, II and V restate the program as the prospectus describes it. Parts III and IV are the core of the haṃsa teaching: what ajapā-haṃsa is, and how a Sahṛdaya Meditation Teacher would teach it to a new group. The appendix gives the translations in full, so every verse a mentor quotes can be checked against its source."
+    },
+    {
+     "t": "p",
+     "s": "**Reading the labels.** Three labels from the mentor guide carry through. **[Text]** means the root verse says it. **[Uddyota]** means Kṣemarāja says it in his commentary. **[Interpretation]** means it is the school's reading, and mentors should present it as such."
+    },
+    {
+     "t": "p",
+     "s": "**Citations.** \"ST 7.x\" is _Svacchandatantra_ paṭala 7 in the numbering of the working translation. \"HS\" is the _Haṃsasāra_ in its continuous bracketed numbering. \"PH\" is _Pratyabhijñāhṛdaya_, \"MM\" _Mahārthamañjarī_, \"VBh\" _Vijñānabhairava_, \"SK\" _Spandakārikā_. Full editions are listed under Sources."
+    },
+    {
+     "t": "p",
+     "s": "**Decisions already made and built in.** The initiation ceremony for Sahṛdaya Meditation we refer to as _haṃsa-upadeśa_, not _dīkṣā_. New students are told that cumulative results take 12 to 18 months of daily practice to notice the cumulative effects. Apprentices will lead the _upadeśa_ themselves as part of a certification exam assessed by their mentor. Leading the full three-session offering is an end-of-year project for certification to teach Sahṛdaya Meditation. The final teaching project is separate: a 60-minute specialized talk. The mentors are Jacob and Nataraj Chaitanya."
+    }
+   ],
+   "sections": []
+  },
+  {
+   "id": "part-i",
+   "label": "Part I",
+   "title": "The program",
+   "kind": "part",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "Sahṛdaya Upāya trains experienced teachers in two things at once: the practice of Sahṛdaya Meditation, and Subtle Liberation-Based Teaching (SLBT), the pedagogy that frames it. It runs 100 hours over eleven months, for an initial cohort of 14 teachers in formation."
+    }
+   ],
+   "sections": [
+    {
+     "id": "part-i-why-formation-not-information",
+     "title": "Why formation, not information",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Most teacher trainings bypass _formation_. They treat education as the accumulation of information, so a teacher can be well read and still unintegrated. Our approach has two parts. First, daily practice is non-negotiable: a teacher must first be a mature student, a _sādhaka_. Second, a teacher needs both **pedagogy** (an account of what lets insight take root) and **practicum** (rehearsal in front of a mentor, with affirming and critical feedback). That second part is the \"hidden curriculum\" traditions passed on by proximity to a primary teacher, and SLBT attempts to make this explicit."
+      }
+     ]
+    },
+    {
+     "id": "part-i-the-twin-trainings",
+     "title": "The Twin Trainings",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "_Sahṛdaya_, \"one with heart,\" is classical aesthetics' word for the person in whom a work of art lands. **Sahṛdaya Meditation** names the practice: cultivating that receptivity toward one's own experience. **SLBT** names the frame. _Subtle_, because transmission happens in a register finer than instruction. _Liberation-based_, because a yoga that rejects the teleology of liberation is the kind of yoga we are working to dethrone."
+      }
+     ]
+    },
+    {
+     "id": "part-i-the-pedagogy-of-prasiddhi",
+     "title": "The pedagogy of prasiddhi",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "The core claim comes from Pratyabhijñā: nothing learned is acquired from outside, but rather remembered from within. Awareness is already full, and practice adds only _avadhāna_, attention, never forceful effort. So any instruction that tasks a student with manufacturing a ‘yogic’ state works against the philosophy. Four principles organize the training, each with its own skill."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Principle",
+        "Meaning",
+        "Practical skill"
+       ],
+       "rows": [
+        [
+         "_Prasiddhi_",
+         "The ground is given, not built",
+         "Instruction that adds attention to what is already happening, starting with the ajapā-haṃsa"
+        ],
+        [
+         "_Bhāvanā_",
+         "Formation is a bringing-into-being over time",
+         "Designing learning arcs with duration, rhythm and cumulative depth"
+        ],
+        [
+         "_Rasa_",
+         "The fruit is savour, and savour has a structure",
+         "Using _vibhāva, anubhāva, vyabhicāri, sthāyin_ to read a student's report"
+        ],
+        [
+         "_Paryavasāna_",
+         "Immanent completion",
+         "Carrying a student's experience to its own conclusion, not affirming, correcting or over-psychologizing it"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "Two commitments run through all of these. _Akṛtaka-vimarśa_, uncontrived reflexive awareness, is the aim, and the teacher moves toward it by learning when to intervene, and when to encourage the student’s own budding wisdom. The _sahṛdaya_-community is ultimately intended to be a horizontal fellowship of peers, not a chain of dependency."
+      }
+     ]
+    },
+    {
+     "id": "part-i-the-six-competencies",
+     "title": "The six competencies",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Every element of the curriculum maps to one of these, and assessment is against them."
+      },
+      {
+       "t": "ol",
+       "items": [
+        "**Pedagogical genealogy and cultural diagnosis.** Seeing the inherited model you teach within, and choosing a different path deliberately based on insight and understanding.",
+        "**Subtle attunement and energetic literacy.** Working with breath, posture, language and tone as instruments of transmission.",
+        "**Ethical speech and relational pedagogy.** Speaking clearly in charged situations and in secular rooms without diluting depth.",
+        "**Presence-based transmission.** Teaching without elitist performance or manipulation; the discipline of not-intervening.",
+        "**Philosophical grounding and curriculum design.** Building arcs that mirror initiation without becoming hierarchical, using the _prasiddhi–bhāvanā–rasa_ triad as a template.",
+        "**Lineage-informed creativity and cultural responsibility.** Reverence for tradition, attention to positionality, and cultivating a voice of one's own."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "part-i-how-each-month-works",
+     "title": "How each month works",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Each monthly immersion has two halves. The **Open Session** (2.5 hours) is a public, standalone workshop; apprentices watch the teaching land in a mixed room. The **Practicum** (2.5 hours) is for apprentices only, where the teachers in formation rehearse a new way of teaching."
+      }
+     ]
+    },
+    {
+     "id": "part-i-the-eight-immersions",
+     "title": "The eight immersions",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "table",
+       "head": [
+        "#",
+        "Immersion",
+        "Focus",
+        "Haṃsa thread"
+       ],
+       "rows": [
+        [
+         "1",
+         "Beneath the Pose",
+         "Subtle attunement",
+         "Introduces the ajapā-haṃsa; noticing, not commanding"
+        ],
+        [
+         "2",
+         "Tasting the Real",
+         "Rasa and wonder",
+         "Fruit is _camatkāra_ and _vismaya_ (Śivasūtra 1.12), not calm"
+        ],
+        [
+         "3",
+         "Two Tongues",
+         "Secular rooms",
+         "Teaching the haṃsa without Sanskrit"
+        ],
+        [
+         "4",
+         "Shadow Speech",
+         "Ferocity and discernment",
+         "Transference and longing, savoured not grasped"
+        ],
+        [
+         "5",
+         "Dying Before Death",
+         "Holding intensity",
+         "Breath as time, _kalayan jagat_ (ST 7.146); when to refer"
+        ],
+        [
+         "6",
+         "Grace and Initiation",
+         "Timing of transmission",
+         "Ritual and _upadeśa_; the āṇava → śākta → śāmbhava arc (MM 56)"
+        ],
+        [
+         "7",
+         "Cult or Community?",
+         "Consent and belonging",
+         "The peer cohort that follows the arc"
+        ],
+        [
+         "8",
+         "The Spectre of Authenticity",
+         "Lineage and voice",
+         "The final teaching project is designed here"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "The \"Haṃsa thread\" column is this manual's mapping [Interpretation], showing where Parts III and IV are practised. The prospectus gives each immersion's full Open Session and Practicum descriptions."
+      }
+     ]
+    },
+    {
+     "id": "part-i-the-hundred-hours",
+     "title": "The hundred hours",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "table",
+       "head": [
+        "Component",
+        "Hours",
+        "Type"
+       ],
+       "rows": [
+        [
+         "Eight immersions (2.5 hr Open Session + 2.5 hr Practicum × 8)",
+         "40",
+         "Live"
+        ],
+        [
+         "Monthly one-to-ones with a mentor (45 min × 10)",
+         "7.5",
+         "Live"
+        ],
+        [
+         "Retreat practicum, July 2027",
+         "11",
+         "Live"
+        ],
+        [
+         "Observation of senior teachers, with structured notes",
+         "10",
+         "Self-directed"
+        ],
+        [
+         "Practice-teaching",
+         "10",
+         "Peer-guided"
+        ],
+        [
+         "Peer articulation: teaching through images (~1 hr × 8)",
+         "8",
+         "Peer-guided"
+        ],
+        [
+         "Monthly written reflections (30 min × 12)",
+         "6",
+         "Self-directed"
+        ],
+        [
+         "Final teaching project: the 60-minute specialized talk",
+         "5",
+         "Self + live"
+        ],
+        [
+         "Competency check",
+         "3",
+         "Self-directed"
+        ],
+        [
+         "Final report",
+         "2",
+         "Self-directed"
+        ],
+        [
+         "**Total**",
+         "**101.5**",
+         "58.5 live"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "There are ten 45-minute one-to-ones, one a month from October to July. The rows add to 101.5 hours, against the round 100 in the prospectus. Book Club sessions on the monthly reading are self-organized and not counted here."
+      },
+      {
+       "t": "p",
+       "s": "The daily sit is not in the table on purpose. It is a condition of enrolment, not a credited component: the program requires more than it credits. The practice log is reviewed in each one-to-one."
+      }
+     ]
+    },
+    {
+     "id": "part-i-what-the-program-does-not-do",
+     "title": "What the program does not do",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "It does not make you a Sanskritist (expect about forty terms used accurately), a therapist (part of the competence is knowing when to refer), or anyone's guru. It confers no lineage authority or _adhikāra_. It supplies no students or business model, and it may, in the first year, cost you some students who came because nothing was asked of them."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "part-ii",
+   "label": "Part II",
+   "title": "The year",
+   "kind": "part",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "The year runs from a November orientation to certification in August 2027. Immersions fill October to May, the retreat practicum is in July, and the final assessment runs July to August."
+    },
+    {
+     "t": "table",
+     "head": [
+      "When",
+      "What"
+     ],
+     "rows": [
+      [
+       "November 2026",
+       "Pre-term reading; practice baseline; cohort orientation call"
+      ],
+      [
+       "November 2026 – May 2027",
+       "Eight monthly immersions, one weekend a month"
+      ],
+      [
+       "Throughout",
+       "Monthly one-to-ones, peer articulation, monthly written reflections"
+      ],
+      [
+       "July 2027",
+       "Summer retreat practicum (in person, or facilitated online)"
+      ],
+      [
+       "July – August 2027",
+       "Final teaching project (the three-session offering), final report, competency check"
+      ],
+      [
+       "August 2027",
+       "Certification"
+      ]
+     ]
+    }
+   ],
+   "sections": [
+    {
+     "id": "part-ii-the-monthly-reading-list",
+     "title": "The monthly reading list",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "One required book a month feeds the written reflection; the suggested book is not assessed. The readings are discussed in self-organized **Book Club** sessions, which any mentee can propose."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Month",
+        "Theme",
+        "Required",
+        "Suggested"
+       ],
+       "rows": [
+        [
+         "1 · Oct 2026",
+         "The Condition That We’re In",
+         "Anthony Kronman, _Education's End_",
+         "—"
+        ],
+        [
+         "2 · Nov 2026",
+         "The Condition of Modern Yoga",
+         "Daniel Simpson, _The Truth of Yoga_ (also on Audible)",
+         "Mark Singleton, _Yoga Body_"
+        ],
+        [
+         "3 · Dec 2026",
+         "The Return to Formation as an Educational Paradigm",
+         "Pierre Hadot, _What Is Ancient Philosophy?_",
+         "—"
+        ],
+        [
+         "4 · Jan 2027",
+         "The Alternative and its Benefits",
+         "Georges Dreyfus, _The Sound of Two Hands Clapping_",
+         "Ivan Illich, _In the Vineyard of the Text_"
+        ],
+        [
+         "5 · Feb 2027",
+         "What a Teacher Does & Can Do",
+         "Jacques Rancière, _The Ignorant Schoolmaster_",
+         "—"
+        ],
+        [
+         "6 · Mar 2027",
+         "Authority and Belonging After the Fall of Gurus",
+         "Theodora Wildcroft, _Post-Lineage Yoga_",
+         "Matthew Remski, _Practice and All Is Coming_ (contested: read with care)"
+        ],
+        [
+         "7 · Apr 2027",
+         "What Knowing Is, and Therefore What Transmits It",
+         "Parker Palmer, _To Know as We Are Known_",
+         "—"
+        ],
+        [
+         "8 · May 2027",
+         "Why the Interpersonal is Central",
+         "Michael Polanyi, _The Tacit Dimension_",
+         "Jean Lave and Etienne Wenger, _Situated Learning_"
+        ],
+        [
+         "9 · Jun 2027",
+         "Back to Attention",
+         "Simone Weil, _Waiting for God_: the essay \"Reflections on the Right Use of School Studies with a View to the Love of God\"",
+         "Josef Pieper, _Leisure: The Basis of Culture_ (optional)"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Required for the whole year.** Two more books are required but not tied to a month. Mentees read them alongside the monthly books from October to July:"
+      },
+      {
+       "t": "ul",
+       "items": [
+        "**_Vijñānabhairavatantra_**. The Sanskrit is in the Tantrik Translations folder; the haṃsa verses are in Appendix C8. Mentees should buy Jaideva Singh's translation, Vijñānabhairava or Divine Consciousness (Motilal Banarsidass).",
+        "**Sally Kempton (Swami Durgananda),** **_The Heart of Meditation: Pathways to a Deeper Experience_****.**"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Suggested for the whole year** (not assessed): André Padoux, _Vāc: The Concept of the Word in Selected Hindu Tantras_ (SUNY, 1990) and _Tantric Mantras: Studies on Mantraśāstra_ (Routledge, 2011). Both are in the Tantrik Translations folder."
+      },
+      {
+       "t": "p",
+       "s": "Buy links in the cohort materials go to Amazon.co.uk."
+      }
+     ]
+    },
+    {
+     "id": "part-ii-primary-texts-studied-alongside",
+     "title": "Primary texts studied alongside",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "The completion requirements still name study in Pratyabhijñā, the _Śivasūtra_ and _Svacchandatantra_. For the haṃsa practice, the texts mentors work from are the ST 7 haṃsa passages and the _Haṃsasāra_ (Appendix A and B), with PH 17–18, MM 56 and the Spanda passages as support (Appendix C)."
+      }
+     ]
+    },
+    {
+     "id": "part-ii-your-year-step-by-step",
+     "title": "Your year, step by step",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "The year has five layers, from the daily sit to certification. Keep the lower layers going and the upper ones don't pile up. The same schedule, with self-organized partner and group meetups, is on the [Mentee Year page](https://www.embodiedphilosophy.com/school/mentee-year). Pacing figures marked _suggested_ are guides, not requirements."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Layer",
+        "What you do"
+       ],
+       "rows": [
+        [
+         "**Daily**",
+         "Sit with the ajapā-haṃsa for the length set at your practice baseline. Log it: date, length, one line on what you noticed. Read some of the month's book (about 30 minutes on most days, _suggested_). Notice any task language in your own teaching."
+        ],
+        [
+         "**Weekly**",
+         "Read about a quarter of the month's book. Ten minutes in your project notebook: one line for the talk, one for the offering. Field hours: alternate observing a senior teacher (notes against the six competencies) and practice-teaching, about 30 minutes a week of each (_suggested_). Join or propose a Book Club."
+        ],
+        [
+         "**Monthly**",
+         "The immersion weekend, October to May: Open Session and Practicum, 2.5 hours each, both halves live, attendance at 80% or above. One 45-minute one-to-one with Jacob or Nataraj Chaitanya. One articulation session with your partner, about an hour: each explains one teaching from the month through an analogy or image a new student could hold. Written reflection on the required book, posted by the last day of the month. That month's project steps (below)."
+        ],
+        [
+         "**Quarterly**",
+         "**End of December, end of March, end of June.** Read back through your practice log, rate yourself on the six competencies, check your field hours (_suggested_ pace: 3 and 3, then 6 and 6, then 10 and 10 complete by 30 June) and check the project steps due. March adds an attendance check. June is the readiness review."
+        ],
+        [
+         "**Culmination, July 2027**",
+         "Retreat practicum. The 60-minute talk, live and recorded. The three-session offering to a real group, leading the haṃsa-upadeśa yourself, assessed by your mentor. Final report and competency check."
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "Partners rotate on 1 November, 1 December, 1 February, 1 April and 1 June. Contact your new partner in the first week of each rotation."
+      },
+      {
+       "t": "p",
+       "s": "**A typical month.** Move the immersion weekend to wherever it falls; the rest stays put."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Week",
+        "Focus",
+        "What to do"
+       ],
+       "rows": [
+        [
+         "1",
+         "Open",
+         "Start the book. Book your one-to-one and send your summary. Fix a date with your articulation partner. Check this month's project steps."
+        ],
+        [
+         "2",
+         "Practise",
+         "Reading, second quarter. Observation hour with notes. Articulation session."
+        ],
+        [
+         "3",
+         "Teach",
+         "Reading, third quarter. Practice-teaching hour, recorded if you can (you'll need student reports in May). This month's project step. Book Club."
+        ],
+        [
+         "4",
+         "Gather",
+         "Finish the book, post your reflection. One-to-one (sessions run in the last week of the month). Log your hours. Notebook lines for the talk and the offering."
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "June has no immersion; use that weekend to finish your hours and work on the projects. July has no new book; its reflection is on the retreat and your deliveries."
+      }
+     ]
+    },
+    {
+     "id": "part-ii-preparing-the-final-projects",
+     "title": "Preparing the final projects",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Both final pieces are built in small dated steps from November, so nothing waits for July. Tick each step in your own copy, and bring the evidence to your one-to-one. The steps follow the preparation list for the certification project in Part V."
+      },
+      {
+       "t": "p",
+       "s": "**The 60-minute specialized talk** (assessed separately; may be revised once)"
+      },
+      {
+       "t": "checks",
+       "items": [
+        "**30 Nov 2026.** Start your project notebook: one page a month, with one possible talk theme after each immersion, reading and observation.",
+        "**31 Dec.** Longlist three possible topics, one sentence each. Bring them to the Q1 review.",
+        "**28 Feb 2027.** Topic proposal in your one-to-one summary: the topic, who it's for, why you are the person to give it. Mentors confirm or redirect.",
+        "**30 Apr.** Try a 10-minute seed version on your articulation partner: the opening and the central image only.",
+        "**May, immersion 8.** The talk is designed at this immersion.",
+        "**31 May.** Full outline with sources, timings and the one practice you'll guide, sent to your mentor.",
+        "**15 Jun.** Record a full 60-minute run-through for your partner or a small group.",
+        "**30 Jun.** Mentor feedback on the recording in your June one-to-one. Book a live delivery date in the first half of July.",
+        "**15 Jul.** Deliver the talk live and recorded.",
+        "**31 Jul.** Revised talk, if you're using the one revision."
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**The three-session Sahṛdaya offering** (certifies you to teach Sahṛdaya Meditation)"
+      },
+      {
+       "t": "checks",
+       "items": [
+        "**30 Nov 2026.** In the same notebook, note one possible Session 1 angle from each month's book.",
+        "**31 Dec.** Shortlist two or three angles you can speak to from your own life.",
+        "**31 Jan 2027.** Name your real group and venue (your students, a studio, a community group) and talk to the host.",
+        "**28 Feb.** Choose your Session 1 angle and its book.",
+        "**15 Mar.** Memorise ST 7.59 in Sanskrit and English; recite it in your March one-to-one.",
+        "**31 Mar.** Write the Session 1 talk, landing included, in under 1,500 words.",
+        "**15 Apr.** Rehearse the Session 2 talk with your partner, checking every instruction against the use-and-avoid table in Part III.",
+        "**30 Apr.** Book your three dates and open sign-ups. Tell your mentor which Session 2 they are assessing.",
+        "**15 May.** Practise paryavasāna responses on five recorded student reports.",
+        "**31 May.** Lead the full upadeśa for peers, under your mentor's supervision.",
+        "**15 Jun.** Write the follow-on cohort plan: meeting rhythm, place, how students join for the 12 to 18 months.",
+        "**26 Jul.** Last day to finish all three sessions, recorded."
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Spacing.** Session 2 comes one week after Session 1, and Session 3 at least two weeks after Session 2, so students arrive with real practice. Monday 5 July is the latest start that finishes by the end of July; starting in June leaves room for a missed week."
+      },
+      {
+       "t": "p",
+       "s": "**Both, by 31 July:** the final report (positionality, lineage, how SLBT principles moved into your teaching) and the open-book competency check. Outline the report by 30 June."
+      }
+     ]
+    },
+    {
+     "id": "part-ii-one-to-ones",
+     "title": "One-to-ones",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Book early in the month; sessions run in the last week. When you book, send a short summary of what you want to work on, at least two days before the session, so your mentor can prepare. Attach anything you want looked at (a draft, a recording, a notebook page) and bring your practice log, which is reviewed every time."
+      },
+      {
+       "t": "lines",
+       "items": [
+        "What I want to work on:",
+        "One thing from my practice log:",
+        "Where I am on the talk:",
+        "Where I am on the offering:",
+        "Attached (optional):"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "part-iii",
+   "label": "Part III",
+   "title": "The practice: ajapā-haṃsa",
+   "kind": "part",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "The whole practice fits in one sentence a new student can carry home: **your breath is already a meditation, and practice is learning to be present for it.** Paṭala 7 of the _Svacchandatantra_ never sets out a method, but with Kṣemarāja's _Uddyota_ it holds a clear theory of one. This part states that theory, then gives mentors the words, vocabulary and cautions to teach it."
+    },
+    {
+     "t": "p",
+     "s": "A note on the name: the word _ajapā_ does not occur in the translated passages, but the idea does. ST 7.59 says the haṃsa has \"none who utters it,\" and the _Uddyota_ on 7.56 quotes VBh 156 calling the 21,600 daily breaths \"the recitation of the Goddess.\" \"Ajapā-haṃsa\" follows later usage, attested in the Tantric Upaniṣads (Padoux, _Tantric Mantras_)."
+    }
+   ],
+   "sections": [
+    {
+     "id": "part-iii-the-theory-in-seven-claims",
+     "title": "The theory in seven claims",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "ol",
+       "items": [
+        "**The breath is one pulse of letting go and taking in, at every scale.** [Text] \"Śiva, by his very nature, is Haṃsa; the Sun … is Haṃsa; the Self too is declared to be Haṃsa; and the Breath is conjoined with Haṃsa\" (7.29–30). [Uddyota] _Haṃsa_ is _hāna-samādāna_: exhale and inhale, the senses opening and closing, the world emitted and withdrawn. _Consequence:_ the breath is not a tool for reaching something larger; it is a close-up instance of it.",
+        "**It is already happening, without effort.** [Text] \"Even when the mind is cast elsewhere and the eye let fall on something else, the breath still moves on always, wholly without effort\" (7.58). _Consequence:_ there is nothing to start.",
+        "**Nobody recites it, and nobody can stop it.** [Text] \"There is none who utters it, and none is found who checks it: the Haṃsa utters itself, abiding in the breast of living beings\" (7.59). [Uddyota] It is _anāhata_, unstruck, and \"never sets.\" _Consequence:_ instructions that make the student its producer (\"say _ham_ as you inhale\") get the direction backwards.",
+        "**The only thing you add is attention.** [Uddyota] \"Only some, rich in attentiveness (_avadhāna-dhana_), enter into its reality\" (on 7.59). \"Dissolved\" means \"reposed through contemplative attention (_nibhālana_)\" (on 7.56). _Consequence:_ this is the textual ground for SLBT's \"practice adds only _avadhāna_.\"",
+        "**The breath already is the recitation, 21,600 times a day.** [Text] For the adept dissolved in the Prāṇa-Haṃsa, the breath-count \"is declared to be his recitation (_japa_)\" (7.56). _Consequence:_ you join a mantra that has run since birth.",
+        "**The breath is time, and one can stop being only the one counted.** [Text] The haṃsa dwells within \"as Time itself, reckoning the world by its measures\" (_kalābhiḥ kalayan jagat_, 7.146); one who recites or meditates on the Kāla-Haṃsa \"moves about like Time\" (7.210). [Uddyota] _kal_ means to count, to cast, to go and to know. _Consequence [Interpretation]:_ attending to the breath shifts you from the thing counted to the knowing that counts.",
+        "**The method is graded, and ends in uncontrived awareness.** [Text] The chapter also teaches effortful yoga (7.293, 7.217–225, \"first conquer the breath,\" 7.315), but offers a direct option: \"one established in the Supreme Reality is not afflicted by any of the Times\" (7.226). [Uddyota] Even the tenfold yoga ends in _akṛtaka-vimarśa_ (on 7.293). _Consequence [Interpretation]:_ effort is early scaffolding, matching the SLBT arc toward the teacher withdrawing their own."
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Where the breath rests.** The haṃsa is \"seated in the central breath\" (verse quoted at 7.10) and \"abides in the breast\" (7.59). It comes to rest in the heart (_Uddyota_ on 7.118) and stands \"in perfect balance\" at mid-palate, the \"equinox\" (on 7.114). PH 18 adds the beginner's instruction: notice the breath's start and end points. For students these become the place the breath comes home to, and the still point where one direction turns into the other."
+      }
+     ]
+    },
+    {
+     "id": "part-iii-the-beginner-talk-in-five-moves",
+     "title": "The beginner talk, in five moves",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "ol",
+       "items": [
+        "**Something has been happening all day without you.** About fifteen breaths a minute, 21,600 a day. You didn't start it and can't really stop it. No one recites it; it recites itself (7.59).",
+        "**Each breath has two halves and a turn.** Letting go, taking in, and a small pause where one becomes the other: the rhythm of waking and sleeping, day and night.",
+        "**The old teachers heard a word in it.** _Haṃsa_, \"swan,\" which also sounds like the breath: a soft \"ham,\" a soft \"sa.\" _Ajapā_, the prayer you don't have to say. You don't make the sound; you listen for it.",
+        "**Your one job is attention, not effort.** Only those \"rich in attention\" enter it. That attention is like listening to music you love: interested, relaxed, curious.",
+        "**Each breath is a moment of your life.** The breath is the body's clock. Resting with it, you're not running out of time; you're present for it."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "part-iii-the-five-minute-guided-practice",
+     "title": "The five-minute guided practice",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "ol",
+       "items": [
+        "Sit comfortably. Let the breath do whatever it is already doing.",
+        "Notice one exhale. Just one. Notice it finish.",
+        "Notice the inhale arrive on its own. You didn't call it.",
+        "Notice where the outbreath ends, and where the inbreath ends: the tiny place where out becomes in. (PH 18)",
+        "If you like, hear the two halves as a soft \"ham\" and \"sa,\" without making the sound. If that feels like work, drop it.",
+        "When the mind wanders, that's fine. The breath kept going while you were away.",
+        "Close by noticing that the breath will keep going after you stop \"meditating.\""
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**On syllables [Interpretation].** The ST 7 passages don't say which syllable goes with which half. VBh 155 has the breath go out with _sa_ and in with _ha_; MM 56, read with its moon and sun pairing, gives the reverse. Pick one and keep it light, or skip the syllables."
+      }
+     ]
+    },
+    {
+     "id": "part-iii-instruction-language-use-and-avoid",
+     "title": "Instruction language: use and avoid",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "This is the instruction-language throughline of every practicum, applied to the breath."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Instead of (task language)",
+        "Try (noticing language)",
+        "Ground"
+       ],
+       "rows": [
+        [
+         "\"Focus on your breath.\"",
+         "\"Notice the breath that's already here.\"",
+         "It moves \"without effort\" (7.58)"
+        ],
+        [
+         "\"Breathe deeply and slowly.\"",
+         "\"Let the breath be however it is.\"",
+         "None utters it, none checks it (7.59)"
+        ],
+        [
+         "\"Say _ham_ on the inhale.\"",
+         "\"Listen for the sound the breath already makes.\"",
+         "\"The Haṃsa utters itself\" (7.59)"
+        ],
+        [
+         "\"Clear your mind.\"",
+         "\"The breath kept going while you were thinking.\"",
+         "Even when \"the mind is cast elsewhere\" (7.58)"
+        ],
+        [
+         "\"Relax and calm down.\"",
+         "\"Get curious about the moment it turns.\"",
+         "Attention, not a state, is the entry (on 7.59)"
+        ],
+        [
+         "\"Try harder to stay present.\"",
+         "\"You can't miss it. It's been here the whole time.\"",
+         "It \"never sets\" (on 7.59)"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "part-iii-essential-vocabulary",
+     "title": "Essential vocabulary",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Introduce words a few at a time, and only after the student has felt what each names."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Tier",
+        "Term",
+        "Plain meaning",
+        "Where"
+       ],
+       "rows": [
+        [
+         "1 · first class",
+         "_haṃsa_",
+         "the breath as self-sounding mantra; letting go and taking in",
+         "7.29–30, 7.59"
+        ],
+        [
+         "1",
+         "_ajapā_",
+         "\"not recited\"; the mantra that says itself",
+         "idea at 7.59"
+        ],
+        [
+         "1",
+         "_prāṇa_",
+         "breath, and the aliveness in it",
+         "7.56, 7.77, 7.167"
+        ],
+        [
+         "1",
+         "_avadhāna_",
+         "attention as being there for it, not effort",
+         "_Uddyota_ on 7.59"
+        ],
+        [
+         "2 · once practising",
+         "_japa_",
+         "recitation; here, what the breath already does",
+         "7.56, 7.109, 7.210"
+        ],
+        [
+         "2",
+         "_svayam uccarate_",
+         "\"it utters itself\"",
+         "7.59"
+        ],
+        [
+         "2",
+         "_anāhata_",
+         "unstruck sound, made by nothing",
+         "_Uddyota_ on 7.29, 7.59"
+        ],
+        [
+         "2",
+         "_hṛd_ / _uras_",
+         "heart / breast, where the haṃsa abides",
+         "7.59, 7.110, 7.118"
+        ],
+        [
+         "2",
+         "_madhya_",
+         "the middle; the still point",
+         "verse at 7.10; on 7.58"
+        ],
+        [
+         "2",
+         "_kāla_ / _kalayati_",
+         "time / it counts",
+         "7.30, 7.146, 7.207–210"
+        ],
+        [
+         "2",
+         "_līna_",
+         "dissolved, reposed",
+         "7.56"
+        ],
+        [
+         "3 · mentors",
+         "_hāna-samādāna_, _sarga/saṃhāra_, _kāla-haṃsa_, _svarasataḥ_, _nibhālana_, _vyāpti_, _tuṭi_, _saṃkrānti_, _dādaśānta_, _akṛtaka-vimarśa_, _pañcavidha-kṛtya_",
+         "for reading the text; rarely said aloud",
+         "see mentor guide"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "_Prasiddhi_ and _bhāvanā_ are not in these passages but pair with them [Interpretation]: 7.58–59 is the textbook case of _prasiddhi_."
+      }
+     ]
+    },
+    {
+     "id": "part-iii-images-for-teaching",
+     "title": "Images for teaching",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "These images are the material of the **peer articulation exercises**: mentees practise drawing new students into a teaching through an accessible image, then articulating the teaching that stems from it. Each image sets the marketplace view (meditation installs a state) beside the text's (tune in to what is already running). All are teaching stock except the swan, which is traditional."
+      },
+      {
+       "t": "ul",
+       "items": [
+        "**The refrigerator hum.** You notice it only when it clicks off. The sound \"never sets\" (7.59).",
+        "**Glasses on your head.** Effort makes the search worse; noticing ends it (7.58–59).",
+        "**The swing at the top of its arc.** The weightless instant comes with the rhythm, not by pushing (balance, on 7.114).",
+        "**The birder's ear.** The forest didn't get louder; attention got richer. \"Rich in attentiveness\" (on 7.59).",
+        "**The music you love.** Nobody concentrates on a favourite song; you're drawn in, \"of its own savour\" (on 7.58).",
+        "**The clock you stopped hearing.** The breath measures out a life; hearing it again frees you from being only counted (7.146, 7.210).",
+        "**The swan and the milk [traditional].** The haṃsa sips milk from water: innate discernment (_Spandapradīpikā_)."
+       ]
+      },
+      {
+       "t": "p",
+       "s": "Longer class stories (the lighthouse keeper, two meditation students, the counting-house) are in the [mentor guide](https://claude.ai/artifact/9q7WRAhDECfiYfRWy5eTwe)."
+      }
+     ]
+    },
+    {
+     "id": "part-iii-cautions-for-every-mentor",
+     "title": "Cautions for every mentor",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "ul",
+       "items": [
+        "**Teach the public layer only.** 7.58–59 describe a breath every living being has. The tenfold yoga (7.293), nectar visualization (7.217–225), death-omens and the _Haṃsasāra_'s secret technique (HS 32–36, [53]–[54]) stay out of beginner classes.",
+        "**Make no literal promises.** The texts promise the end of old age and death (7.210; HS 39). \"No longer only the one counted\" is our interpretation; say so.",
+        "**Name the effort tension.** \"First conquer the breath\" (7.315) is in the chapter too. Reading effort as scaffolding is defensible, not the only reading.",
+        "**Mortality material needs care.** Breath-as-time lands hard on the grieving or ill; it belongs with Immersion 5.",
+        "**Don't assign syllables dogmatically.** The sources disagree.",
+        "**Correct one translation slip before quoting.** The _Spandapradīpikā_ rendering of a _Haṃsapārameśvara_ verse says mantras \"attain flightlessness (fall)\"; _patitvaṃ prāpnuvanti_ here means they \"attain lordship.\""
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "part-iv",
+   "label": "Part IV",
+   "title": "Teaching new meditators: the three-session process",
+   "kind": "part",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "Three 90-minute sessions take a newcomer from \"why meditate at all\" to a received practice and a first month of honest questions. Session 1 makes the case, Session 2 gives the practice in the _haṃsa-upadeśa_, and Session 3 completes what students have met. Leading all three to a real group completes the certification (Part V)."
+    },
+    {
+     "t": "table",
+     "head": [
+      "",
+      "Session 1: Why now, why this",
+      "Session 2: Theory and upadeśa",
+      "Session 3: Questions"
+     ],
+     "rows": [
+      [
+       "Job",
+       "Diagnose the moment and make the case",
+       "Explain why it works; give the practice",
+       "Complete what students have met"
+      ],
+      [
+       "SLBT principle",
+       "Cultural diagnosis (competency 1)",
+       "_Prasiddhi_",
+       "_Paryavasāna_"
+      ],
+      [
+       "Format",
+       "Arrival 5 · talk 40 · taste 10 · conversation 30 · close 5",
+       "Talk 35 · break 10 · ceremony 30 · silent sitting 15",
+       "Reports 30 · questions 45 · closing practice 15"
+      ],
+      [
+       "Student leaves with",
+       "A reason to practise that isn't stress relief",
+       "The ajapā-haṃsa, received, and a 40-day commitment",
+       "Their own experience, met and named"
+      ],
+      [
+       "Gap before next",
+       "One week",
+       "Two to four weeks of daily practice",
+       "A 12–18 month practice cohort"
+      ]
+     ]
+    },
+    {
+     "t": "p",
+     "s": "The gap between Sessions 2 and 3 matters most: Session 3 works only if students bring real experience, so hold it after at least two weeks of practice."
+    }
+   ],
+   "sections": [
+    {
+     "id": "part-iv-session-1-the-inspirational-talk",
+     "title": "Session 1: the inspirational talk",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "The apprentice picks one angle, tells it as a story about the present, and always lands on the same four steps. Pick the angle you can speak to from your own life."
+      },
+      {
+       "t": "p",
+       "s": "**Structure.** Arrival: one minute of silence, no instruction (5 min). The talk: a concrete scene, the problem, how the usual answers repeat it, the landing (40 min). A taste: the five-minute practice from Part III, without Sanskrit (10 min). Conversation in pairs, then the room: \"What were you hoping meditation would do for you?\" and \"What did you notice just now that you weren't expecting?\" (30 min). Close: name what Session 2 offers (5 min)."
+      },
+      {
+       "t": "p",
+       "s": "**The landing.**"
+      },
+      {
+       "t": "ol",
+       "items": [
+        "The problem is not a lack of content but a model: we were taught to acquire states, skills and information, and that model now runs our inner lives.",
+        "Most meditation on the market repeats the model. It sells calm or productivity and makes you the manager of your own mind.",
+        "There is an older account. Awareness is already full and practice adds only attention. The breath is already a mantra, said about 21,600 times a day.",
+        "So Sahṛdaya Meditation trains a capacity, not a state: the capacity to be moved. Its fruit is wonder (_vismaya_, Śivasūtra 1.12), not calm."
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Angles.** The first eleven follow the reading list; the last two come from the texts."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Angle",
+        "Opening",
+        "Reaches the landing by",
+        "Reading (month)"
+       ],
+       "rows": [
+        [
+         "Education's end",
+         "\"When did anyone at school last ask you how you should live?\"",
+         "Apps inherited the vacancy and answered with productivity",
+         "Kronman (1)"
+        ],
+        [
+         "What yoga was for",
+         "A photo of a packed āsana class",
+         "Returning to the older centre: sound and breath",
+         "Simpson (2); Singleton (2, sugg.)"
+        ],
+        [
+         "Philosophy used to be a practice",
+         "Ancient Athens",
+         "Meditation as an exercise of attention, not a technique for an outcome",
+         "Hadot (3)"
+        ],
+        [
+         "The long apprenticeship",
+         "Tibetan monks debating for decades",
+         "Results take 12–18 months to notice",
+         "Dreyfus (4)"
+        ],
+        [
+         "How reading used to sound",
+         "Monks murmuring the page",
+         "The haṃsa is a text the body already murmurs",
+         "Illich (4, sugg.)"
+        ],
+        [
+         "The teacher who doesn't explain",
+         "Jacotot teaching French he couldn't explain",
+         "The upadeśa points, then steps back",
+         "Rancière (5)"
+        ],
+        [
+         "Authority after the guru",
+         "The guru scandals",
+         "A mantra that empowers itself; belonging from a peer cohort",
+         "Wildcroft (6); Remski (6, sugg., contested)"
+        ],
+        [
+         "Knowing as relationship",
+         "\"Do you know your best friend the way you know a fact?\"",
+         "The breath is known by intimacy",
+         "Palmer (7)"
+        ],
+        [
+         "We know more than we can tell",
+         "Recognizing a face you can't describe",
+         "Why the practice is received in person, not from an app",
+         "Polanyi (8); Lave and Wenger (8, sugg.)"
+        ],
+        [
+         "Attention as the rarest gift",
+         "A failed geometry problem",
+         "_Avadhāna_ as receptive waiting",
+         "Weil (9)"
+        ],
+        [
+         "The world of total work",
+         "\"When did you last do something that wasn't for something?\"",
+         "A return to receptive leisure",
+         "Pieper (9, optional)"
+        ],
+        [
+         "Running out of time",
+         "\"How many of you feel behind?\"",
+         "The breath as clock; knowing the counting",
+         "ST 7.30, 7.146, 7.210"
+        ],
+        [
+         "Calm as a commodity",
+         "An app that scores your heart rate",
+         "The fruit is _camatkāra_, not sedation",
+         "Śivasūtra 1.12"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "The book summaries behind these angles are general knowledge, not checked against copies [Interpretation]; apprentices should verify their interpretation against the source."
+      }
+     ]
+    },
+    {
+     "id": "part-iv-session-2-theory-and-the-hasa-upadea",
+     "title": "Session 2: theory and the haṃsa-upadeśa",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "The talk explains, in the tradition's words, why the practice works. The ceremony then gives the practice in a way that matches the theory: it does not install a mantra but wakes attention to one already sounding."
+      },
+      {
+       "t": "p",
+       "s": "**The talk (35 min).** Each move introduces one Sanskrit word, only after students have felt what it names."
+      },
+      {
+       "t": "ol",
+       "items": [
+        "**_Haṃsa_****: letting go and taking in.** One pulse of release and return (_hāna-samādāna_, on 7.29).",
+        "**_Ajapā_****: the mantra no one recites.** \"There is none who utters it … the Haṃsa utters itself\" (7.59); it goes on \"even when the mind is cast elsewhere\" (7.58).",
+        "**_Japa_****: you've said it 21,600 times today.** The breath-count is \"his recitation\" (7.56).",
+        "**_Avadhāna_****: the only thing you add.** \"Only some, rich in attentiveness, enter into its reality\" (on 7.59).",
+        "**_Madhya_****: the turn.** Where the outbreath ends and the inbreath begins (PH 18); the haṃsa opens as \"I am That\" in the gap (MM 56).",
+        "**_Kāla_****: the breath as clock.** It \"reckons the world\" (7.146). Resting in it, one is no longer only the one counted (7.210, read gently).",
+        "**Why a ceremony.** Traditions mark a threshold so something ordinary can be received as significant. Nothing is added to you; you will know what you've been doing all along."
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**The ritual (30 min).** It is called _haṃsa-upadeśa_, \"the instruction in the haṃsa,\" and deliberately not _dīkṣā_. _Dīkṣā_ is given by an initiated guru and claims to transform the student; _upadeśa_ is honest about what is offered, an instruction that points."
+      },
+      {
+       "t": "p",
+       "s": "_Setup:_ a table or altar with murtis (or a substitute), candle, a bowl of water, incense, and a pūjā tray. Each student receives a flower to offer at the pūjā table, alongside a folded piece of paper in which they have articulated their dedication to sustained practice."
+      },
+      {
+       "t": "ol",
+       "items": [
+        "**Lighting the lamp (2 min).** In silence. Light (_prakāśa_) is awareness, present before the lamp.",
+        "**Settling (5 min).** Guided noticing of where each outbreath and inbreath ends (PH 18). No technique, no control.",
+        "**The request (3 min).** Each student asks, \"Please show me the haṃsa.\" The texts open with a request (the Goddess asks, Bhairava answers). A student may stay silent and witness.",
+        "**The verse (2 min).** The mentor recites ST 7.59: _nāsyoccārayitā kaścit pratihantā na vidyate | svayam uccarate haṃsaḥ prāṇinām urasi sthitaḥ ||_, then in English.",
+        "**The pointing (8 min).** \"I am not going to give you a syllable to repeat. I am going to point to one you already say.\" Students rest a hand on their own chest. Over three breaths the mentor says softly, once, \"haṃ… sa…\", then falls silent for two to three minutes. The giving is a pointing, not a transfer.",
+        "**The offering (3 min).** Each student places their flower in the water by the lamp, with their card. \"Nothing here needs anything from you. What you offer is attention.\"",
+        "**The commitment (3 min).** Together, aloud: \"For forty days I will sit with the breath that recites itself, ten minutes each day, and bring what I notice to our next meeting.\" A simple _samaya_, giving the practice time to take root.",
+        "**Closing (4 min).** \"You have been saying this all your life. From today you know it.\" The lamp stays lit into the silent sitting."
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Silent sitting (20 min).** The first practice as received practitioners, with no guidance after the first minute."
+      },
+      {
+       "t": "p",
+       "s": "**Forty days, then 12 to 18 months.** The 40-day commitment is the first step, not the whole practice. Teachers say plainly in the ceremony that the cumulative results of any practice take 12 to 18 months of daily sitting to notice. They then offer the context for that longer arc: a new-practitioner cohort that meets regularly after Session 3."
+      },
+      {
+       "t": "p",
+       "s": "**Why this is faithful [Interpretation].** Every element is traditional in kind (lamp, request, verse, offering, commitment), and every one is aimed at attention. That follows 7.59 and the _Spandapradīpikā_'s sources: mantras that are \"mere letters\" stay powerless; sound works only when \"enriched by awareness.\" Left out on purpose: anything from ST 7's initiatory layer, and any claim of _śaktipāta_."
+      }
+     ]
+    },
+    {
+     "id": "part-iv-session-3-questions-objections-misunderstandings",
+     "title": "Session 3: questions, objections, misunderstandings",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Session 3 starts from what students actually experienced. The apprentice's main skill is _paryavasāna_."
+      },
+      {
+       "t": "p",
+       "s": "**Structure.** Reports (30 min): each student answers \"What did you notice that surprised you?\", and the apprentice completes the report, for example \"You noticed the breath kept going while you were planning dinner. So who was breathing?\" Questions and objections (45 min). Closing practice (15 min): ten minutes of silent sitting, then the invitation into the 12–18 month cohort."
+      },
+      {
+       "t": "table",
+       "head": [
+        "Students say",
+        "Short answer",
+        "Ground",
+        "The move"
+       ],
+       "rows": [
+        [
+         "\"My mind won't stop.\"",
+         "It doesn't need to. The breath kept going while you thought.",
+         "7.58",
+         "\"And when you noticed, what was the breath doing?\""
+        ],
+        [
+         "\"Am I doing it right?\"",
+         "There's no doing to get right.",
+         "7.59",
+         "\"What happened just before you asked that?\""
+        ],
+        [
+         "\"Isn't this just mindfulness?\"",
+         "Close, but it isn't regulating attention to calm down.",
+         "7.29, 7.59; PH 17",
+         "Ask what they hoped mindfulness would give."
+        ],
+        [
+         "\"Should I breathe deeply?\"",
+         "No. Let it be however it is.",
+         "7.59; PH 18",
+         "\"What happens when you stop managing it?\""
+        ],
+        [
+         "\"Which syllable goes with which breath?\"",
+         "Sources disagree, so it doesn't matter.",
+         "VBh 155 vs MM 56",
+         "Drop the syllables for a week."
+        ],
+        [
+         "\"I got bored, or fell asleep.\"",
+         "That's information, not failure.",
+         "_Uddyota_ on 7.59",
+         "\"What were you waiting for it to do?\""
+        ],
+        [
+         "\"Noticing my breath makes me anxious.\"",
+         "Thank you. Open your eyes, feel your feet; the breath can wait.",
+         "A care question",
+         "Outer anchor; talk privately; refer if needed."
+        ],
+        [
+         "\"Is this religious?\"",
+         "No belief is required.",
+         "7.58–59",
+         "\"What would change for you if it were?\""
+        ],
+        [
+         "\"When will it work?\"",
+         "Moments of wonder often come within weeks; cumulative changes take 12–18 months.",
+         "Śivasūtra 1.12",
+         "\"What's already different, even slightly?\""
+        ],
+        [
+         "\"Did I receive something?\"",
+         "You received a pointing to what was always yours.",
+         "7.59; MM 56",
+         "\"What did you notice during the pointing?\""
+        ],
+        [
+         "\"Conquering death sounds like superstition.\"",
+         "Read literally, it's a promise we don't make.",
+         "7.210",
+         "Ask what they fear running out of."
+        ],
+        [
+         "\"Isn't this appropriation?\"",
+         "A fair question. We name sources, keep the words, and leave initiatory layers alone.",
+         "Competency 6",
+         "Welcome it; don't defend."
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "The full objection table, with five more rows, is in the [three-session arc](https://claude.ai/artifact/5wPoP2CBPKvGTxq6GV3Vsf)."
+      },
+      {
+       "t": "p",
+       "s": "**Misunderstandings to refine.** A good meditation is one where you were present, not one that was calm. Thoughts are allowed; the breath goes on through them. Practice uncovers rather than builds. The teacher points to the mantra rather than giving it. Each return is the practice. The haṃsa sounds in traffic too."
+      }
+     ]
+    },
+    {
+     "id": "part-iv-guardrails",
+     "title": "Guardrails",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "ul",
+       "items": [
+        "**No touch.** Students place their own hand on their own chest.",
+        "**Opting out is complete.** A student may witness without asking, reciting or committing, and still belongs.",
+        "**No claims of transmitted power,** guru status or lineage authority.",
+        "**No separate fee** for the ceremony; it is never an upsell.",
+        "**Public layer only** (Part III cautions).",
+        "**Know when to refer.** Breath attention can surface panic or trauma (Immersion 5 practicum).",
+        "**Name the sources** in every session (competency 6)."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "part-v",
+   "label": "Part V",
+   "title": "Assessment and certification",
+   "kind": "part",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "To be certified to teach Sahṛdaya Meditation, an apprentice delivers the full three-session offering of Part IV to a test group as the end-of-year project. Separately, every apprentice gives a 60-minute specialized talk, the final teaching project, which tests their ability as a teacher. Apprentices lead the upadeśa themselves, and leading it is part of the certification exam, in which their mentor (Jacob or Nataraj Chaitanya) assesses them."
+    }
+   ],
+   "sections": [
+    {
+     "id": "part-v-requirements-for-completion",
+     "title": "Requirements for completion",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "checks",
+       "items": [
+        "**Daily practice,** sustained across the year and logged; reviewed in each one-to-one.",
+        "**Attendance** at both halves of each immersion, live, at 80% or above. Recordings are not a substitute.",
+        "**Study** of the monthly reading and the primary texts, discussed in mentee-organized Book Club sessions.",
+        "**Monthly written reflection** posted to the cohort group.",
+        "**Peer articulation work** between immersions: articulating teachings to new students through analogies and images (Part III).",
+        "**Ten hours of practice-teaching and ten of observation,** documented, with observation notes written against the six competencies.",
+        "**Retreat practicum,** in person or the facilitated online version.",
+        "**The three-part offering:** the arc of Part IV delivered live and recorded to a real group, with the apprentice leading the haṃsa-upadeśa themselves and their mentor assessing it.",
+        "**Final teaching project:** a 60-minute specialized talk, separate from the three-part offering. It is a lecture and presentation in the style of a Sādhana School session, and it integrates study and practice. It reflects the specialization the mentee has chosen and shows how they will apply this training in their own work. It is delivered live, recorded and assessed by a mentor, and it may be revised once.",
+        "**Final report:** positionality, lineage, and how SLBT principles moved into your teaching.",
+        "**Competency check:** an open-book examination on terminology and framework."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "part-v-preparing-the-certification-project",
+     "title": "Preparing the certification project",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "ol",
+       "items": [
+        "Choose one Session 1 angle, read its book, and write the talk, landing included, in under 1,500 words.",
+        "Rehearse the Session 2 talk with a peer, checking every instruction against the use-and-avoid table in Part III.",
+        "Memorize ST 7.59 in Sanskrit and English.",
+        "Lead the full upadeśa once for peers under supervision before offering it publicly.",
+        "Practise _paryavasāna_ responses against five recorded student reports.",
+        "Plan the follow-on cohort: meeting rhythm, place, and how students join for the 12–18 months.",
+        "Deliver all three sessions to a real group, with at least two weeks of practice between Sessions 2 and 3."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "part-v-what-the-project-shows",
+     "title": "What the project shows",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "table",
+       "head": [
+        "Competency",
+        "Where the arc shows it"
+       ],
+       "rows": [
+        [
+         "1 · Genealogy and cultural diagnosis",
+         "The Session 1 talk and its landing"
+        ],
+        [
+         "2 · Subtle attunement",
+         "The guided practice and the settling in Session 2"
+        ],
+        [
+         "3 · Ethical speech",
+         "Objections in Session 3, especially religion and appropriation"
+        ],
+        [
+         "4 · Presence-based transmission",
+         "The pointing and the silence after it"
+        ],
+        [
+         "5 · Grounding and curriculum design",
+         "The arc itself, and the 12–18 month cohort plan"
+        ],
+        [
+         "6 · Lineage and responsibility",
+         "Naming sources; keeping to the public layer"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "s": "This mapping is a draft [Interpretation]. It shows which competencies the offering gives evidence for, as a guide for the mentor who assesses it."
+      }
+     ]
+    },
+    {
+     "id": "part-v-certification-and-after",
+     "title": "Certification and after",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Completion earns the 100-Hour SLBT Certificate in Subtle Liberation-Based Teaching, issued by Sādhana School, with letters of reference on request. Graduates may be invited to assist or facilitate future Sādhana School offerings; invitation follows demonstrated competence, not completion. A longer formation track toward independent teaching within the lineage is discussed individually after the year ends. Alumni keep cohort access and free entry to later Open Sessions."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "appendices-and-sources",
+   "label": "",
+   "title": "Appendices and sources",
+   "kind": "front",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "The translations are given in full in Appendices A to C at the end of this document, quoted as written."
+    },
+    {
+     "t": "ul",
+     "items": [
+      "**Appendix A · Svacchandatantra 7.** Every haṃsa passage of paṭala 7 with Kṣemarāja's _Uddyota_, 18 sections from 7.10 to 7.315.",
+      "**Appendix B · Haṃsasāra.** The full text, vv. 1–54, with textual notes. Sections IV–VI are for mentors' study only.",
+      "**Appendix C · Supporting passages.** PH 17–18, MM 56, SK 1.23–26 with the _Spandapradīpikā_, the swan image, and _Spanda Sandoha_ on SK 1.1, and the haṃsa passages of Tantrāloka 6 and the Vijñānabhairava in Sanskrit."
+     ]
+    }
+   ],
+   "sections": [
+    {
+     "id": "appendices-and-sources-sources",
+     "title": "Sources",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "ul",
+       "items": [
+        "_Sahṛdaya_ prospectus: the live [Google Doc](https://docs.google.com/document/d/1ZUNbS2WwQBjbalE9ApGQVPZ5mP-tSvtFLOIr8wgj5BI) (read 1 November 2026, now titled \"The Sahṛdaya Conservatory\"), and project files SLBT\\_Sahrdaya\\_Apprenticeship\\_Prospectus.pdf.",
+        "[Ajapā Haṃsa in Svacchandatantra 7: A Mentor's Guide](https://claude.ai/artifact/9q7WRAhDECfiYfRWy5eTwe).",
+        "[Three-Session Arc for New Meditators: A Mentee Template](https://claude.ai/artifact/5wPoP2CBPKvGTxq6GV3Vsf).",
+        "_Svacchandatantra_ paṭala 7 with _Uddyota_, working translation: project files source-texts/Svacchandatantra\\_Patala-7\\_Hamsa.md.",
+        "_Haṃsasāra_, working translation (July 2026) from Muktabodha M00264, MS BHU C4244: project files source-texts/Hamsasara\\_Translation\\_July-2026.md.",
+        "[Tantrik Translations folder](https://drive.google.com/drive/folders/1B8OIHxILvtKXIzEMYuvIq-fCUezYE3SF): Kṣemarāja, _Pratyabhijñāhṛdaya_; Maheśvarānanda, _Mahārthamañjarī_ with _Parimala_; _Spandapradīpikā_; Kṣemarāja, _Spanda Sandoha_; Bettina Bäumer, \"The Lord of the Heart\"; André Padoux, _Tantric Mantras_ (Routledge, 2011).",
+        "The monthly reading list as Jake set it for the 2026–27 cohort."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "appendix-a",
+   "label": "Appendix A",
+   "title": "The Haṃsa in Svacchandatantra paṭala 7, with Kṣemarāja's Uddyota",
+   "kind": "appendix",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "Jacob's working translation of every Haṃsa passage in paṭala 7 (Kālādhikāra), reproduced in full and as written. Verse numbers follow the _Uddyota_ edition as transmitted in that source; cite ST 7 by the KSTS edition (ed. Madhusūdan Kaul). Passages purely on breath-arithmetic are summarized in italics by the translator."
+    }
+   ],
+   "sections": [
+    {
+     "id": "appendix-a-orienting-note",
+     "title": "Orienting note",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "This is the seventh chapter (_paṭala_) of the **Svacchandatantra**, \"the chapter on Time\" (_kālādhikāra_), together with Kṣemarāja's _Uddyota_ commentary. The chapter maps cosmic Time (_kāla_) onto the movement of the breath (_prāṇa_) in the body, and its hidden spine is the **Haṃsa** — at once (a) the gander/\"wild goose,\" (b) the spontaneous breath-mantra _haṃ-sa_ (⇄ _so'ham_) that beings breathe without effort, and (c) a name of the supreme Lord."
+      },
+      {
+       "t": "p",
+       "s": "Kṣemarāja's constant move is an **etymology by nirukti**: _haṃsa_ is read as **hāna + samādāna** — \"abandoning and taking in.\" Outwardly this is exhalation and inhalation; cosmically it is _sarga-saṃhāra_, the emission and withdrawal of the universe. So to say \"Śiva, the Sun, the Self, and Prāṇa are all Haṃsa\" is to say that one and the same reality pulses as emission and reabsorption at every level. When that pulsing reckons and measures the world, it is **Kāla-haṃsa**, the \"Time-Haṃsa,\" and meditation on it conquers death."
+      },
+      {
+       "t": "p",
+       "s": "Passages are given in textual order. For each: the root verse(s) of the Tantra in transliteration and translation, followed by the _Uddyota_ commentary (translated fully where it bears on the Haṃsa, condensed where it turns to purely technical breath-timing). Bracketed material and headings are editorial."
+      },
+      {
+       "t": "p",
+       "s": "Recurring technical vocabulary is kept close to the Sanskrit: _prāṇa_ (breath/vital energy), _apāna_ (the downward/incoming breath), _madhyama prāṇa_ (the central breath), _hāna-samādāna_ (emission-and-reception), _sarga/saṃhāra_ (emission/withdrawal), _niṣkala bhaṭṭāraka_ (the partless Lord), _anāhata_ (the \"unstruck\" sound), _svātantrya_ (autonomy), _vyāpti_ (pervasion), _tuṭi_ (a breath-unit of time)."
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-1-the-mantra-potency-verse-quoted-at-7-10",
+     "title": "1. The mantra-potency verse quoted at 7.10",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "In the commentary on verse 10, having explained that the body is pervaded by 350 million nāḍīs \"as a palāśa leaf is pervaded by its veins,\" Kṣemarāja quotes a verse in which the Haṃsa first appears as the source from which the breaths radiate."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "madhyaprāṇaniviṣṭahaṃsavisṛtā ye romakūpāśrayāḥ prāṇāḥ sūkṣmavimarśaśālivapuṣaḥ sārdhatrikoṭyātmakāḥ | tān mantrātmatayā vilomayati yo niḥśeṣatattvāśraye dehe 'sāv iha nādabhairavatanuḥ svacchandanāthaḥ paraḥ ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Those breaths (_prāṇa_) that stream out from the **Haṃsa** seated in the central breath and that lodge in the pores of the skin — three and a half _crores_ [350 million] in number, their bodies made of subtle reflective awareness (_sūkṣma-vimarśa_) — he who, in this body that is the seat of the entire array of _tattvas_, turns them back in reverse as [so many forms of] mantra: he is here the Supreme Lord Svacchanda, whose very body is Bhairava as Sound (_nāda-bhairava_).\""
+      },
+      {
+       "t": "p",
+       "s": "The point of the citation: every one of the countless breaths is a filament radiating from the single Haṃsa of the central channel; the yogin who \"reverses\" them — reading them back to their source as mantra — _is_ Svacchandabhairava."
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-2-the-keystone-iva-sun-self-and-breath-are-all-hasa-7-2930",
+     "title": "2. The keystone: Śiva, Sun, Self and Breath are all Haṃsa (7.29–30)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "_This is the doctrinal heart of the chapter's Haṃsa teaching. The context (from 7.28) is that the breath rises and falls within the body just as the outer sun rises and sets; the verse now explains_ why _the same breath is inconstant, now going out, now coming in — because its very nature is Haṃsa, \"abandoning-and-taking-in.\"_"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "śivo dharmeṇa haṃsas tu sūryo haṃsaḥ prabhānvitaḥ || 7-29 || ātmā vai haṃsa ity uktaḥ prāṇo haṃsasamanvitaḥ |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation of the verse.** \"Śiva, by his very nature (_dharma_), is **Haṃsa**; the Sun, endowed with radiance, is **Haṃsa**; the Self (_ātman_) too is declared to be **Haṃsa**; and the Breath (_prāṇa_) is conjoined with **Haṃsa**.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary (****_Uddyota_****).**"
+      },
+      {
+       "t": "p",
+       "s": "\"He who was earlier called **Śiva** — the dense mass of consciousness-and-bliss (_cidānanda-ghana_) — is, _by his dharma_, that is, by his innate nature which is **autonomy** (_svātantrya_), **Haṃsa**: one whose law is **abandoning-and-taking-in** (_hāna-samādāna_), the agent of the emission and withdrawal of the universe (_viśva-sarga-saṃhāra-kārī_). Precisely because he is Śiva, he performs the **fivefold cosmic act** (_pañcavidha-kṛtya_), whose essence is emission-and-reabsorption."
+      },
+      {
+       "t": "p",
+       "s": "\"And just as he is [Haṃsa], so too the **Sun** — which is made of Śiva's Power of Knowledge (_jñāna-śakti_) — being conjoined with radiance, that is, with light (_prabhā = prakāśa_), is **Haṃsa**, one whose nature is abandoning-and-taking-in, by way of the emitting and drawing-in of the fluid/nectar (_rasa-visarga-ādāna_)."
+      },
+      {
+       "t": "p",
+       "s": "\"And since, by the principle already settled, the **Self** (_ātman_) is nothing but Śiva himself appearing as **contracted consciousness** through his own autonomy, it too — by way of the opening and closing of the sense-organs and the rest (_karaṇa-unmīlana-nimīlana_) — has the nature of abandoning-and-taking-in, and is therefore called **Haṃsa**."
+      },
+      {
+       "t": "p",
+       "s": "\"As it was said [at 4.260] in the connecting gloss (_yojanikā_): _'By this very conjunction/yoga the puruṣa is Haṃsa.'_ Just so, that very **Breath** — even while it rests on the plane of breath — performing abandoning-and-taking-in both outwardly and inwardly, is precisely **Haṃsa**. For this Sun, this Self, and this Breath are fully conjoined with the Haṃsa — the **partless Lord** (_niṣkala bhaṭṭāraka_) whose essence is the **unstruck** [sound] (_anāhata_), in the form of Śiva."
+      },
+      {
+       "t": "p",
+       "s": "\"For it is he alone who, by the descending sequence, having taken up the station that ends in breath, performs the outward and inward going-and-coming (_bahir-antar gamāgamau_) — and so effects emission and withdrawal. **Therefore, by the mere practice of cultivating this station, the great yogins swiftly enter the state of Supreme Śiva.** In passing, the secret meaning (_rahasyārtha_) has here been glanced at.\""
+      },
+      {
+       "t": "p",
+       "s": "_Immediately after, verse 7.30 continues:_ **tasyodayāt kalet kālaḥ** — \"From its (the breath's) rising, Time reckons [the world],\" i.e. the breath, rising, measures out the world through the sixfold transformation (birth, subsistence, etc.), dividing it as past, present and future. The Haṃsa-breath and Time are thus the same pulse."
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-3-dissolved-forever-in-the-pra-hasa-7-5556",
+     "title": "3. \"Dissolved forever in the Prāṇa-Haṃsa\" (7.55–56)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "After computing the number of breath-movements in a day, month and year, the text describes the adept who reposes in the breath."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "prāṇahaṃse sadā līnaḥ",
+        "sādhakaḥ … paratattvavit |",
+        "tasyāyaṃ japa uddiṣṭaḥ",
+        "siddhi-mukti-phala-pradaḥ || 7-56 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"The adept (_sādhaka_) forever **dissolved in the Prāṇa-Haṃsa** … becomes a knower of the Supreme Reality (_paratattva-vit_). For him this [breath-count] is declared to be [his true] recitation (_japa_), granting the fruits of both _siddhi_ and liberation.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"_Dissolved_ (_līna_) means reposed through contemplative attention (_nibhālana_). — And thus, by his sinking down into the plane of breath he attains, through absorption into the _śākta_ station, [the state of] a **knower of the Supreme Reality**."
+      },
+      {
+       "t": "p",
+       "s": "\"Here the breath is called **Haṃsa** because it is the substrate of the Haṃsa that is the very mantra-potency (_mantra-vīrya_) of the whole universe, as determined [above]. He who is dissolved therein is thereby ever endowed with a recitation (_japa_) equal to [that great] breath-count. As is said in the **Vijñānabhairava**:"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "'Six hundred by day and by night, together with twenty-one thousand — this is proclaimed the recitation of the Goddess; supremely hard to attain, it lies at the end of the breath.' (VBh 156)\""
+       ]
+      },
+      {
+       "t": "p",
+       "s": "_And 7.57 divides the fruit:_ downward flow (as far as the heart-lotus) yields _siddhi_; the upward flow, [culminating] in the Supreme Reality, yields liberation."
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-4-the-middle-breath-is-hasa-natured-commentary-on-7-58",
+     "title": "4. The middle breath is Haṃsa-natured (commentary on 7.58)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "mano 'py anyatra nikṣiptaṃ",
+        "cakṣur anyatra pātitam |",
+        "yathā pravartate prāṇas-",
+        "tv-ayatnād eva sarvadā || 7-58 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Even when the mind is cast elsewhere and the eye let fall on something else, the breath still moves on always, wholly **without effort** (_ayatnād eva_).\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary (Haṃsa-relevant portion).** \"…Even though the inner and outer faculties are spread out toward their own objects, still, for one who knows the pervasion of the breath and is intent on repose in the Supreme Reality, the **middle breath, whose self is Haṃsa** (_prāṇo haṃsātmā madhyamaḥ_), moves on of its own savour (_svarasata eva_), always, effortlessly — by that very mode that grants supreme repose.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-5-the-self-uttering-hasa-7-59",
+     "title": "5. The self-uttering Haṃsa (7.59)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "The chapter's most celebrated line: the Haṃsa is the mantra no one recites, because it recites itself."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "nāsyoccārayitā kaścit pratihantā na vidyate |",
+        "svayam uccarate haṃsaḥ prāṇinām urasi sthitaḥ || 7-59 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"There is none who **utters** it, and none is found who **checks** it: the **Haṃsa utters itself** (_svayam uccarate haṃsaḥ_), abiding in the breast of living beings.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"**'Haṃsa'** is the supreme **partless Lord** whose true nature was described before; and because the middle breath is presided over by it, that middle breath too has for its essence the pervasion already determined."
+      },
+      {
+       "t": "p",
+       "s": "\"**'It utters itself'** — transcending the entire sequence of signified and signifier (_vācya-vācaka-krama_), it flashes forth (_sphurati_) as the **potency of the Great Mantra** (_mahāmantra-vīrya_) whose essence is supreme non-difference. For it has none who utters it and none who checks it, since it alone, as the **agent of all** (_sarva-kartṛtva_), has the nature of the supreme Subject (_paramātṛ-rūpa_)."
+      },
+      {
+       "t": "p",
+       "s": "\"For just this reason it is proclaimed **'unstruck'** (_anāhata_): unlike the other phonemes, it is not made manifest by the striking of the places and organs of articulation, and it **never sets** (_an-astamita_, is never extinguished). And this [Haṃsa] abides in the **breast, the heart**, of living beings, being **the very life even of life itself** (_jīvitasyāpi jīvita-bhūtaḥ_). Yet only some, rich in attentiveness (_avadhāna-dhana_), enter into its reality.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-6-the-pra-hasa-dividing-day-and-night-in-the-fortnight-7-77",
+     "title": "6. The Prāṇa-Haṃsa dividing day and night in the fortnight (7.77)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "prāṇahaṃso yadā prāptas tv adhastāṃ prathamāṃ tuṭim || 7-77 ||",
+        "pūrvam ardhaṃ tv ahaḥ proktaṃ tuṭyardham aparaṃ niśā |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"When the **Prāṇa-Haṃsa** reaches the first lower _tuṭi_, the first half [of that unit] is declared to be day, and the latter half-_tuṭi_ is night.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"**'Prāṇa-Haṃsa' as before** (i.e., as already glossed). _'Lower'_ means [reckoned] from the first _tuṭi_ [above] the half-_tuṭi_ of the [fortnight-]juncture — namely the _tuṭi_ that is the first day (_pratipad_) of the bright fortnight. The division into day and night is exactly as before; and so it is to be understood of the second and subsequent lunar days as well.\" _(Here the Haṃsa-breath's motion through the sixteen tuṭis maps the days of the lunar fortnight.)_"
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-7-the-hasa-draws-in-the-world-s-vital-sap-by-its-rays-7-101",
+     "title": "7. The Haṃsa draws in the world's vital sap by its rays (7.101–102)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "In the \"northern course\" (uttarāyaṇa), the breath rising from Capricorn to Gemini withdraws the vital essence of the world."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "… tatkāle saṃhared vīryaṃ jagaty asmiṃś carācare || 7-101 ||",
+        "haṃso raśmibhir ākṛṣya garbhasthaṃ kārayet tu tam |",
+        "garbhasthānekadhārūpaṃ yad gṛhītaṃ purātanam || 7-102 ||",
+        "karkaṭādeḥ samārabhya sarvaṃ varṣati tat punaḥ |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"…At that time [in the northern course] he **withdraws the vital potency** (_vīrya_) in this world of moving and unmoving things. The **Haṃsa**, drawing it in **by its rays** (_raśmibhir ākṛṣya_), makes it embryonic (_garbhastha_). And that ancient [potency], taken in and held in manifold embryonic form, it **rains forth again**, beginning from Cancer [the southern course].\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"'At that time' — in the northern course. The 'increase of days' [in that course arises] from the practice of grasping the knowable, disregarding the portion of repose. **'Vīrya'** is the vital sap (_rasa_) that nourishes the universe. **'Haṃsa'** is inwardly the **unstruck Sound** (_anāhata-nāda_), and outwardly the **Sun**. **'By its rays'** — inwardly, by the goddess-faculties (_indriya-devī_) turned inward and made of reflective awareness; outwardly, by [the sun's] beams. He explains _'saṃharet'_ (withdraws): **'making it embryonic'** means [drawing it] within the [supreme] Power (_śakti_); _'kārayet'_ — he sets the rays to work drawing it in.\" _(The Haṃsa thus inhales the world's sap in the ascending breath and exhales it back in the descending breath — hāna-samādāna on a cosmic scale.)_"
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-8-the-hasa-kindled-by-illumined-awareness-resting-as-the-fi",
+     "title": "8. The Haṃsa kindled by illumined awareness, resting as the \"Fish\" in the throat (7.107–109)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "The chapter's mantra for the \"northern-course\" practice: the inner unstruck sound (adhyātma-śabda), tasting the sixfold savours, becomes the mantra \"Fish\" (mīna) darting up in the throat."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "adhyātmaśabdarūpātmā ṣaḍrasāsvādaneritaḥ || 7-107 ||",
+        "haṃsabodhapradīptas tu galake mīnam āśritaḥ |",
+        "śabdasaṃvedanaṃ tasya sphuṭaṃ tatra bhaved yataḥ || 7-108 ||",
+        "tadārabhya japāt tasya sarvam eva pravartate |",
+        "mithunāntaṃ ca deveśi tataḥ siddhiḥ prajāyate || 7-109 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Its self is the form of the **inner sound** (_adhyātma-śabda_); impelled by the tasting of the six savours, **kindled by the awakening that is the Haṃsa** (_haṃsa-bodha-pradīpta_), it takes up [the form of] the **Fish** (_mīna_) in the throat. Because a clear sensing of the sound then arises for him, from that point on, through his recitation, everything [he undertakes] proceeds; and [reposing] at the end of Gemini, O Queen of gods, _siddhi_ is thereupon born.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"The **'inner sound'** is the unstruck resonance (_anāhata-dhvani_); its highest sense is what was settled at [7.29] _'Śiva by his nature is Haṃsa.'_ **'Kindled by the awakening that is the Haṃsa'** means enkindled by the **knowledge of pervasion** (_vyāpti-jñāna_) that is the [realized] awakening of the Haṃsa. By the pervasion of the 'turning of the Fish' already explained, it reaches the throat, the zone of the Gemini/Fish-sign's course; and taking up the darting Fish-form — by the flicking of its head-and-tail, which are the upper and lower _kalās_ [of the sixth seed-syllable] — it becomes mantra. Then, mounted upon the breath that is the seat of all the senses, urged toward the tasting of the palatal nectar, from that point on it attains mantra-hood, i.e., is [truly] uttered.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-9-with-its-hasa-the-breath-poised-at-the-point-power-7-110",
+     "title": "9. \"With its Haṃsa\" — the breath poised at the point-power (7.110)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "The turn to the \"southern course\" (dakṣiṇāyana), the breath now descending from Cancer to Libra, raining nectar down."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "sahaṃso binduśaktisthaḥ",
+        "siddhidvārair adhomukhaḥ |",
+        "karkaṭādau sa varṣet tu",
+        "tulāntaṃ tālukāntare || 7-110 ||",
+        "kaṇṭhād adhas tato dehī",
+        "hṛtpadmāt sarvato vrajet |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"**Together with its Haṃsa** (_sahaṃsaḥ_), poised in the **Point-power** (_bindu-śakti_), facing downward through the doors of _siddhi_, [the breath] rains down from Cancer as far as Libra, [passing] through the region of the palate. Then the embodied one [carries it] down from the throat, spreading everywhere from the heart-lotus.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"**The breath that abides together with the Haṃsa** is 'poised in the Point-power' — that is, seated in the _samanā_ station, per [6.15] _'When it enacts creation, the bindu rises up above.'_ Because it grants _siddhi_, [it descends] through those doors — the six finger-breadths and four courses; **facing downward**, it has entered within by way of the _brahmarandhra_; in the region of the palate, i.e., mid-palate, it rains as far as Libra, [reckoned as] the throat, six finger-breadths [down]. …The heart, being made to blossom by the filling of the _apāna_, has the character of a lotus; **'from the heart-lotus'** means resting upon it.\" _(This descending, nectar-raining Haṃsa is the counterpart to §7 above: samādāna giving way to hāna.)_"
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-10-the-downward-faced-hasa-entering-cancer-7-112114",
+     "title": "10. The downward-faced Haṃsa entering Cancer (7.112–114)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "śaktyadho hṛdaye haṃsaḥ saṃkramet karkaṭe priye || 7-112 ||",
+        "ṣaḍaṅgulāni saṃtyajya siṃhe vai saṃkramet punaḥ |",
+        "ṣaḍaṅgulaiḥ punas tyaktaiḥ kanyāṃ saṃkramate punaḥ || 7-113 ||",
+        "nāsikāgrāt tu tālvantaṃ tyaktvaivaṃ viṣuvad bhavet |",
+        "tulāsaṃkrāntir eṣoktā dakṣiṇaṃ viṣuvad bhavet || 7-114 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Below the [supreme] Power, in the heart, the **Haṃsa** crosses into Cancer, O beloved. Abandoning six finger-breadths, it crosses again into Leo; and again, six finger-breadths given up, it crosses into Virgo. Having left [the span] from the tip of the nose to the palate, thus arises the **equinox** (_viṣuvat_): this is called the crossing into Libra — it is the **southern equinox**.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary (Haṃsa-relevant portion).** \"Below the Power that is the means-of-practice lies the pervading Power (_vyāpinī-śakti_). At the station of the _brahmarandhra_ and so on, the **Haṃsa, downward-faced like a crab** (_karkaṭa iva adhovaktro haṃsaḥ_) [enters Cancer]; then, from its predominance of resonance (_nadana_) and its power to invade the whole universe, [it becomes] Leo; then, from the predominance of the point-radiance (_baindava-prakāśa_) at the brow-center, with its glow and beauty and its motion of all-pervading extension, it is called by the word Virgo; and then, because it stands in perfect balance (_samatva_) in mid-palate, it takes the form of Libra — and just by that balance it merits [the name] _viṣuvat_ (equinox), 'that which deserves pervasion.'\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-11-the-archer-hasa-returning-to-the-heart-lotus-7-117119",
+     "title": "11. The \"Archer\" Haṃsa returning to the heart-lotus (7.117–119)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "vṛścikaṃ tu parityajya dhanvisaṃkrāntir ucyate || 7-117 ||",
+        "ṣaḍaṅgulād adhastāt tu dhanvisthaś carate hṛdi |",
+        "hṛtpadmāntaṃ tu vai haṃsaś caritvā ūrdhvagodayaḥ || 7-118 ||",
+        "makarādiṣu saṃkrāntau dvādaśaivaṃ caret sadā |",
+        "amunoktakrameṇaiva āyur vai sarvadehinām || 7-119 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Leaving Scorpio behind, the crossing into Sagittarius is declared; below the six finger-breadths, standing in Sagittarius, it moves in the heart. Having coursed as far as the end of the **heart-lotus**, the **Haṃsa** [again] rises upward. Thus, at the twelve crossings beginning with Capricorn, it moves forever; and by just this sequence [is measured] the **life-span of all embodied beings**.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"**'Below'** — resorting to the lower six finger-breadths, it 'moves in the heart,' i.e., comes to rest (_viśrāmyati_). And there this **Haṃsa**, because its target is now fixed (_baddha-lakṣya_), is called 'the Archer' (_dhanvin_ = Sagittarius). … Having coursed to the end of the heart-lotus, the Haṃsa **again takes up the [ascending] activity of prāṇa**.\" — On 7.119: \"At the crossings that fall in Capricorn and the rest, the **Haṃsa** courses through the twelve — that is, the months beginning with Māgha — always, at every breath-movement; and this lasts _'the life-span of all embodied beings,'_ i.e., as long as one lives.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-12-knowing-the-pra-hasa-s-course-7-142",
+     "title": "12. Knowing the Prāṇa-Haṃsa's course (7.142)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "prāṇahaṃsagatiṃ cāre jñātvaikasmiṃs tu tad bhajet || 7-142 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Having **known the course of the Prāṇa-Haṃsa** in [each single] breath-movement, one should then undertake that [rite — an eclipse-practice, etc.] within a single [breath].\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"The Haṃsa-hood of the breath is **as before** (i.e., per 7.29). _'In the course'_ — in the flow of _prāṇa_ and _apāna_, which encompasses the pervasion up to the sixty-year cycle. _'That'_ means the lunar eclipse and the like.\" _(Because the entire macrocosm of Time is folded into one breath, the adept who reads the Prāṇa-Haṃsa's motion can perform in one breath what outwardly awaits an eclipse.)_"
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-13-as-the-hasa-courses-so-it-reckons-the-world-as-time-7-14",
+     "title": "13. As the Haṃsa courses, so it reckons the world as Time (7.144–146)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "punar eva pravakṣyāmi nāḍitrayavibhāgataḥ || 7-144 ||",
+        "dakṣiṇottarasaṃkrāntau viṣuvaccāratas tathā |",
+        "yathā caraty asau haṃso jagaty asmiṃś carācare || 7-145 ||",
+        "antaḥsthaḥ kālarūpeṇa kalābhiḥ kalayan jagat |",
+        "nāḍitrayakṛtādhāro mārgatrayavyavasthitaḥ || 7-146 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Again I shall declare, by the division of the three channels — in the southern, northern, and equinoctial course — **how this Haṃsa courses** through this world of moving and unmoving things, dwelling within as **Time itself** (_kāla-rūpeṇa_), **reckoning the world by its measures** (_kalābhiḥ kalayan jagat_), taking the three channels as its support, established on the three pathways.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"…Now [I shall tell] how the **Haṃsa** courses in the equinox that is the right, the left, and both together — in the world made of the moving and the unmoving: moving among moving beings, and, by the mode of the outgoing of the senses, **touching even unmoving things**; and therefore _'dwelling within'_ the [various] subjects, **fixing its foot as Time** — past, present and future — **reckoning the whole world** by its measures (_kalā_: instants, _tuṭis_, _lavas_, etc.), emitting and withdrawing it by way of the sixfold transformation beginning with birth. Even in an unmoving thing, this indwelling Haṃsa, by joining the sap in the right, left, and central channels, effects the nourishment of flower and fruit — so say the knowers of the science of plant-life (_vṛkṣāyurveda_).\""
+      },
+      {
+       "t": "note",
+       "s": "Verses 7.147ff. then unfold this Haṃsa as \"supported on the three channels, established on the three paths, invaded by the three guṇas, set in the three states [waking/dream/deep sleep], overrun by the six causal-lords, joined with the three powers [icchā-jñāna-kriyā], lying between moon, sun and fire\" — i.e. the single Haṃsa differentiated through the whole yogic physiology."
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-14-the-pra-hasa-crossing-the-twenty-four-sakrntis-7-167-7-1",
+     "title": "14. The Prāṇa-Haṃsa crossing the twenty-four saṃkrāntis (7.167, 7.170)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "bāhye caiva tv ahorātre adhyātmaṃ tu varānane |",
+        "catuvíṃśatisaṃkrāntīḥ prāṇahaṃsas tu saṃkramet || 7-167 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"In one outer day-and-night — that is, in the inner [breath-day] — the **Prāṇa-Haṃsa** crosses **twenty-four transitions** (_saṃkrānti_).\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"By the mere contact with the three principal channels of the eight-petalled heart-lotus, it is thus [twenty-four] — so say the knowers of pervasion. _'Prāṇa-Haṃsa' as before._\" _(Twelve by day, twelve by night.)_"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "caturviṃśatisaṃkrāntyaḥ samadhātoḥ svabhāvataḥ |",
+        "śatāni nava vai haṃsa ekām ekāṃ vahet sadā || 7-170 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"The twenty-four transitions, [in one] of balanced humours, by [the breath's] own nature: the **Haṃsa** carries each single [transition] as **nine hundred** [breaths], always.\" _(Kṣemarāja's gloss: in a healthy body the Haṃsa moves each saṃkrānti at a steady 900 breath-counts; deviation from this signals what is desired or undesired, and — developed in the death-omen sections — impending death.)_"
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-15-the-kla-hasa-and-the-conquest-of-death-7-206211",
+     "title": "15. The Kāla-Haṃsa and the conquest of death (7.206–211)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "The chapter's climactic Haṃsa teaching: meditation on the Haṃsa as Lord of Time (Kāla-haṃsa / Svacchanda) conquers death and confers omniscience."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "evaṃ śarīraje kāle mṛtyuṃ cāśubham eva ca |",
+        "jñātvā yogī jayen mṛtyum aśubhāny apy aśeṣataḥ || 7-206 ||",
+        "dhyātvā kāleśasvacchandaṃ haṃsaṃ vā sakaleśvaram |",
+        "nāsikārandhramārgasthaḥ sa sṛjet saṃharej jagat || 7-207 ||",
+        "tatrasthaḥ kalayet sarvaṃ sarvabhūteṣv avasthitaḥ |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Thus, having **known** death and misfortune in the body-born [reckoning of] Time, the yogin conquers death, and misfortunes too, entirely — having **meditated on Svacchanda, the Lord of Time, or on the Haṃsa, the Lord of the manifest** (_sakaleśvara_). Abiding on the pathway of the nostril-aperture, he **emits and withdraws the world**; abiding therein he **reckons** (_kalayet_) all, established in all beings.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"Having meditated on — that is, made vivid by the technique of entering-into — **Svacchanda, the Lord of Time**, who at will illumines all of Time in its divisions (gross, subtle, and so on) and in its outer and inner forms; the **Haṃsa** whose nature is the supreme partless [Lord] as already explained, the Lord of the whole manifest world — the yogin conquers death: this is the link with what precedes."
+      },
+      {
+       "t": "p",
+       "s": "\"…**'Nose'** (_nāsikā_) is the central Power, [derived] from _nasate_, 'moves crookedly'; on the pathway of its aperture, in the _suṣumnā_ abode, [the Lord] — having by the descending sequence assumed the form of breath — stands in the nose and in the apertures (the hollow zones of the eyes and the other senses); and by the mode of opening and closing (_unmeṣa-nimeṣa_) he emits and withdraws the world, outer and inner. Abiding there, he **reckons all**: he casts the inwardly-fixed outward, and the outwardly-manifest inward; and he 'reckons' — that is, arranges variously, knows, and reflectively apprehends — since the root _kal_ means to cast, to count, to go, and to know.\""
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "kālahaṃsaṃ sa tu japan dhyāyan vāpi maheśvari |",
+        "sa bhavet kālarūpī vai svacchandaḥ kālavac caret || 7-210 ||",
+        "hatamṛtyur jarāṃ tyaktvā rogaiḥ sarvabhayojjhitaḥ |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"**Reciting** the **Kāla-Haṃsa** (_kāla-haṃsa_), or even **meditating** on it, O Great Goddess, he becomes one who has **the very form of Time** — [he becomes] **Svacchanda** — and he moves about **like Time** [freely]: his death slain, having cast off old age, freed of all fear [that comes] from diseases.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"The **Haṃsa** whose self is the supreme partless Lord, determined before — that very one, **reckoning the universe by way of the nature of abandoning-and-taking-in** (_hāna-samādāna_) already settled, is here called the **Kāla-Haṃsa**, the Time-Haṃsa."
+      },
+      {
+       "t": "p",
+       "s": "\"**'Reciting or meditating on it'** — reciting by repeating the utterance of the mantra of the Four-_Kalā_ Lord (_catuṣkala-bhaṭṭāraka_), being intent again and again on repose in it, through contemplation of the pervasion taught in the connecting-passage of the section on the Five Praṇavas. **'Having the form of Time'** — he for whom there arises this eminent form of Time, whose essence is the reckoning of the entire universe, becomes verily the Lord **Svacchandabhairava**. And he wanders about just like [Time], ever proceeding through the **performance of the fivefold act** (_pañcavidha-kṛtya_). By the fear caused by diseases — of that he is freed.\""
+      },
+      {
+       "t": "note",
+       "s": "Verse 7.211 then lists the fruits: \"hearing from afar, thinking, seeing [at a distance], and the attainment of all the qualities of sovereignty (aiśvarya) — these arise ever from the conquest of Time (kāla-jaya).\" Kṣemarāja: through absorption into the nature of the Haṃsa — Svacchandabhairava beyond all space-and-time, pervading every aperture — the yogin transcends body and senses, and, re-flooded by the savour of the Supreme Reality, is as-if-automatically free of aging, death, disease, and the limits of finite knowledge."
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-16-the-hasa-meditated-in-the-three-channels-as-brahm-viu-ru",
+     "title": "16. The Haṃsa meditated in the three channels as Brahmā, Viṣṇu, Rudra (commentary on 7.212–216)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "The verses (7.212–216) assign the fruits of right-, left-, and central-channel meditation. The Uddyota makes the Haṃsa explicit."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "dakṣanāsāpuṭe dhyātvā brāhmaiśvaryam avāpnuyāt || 7-212 ||",
+        "… bhaviṣyajjño bhaved vāme viṣṇutulyabalaś ca saḥ || 7-213 ||",
+        "… bhūtaṃ bhavyaṃ bhaviṣyac ca sarvaṃ jānāti madhyataḥ || 7-214 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation (gist).** \"Meditating in the **right** nostril he gains Brahmā's sovereignty [and knowledge of the past]; in the **left**, he knows the future and is equal in strength to Viṣṇu; from the **middle**, he knows all — past, present, and future — and by constant meditative practice attains equality with Rudra… By the supreme mode he gains the station of Īśvara, of Sadāśiva, and [meditating on] the supreme being of Rudra, one becomes **Śiva**.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"As was said before [7.151], _'Brahmā and Īśvara stand on the right, Viṣṇu and Sadāśiva on the left, Rudra and Śiva are declared in the middle'_ — the abiding of the six causal-lords in the three channels alone, by the higher and lower pervasion. Therefore, if in the right and left channels one **meditates on and reflectively realizes the Haṃsa in the form of Brahmā, Viṣṇu, and Rudra** by the lower pervasion, then one becomes possessed of their strength, virility, and sovereignty, and knows the threefold-time universe; and by meditating on Brahmā and the rest, through the higher pervasion, as Īśvara, Sadāśiva, and Śiva, one attains their very nature.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-17-the-hasa-raining-nectar-the-amta-meditation-7-217226",
+     "title": "17. The Haṃsa raining nectar — the amṛta-meditation (7.217–226)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "A distinct death-conquering practice: visualizing a Haṃsa in an inverted lotus at the palate, raining immortal nectar down through the channels."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "… amṛtaṃ dhyāyato jayaḥ || 7-217 ||",
+        "nāḍibhinnālarandhrasthaṃ hṛtpadmaṃ ṣoḍaśacchadam |",
+        "dhyātvā sitaṃ suvikacaṃ kalāṣoḍaśakānvitam || 7-218 ||",
+        "sampūrṇāvayavaṃ candraṃ karṇikākāravigraham |",
+        "tanmadhye cintayed ātmānaṃ śuddhasphaṭikanirmalam || 7-219 ||",
+        "… upariṣṭād dvitīyābjaṃ śāktāmṛtamahodadhau || 7-220 ||",
+        "tac cādho mukhapadmaṃ tu paripūrṇendukarṇikam |",
+        "tanmadhye cintayed dhaṃsam adho binduśikhānvitam || 7-221 ||",
+        "varṣantam amṛtaṃ divyaṃ samantāt saṃvicintayet |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"…For one who meditates on the **nectar**, [there is] victory [over death]. Having meditated on the **heart-lotus** of sixteen petals — set at the aperture of the channel-stalk, white, in full bloom, endowed with the sixteen _kalās_, a **full moon** with all its digits complete, its form the pericarp — one should contemplate in its midst the **Self**, pure and stainless as crystal… Above [is] a second lotus in a great ocean of _śākta_ nectar; and that lotus **faces downward**, its pericarp a full moon. **In its midst one should contemplate the Haṃsa**, downward, tipped with the _bindu_-flame, **raining down divine nectar** (_varṣantam amṛtaṃ divyam_) — one should visualize it [flooding] on every side.\""
+      },
+      {
+       "t": "note",
+       "s": "The visualization continues (7.222–225): the nectar, entering by the upward channel-aperture of the Self, floods and fills the whole body through the mouths of all the channels bound to the lotus-stalk, so that \"the whole body is filled with nectar.\" \"Thus the one ever yoked becomes equal to the Lord of Nectar (Amṛteśa), and — casting off diseases, death and old age — sports with the powers beginning with aṇimā.\" (7.225)"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "evaṃ tasyāmṛtadhyānāt kālamṛtyujayo bhavet |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Thus, from this **meditation on the nectar**, victory over Time-and-Death is his.\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary (summary).** Kṣemarāja glosses the whole as a single image: an adept who for six months continuously contemplates the crystal-bright **Self** within the moon-filled heart-lotus, and above it the downward-facing **Haṃsa** in the inverted palatal lotus — from whose four-_kalā bindu_-radiance the stream of nectar pours through the _brahmarandhra_ and floods every channel-mouth of the body — \"becomes free of disease, un-aging and undying, endowed with the _siddhis_ beginning with aṇimā, and equal to **Amṛteśa-Bhairava**.\" He adds that the nectar here (_amṛta_) is \"the essence of the bliss of the Supreme Power\" (_paraśakti-ānanda-sāra_). He then frames the sequel: \"Having thus taught the conquest of death both by the **Haṃsa-meditation** resting on all three channel-paths and by the **nectar-meditation**, [the text] now begins to teach the truly ultimate essence\" — namely the _athavā_ option (7.226): \"**Or else, one established in the Supreme Reality is not afflicted by any of the Times.**\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-18-practising-the-hasa-svacchanda-tenfold-7-286-7-292293",
+     "title": "18. Practising the Haṃsa-Svacchanda tenfold (7.286, 7.292–293)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "In the closing yoga-teaching, Bhairava names the supreme secret and prescribes seated practice of the Haṃsa-Svacchanda by way of the tenfold yoga (the six purifications, retention, withdrawal, fixation, meditation)."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "daśadhā yogamārgeṇa haṃsasvacchandam abhyaset |",
+        "mantraṃ bindum atītaṃ tu nādāntajyotirākṛtim || 7-293 ||",
+        "saṅkalpya kalpanālakṣyaṃ dhyāyed vai tena sarvagam |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"By the tenfold path of yoga one should practise the **Haṃsa-Svacchanda**. Having conceived the **mantra** as that which has passed beyond the _bindu_, its form the radiance at the end of _nāda_ — [an object] beyond [ordinary] conceiving (_kalpanā-alakṣya_) — one should meditate through it upon the **all-pervading** [Haṃsa-Svacchanda].\""
+      },
+      {
+       "t": "p",
+       "s": "**Commentary.** \"**'By the tenfold path of yoga'** means: by the six practices — outer and inner exhalation and the rest — [culminating in] the quiescent retention (_praśānta-kumbhaka_), withdrawal (_pratyāhāra_), fixation (_dhāraṇā_), and meditation (_dhyāna_) that are to come; and, having first conquered the tenfold vital airs (_prāṇa_ and the rest), one should practise — that is, **enter into** — the aforesaid **Haṃsa-Svacchanda, the partless Lord** (_niṣkala-bhaṭṭāraka_)."
+      },
+      {
+       "t": "p",
+       "s": "\"He clarifies that entering: uttering the mantra of the Four-_Kalā_ Lord beginning with the _a_-_kalā_, then transcending the _bindu_ — thereby unsealing the station of the checking-power (_nirodhikā_) that is the half-moon — and by the sequence of _nāda_ and _nāda-anta_ reaching the form of radiance that is the light of the Power and beyond; having, after [initial] conceptualization, reached it **non-conceptually**; the all-pervading **Haṃsa-Svacchanda**, unmarked by [any] mental construction, self-luminous dense mass of consciousness-and-bliss — this one should meditate on, **dissolving it up to the** **_samanā_** **level**, and enter it by the dawning of an **uncreated reflective awareness** (_akṛtaka-vimarśa_).\""
+      },
+      {
+       "t": "note",
+       "s": "The chapter then turns to nāḍī-purification and prāṇāyāma as the supports of this practice, closing (7.315): \"One should first conquer the breath; when the breath is conquered, the mind is conquered; and when the mind is conquered, for the tranquil one the Supreme Reality shines forth.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-colophon-note",
+     "title": "Colophon note",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "The chapter closes: _\"iti śrīsvacchandatantre … śrīkṣemarājaviracitoddyotākhyavyākhyopete kālādhikāraḥ nāma saptamaḥ paṭalaḥ\"_ — \"the seventh chapter, named the Section on Time, in the _Svacchandatantra_, together with the commentary called _Uddyota_ composed by the venerable Kṣemarāja.\" Kṣemarāja's own summary verse restates the whole: _\"Having rightly known the universe as resting within the breath, through the pervasion that is the outspreading of consciousness, one should — by the knowledge of the portions [of Time] — attain the full, [ever-]abiding [state], [together with] the several siddhis.\"_"
+      }
+     ]
+    },
+    {
+     "id": "appendix-a-a-note-on-the-transliteration",
+     "title": "A NOTE ON THE TRANSLITERATION",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "The verse text follows the _Uddyota_ edition as transmitted in the source; a few readings there are visibly corrupt (e.g. _mirayeta_ for _mriyeta_, _nirṇeṣyamāṇan_ etc.), and where a form was plainly a scribal slip I have silently read the standard form in the translation while leaving the transliteration close to the copy. Passages purely concerned with breath-arithmetic that surround a Haṃsa line have been summarized in italics rather than translated in full, to keep the Haṃsa thread continuous."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "appendix-b",
+   "label": "Appendix B",
+   "title": "Haṃsasāra (The Essence of the Haṃsa)",
+   "kind": "appendix",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "Jacob's working translation (July 2026) from the Muktabodha e-text M00264, MS BHU C4244, reproduced in full and as written, with its textual notes. Source: project files source-texts/Hamsasara\\_Translation\\_July-2026.md, from the original Google Doc (id 1MIcC\\_29LT7jwUaCPVd75K6ow1qXgN2tB3ZS7oMgwfDo). Verse numbers in square brackets are the translator's continuous renumbering; manuscript numbers follow in parentheses."
+    },
+    {
+     "t": "p",
+     "s": "**For mentors.** Sections IV–VI (vv. 21–54) are initiatory and esoteric material: death-signs, the secret technique for \"cheating Time,\" and the rules of concealment. They are given here for study, not for teaching to beginners (see Part III cautions)."
+    },
+    {
+     "t": "p",
+     "s": "**Translated from the Muktabodha e-text (M00264), MS BHU C4244** Working translation with textual notes"
+    }
+   ],
+   "sections": [
+    {
+     "id": "appendix-b-a-note-on-the-text",
+     "title": "A note on the text",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "This is a short Kaula revelation-text in the standard dialogue frame: the Goddess asks, Bhairava answers. Its subject is the _haṃsa_ — the Self as the spontaneous, unrecited breath-mantra _haṃsa/so'ham_ moving in the three channels — treated first as an object of visionary sight (verses 4–20), then as the ground of _kālajñāna_, the reading of mortality in signs (21–29), and finally as the secret technique for cheating Time altogether (30–40). The remainder is the _samaya_ frame: who may receive this and who may not."
+      },
+      {
+       "t": "p",
+       "s": "The manuscript is in poor condition. The verse numbering collapses after v. 40 and restarts at 32; I have renumbered continuously in square brackets and given the manuscript number where it differs. Asterisks and question marks in the source mark illegible _akṣaras_. Where the reading is genuinely uncertain I have translated conservatively and flagged it in the notes rather than emending silently."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-invocation",
+     "title": "Invocation",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "oṃ namaḥ śivāya sa",
+        "śivāya śivadāya namo namaḥ ||",
+        "oṃ namaḥ paramātmane ||",
+        "oṃ namo vighnahartre ||",
+        "atha haṃsasāraṃ likhyate ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "Oṃ, homage to Śiva — to him who is Śiva, the giver of what is auspicious, homage and homage again. Oṃ, homage to the Supreme Self. Oṃ, homage to the Remover of Obstacles. Here the _Haṃsasāra_ is set down."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-i-the-goddess-asks-12",
+     "title": "I. The Goddess Asks (1–2)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "śrutaṃ deva mayā pūrvam amalaṃ haṃsayāmalam |",
+        "punar hi śrotum icchāmi sārāt sārataraṃ param ||"
+       ],
+       "n": "1"
+      },
+      {
+       "t": "p",
+       "s": "O God, I have heard before the immaculate _Haṃsayāmala_. Now I wish to hear again what is beyond it — more essential than the essence."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "yat purā kathitaṃ deva sūcitaṃ na prakāśitam |",
+        "vada me vastu sadbhāvaṃ prasādaṃ kuru śūlabhṛt ||"
+       ],
+       "n": "2"
+      },
+      {
+       "t": "p",
+       "s": "What was told before, O God, was only hinted at, never disclosed. Speak to me the true being of the Real. Grant your favour, Bearer of the Trident."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-ii-bhairava-consents-38",
+     "title": "II. Bhairava Consents (3–8)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "sādhu sādhu mahāprājñe sarvasatvārthabodhini |",
+        "tadarthaṃ saṃpravakṣyāmi tava snehān maheśvari ||"
+       ],
+       "n": "3"
+      },
+      {
+       "t": "p",
+       "s": "Well asked, well asked, O greatly wise one, awakener of all beings to their purpose. For that very purpose I shall declare it fully, out of love for you, Maheśvarī."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "durlabhaṃ sarvadevānāṃ yoginīnāṃ tathaiva ca |",
+        "yo 'sau śānto hy ajo devaḥ śaktyādhāro hy avigrahaḥ ||"
+       ],
+       "n": "4"
+      },
+      {
+       "t": "p",
+       "s": "It is hard to come by, even for all the gods, and for the yoginīs likewise. That God who is at peace, unborn, the support of Śakti, having no body —"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "jīvabhūtaḥ sadā tiṣṭhed vāmadakṣiṇamadhyagaḥ |",
+        "ca caiṣa paramo haṃsaḥ sa vai devaḥ sanātanaḥ ||"
+       ],
+       "n": "5"
+      },
+      {
+       "t": "p",
+       "s": "— he abides always as the living being itself, travelling in the left, the right, and the middle. This is the supreme Haṃsa; he alone is the everlasting God."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "sa brahmā sa ca vai rudra īśvaro viṣṇur eva ca |",
+        "sadāśivaḥ paraṃdhāma tārakaṃ brahma eva ca ||"
+       ],
+       "n": "6"
+      },
+      {
+       "t": "p",
+       "s": "He is Brahmā, he is Rudra, Īśvara and Viṣṇu as well; he is Sadāśiva, the highest abode, and the Brahman that carries one across."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "vārāṇasyāṃ tu deveśi svakaṃ mārgaṃ prakāśitam |",
+        "ajñānaṃ caiva tatkṣetraṃ jñānināmavrataḥ sthitam ||"
+       ],
+       "n": "7"
+      },
+      {
+       "t": "p",
+       "s": "But in Vārāṇasī, Mistress of the gods, my own path has been made manifest. That field is [the undoing of] ignorance; for those who know, it stands without need of vows."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "lakṣaṇaṃ tasya vakṣyāmi yena jñāsyanti sādhakāḥ |",
+        "gurvavasthā gamaḥ so hi dṛśyate na tu lakṣyate ||"
+       ],
+       "n": "8"
+      },
+      {
+       "t": "p",
+       "s": "I shall state the mark of it, by which sādhakas will recognise it. Its coming is the guru's own condition: it is seen, and yet cannot be marked out."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-iii-the-nature-of-the-hasa-920",
+     "title": "III. The Nature of the Haṃsa (9–20)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "sa paraḥ sarvato hy ātmā cañcalatve vyavasthitaḥ |",
+        "sa bāhyābhyantarastho hi spandate sarvadehinām ||"
+       ],
+       "n": "9"
+      },
+      {
+       "t": "p",
+       "s": "He is the supreme Self on every side, established in the very condition of tremor. Standing without and within, he vibrates in all embodied beings."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "nityoditaśca niṣṭaśca anādirnidhaneśvaraḥ |",
+        "avyakto vyaktarūpaśca agrāhyaśca calācalaḥ ||"
+       ],
+       "n": "10"
+      },
+      {
+       "t": "p",
+       "s": "Perpetually risen and perpetually settled, without beginning, lord of the end; unmanifest and yet possessed of manifest form; ungraspable; moving and unmoving at once."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "bhāvagrāhyassacinmātraccaitanyāsusthitaḥ sthitaḥ |",
+        "tejorūpī hi bhagavān hṛdvyomnevasthitaḥ paraḥ ||"
+       ],
+       "n": "11"
+      },
+      {
+       "t": "p",
+       "s": "He is grasped through contemplative feeling; he is consciousness alone, and stands firm by the power of consciousness. The Lord, whose form is radiance, the Supreme, abides in the sky of the heart."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "bāhyavyomni sthito dhūmro dhūmrāgre prakṛtirvapuḥ |",
+        "śuddha sphaṭikasaṅkāśaṃ bhinnaṃ vyomni tu vyomavat ||"
+       ],
+       "n": "12"
+      },
+      {
+       "t": "p",
+       "s": "Standing in the outer sky he is smoke-coloured; at the smoke's edge his body is Nature herself. Then he appears like clear crystal — distinct within the void, and yet like the void."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "mukterlatā tadākāraṃ cittrāvalitatādṛśam |",
+        "bhramareṇa pratīkāśaṃ hakāramaśirāhatam ||"
+       ],
+       "n": "13"
+      },
+      {
+       "t": "p",
+       "s": "The vine of liberation takes that shape, resembling a shimmering, variegated coil. It has the look of a bee — the syllable HA, headless, unstruck."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "kulanāthaṃ paraṃ śāntaṃ kulasantati dṛśyate |",
+        "siddhoti nūnaṃ tat tasmiñciva puṣpāṇi paśyati ||"
+       ],
+       "n": "14"
+      },
+      {
+       "t": "p",
+       "s": "The Lord of the Kula, supreme and at peace, is seen as the unbroken succession of the Kula. Then surely he is accomplished — for therein he sees the flowers of Śiva."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "ekoneka vibhedena koṭibhedena dṛśyate |",
+        "nānākāra vibhāgena dṛśyate parameśvaraḥ ||"
+       ],
+       "n": "15"
+      },
+      {
+       "t": "p",
+       "s": "He is seen through the division of the one into many, through ten million divisions. The Supreme Lord is seen through the partitioning into manifold forms."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "havito piṅgalo dīpto niśi veśmani dṛśyate |",
+        "sadvyomajyotirūposau nadate sa muhurmuhuḥ ||"
+       ],
+       "n": "16"
+      },
+      {
+       "t": "p",
+       "s": "Tawny, blazing, he is seen in the house at night. Having the form of the light of the real void, he sounds forth again and again."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "sa bāhyābhyantaraṃ lakṣyaṃ yo dadāti dine dine |",
+        "aghaṃśamaya te devi na kvacidyoni sambhavaḥ ||"
+       ],
+       "n": "17"
+      },
+      {
+       "t": "p",
+       "s": "He who day after day yields this sign, outer and inner alike, quenches sin, O Goddess: there is for him no birth from any womb."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "janmāntara sahasrāṇi śivabhakti parāyaṇaḥ |",
+        "tasya cāpaścimaṃ janma haṃso dṛśyo varānane ||"
+       ],
+       "n": "18"
+      },
+      {
+       "t": "p",
+       "s": "For one intent upon devotion to Śiva through thousands of successive births — for him this birth is the last, and the Haṃsa becomes visible, O lovely-faced one."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "bhidyate hṛdayagranthi cchidyante sarvasaṃśayaḥ |",
+        "kṣīyante cāsya karmāṇi tasmin dṛṣṭe parāpare ||"
+       ],
+       "n": "19"
+      },
+      {
+       "t": "p",
+       "s": "The knot of the heart is split, all doubts are severed, and his actions are worn away — when that supreme-and-not-supreme is seen."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "haṃsajñānapradātā vai durlabho *vidaiśikaḥ |",
+        "pṛthivyāṃ nāsti tad dravyaṃ yad datvā cāriṇī *? vet ||"
+       ],
+       "n": "20"
+      },
+      {
+       "t": "p",
+       "s": "The teacher who bestows knowledge of the Haṃsa is truly hard to find. There is no substance on earth which, by giving it, one could [repay him]."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-iv-the-knowledge-of-time-2129",
+     "title": "IV. The Knowledge of Time (21–29)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "athātaḥ saṃpravakṣyāmi kālajñānaṃ ca?ṇāmbike |",
+        "kālacihnaparijñānaṃ nādhogatiṣu yoginām ||"
+       ],
+       "n": "21"
+      },
+      {
+       "t": "p",
+       "s": "Now I shall declare the knowledge of Time, O Mother — the full understanding of Time's signs, so that yogins do not fall into the lower courses."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "bhu?jaṅga kuṭilākāramagrataḥ sarvatantuṣu |",
+        "taṃ dṛṣṭvāpi ciraṃ devi punarjanma na vidyate ||"
+       ],
+       "n": "22"
+      },
+      {
+       "t": "p",
+       "s": "Coiled in the shape of a serpent, in front, throughout all the filaments: having beheld that even briefly, O Goddess, no further birth is found."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "liṅgākāre ṛ?venmokṣaṃ ghanena bandhanaṃ bhavet |",
+        "rakto yadā tanurvidyātpīte cārthasya sambhavaḥ ||"
+       ],
+       "n": "23"
+      },
+      {
+       "t": "p",
+       "s": "If it takes the form of a liṅga, one attains release; if it is dense, there will be bondage. When it is red one should know the body is frail; when yellow, wealth is coming."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "vyālairviśeṣagamanaṃ bindunādaprasādanam |",
+        "subhikṣaṃ ca pracāre ca durbhikṣaṃ cañcu bandhane ||"
+       ],
+       "n": "24"
+      },
+      {
+       "t": "p",
+       "s": "With serpent-forms, an extraordinary journey — the grace of _bindu_ and _nāda_. Plenty when it moves freely; famine when the beak is bound."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "madhyacchede tribhirmāsairmriyate nātrasaṃśayaḥ |",
+        "tridivairdivase yukte mriyate ca tato dhruvam ||"
+       ],
+       "n": "25"
+      },
+      {
+       "t": "p",
+       "s": "If it is severed in the middle, he dies within three months — no doubt of it. If three days are joined to the day, he dies thereafter for certain."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "pūrvāhṇe pūrvasaṃsthaṃ tu yathā dṛṣṭvā varānane |",
+        "añjaliṃ vāripūrṇāyāṃ bhāvayeta vicakṣaṇaḥ ||"
+       ],
+       "n": "26"
+      },
+      {
+       "t": "p",
+       "s": "Having seen it in the forenoon, stationed to the east, O lovely-faced one, the discerning practitioner should contemplate it in a cupped handful brimming with water."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "sāmastho dakṣiṇaṃ gatvā ṣaṇmāsānmṛtyumādiśet |",
+        "somasūyavibhāgena ahorātraṃ nirīkṣayet ||"
+       ],
+       "n": "27"
+      },
+      {
+       "t": "p",
+       "s": "Established [in the moon-channel], if it passes to the right, one should predict death within six months. By the division of moon and sun one should observe day and night."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "dvau māsau somasūryābhyāṃ māsaṃ somasya dakṣiṇe |",
+        "pūrve dakṣiṇamāvasyāṃ praviśedravimaṇḍale ||"
+       ],
+       "n": "28"
+      },
+      {
+       "t": "p",
+       "s": "Two months by moon and sun together; one month when the moon is in the right. Eastward and rightward, on the new moon, it enters the solar orb."
+      },
+      {
+       "t": "p",
+       "s": "**29.** _somāvasyāṃ daśāhetu pañcāhaṃ sūryagottare | ekaḥ kālasya paryāyaṃ kathitaṃ tava sundari ||_"
+      },
+      {
+       "t": "p",
+       "s": "Ten days at the lunar new moon; five days when the sun goes northward. One full cycle of Time has now been told to you, O beautiful one."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-v-cheating-time-3040",
+     "title": "V. Cheating Time (30–40)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "kālasya vañcanaṃ deva kathaṃ jānāti tattvataḥ |",
+        "etaddhi saṃśayaṃ brūhi atrakautūhalaṃ mama ||"
+       ],
+       "n": "30"
+      },
+      {
+       "t": "p",
+       "s": "**[The Goddess:]** But how, O God, does one truly know the outwitting of Time? Speak to this doubt — my eagerness rests here."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "śṛṇu devi paraṃ guhyaṃ rahasyaṃ bhuvi durlabham |",
+        "yanna kasya cidākhyātaṃ tat te vakṣyāmi suvrate ||"
+       ],
+       "n": "31"
+      },
+      {
+       "t": "p",
+       "s": "**[Bhairava:]** Listen, Goddess, to the highest secret, the mystery hard to find on earth, which has been told to no one. That I shall tell you, O you of good observance."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "candramaṇḍalamadhye tu ṭhakāraṃ cintayet priye |",
+        "ṭha madhyame gatohaṃsaścintanīyaḥ prayatnataḥ ||"
+       ],
+       "n": "32"
+      },
+      {
+       "t": "p",
+       "s": "In the centre of the lunar orb one should contemplate the syllable ṬHA, beloved. The Haṃsa, gone into the middle of ṬHA, is to be contemplated with full effort."
+      },
+      {
+       "t": "p",
+       "s": "**33.** _brahmarandhrātsravantī ca paramāmṛtarūpiṇī | avyayā sarvagā sūkṣmā parā cāsya parākalā ||_"
+      },
+      {
+       "t": "p",
+       "s": "And flowing down from the brahmarandhra, having the form of the supreme nectar — imperishable, all-pervading, subtle, transcendent — is his highest _kalā_."
+      },
+      {
+       "t": "p",
+       "s": "**34.** _haṃsodara gatā sā tu sravantī cintayet priye | kālo na kalayeccātra na jarāvyādhireva ca ||_"
+      },
+      {
+       "t": "p",
+       "s": "One should contemplate her streaming, gone into the belly of the Haṃsa, beloved. Here Time does not count him out, nor does old age, nor disease."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "kālasya vañcanaṃ devi goptavyaṃ vīravandite |",
+        "guptosānnidhyamicchanti mātaraḥ sādhakeśvari ||"
+       ],
+       "n": "35"
+      },
+      {
+       "t": "p",
+       "s": "This outwitting of Time, O Goddess honoured by the heroes, must be kept hidden. The Mothers desire the nearness of one who guards it, O mistress of sādhakas."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "tasmāt sarvaprayatnena na deyaṃ yasya kasyacit |",
+        "dātavyaṃ bhakti yuktānāṃ gurubhaktiratātmanām ||"
+       ],
+       "n": "36"
+      },
+      {
+       "t": "p",
+       "s": "Therefore, with every care, it is not to be given to just anyone. It is to be given to those joined with devotion, whose very selves delight in devotion to the guru."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "guruśśiva gatojñeyaḥ śivogurumukhodgataḥ |",
+        "yo guruḥ sa śivaḥ sākṣāt pūjanīyaḥ prayatnataḥ ||"
+       ],
+       "n": "37"
+      },
+      {
+       "t": "p",
+       "s": "The guru is to be known as one who has gone into Śiva; and Śiva is what issues from the guru's mouth. Whoever is the guru, he is Śiva in person, to be worshipped with diligence."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "śucirdakṣo vinītaśca śaktiścāpyasya tat plutā |",
+        "tasya jñānaṃ ca mokṣaṃ ca siddhyate paramārthataḥ ||"
+       ],
+       "n": "38"
+      },
+      {
+       "t": "p",
+       "s": "Pure, capable, disciplined — and his śakti flooded through with That: for such a one, knowledge and liberation are accomplished in the ultimate sense."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "tasmin sthāne yadā līnaṃ cittaṃ vigatavṛttikam |",
+        "valīpalitanirmuktaḥ ṣaṇmāsena bhaviṣyati ||"
+       ],
+       "n": "39"
+      },
+      {
+       "t": "p",
+       "s": "When the mind, its fluctuations gone, dissolves into that place, within six months he will be freed of wrinkles and grey hair."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "na kālaṃ kalayeccātra na ca sāvyādhireva ca |",
+        "haṃsasāraṃ paraṃ brahma paraṃ vyoma paraḥ śivaḥ ||"
+       ],
+       "n": "40"
+      },
+      {
+       "t": "p",
+       "s": "Here Time does not count him out, nor disease either. The essence of the Haṃsa is the supreme Brahman, the supreme Void, the supreme Śiva."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-vi-transmission-and-concealment-4154",
+     "title": "VI. Transmission and Concealment (41–54)",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "note",
+       "s": "The manuscript's numbering restarts here; MS numbers given in parentheses."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "tvacchreyorthamidaṃ khyātaṃ haṃsasārasamuccayam |",
+        "anāstikānāṃ nādeyaṃ śaṭhānāṃ kruracetasām ||"
+       ],
+       "n": "[41]"
+      },
+      {
+       "t": "p",
+       "s": "For your welfare this compendium, the _Haṃsasāra_, has been proclaimed. It is not to be given to the faithless, the treacherous, the cruel of mind —"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "dāmbhikānāmabhaktānāṃ tantrācāraratātmanām |",
+        "yataste paśavaḥ kīṭā mahāmārgabahiṣkṛtāḥ ||"
+       ],
+       "n": "[42] (MS 32)"
+      },
+      {
+       "t": "p",
+       "s": "— to hypocrites, to the undevoted, to those whose hearts delight in mere Tantric observance. For they are bound beasts, vermin, cast out from the Great Path."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "śaṅkāvikalpanirdagdhā mahāmohāndhyapīḍitāḥ |",
+        "anāśvastā asantuṣṭāḥ paśuśāstreṣu bhāvitāḥ ||"
+       ],
+       "n": "[43] (MS 33)"
+      },
+      {
+       "t": "p",
+       "s": "Burnt up by hesitation and discursive thought, tormented by the blindness of great delusion, unassured, unsatisfied, formed by the scriptures of the bound."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "na te labhante paramaṃ mahorminikarākulam |",
+        "oghasarvasvamatulaṃ guruvaktre samāgatam ||"
+       ],
+       "n": "[44] (MS 34)"
+      },
+      {
+       "t": "p",
+       "s": "They do not attain the Supreme — that turbulence teeming with masses of great waves, the incomparable all-in-all of the Stream, come to rest in the guru's mouth."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "tasmāt sarvaprayatnena dātavyaṃ vīravandite |",
+        "gurubhaktāya śāntāya nityābhyāsaratāya ca ||"
+       ],
+       "n": "[45] (MS 35)"
+      },
+      {
+       "t": "p",
+       "s": "Therefore, O you honoured by the heroes, with every care it is to be given to one devoted to the guru, at peace, delighting in unceasing practice —"
+      },
+      {
+       "t": "p",
+       "s": "**[46]** (MS 36) _vīrācāraniṣaṇṇāya dravyādvaitaparāya ca | samayā sevine nityaṃ kulakālodite śive ||_"
+      },
+      {
+       "t": "p",
+       "s": "— to one seated firmly in the observance of the heroes, given over to the non-duality of substances, ever serving the _samaya_, in the Śiva who rises at the Kula hour;"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "adāmbhikāya guptāya guptācāraratāya ca |",
+        "yataḥ svarasmirūpasthāḥ pīṭhebhyaḥ pīṭhavigrahaḥ ||"
+       ],
+       "n": "[47] (MS 37)"
+      },
+      {
+       "t": "p",
+       "s": "— to one without pretence, discreet, delighting in concealed observance. For [the Mothers] abide in the form of their own rays, coming from the seats, embodied as the seats themselves."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "nityaṃ bhrānti vihīnānāṃ parokṣākāritāṃśritāḥ |",
+        "rakṣantitāḥ kṛpāviṣṭāḥ samayācārapālakāḥ ||"
+       ],
+       "n": "[48] (MS 38)"
+      },
+      {
+       "t": "p",
+       "s": "For those forever free of error, they take on the manner of acting unseen; possessed by compassion, they protect the keepers of _samaya_ observance."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "sarvabhāvaiḥ prayatnena prāṇamadhye ca mātaraḥ |",
+        "vikāsayanti paramaṃ tejo yadvāntasambhṛtam ||"
+       ],
+       "n": "[49] (MS 39)"
+      },
+      {
+       "t": "p",
+       "s": "With their whole being and with effort, the Mothers cause to unfold, in the midst of the breath, that supreme radiance which is gathered within."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "te nodito nodayanti melāpādi samṛddhayaḥ |",
+        "pratyakṣarūpo vīrāṇāṃ sa bāhyābhyantaraṃ sthitāḥ ||"
+       ],
+       "n": "[50] (MS 40)"
+      },
+      {
+       "t": "p",
+       "s": "Themselves unimpelled, they impel the attainments beginning with _melāpa_. For the heroes he stands in perceptible form, both without and within."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "saṃvidyā hṛdayādīnāṃ yogināṃ kaulaśāsane |",
+        "rahasyaṃ jñeyagamanaṃ bhūmiratramagāhyagā ||"
+       ],
+       "n": "[51] (MS 41)"
+      },
+      {
+       "t": "p",
+       "s": "By the awareness of the yogins whose hearts [are opened], within the Kaula teaching: the secret, the going-forth to what is to be known — here the ground is one that reaches the unfathomable."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "jīvanmuktirahasyaṃ ca vīreśānāṃ sukhāgamam |",
+        "kathitaṃ sārasarvasvamumayāsaharaṃ param ||"
+       ],
+       "n": "[52] (MS 42)"
+      },
+      {
+       "t": "p",
+       "s": "And the secret of liberation-while-living, easily come by for the lords of heroes, has been declared — the entire essence, supreme, [spoken by Hara] together with Umā."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "upeya gahvaraṃ prāyaḥ sataśotha sahasraśaḥ |",
+        "tasmāt sarvaprayatnena na deyaṃ yasya kasyacit ||"
+       ],
+       "n": "[53] (MS 43)"
+      },
+      {
+       "t": "p",
+       "s": "The goal is a hidden cavern, sought for the most part by hundreds and by thousands [in vain]. Therefore with every care it is not to be given to just anyone."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "ekaśiṣyamidaṃ jñānamaprakhyāpyamahātmabhiḥ |",
+        "sarvaśāstrabahirbhūtaṃ hṛdayaṃ yoginī kule ||"
+       ],
+       "n": "[54] (MS 44)"
+      },
+      {
+       "t": "p",
+       "s": "This knowledge is for a single disciple, not to be divulged by the great-souled. It lies outside all scripture — the Heart within the Kula of the Yoginīs."
+      }
+     ]
+    },
+    {
+     "id": "appendix-b-textual-notes",
+     "title": "Textual notes",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "**v. 5** — _vāmadakṣiṇamadhyagaḥ_: the standard triad of _iḍā_, _piṅgalā_, _suṣumnā_. The _jīvabhūtaḥ_ construction is doctrinally pointed: the bodiless (_avigraha_) Śiva of v. 4 _is_ the living being, not merely its cause. The stray _ca ca_ at the start of pāda c is metrically defective; likely a scribal doubling."
+      },
+      {
+       "t": "p",
+       "s": "**v. 7** — _jñānināmavrataḥ sthitam_ is unmetrical and probably corrupt. I read _avrataḥ_ as \"without [obligatory] vows,\" i.e. Kāśī grants what elsewhere requires observance. An alternative is _a-vrataiḥ_, \"even by those without vows.\""
+      },
+      {
+       "t": "p",
+       "s": "**v. 8** — _gurvavasthāgamaḥ_ is ambiguous between \"its coming is the guru's condition\" and \"the transmission (_āgama_) of the guru's state.\" The second half is the clearer claim, and a familiar one: the Haṃsa is available to sight (_dṛśyate_) but resists definitional marking (_na lakṣyate_) — perception without _savikalpa_ determination."
+      },
+      {
+       "t": "p",
+       "s": "**v. 10** — _nityodita_ is the Kashmirian technical term par excellence; _niṣṭa_ is presumably for _niṣṭha_ / _niṣṭhita_, giving the standard pairing of perpetual arising with perpetual repose."
+      },
+      {
+       "t": "p",
+       "s": "**v. 11** — _caitanyāsusthitaḥ_ is the crux. I have taken it as _caitanyāt su-sthitaḥ_. Reading _asu-sthitaḥ_ (\"established in the vital breath\") is also possible and fits the breath-context of the whole text rather well; I flag it because it would materially change the verse."
+      },
+      {
+       "t": "p",
+       "s": "**v. 13** — _aśirāhatam_ resists confident construal. _A-śiras_ would describe the _ha_-glyph deprived of its headstroke; _anāhata_ would give the familiar \"unstruck sound.\" The bee-simile (_bhramareṇa pratīkāśam_) supports the acoustic reading — the humming _ha_ — so I have kept both senses in the translation rather than choosing."
+      },
+      {
+       "t": "p",
+       "s": "**v. 16** — _havito_ is unconstruable as it stands. Something like _kapilaḥ_ or a form of _huta-_ would fit the colour-sequence (tawny/blazing). The nocturnal indoor vision here belongs to the same visionary-diagnostic register as the _kālajñāna_ section that follows."
+      },
+      {
+       "t": "p",
+       "s": "**v. 19** — A near-verbatim echo of _Muṇḍaka Upaniṣad_ 2.2.8, with _parāvare_ replaced by _parāpare_ — the substitution is doctrinally deliberate, importing the Śaiva _para/parāpara/apara_ triad into the Upaniṣadic formula."
+      },
+      {
+       "t": "p",
+       "s": "**v. 20** — Both damaged points are recoverable in sense if not in letter: _\\*vidaiśikaḥ_ is almost certainly _deśikaḥ_ with a preceding syllable lost, and the second half is a topos (nothing on earth suffices to repay such a teacher), so the missing verb is likely a form meaning \"could requite.\""
+      },
+      {
+       "t": "p",
+       "s": "**vv. 23–29** — This is a compressed _chāyā_-divination and breath-divination manual and the most damaged stretch of the text. The signs are read from a visionary form (shape: serpentine, liṅga-like, dense; colour: red, yellow) and from which nostril-channel the breath runs relative to the solar and lunar orbs. My renderings of 27–29 give the sense of the numerical scheme but the correspondences do not fully cohere as transmitted; _somasūya_ in 27 is for _soma-sūrya_, and _sūryagottare_ in 29 is probably _sūryago 'ttare_."
+      },
+      {
+       "t": "p",
+       "s": "**v. 32** — ṬHA is the conventional tantric cipher for the lunar disc, so the instruction is self-referential: visualise the moon within the moon, and the Haṃsa at its centre. This verse plus 33–34 is the whole technique for \"cheating Time\" — the nectar streaming from the _brahmarandhra_ is caught in the belly of the Haṃsa rather than falling into the solar fire."
+      },
+      {
+       "t": "p",
+       "s": "**v. 42** — _tantrācāraratātmanām_ listed among the disqualified is not a scribal slip. It reflects the standard Kaula hierarchy in which the _tantra-prakriyā_ is a lower dispensation than the _kula-prakriyā_; devotion to ritual observance alone marks one as still a _paśu_."
+      },
+      {
+       "t": "p",
+       "s": "**v. 44** — _ogha_ here is the Kaula \"stream\" or current of transmission (as in _divyaugha_, _siddhaugha_, _mānavaugha_), not simply \"flood,\" though the wave-imagery of the preceding pāda plays on both."
+      },
+      {
+       "t": "p",
+       "s": "**v. 49** — _yadvāntasambhṛtam_ admits two readings: _yad vānta-sambhṛtam_, \"nourished by what has been emitted,\" which would carry the Kaula sacramental sense; or _yad vā antaḥ-sambhṛtam_, \"or rather, gathered within.\" I have taken the second as the more likely, given that the radiance is being unfolded _prāṇa-madhye_, but the first cannot be excluded in a text of this affiliation."
+      },
+      {
+       "t": "p",
+       "s": "**v. 50** — Badly corrupt. _te nodito nodayanti_ is unconstruable; my rendering assumes a play on _na-udita / unnodayanti_ (\"themselves unimpelled, they impel\"), which suits the surrounding sense but is a guess. Note the number-disagreement in pāda c–d (_pratyakṣarūpo_ singular against _sthitāḥ_ plural), which I have not smoothed over."
+      },
+      {
+       "t": "p",
+       "s": "**v. 52** — _umayāsaharaṃ param_ is metrically and grammatically broken. The most economical restoration is _umayā saha haraṃ param_, \"supreme Hara together with Umā,\" which would make this a standard colophon-style attribution of the dialogue."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "appendix-c",
+   "label": "Appendix C",
+   "title": "Supporting passages from Various Tantras",
+   "kind": "appendix",
+   "blocks": [
+    {
+     "t": "p",
+     "s": "The passages Parts III and IV lean on beyond ST 7 and the _Haṃsasāra_, quoted as given in unpublished working translations. Each is cited by text, verse and the file it comes from. Bracketed notes are the manual's, not the translator's."
+    }
+   ],
+   "sections": [
+    {
+     "id": "appendix-c-c1-kemarja-pratyabhijhdaya-17",
+     "title": "C1. Kṣemarāja, Pratyabhijñāhṛdaya 17",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "**Sūtra.** _madhya-vikāsāc cid-ānanda-lābhaḥ ||_"
+      },
+      {
+       "t": "p",
+       "s": "\"The attainment of the bliss of consciousness (cid-ānanda-lābha) arises from the expansion of the center (madhya-vikāsa).\""
+      },
+      {
+       "t": "p",
+       "s": "**From the commentary.** _sā tu māyā-daśāyām tathābhūtāpi svarūpaṃ gūhayitvā prāk saṃvit-prāṇe pariṇatā iti nītyā prāṇa-śakti-bhūmiṃ svīkṛtya avarohakrameṇa buddhi-dehādi-bhuvam adhiśayānā nāḍī-sahasra-saraṇim anusṛtā …_"
+      },
+      {
+       "t": "p",
+       "s": "\"In the stage of māyā, that same consciousness hides her true form and becomes the vital force (prāṇa-śakti). Descending (avarohakrama), she pervades intellect, body, and the network of subtle channels (nāḍī-sahasra-saraṇi).\""
+      },
+      {
+       "t": "p",
+       "s": "_evaṃbhūtāpi eṣā paśūnāṃ nimīlita-svarūpa eva sthitā_ — \"In bound beings, this central consciousness remains dormant, with its true nature closed off.\""
+      },
+      {
+       "t": "p",
+       "s": "\"When, by the means already described, the Goddess Consciousness (saṃvid-bhagavatī), existing as the innermost center (madhya-bhūtā), unfolds, or when the madhya itself — the central brahma-nāḍī — expands, then from that expansion arises the attainment of the aforesaid cidānanda (bliss of consciousness). Thence follows the jīvanmukti already explained.\""
+      },
+      {
+       "t": "p",
+       "s": "[_prāk saṃvit prāṇe pariṇatā_, \"consciousness first becomes breath,\" is a citation inside the commentary on sūtra 17; the mentor guide's \"PH 17\" refers to this line.]"
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c2-kemarja-pratyabhijhdaya-18",
+     "title": "C2. Kṣemarāja, Pratyabhijñāhṛdaya 18",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "**Sūtra.** _vikalpa-kṣaya-śakti-saṃkoca-vikāsa-vāha-ccheda-ādi-anta-koṭi-nibhāla-nādaya iha upāyāḥ ||_"
+      },
+      {
+       "t": "p",
+       "s": "\"Here the means [to the unfolding of the centre] are: the dissolution of thought-constructs (_vikalpa-kṣaya_), the contraction and expansion of power (_śakti-saṃkoca-vikāsa_), the cutting of the currents [of breath] (_vāha-ccheda_), attentive contemplation of the first and last points [of the breath] (_ādi-anta-koṭi-nibhālana_), and so on.\""
+      },
+      {
+       "t": "p",
+       "s": "**On setting aside mechanical methods.** _prāṇāyāma-mudrā-bandhādi-samasta-yantra-troṭanena sukhopāyameva hṛdaye nihita-cittaḥ…_"
+      },
+      {
+       "t": "p",
+       "s": "\"By transcending all mechanical methods such as prāṇāyāma, mudrā, and bandha, one should place awareness at ease within the heart (hṛdaye nihita-cittaḥ).\""
+      },
+      {
+       "t": "p",
+       "s": "**On the breath's start and end points.** _ādikoṭiḥ hṛdayam antakoṭiḥ dvādaśāntaḥ tayoḥ prāṇollāsa-viśrānti-avasare nibhālanaṃ citta-niveśanena pariśīlanam |_"
+      },
+      {
+       "t": "p",
+       "s": "\"The initial limit (ādi-koṭi) is the heart (hṛdaya); the final limit (anta-koṭi) is the dvādaśānta (a point roughly twelve finger-breadths above the crown). One should contemplate at the moment between the rising and resting of the breath, fixing awareness (citta-niveśa) alternately upon these two points.\""
+      },
+      {
+       "t": "p",
+       "s": "[Corrected 1 November 2026. The folder's rendering of the sūtra read _ādi-anta-koṭi-nibhālana_ as \"methods reaching up to the supreme limit\"; it is rendered here to match Kṣemārāja's own gloss below, attention to the heart and the _dvādaśānta_. The folder's note credits this line to Abhinavagupta; the _Pratyabhijñāhṛdaya_ and its commentary are by Kṣemārāja.]"
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c3-mahevarnanda-mahrthamajar-56-with-parimala",
+     "title": "C3. Maheśvarānanda, Mahārthamañjarī 56 with Parimala",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "Verse. yadi nijahṛdayollāsaṃ nirṇetuṃ nityaniṣkalamicchā |",
+        "madhyatuṭistruṭitavyā'straṃ yatoḥ somasūryayoḥ || 56 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation of the verse and the opening of the** **_Parimala_** (new working translation from the Sanskrit e-text, Muktabodha M00035, Trivandrum Sanskrit Series 66; to be checked before handouts). This fills the gap in the folder's translation, which began partway through the commentary."
+      },
+      {
+       "t": "p",
+       "s": "\"If you wish to ascertain the welling-up of your own heart, eternal and partless, then the middle tuṭi of moon and sun, as they reach their release (_astra_), must be snapped.\" (56)"
+      },
+      {
+       "t": "p",
+       "s": "\"Now, about to teach the very clear means, beginning with the āṇava, to the reflective awareness of the vibrancy of the Self's nature established above, he first discloses all three in a single verse."
+      },
+      {
+       "t": "p",
+       "s": "\"'Your own heart' is the heart fit to be directly realized, whose nature has already been explained. Its 'welling-up' is its flashing forth in the variety of object and subject and the rest. By nature that is 'partless', because it excludes the division of time, and free of the stain of every construct, such as what is to be rejected and what is to be accepted. If you who have approached [as disciples] feel some wish to make it, so described, the ground of a certainty that has the wonder of direct perception, with utter clarity (for, as the _Bhagavad Gītā_ says, 'a person is made of faith; as one's faith is, so is one'), then here is the means. This construal holds for all the meanings to be given."
+      },
+      {
+       "t": "p",
+       "s": "\"Moon and sun are the phonemes _sa_ and _ha_: the moon because it animates all that is known, the sun because it is the knower, undivided from the Akula sun. Their _astra_ is the visarga, and their _āsthā_ is the anusvāra, which marks enclosing [them] in one's heart. As the two reach these, the tuṭi in the middle (the instant in which they stand apart, a fragment of time) must be snapped out, extracted as [a letter is extracted] in the _Mālinī_ and the like. Then the awareness '_haṃsa_' arises. The idea is this: although in reciting the alphabet _ha_ and _sa_ are taken like any other letters, that pair, inseparable from the Anuttara in one's heart, should be contemplated, by fusing them, as the great mantra _haṃsa_: a means to recognize one's own Self as _ahaṃ saḥ_, 'I am He'. The mantra is extracted in reverse order, [as _so'ham_]:"
+      },
+      {
+       "t": "p",
+       "s": "\"'Dealing outwardly with worldly people, concealing what lies within reach of reasoning, moving by the path of disguise, one should lead [the disciple] up, as on the left-hand way.'\""
+      },
+      {
+       "t": "p",
+       "s": "The folder's translation picks up from here."
+      },
+      {
+       "t": "p",
+       "s": "**From the commentary, as translated.**"
+      },
+      {
+       "t": "p",
+       "s": "\"Thus, in keeping with the disciplinary line of the Śrī Laghu-bṛṃhaṇī, he brings in 'so'ham' both to signal the requirement of secrecy and to point the reader toward another mantra. And because this practice takes the form of reflexive awareness focused on particular mantra-phonemes, it is a certain āṇava means. As the Mālinīvijaya says: the samāveśa that arises through arranging utterance, bodily placement, visualization, phoneme, and locus is called the properly āṇava (mode of entry). The same should be understood with respect to 'uccāra' and the rest."
+      },
+      {
+       "t": "p",
+       "s": "\"Here 'uccāra' is the activity of prāṇa—whether breath is retained, exhaled, or filled; at the end of it, that state called 'śānta' shines as stilled through stillness. 'Karaṇa' is a bodily settling (postural/physiological placement); 'dhyāna' is an inner sketching of awareness; and 'sthāna-kalpana' is configuring loci such as the mūlādhāra—at the root a golden heap, in the heart a lightning-flash, at the ājñā a moonlike radiance. Even if these sometimes blend, one should note which factor predominates."
+      },
+      {
+       "t": "p",
+       "s": "\"Moreover, 'soma' is the object-side surge, thick with the character of seeking, knowing, and doing; 'sūrya' is the flashing of the means of knowledge, consisting of will, knowledge, and action. While these two are reaching their respective efficacies, the 'truṭi' belonging to me—the Self as knower—appears as a fault in the form of doubt; it must be snapped, i.e., the doubt that rises in relation to the Self must be cut through. For this coarse blossoming of the world—animated by seeking and so forth—never occurs without the activity of the triad of powers (will/knowledge/action). Therefore one drives away the panic of doubt, which is precisely the inversion of clear, immediate realization; and thereby one gains the heart-centered reflexive awareness described above. Insofar as it can be effected without utterance and the rest—simply as subtle configurations within awareness itself—this is a Śākta means, as that very text says: the samāveśa attained by contemplating the reality by mind alone, without uccāra, is called Śākta."
+      },
+      {
+       "t": "p",
+       "s": "\"Again, it is also taught that soma is apāna and sūrya is prāṇa, moving from dvādaśānta to the heart and from the heart to dvādaśānta. In the middle 'tuṭi'—marked as both outer and inner—where the two naturally arrive at a flashing characterized as a 'throw' (kṣepa), one should rupture into that act of reflexive awareness, whose mark is camatkāra (astonished savor), until it becomes fully heart-penetrating and decisively known. Though the recognition of prāṇa and apāna as ever-arisen, common to the whole body, and as a simultaneous double-release like the fire-drill sticks is already established, it should be deliberately linked for the sake of stabilizing heart-joy and camatkāra; yet even if one doesn't link it, its reality is not harmed."
+      },
+      {
+       "t": "p",
+       "s": "\"This means, however, is to be understood as Śāmbhava, since it operates by eliminating all turbulence of conceptualization and by establishing only one's own nature; hence: 'The āveśa that arises in one who thinks of nothing at all, when awakened by the guru, is called Śāmbhava.' Some also explain it, following Vijñānabhairava-style reasoning, as extracting by intelligence the tiniest sliver of time that lies between the moon and the sun. But the author doesn't press that here. Because of the force of vernacular usage the tantra speaks in shorthand: 'astram—let it go,' 'astam—the middle,' 'mama—tuṭi,' 'struṭi—snap.'"
+      },
+      {
+       "t": "p",
+       "s": "\"Finally, these three means inevitably intermix when examined closely; they are distinguished only by which is predominant. And one should not imagine any difference in the fruit of awareness: all upāyas culminate in the same result; distinctions are pedagogical, made for the sake of gathering and guiding students. Hence the standard map: Śāmbhava and Śākta are the nondual means; Āṇava is the dual or mixed means. The more 'prāṇa-grounded' ones are accomplished through uccāra and related techniques; the intermediate ones through purified conceptual formations; the subtlest through those same formations once pacified.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c4-spandakrik-1-2326-with-the-spandapradpik",
+     "title": "C4. Spandakārikā 1.23–26 with the Spandapradīpikā",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "**1.23.** _yām avasthāṃ samālambya yad ayaṃ mama vakṣyati | tad avaśyaṃ kariṣye 'ham iti saṃkalpya tiṣṭhati ||_ \"Seizing that state of poised receptivity and resolving, 'Whatever he (the guru, or inner Self) instructs, that I shall surely do,' the aspirant stands firmly established.\""
+      },
+      {
+       "t": "p",
+       "s": "**1.24.** _tām āśritya ūrdhva-mārgeṇa soma-sūryāv ubhāv api | sauṣumṇe 'dhvany astamito hitvā brahmāṇḍa-gocaram ||_ \"Relying on that state and turning upward along the central path, the two luminaries — sun and moon — sink within the suṣumṇā, as the yogin leaves behind the sphere of the cosmos (the bodily universe).\""
+      },
+      {
+       "t": "p",
+       "s": "**1.25.** _tadā tasmin mahā-vyomni pralīna-śaśi-bhāskare | sauṣupta-padavan mūḍhaḥ prabuddhaḥ syād anāvṛtaḥ ||_ \"Then, in that vast expanse where the sun and moon are set, he appears outwardly inert like one in deep sleep, yet inwardly he is awakened and unobscured.\""
+      },
+      {
+       "t": "p",
+       "s": "**Transition to 1.26.** _evaṃ spanda-tattvasya udayaḥ proktaḥ | tadā asmād eva ca sahajaḥ mantra-udayaḥ |_ \"Thus the arising (udaya) of the spanda-tattva has been explained. From that very realization there then arises the innate manifestation of mantra (sahaja-mantrōdaya).\""
+      },
+      {
+       "t": "p",
+       "s": "**1.26.** _tad ākramya balaṃ mantrāḥ sarva-jña-bala-śālinaḥ | pravartante 'dhikārāya karaṇānīva dehinām ||_ \"Having entered into that supreme power—the radiance of pure, unobstructed consciousness—the mantras, filled with omniscient potency, function for their appointed purposes, just as the organs of action operate for embodied beings.\""
+      },
+      {
+       "t": "p",
+       "s": "**Scriptures cited in the commentary on 1.26.**"
+      },
+      {
+       "t": "p",
+       "s": "_Haṃsa-Pārameśvara: paśu-bhāve sthitā mantrāḥ kevalā varṇa-rūpiṇaḥ | sauṣumṇe 'dhvany uccaritāḥ patitvaṃ prāpnuvanti te ||_ \"Mantras that remain in the bound state (_paśu-bhāva_) are mere letters; uttered on the path of the suṣumṇā, they attain lordship.\" [Corrected 1 November 2026: the folder renders _patitvaṃ_ as \"flightlessness (fall)\"; it is _pati-tva_, \"lordship\", which is what the argument requires.]"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "Tattva-rakṣā-vidhāna: aśaktatvān niṣkriyatvān na puṃsi na pare pade |",
+        "śaktau niyojayen mantraṃ japaś tu saphalo bhavet ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "\"Because of its powerlessness, the mantra yields no fruit either in the human or the transcendent state unless joined with śakti; when united with śakti, the recitation becomes effective.\""
+      },
+      {
+       "t": "note",
+       "s": "Śrī Vaihāyasya-Saṃhitā: viṣuvat-sthaṃ japaṃ kuryād nāda-ūrdhva-dhvani-bodhitam | mantrākṣarāṇi maṇivat śaktau protāni bhāvayet || tāmeva ca pare vyomni paramāmṛta-bṛṃhitām | darśayaty ātma-sad-bhāvam evaṃ mantro huti-vinā ||"
+      },
+      {
+       "t": "p",
+       "s": "\"He should perform japa at the equinoctial (balanced) point, aware of the upward resonance of nāda; he should contemplate the mantra-syllables as jewels strung on śakti, and see that śakti, expanded with the supreme nectar in the higher sky, revealing the very being of the Self—thus the mantra yields realization without any outer offering.\""
+      },
+      {
+       "t": "p",
+       "s": "_Śrī Kālaparā-Tantra: śabdo nāda-ātmakaḥ tasmāt pratyayenopabṛṃhitaḥ | mantra-bodha-svarūpasthaṃ abhinno bodhayaty api ||_ \"Since sound is of the nature of nāda, when enriched by inner awareness (pratyaya), it remains established in the essence of mantra-consciousness and reveals (the same) non-dual awareness.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c5-the-swan-in-the-spandapradpik-s-list-of-innate-knowings",
+     "title": "C5. The swan in the Spandapradīpikā's list of innate knowings",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "_aśakya-śaktiḥ kasyeyaṃ salilāt pibataḥ payaḥ haṃsasya —_ \"What unfathomable power enables the swan to drink milk alone from a mixture of milk and water?\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c6-kemarja-spanda-sandoha-on-spandakrik-1-1",
+     "title": "C6. Kṣemarāja, Spanda Sandoha on Spandakārikā 1.1",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "Verse. yasyonmeṣanimeṣābhyāṃ jagataḥ pralayodayau |",
+        "taṃ śakticakravibhavaprabhavaṃ śaṃkaraṃ stumaḥ || 1 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**From the commentary.** \"Here, in the case of the Supreme Lord — whose nature is pure and constituted of the Great Light (mahā-prakāśa-ātman) — there exists but one single power of reflexive awareness (parāmarśa-śakti). When appearing as a faint movement (kiṃcid-calattā-ābhāsa-rūpa), it is called by many names in the Āgamas: spanda (vibration), sphurattā (radiance), ūrmi (wave), bala (power), udyoga (effort), hṛdaya (heart), sāra (essence), mālinī, parā, and countless others. Though single, this one power is simultaneously unmeṣa-nimeṣa-mayī — made up of both the opening and closing movements.\""
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c7-tantrloka-6-with-jayaratha-s-viveka-the-hasa-passages",
+     "title": "C7. Tantrāloka 6 with Jayaratha's Viveka: the haṃsa passages",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "**Source.** _Tantrāloka_ of Abhinavagupta with the _Viveka_ of Jayaratha, KSTS edition, chapter 6 (_kālatattvaprakāśana_, \"illuminating the principle of time\"), from the Google Doc \"Tantraloka 6\" in the Tantrik Translations folder. The file's opening line reads \"aṣṭhamāhnikam\", a slip for _ṣaṣṭham āhnikam_."
+      },
+      {
+       "t": "p",
+       "s": "**How to read this section.** The Sanskrit is quoted as it stands in the file. The English is a new working translation made for this manual (1 November 2026), as literal as readability allows; square brackets mark words supplied for sense. It has not yet been checked by Jacob or Nataraj Chaitanya, so mark it \"draft\" on any handout until it has. Abhinavagupta's root verses seldom name the haṃsa; almost every use of the word comes in verses of _Svacchandatantra_ 7 that Jayaratha quotes, so the chapter mainly shows how the Trika read ST 7 (Appendix A)."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c7-1-the-topknot-as-attention-to-every-breath-ta-6-2223",
+     "title": "C7.1 THE TOPKNOT AS ATTENTION TO EVERY BREATH (TA 6.22–23)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "baddhā yāgādikāle tu niṣkalatvācchivātmikā |",
+        "yato'horātramadhye'syāścaturviṃśatidhā gatiḥ || 6-23 ||",
+        "prāṇavikṣeparandhrakhyaśataiścitraphalapradā |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "From the _Viveka_:"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "ayameva hi śikhābandho yatprāṇaśakteḥ praticāramādimadhyānteṣvavadhānena punaḥ punaḥ parāmarśanaṃ nāma | yadabhiprāyeṇaiva -- \"ṣaṭ śātāni divā rātrau sahasrāṇyekaviṃśatiḥ | japo devyāḥ samuddiṣṭaḥ sulabho durlabho jaḍaiḥ ||\" (vi. bhai. 156) ityādyanyatroktaṃ"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation (6.22cd–23).** \"But when it is bound at the time of worship and the like, it is of the nature of Śiva, because it is partless. For within a day and night its course is twenty-fourfold, bringing manifold fruits through [units of] hundreds of breath-movements counted as 'openings' [i.e. nine hundred].\""
+      },
+      {
+       "t": "p",
+       "s": "**Translation (****_Viveka_****).** \"This alone is the binding of the topknot: reflecting again and again on the power of breath, with attention at the beginning, middle and end of every single breath. It is with this very intention that it is said elsewhere: 'Six hundred and twenty-one thousand, by day and by night: this is declared the japa of the Goddess, easy, yet hard for the dull' (VBh 156).\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** The topknot (_śikhā_) is the power of action; \"tying\" it before worship is reread as attention to the breath. Jayaratha also quotes ST 7.57 here: \"Even when the mind is placed elsewhere and the eye is cast elsewhere, the breath goes on of itself, without effort, always.\" This is the closest TA 6 comes to a statement of ajapā practice."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c7-2-the-three-junctures-inside-one-breath-ta-6-2427",
+     "title": "C7.2 THE THREE JUNCTURES INSIDE ONE BREATH (TA 6.24–27)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "kṣapā śaśī tathāpāno nāda ekatra tiṣṭhati || 6-24 ||",
+        "jīvādityo na codgacchettuṭyardhaṃ sāndhyamīdṛśam |",
+        "ūrdhvavaktro raviścandro'dhomukho vahnirantare || 6-25 ||",
+        "mādhyāhnikī mokṣadā syād vyomamadhyasthito raviḥ |",
+        "anantamitasāro hi jantucakraprabodhakaḥ || 6-26 ||",
+        "binduḥ prāṇo hyahaścaiva ravirekatra tiṣṭhati |",
+        "mahāsandhyā tṛtīyā tu supraśāntātmikā sthitā || 6-27 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation (6.24–27).** \"Where night, the moon, the apāna and nāda stand together in one place, and the sun of the life-breath does not rise: such a half-tuṭi is the twilight. (24–25ab) When the sun faces upward, the moon faces downward and fire is in between, the midday [twilight] grants liberation, with the sun standing in the middle of the sky; for its essence is boundless and it awakens the whole circle of beings. (25cd–26) Where bindu, the breath, the day and the sun stand together in one place, the third, the great twilight, abides, utterly at peace. (27)\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** Each breath has its own dawn, noon and dusk. The first twilight is the pause after the in-breath has come to rest in the heart; the third is the pause after the out-breath has come to rest outside. \"Its essence is boundless\" renders _anantamitasāraḥ_, whose sense is uncertain. This is a usable image for Part III: the pause at each turn of the breath is a twilight."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c7-3-practice-at-the-moment-of-eclipse-ta-6-107108",
+     "title": "C7.3 PRACTICE AT THE MOMENT OF ECLIPSE (TA 6.107–108)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "grāsamokṣāntare snānadhyānahomajapādikam |",
+        "laukikālaukikaṃ bhūyaḥphalaṃ syātpāralaukikam || 6-107 ||",
+        "grāsyagrāsakatākṣobhaprakṣaye kṣaṇamāviśan |",
+        "mokṣabhāgdhyānapūjādi kūvarṃścaṃndrārkayorgrahe || 6-108 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation (6.107–108).** \"Bathing, meditation, oblation, japa and the like, [done] in the interval between the seizing and the release, bear great fruit, worldly and beyond the world, [and] in the world to come. (107) Entering for an instant into the dissolution of the agitation of devourer and devoured, one who performs meditation, worship and the like at an eclipse of the moon or sun shares in liberation. (108)\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** The eclipse is internal: the moment where the moon-breath and the sun-breath swallow one another. Jayaratha glosses \"devourer and devoured\" as knower and known, and cites ST 7.74."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c7-4-the-hasa-s-course-makes-the-calendar-ta-6-110116-vivek",
+     "title": "C7.4 THE HAṂSA'S COURSE MAKES THE CALENDAR (TA 6.110–116, VIVEKA)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "\"prāṇahaṃso yadā prāptastvadhastātprathamāṃ tuṭim | pūrvamardhaṃ tvahaḥ proktaṃ tuṭyardhamaparaṃ niśā ||\" (7|77)"
+       ]
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "\"śaktyadho hṛdaye haṃsaḥ saṃkrāmetkarkaṭe priye | ṣaḍaṅgulāni saṃtyajya siṃhe vai saṃkrametpunaḥ || ṣaḍaṅgulaiḥ punastyaktaiḥ kanyāṃ saṃkramate punaḥ | nāsikāgrāttu tālvantaṃ tyakte vai viṣuvadbhavet || tulāsaṃkrāntireṣoktā dakṣiṇaṃ viṣuvadbhavet ||\" (svaṭaṃ. 7|113)"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation (ST 7.77, quoted on 6.111).** \"When the breath-haṃsa has reached the first tuṭi below, the first half is called day, the [other] half of the tuṭi night.\""
+      },
+      {
+       "t": "p",
+       "s": "**Translation (ST 7.113, quoted on 6.116).** \"Below Śakti, in the heart, the haṃsa enters Cancer, dear one; leaving six finger-breadths, it enters Leo; when six more finger-breadths are left, it enters Virgo; when [the stretch] from the tip of the nose to the end of the palate is left, the equinox occurs. This is called the passage into Libra; it is the southern equinox.\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** Every outer calendar point has an inner counterpart within one breath. For the manual this is background; Part IV already tells mentees not to teach the breath arithmetic to newcomers."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c7-5-one-breath-is-enough-ta-6-128-viveka",
+     "title": "C7.5 ONE BREATH IS ENOUGH (TA 6.128, VIVEKA)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "praharāharniśāmāsaṛtvabdaraviṣaṣṭigaḥ |",
+        "yaśchedastatra yaḥ sandhiḥ sa puṇyo dhyānapūjane || 6-128 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "From the _Viveka_, quoting ST 7.140:"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "\"... dhyānayogatapobhiśca bāhye kāle'tha yatkṛtam | amunokte varārohe tatphalaṃ labhate mahat || prāṇahaṃsagatiṃ cāre jñātvaikasmiṃstu tadbhajet |\" (svaṭaṃ. 7|140)"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation (6.128).** \"The juncture where a watch, day, night, month, season, year, twelve-year cycle or sixty-year cycle ends: that juncture is holy for meditation and worship.\""
+      },
+      {
+       "t": "p",
+       "s": "**Translation (ST 7.140, quoted in the** **_Viveka_****).** \"…whatever is done with meditation, yoga and austerities at an outer time, O lovely one, [the yogin] described here obtains that great fruit. Knowing the course of the breath-haṃsa within its movement, let him practise it in a single [breath].\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** Jayaratha's point is that what outer ritual might not finish in a lifetime, the yogin reaches by a moment's attention within one breath. This is the strongest support in TA 6 for the claim in Part III that the practice goes with you in every breath."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c7-6-nine-hundred-breaths-per-transit-ta-6-199200",
+     "title": "C7.6 NINE HUNDRED BREATHS PER TRANSIT (TA 6.199–200)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "sārdhanālīdvayaṃ prāṇaśatāni nava yatsthitam || 6-199 ||",
+        "tāvadvahannahorātraṃ caturviṃśatidhā caret |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation (6.199cd–200ab).** \"Carrying the nine hundred breaths contained in two and a half _nāḍikās_, it moves twenty-fourfold through the day and night.\""
+      },
+      {
+       "t": "p",
+       "s": "**Translation (ST 7.168, quoted).** \"In one of even constitution there are by nature twenty-four transits; the haṃsa always carries nine hundred [breaths] in each one.\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** 900 × 24 = 21,600. These are the same ST 7 verses as in Appendix A."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c8-vijnabhairava-with-nandabhaa-s-vijnakaumud-the-breath-an",
+     "title": "C8. Vijñānabhairava with Ānandabhaṭṭa's Vijñānakaumudī: the breath and haṃsa verses",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "Note that verse numbers differ between editions. The file numbers the haṃsa-mantra verse \"54\" where the run of verses calls for 154, and numbers the next half-verse 155. Other editions, and the mentor guide, count these as 155–156."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c8-1-the-first-breath-practices-vbh-2427",
+     "title": "C8.1 THE FIRST BREATH PRACTICES (VBH 24–27)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "These are the first four of the 112 _dhāraṇās_. They all turn on the two points where the breath turns: the heart, and the _dvādaśānta_, twelve finger-breadths beyond the body."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "ūrdhve prāṇo hyadho jīvo visargātmā paroccaret |",
+        "utpattidvitayasthāne bharaṇādbharitasthitiḥ || 24 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Gist.** The out-breath (_prāṇa_) goes up and out, the in-breath (_jīva_) comes down and in, and the supreme, whose nature is emission, utters itself as both. By holding attention at the two places where each breath arises, one comes to rest in fullness. The _Kaumudī_ places the two points at the _dvādaśānta_ and the heart, and says this attention leads to the self-awareness \"I\" (_aham_) once every adjunct is forgotten. This is the verse closest to ajapā-haṃsa and the best one to set beside ST 7.59 (Appendix A §5)."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "maruto'ntarbahirvāpi viyadyugmānuvartanāt |",
+        "bhairavaṃ bhairavasyetthaṃ bhairavi vyajyate vapuḥ || 25 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Gist.** By following the breath, inward or outward, to the two \"spaces\" where it turns, the body of Bhairava is revealed. The _Kaumudī_: the two spaces are the _dvādaśānta_ and the heart."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "na vrajenna viśecchaktirmarudrūpā vikāsate |",
+        "nirvikalpatayā madhye tayā bhairavarūpadhṛt || 26 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Gist.** When the breath-power neither goes out nor comes in, it opens up; in that middle, free of thought, one takes on Bhairava's form. This is the pause itself. It matches the \"twilights\" of TA 6.24–27 (C7.2)."
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "kumbhitā recitā vāpi pūritā vā yadā bhavet |",
+        "tadante śāntanāmāsau śaktyā śāntaḥ prakāśate || 27 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Gist.** Whether the breath is held, emptied or filled, at its end the power called \"Peace\" shines, and through it the Peaceful One. The _Kaumudī_ compares the settling to a potter's wheel slowing after the push. It also quotes the _Pratyabhijñā_: resting in one's own nature is the awareness \"I am he\" (_so'ham_)."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c8-2-the-meeting-of-the-two-breaths-vbh-64",
+     "title": "C8.2 THE MEETING OF THE TWO BREATHS (VBH 64)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "āyudvayasya saṃghaṭṭādantarvā bahirantataḥ |",
+        "yogī samatvavijñānasamudgamanabhājanam || 64 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Gist.** Where the two breaths meet, inside or outside, the yogin becomes the vessel in which the knowledge of sameness (_samatva_) dawns. The _Kaumudī_ places the meeting at the heart and the _dvādaśānta_."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c8-3-i-am-the-supreme-hasa-kaumud-on-vbh-65-and-91",
+     "title": "C8.3 \"I AM THE SUPREME HAṂSA\" (KAUMUDĪ ON VBH 65 AND 91)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "On verse 91, which is about meditating on oneself as boundless space, Ānandabhaṭṭa quotes:"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "ahameva paro haṃsaḥ paramātmā parātparaḥ |"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Gist.** \"I alone am the supreme haṃsa, the supreme Self, beyond the beyond.\" He also uses the line in his comment on verse 65. This is not a breath practice, but it shows the haṃsa as a name for the Self, as in ST 7.29–30 (Appendix A §2)."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c8-4-the-hasa-mantra-that-every-being-repeats-vbh-152156-in",
+     "title": "C8.4 THE HAṂSA MANTRA THAT EVERY BEING REPEATS (VBH 152–156 IN THE FILE'S NUMBERING)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "vrajetprāṇo viśejjīva icchayā kuṭilākṛtiḥ |",
+        "dīrghātmā sā mahādevī paraṃ kṣetraṃ parātparā || 152 ||",
+        "asyāmanucaraṃstiṣṭhanmahānandamaye'dhvare |",
+        "tayā devyā samāviṣṭaḥ paraṃ bhairavamāpnuyāt || 153 ||",
+        "ṣaṭśatāni divārātrau sahasrāṇyekaviṃśatiḥ |",
+        "haṃsa-haṃseti-mantreṇa jīvo japati nityaśaḥ || 54 ||",
+        "japo devyāḥ samuddiṣṭaḥ prāṇasyānte sudurlabhaḥ |",
+        "ityetatkathitaṃ devi paramāmṛtamuttamam || 155 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Gist.** The out-breath goes and the in-breath enters by will (_icchā_), as the curved, long-drawn Great Goddess, the supreme field. Whoever moves and rests in her, on that path made of great bliss, is filled by the goddess and reaches the supreme Bhairava. Day and night the living being repeats the mantra \"haṃsa, haṃsa\" 21,600 times; this is called the goddess's japa, very hard to grasp at the end of the breath. On 152 the _Kaumudī_ declines to explain, saying the secret meaning is set out in the _Tantrāloka_ and must be learned from a teacher. It glosses \"the end of the breath\" as the state of coming to rest (_paryavasāna_)."
+      },
+      {
+       "t": "p",
+       "s": "**A difference between the readings.** This edition's second line, \"_prāṇasyānte sudurlabhaḥ_\" (\"very hard to grasp, at the end of the breath\"), agrees with the line as Kṣemarāja quotes it in the _Uddyota_ on ST 7.56 (Appendix A §3). Jayaratha on TA 6.23 (C7.1) quotes it differently, as \"_sulabho durlabho jaḍaiḥ_\" (\"easy, yet hard for the dull\"). This edition also lacks the half-verse that other editions give here, \"_sakāreṇa bahir yāti hakāreṇa viśet punaḥ_\" (with _sa_ it goes out, with _ha_ it comes back in), which the mentor guide cites as VBh 155. If you quote that half-verse to students, say that it is missing from the KSTS text."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c9-more-from-the-mahrthamajar-and-the-two-mahnayaprakas",
+     "title": "C9. More from the Mahārthamañjarī and the two Mahānayaprakāśas",
+     "level": 3,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "These are Krama texts. The Krama reads the breath as the place where time is devoured: the out-breath and in-breath are sun and moon, and practice is their dissolution into the ground \"beyond breath\" (_aprāṇabhūmi_). That is the same move as ST 7's conquest of time (Appendix A §15), described from the side of the goddess Kālī."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c9-1-the-rare-teacher-hasabheda-quoted-in-the-parimala-s-in",
+     "title": "C9.1 THE RARE TEACHER (HAṂSABHEDA, QUOTED IN THE PARIMALA'S INTRODUCTION)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "sevyante guravo'neke jñānavijñānabhāsurāḥ |",
+        "durlabho'yaṃ gururdevi yo'haṅkārakṣayaṅkaraḥ ||",
+        "tenādhītaṃ śrutaṃ tena tena sarvamanuṣṭhitam |",
+        "yenāhaṅkāranirmuktaḥ kevalo viditaḥ svayam ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Many teachers are served, shining with knowledge and understanding; but rare, O Goddess, is the teacher who brings about the destruction of the ego. He has studied, he has listened, he has done everything, who, freed from ego, has known the Alone by himself.\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** The text quoted is called the _Haṃsabheda_. It echoes _Haṃsasāra_ 20 (Appendix B), on the rarity of the teacher who gives knowledge of the haṃsa. It is useful for Part V on what a teacher is for."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c9-2-the-royal-swan-of-the-mind-manonusanastotra-quoted-in-",
+     "title": "C9.2 THE ROYAL SWAN OF THE MIND (MANONUŚĀSANASTOTRA, QUOTED IN THE PARIMALA ON MM 2)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "haṃsāḥ patanti gamane pravisārya pakṣau",
+        "svau sarvadaiva kila mānasarājahaṃsaḥ |",
+        "atyadbhutā tava gatirgagane parasmin",
+        "vikṣepaśūnyamayapakṣayugaṃ vihāya ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Swans, when they fly, always spread their two wings. But your flight, O royal swan of the mind, in the supreme sky is a great wonder, for you have left behind the pair of wings made of distraction and blankness.\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** _Mānasa-rājahaṃsa_ is a pun: the royal swan of Lake Mānasa, and the royal swan of the mind (_mānasa_). Ordinary attention flies on two wings, being scattered and going blank; the mind's swan flies without either. Maheśvarānanda says the verse is by his own teacher. It is a ready image for the articulation exercises (Part III)."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c9-3-breath-devours-time-anonymous-mahnayapraka-2-1517",
+     "title": "C9.3 BREATH DEVOURS TIME (ANONYMOUS MAHĀNAYAPRAKĀŚA 2.15–17)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "akālakalite vyomni spandamānā tu yā citi |",
+        "kāladāhaikabhūḥ saiṣā śmaśānaṃ khecarī matā || 2/15 ||",
+        "apavedye suṣupteṣu prāṇaḥ spandanaśaktimān |",
+        "kālaṃ grasati dehāntaḥ śmaśānaṃ sa tathā smṛtaḥ || 2/16 ||",
+        "vedyasya kalanārūpe (-rūpaṃ) kālastvapi samāpyate |",
+        "kālagrasanaśīlatvāt tvak śmaśānaṃ tu sā bahiḥ || 2/17 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Consciousness, pulsing in the space that time does not measure, is the one ground where time is burned: she is held to be the cremation ground, Khecarī. (15) In the state where nothing is known, in those who sleep, the breath, endowed with the power of pulsation, devours time within the body; so it too is called the cremation ground. (16) Time, which is the reckoning of what is known, also comes to an end [there]. Because it habitually devours time, the skin is the outer cremation ground. (17)\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** Even in deep sleep the breath keeps \"eating\" time. This is the Krama form of ST 7.59, the haṃsa that utters itself with no one uttering it."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c9-4-counting-is-not-knowing-anonymous-mahnayapraka-7-18418",
+     "title": "C9.4 COUNTING IS NOT KNOWING (ANONYMOUS MAHĀNAYAPRAKĀŚA 7.184–187)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "verse",
+       "lines": [
+        "vācyavācakavicchedamayaprāṇakramātmanā |",
+        "akramoccārarūpeṇa citprakāśaḥ prakāśate || 7/184 ||",
+        "akramoccārarūpasya kramātmāyaṃ vyavasthitaḥ |",
+        "adūraviprakarṣeṇa sāmānyātmatayā punaḥ || 7/185 ||",
+        "itthaṃ svānubhavaṃ tyaktvā ye saṅkhyāmātrapūraṇāt |",
+        "yathākathañciccakrāṇāṃ granthyādhārakalādibhiḥ || 7/186 ||",
+        "varṇakramāntyairanyaiśca prakārairasamañjasaiḥ |",
+        "svarūpaṃ bodhayantyuccaiḥ te'pi na jñānaśālinaḥ || 7/187 ||"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Through the sequence of the breath, made of the division of word and meaning, the light of consciousness shines as unsequenced utterance. (184) This sequenced [breath] stands near the unsequenced utterance, not far from it, as its general form. (185) Those who leave aside their own experience in this way and, just to fill out the numbers, loudly expound [the Self's] nature in a haphazard way through the knots, supports and kalās of the cakras, the order of the letters and other incoherent methods: they too are not possessed of knowledge. (186–187)\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** This is a classical warning against teaching the breath as arithmetic or as a map of centres at the expense of experience. It supports the guardrail in Part IV and the use/avoid table in Part III."
+      }
+     ]
+    },
+    {
+     "id": "appendix-c-c9-5-the-breath-dissolves-into-the-ground-beyond-breath-iti",
+     "title": "C9.5 THE BREATH DISSOLVES INTO THE GROUND BEYOND BREATH (ŚITIKAṆṬHA, MAHĀNAYAPRAKĀŚA)",
+     "level": 4,
+     "blocks": [
+      {
+       "t": "p",
+       "s": "On verse 3 of the opening (p. 7 of the KSTS text):"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "kālo bhairavaḥ, sa ca nādasvabhāvaḥ prāṇarūpaḥ, yaduktam — sthāvaraṃ jaṅgamaṃ caiva sarvaṃ prāṇasya bhojanam || iti, bhairavāyamāṇaṃ taṃ prāṇaṃ bhakṣayitvā vilāpya aprāṇabhūmiṃ nādanidhanamāsādya"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"Time is Bhairava, and its nature is sound (_nāda_) and its form is breath. As it is said: 'Everything, moving and unmoving, is food for the breath.' [The goddess] devours that breath which is acting as Bhairava, dissolves it, and reaches the ground beyond breath, where sound comes to its end.\""
+      },
+      {
+       "t": "p",
+       "s": "From the section on the three cremation grounds (p. 52):"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "grāsakāḥ prāṇāśca kāliśarīraṃ spṛśanti tatra viśrāmyanti iti kālagrāso dvitīyaṃ śmaśānam … prāṇasya kulābhyantara evāprāṇabhūmau upaśamo dvitīyam"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"The devourers, the breaths, touch the body of Kālī and come to rest there: this devouring of time is the second cremation ground … The second is the stilling of the breath within the Kula itself, in the ground beyond breath.\""
+      },
+      {
+       "t": "p",
+       "s": "From the section on the order of awareness (p. 102):"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "śivaśaktyātmanāṃ prāṇāpānayorātmanaśca vikalpavikalpyamānānāmakalpanena aprāṇabhūmau pratyastamayāt"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"…because prāṇa and apāna, which are Śiva and Śakti, and the self, all of them constructing and constructed, set in the ground beyond breath when one stops constructing them.\""
+      },
+      {
+       "t": "p",
+       "s": "And, on sun and moon (p. 83):"
+      },
+      {
+       "t": "verse",
+       "lines": [
+        "prāṇo hi sūryaḥ, apānaścandramāḥ, dinaṃ sūryo, rātriścenduḥ, piṅgalā sūryaḥ, iḍā candramāḥ"
+       ]
+      },
+      {
+       "t": "p",
+       "s": "**Translation.** \"For prāṇa is the sun and apāna the moon; the day is the sun and the night the moon; piṅgalā is the sun and iḍā the moon.\""
+      },
+      {
+       "t": "p",
+       "s": "**Note.** This is the same pairing of sun with prāṇa and moon with apāna as MM 56 (C3) and ST 7. Śitikaṇṭha adds the goal: the pair dissolves into the stillness \"beyond breath\". Use it for mentors' study, not for beginners; the Kālī imagery needs context."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

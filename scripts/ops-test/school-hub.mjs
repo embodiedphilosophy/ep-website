@@ -7,16 +7,18 @@ import { planOf, resolveItems, stateOf, watchId, countNew, latestPost, monthOf }
 const cfg = JSON.parse(readFileSync(new URL('../../data/school-hub.json', import.meta.url)));
 const seasons = JSON.parse(readFileSync(new URL('../../data/school-seasons.json', import.meta.url)));
 // Give the rows synthetic space ids (the real ones are copied in from Circle)
-const ids = { announcements: 102, 'welcome-orientation': 103, 'kula-commentary': 104, 'kula-chat': 105, 'practice-resources': 106, 'practice-portfolio': 107, 'saturday-open-sessions': 108, sourcebook: 112, 'song-of-sadhana': 113 };
+const ids = { announcements: 102, 'welcome-orientation': 103, reflections: 104, 'kula-chat': 105, 'practice-resources': 106, 'practice-portfolio': 107, 'saturday-open-sessions': 108, };
 const items = cfg.items.map(it => (ids[it.key] ? { ...it, circle_space_ids: [ids[it.key]] } : it));
 const [fall, winter, spring, summer] = seasons.map(s => String(s.hub_space_id));
-const base = ['102', '103', '104', '105', '106', '107', '112', '113'];
+const base = ['102', '103', '104', '105', '106', '107'];
 const day = '2026-10-24', now = Date.parse('2026-10-24T12:00:00Z');
 const resolved = resolveItems(items, seasons);
 const states = member => { const m = new Set(member), plan = planOf(resolved, m); return { plan, by: Object.fromEntries(resolved.map(r => [r.key, stateOf(r, m, plan, day)])) }; };
 
 // the one-page config: no hub-only rows are left
-assert.deepEqual(cfg.items.map(i => i.key), ['fall-2026', 'winter-2027', 'spring-2027', 'summer-2027', 'announcements', 'welcome-orientation', 'kula-commentary', 'kula-chat', 'practice-resources', 'practice-portfolio', 'saturday-open-sessions', 'sourcebook', 'song-of-sadhana']);
+assert.deepEqual(cfg.items.map(i => i.key), ['fall-2026', 'winter-2027', 'spring-2027', 'summer-2027', 'announcements', 'welcome-orientation', 'reflections', 'kula-chat', 'practice-resources', 'practice-portfolio', 'saturday-open-sessions', 'sourcebook', 'song-of-sadhana']);
+assert.equal(cfg.settings.reflections_space_id, 2896660, 'Kula Commentary is the Reflections space'); assert.ok(cfg.settings.mentee_space_id);
+assert.deepEqual(cfg.items.filter(i => i.kind === 'file').map(i => i.key), ['sourcebook', 'song-of-sadhana'], 'the Sourcebook and Song of Sādhana are PDFs, not spaces');
 assert.ok(cfg.settings.upgrade_url, 'the full-year line needs an upgrade address');
 assert.ok(!JSON.stringify(cfg).match(/mentee_marker|collapse_to|always_locked|today-in-school|mentorship/), 'nothing left of the mentor tab or Today in School');
 
@@ -24,9 +26,9 @@ assert.ok(!JSON.stringify(cfg).match(/mentee_marker|collapse_to|always_locked|to
 const term = states([...base, fall, '108']);
 assert.equal(term.plan.key, 'term'); assert.equal(term.plan.label, 'Fall term');
 assert.deepEqual([term.by['fall-2026'], term.by['winter-2027'], term.by['spring-2027'], term.by['summer-2027']], ['open', 'locked', 'locked', 'locked']);
-assert.equal(term.by['saturday-open-sessions'], 'locked', 'even if a term student is in the Weekend Workshops space, the plan gate keeps Saturday locked');
+assert.equal(term.by['saturday-open-sessions'], 'open', 'a term student who is in the Weekend Workshops space has the Saturdays (the page lists only the weekends within their season)');
 assert.equal(term.by.announcements, 'open'); assert.equal(term.by['kula-chat'], 'open');
-assert.equal(states([...base, fall]).by['saturday-open-sessions'], 'locked');
+assert.equal(states([...base, fall]).by['saturday-open-sessions'], 'locked', 'not in the space: not open');
 
 // Full-year student
 const full = states([...base, fall, winter, spring, summer, '108']);

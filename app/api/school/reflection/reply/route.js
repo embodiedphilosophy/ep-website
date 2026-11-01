@@ -3,7 +3,7 @@ import { currentMember, sameOrigin } from '@/lib/school/session';
 import { createComment, postComments } from '@/lib/school/circle';
 import { reflectionFor, threadFor } from '@/lib/school/reflectionthread';
 
-// A reply to a reflection (or to one of its comments), written to Circle as the signed-in member: { programme, season, post, parent?, text }.
+// A reply to a reflection (or to one of its comments), written to Circle as the signed-in member: { post, parent?, text }.
 // Returns the refreshed replies. Like the cohort chat send, the first real reply after a deploy is the test of Circle's request shape.
 const last = new Map(); // email → time of the last reply, so a double click or a loop cannot flood a thread
 export async function POST(req) {
@@ -16,7 +16,7 @@ export async function POST(req) {
   if (text.length > 4000) return NextResponse.json({ error: 'Keep the reply under 4,000 characters.' }, { status: 400 });
   if (Date.now() - (last.get(me.email) || 0) < 3000) return NextResponse.json({ error: 'One moment, then try again.' }, { status: 429 });
   try {
-    const r = await reflectionFor(me.email, b.programme, b.season, b.post);
+    const r = await reflectionFor(me.email, b.post);
     if (r.error) return NextResponse.json({ error: r.error }, { status: r.status });
     const parent = b.parent ? String(b.parent) : '';
     if (parent && !(await postComments(me.email, r.post.id)).some(c => String(c.id) === parent)) return NextResponse.json({ error: 'That comment is no longer there.' }, { status: 404 });

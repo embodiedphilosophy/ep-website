@@ -1,7 +1,10 @@
 {
   "settings": {
     "upgrade_label": "Upgrade to the full year",
-    "upgrade_url": "https://enroll.embodiedphilosophy.com/sadhana-school"
+    "upgrade_url": "https://enroll.embodiedphilosophy.com/sadhana-school",
+    "reflections_space_id": 2896660,
+    "mentee_space_id": 2896670,
+    "teacher_member_ids": []
   },
   "items": [
     {
@@ -77,17 +80,17 @@
       "order": 12
     },
     {
-      "key": "kula-commentary",
+      "key": "reflections",
       "tabs": [
-        "kula"
+        "reflections"
       ],
       "kind": "space",
-      "title": "Kula Commentary",
+      "title": "Reflections",
       "circle_space_ids": [
         2896660
       ],
       "audience_note": "Sādhana School",
-      "description": "Notes and commentary from the kula.",
+      "description": "Reflections from across Sādhana School, with replies.",
       "order": 20
     },
     {
@@ -143,12 +146,8 @@
         2897912
       ],
       "weekday": 6,
-      "requires_plan": "full-year",
-      "audience_note": "Full year",
-      "description": "Open practice and conversation on Saturdays.",
-      "preview": "",
-      "cta_label": "Upgrade to the full year",
-      "cta_url": "",
+      "audience_note": "Sādhana School",
+      "description": "Open practice and conversation on Saturdays, within the weeks of your season.",
       "order": 40
     },
     {
@@ -156,24 +155,26 @@
       "tabs": [
         "resources"
       ],
-      "kind": "space",
+      "kind": "file",
       "title": "The Sādhaka's Sourcebook",
-      "circle_space_ids": [],
       "audience_note": "Sādhana School",
       "description": "The year's readings, in one place.",
-      "order": 54
+      "order": 54,
+      "source_title": "The Sādhaka's Sourcebook",
+      "url": ""
     },
     {
       "key": "song-of-sadhana",
       "tabs": [
         "resources"
       ],
-      "kind": "space",
+      "kind": "file",
       "title": "Song of Sādhana",
-      "circle_space_ids": [],
       "audience_note": "Sādhana School",
       "description": "The chantbook and recordings.",
-      "order": 55
+      "order": 55,
+      "source_title": "Song of Sādhana",
+      "url": ""
     }
   ]
 }

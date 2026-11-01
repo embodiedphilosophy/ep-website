@@ -12,19 +12,20 @@ Circle decides who can open what. The page reads the member's spaces (`GET /spac
 Plan label (header): in all four seasons = Full year; in some = "Fall term" or "Fall + Winter terms". Mentees are not a plan here: `/c/mentorship` is their own page (`docs/sahrdaya-upaya-page.md`).
 
 ## Config: `data/school-hub.json`
-`settings` (`upgrade_label`, `upgrade_url`: the "See the full year" button) and `items`, one row per Circle space the season page uses. Seasons take their space ids from `data/school-seasons.json` (`season: "fall-2026"`); every other row needs `circle_space_ids`.
+`settings` (`upgrade_label`, `upgrade_url`: the "See the full year" button; `reflections_space_id`: Kula Commentary; `mentee_space_id`: the Mentorship Circle, to tell mentees; `teacher_member_ids`: Circle member ids of teachers besides admins and moderators) and `items`, one row per Circle space the season page uses. Seasons take their space ids from `data/school-seasons.json` (`season: "fall-2026"`); every other row needs `circle_space_ids`.
 | Field | Notes |
 |---|---|
-| `key`, `tabs`, `title`, `kind` (`season` `space` `chat` `events`), `order`, `description`, `audience_note` | the page finds rows by `key`: `announcements` (the line on top), `kula-chat` and `kula-commentary` (Kula), `welcome-orientation` `practice-portfolio` `sourcebook` `song-of-sadhana` `practice-resources` (Resources), `saturday-open-sessions` (the weekend Open Sessions). `tabs` says which tab a row belongs to. |
+| `key`, `tabs`, `title`, `kind` (`season` `space` `chat` `events`), `order`, `description`, `audience_note` | the page finds rows by `key`: `announcements` (the line on top), `kula-chat` (Kula), `reflections` (Kula Commentary, the Reflections tab), `welcome-orientation` `practice-portfolio` `sourcebook` `song-of-sadhana` `practice-resources` (Resources), `saturday-open-sessions` (the weekend Open Sessions). `tabs` says which tab a row belongs to. |
 | `circle_space_ids` | open if the member is in any of them. A row with none is left out |
 | `weekday` | events rows sharing one space: 6 = Saturday |
-| `requires_plan` | `full-year` keeps the row locked for term students who may already be in the space (the Saturday Open Sessions share the Weekend Workshops space). Remove once the spaces are split |
+| `kind: file`, `url`, `source_title` | a PDF card (Sourcebook, Song of Sādhana): `url` is the file, or `source_title` names a "What you'll need" reading whose uploaded file is used. No file, no card |
+| `requires_plan` | `full-year` keeps a row locked for term students who may be in its space. Not used by any row now: the Saturday Open Sessions belong to every season's weeks |
 | `cta_label`, `cta_url`, `preview` | kept for locked cards; the season page does not use them yet |
 
-To add Sourcebook and Song of Sādhana: put their Circle space ids in `circle_space_ids` of those two rows.
+To add the Song of Sādhana PDF: put its address in `url` of that row (or upload it in Ops → Reading assignments as a "What you'll need" reading called "Song of Sādhana" and the Sourcebook works the same way).
 
 ## New-item counts
-Circle shows no unread dots once a space is hidden from the sidebar, and its API gives no per-member counts, so the page keeps its own: when a member opens a space from the page (`POST /api/school/seen`), `school_seen (email, space_id, at)` in Neon records it. New = posts in that space newer than that time (a space never opened counts the last 14 days). The Reflections tab uses the key `refl-<season space id>`, written when the tab is opened. Counts show on the Reflections and Kula tabs and on the Kula card. Without `DATABASE_URL` no counts are shown. Only posts are counted, not replies.
+Circle shows no unread dots once a space is hidden from the sidebar, and its API gives no per-member counts, so the page keeps its own: when a member opens a space from the page (`POST /api/school/seen`), `school_seen (email, space_id, at)` in Neon records it. New = posts in that space newer than that time (a space never opened counts the last 14 days). The Reflections tab uses the key `refl-<Reflections space id>`, written when the tab is opened. Counts show on the Reflections and Kula tabs and on the Kula card. Without `DATABASE_URL` no counts are shown. Only posts are counted, not replies.
 
 ## Reads and caching (per member)
 Spaces 5 min, events 5 min, latest posts 2 min (one read of the newest posts per open space: announcements, Kula, Resources), comments 30 s, config with each deploy. About 8 to 12 Circle reads on a cold load.

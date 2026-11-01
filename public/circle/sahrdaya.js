@@ -103,8 +103,8 @@
       '.esu-h1{margin:0;font:600 48px/1.05 "Cormorant Garamond",Georgia,serif}.esu-h1 em{color:#A5432A;font-style:italic}',
       '.esu-sub{font-size:13.5px;color:#5A5346;margin-top:6px}',
       '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}.esu-tot span{font-size:13px;color:#5A5346}',
-      '.esu-ever{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
-      '.esu-ever .esu-poll{grid-column:1/-1}',
+      '.esu-ever{display:flex;flex-wrap:wrap;gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px;flex:1 1 240px;min-width:0}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
+      '.esu-ever .esu-poll{flex-basis:100%}.esu-ever .esu-btm .esu-btn{white-space:normal;text-align:center;line-height:1.3;max-width:100%}',
       '.esu-steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;margin:0 0 18px;overflow:hidden}.esu-st4{padding:12px 14px;font-size:13.5px;color:#5A5346;border-left:1px solid #E3D8C6}.esu-st4:first-child{border-left:0}.esu-st4 b{display:block;font:500 11px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.12em;color:#A5432A;margin-bottom:2px}.esu-st4.on{background:#F6EEDA;color:#1E1A14}',
       '.esu-rcols{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}.esu-rfl{display:grid;gap:10px}.esu-chips{display:flex;gap:8px;flex-wrap:wrap}',
       '.esu-mq{display:grid;gap:0;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;overflow:hidden}.esu-mqi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 16px;border-top:1px solid #E3D8C6}.esu-mqi:first-child{border-top:0}.esu-mqi b{font-weight:600}.esu-age{font:500 12px "IBM Plex Mono",monospace;color:#5A5346;white-space:nowrap}.esu-age.old{color:#A5432A;font-weight:500}.esu-mqd{grid-column:1/-1;white-space:pre-wrap;color:#3a342b;font-size:14px}.esu-mt{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:8px 0 22px}.esu-tile{border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;padding:14px 16px}.esu-tile.behind{border-color:#A5432A}.esu-dots{display:flex;gap:6px;margin:8px 0 4px}.esu-dots i{width:12px;height:12px;border-radius:50%;border:1.5px solid #5B6343}.esu-dots i.f{background:#5B6343}',
@@ -243,14 +243,14 @@
     }).join('');
   }
 
-  // The evergreen row: Articulation, Questions for the Group, this month's reflection, and a survey while one is open
+  // The evergreen row: this month's reflection, Articulation, Practicum Pods, and a survey while one is open
   function articulationCard(w) {
     var a = w.home.articulation, r = a.rotation;
     var eye = 'Articulation' + (r ? ' · Rotation ' + r.n + ' · ' + r.weeksLeft + (r.weeksLeft === 1 ? ' week' : ' weeks') + ' left' : '');
     var dots = ''; for (var i = 0; i < a.target; i++) dots += '<span class="esu-dot' + (i < a.sessions ? ' on' : '') + '"></span>';
-    return '<section class="esu-card" data-g="ever"><div class="esu-eye">' + esc(eye) + '</div><h2 class="esu-h2">Had a session with your partner?</h2>' +
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">' + esc(eye) + '</div><h2 class="esu-h2">Log a Session with your Articulation Buddy</h2>' +
+      '<p class="esu-muted" style="font-size:13.5px">Choose a concept or an idea from what you’ve learned in Sādhana School and demonstrate your understanding by explaining the ideas and refining if your buddy doesn’t quite follow.</p>' +
       '<div class="esu-dots" aria-hidden="true">' + dots + '<span class="esu-muted" style="margin-left:6px;font-size:13.5px">' + Math.min(a.sessions, a.target) + ' of ' + a.target + ' this rotation · ' + a.hours + ' of ' + a.hoursTarget + ' hrs for the year</span></div>' +
-      '<p class="esu-muted" style="font-size:13.5px">One card logs it for both of you, and your rewritten cue goes into the cue bank.</p>' +
       '<div class="esu-btm"><button type="button" class="esu-btn pri" data-act="open-articulation">Log an articulation session</button></div></section>';
   }
   function questionsCard(w) {
@@ -268,12 +268,12 @@
   }
   function reflectionCard(w) {
     var r = w.home.reflection, month = dayFmt(r.month + '-01', { month: 'long' }), m = r.mine;
-    var body = m ? '<h2 class="esu-h2">' + esc(m.title) + '</h2><p class="esu-muted" style="font-size:13.5px">' + esc(r.line) + '</p>' : '<h2 class="esu-h2">Write your ' + esc(month) + ' reflection</h2><p class="esu-muted" style="font-size:13.5px">Write it, share it with the cohort, and revise it from what they say.</p>';
+    var body = m ? '<h2 class="esu-h2">' + esc(m.title) + '</h2><p class="esu-muted" style="font-size:13.5px">' + esc(r.line) + '</p>' : '<h2 class="esu-h2">Write your ' + esc(month) + ' Reflection</h2><p class="esu-muted" style="font-size:13.5px">Write it, share it with the cohort, get feedback from your peers, revise if necessary, and then post into Sādhana School.</p>';
     var fresh = r.unread ? '<p class="esu-muted" style="font-size:13.5px">New in the cohort: ' + r.unread + (r.unread === 1 ? ' reflection' : ' reflections') + ' you haven’t read</p>' : '';
     var btns = safeUrl(r.url) ? '<div class="esu-btm esu-acts">' + link(r.url, 'Open Reflections', 'esu-btn pri') + (m && m.status === 'shared' ? link(r.url + (r.url.indexOf('?') < 0 ? '?' : '&') + 'post=' + encodeURIComponent(m.id), 'Post to SS', 'esu-btn out') : '') + '</div>' : '<p class="esu-muted esu-btm" style="font-size:13px">Reflections opens here soon.</p>';
     return '<section class="esu-card" data-g="ever"><div class="esu-eye">Your ' + esc(month) + ' reflection</div>' + body + fresh + btns + '</section>';
   }
-  function evergreen(w) { return '<div class="esu-ever">' + articulationCard(w) + questionsCard(w) + reflectionCard(w) + pollCards(w) + '</div>'; }
+  function evergreen(w) { return '<div class="esu-ever">' + reflectionCard(w) + articulationCard(w) + practicumCard(w) + pollCards(w) + '</div>'; }
 
   function immersionCard(w) {
     var im = w.home.immersion;
@@ -303,7 +303,7 @@
   function roomCard(w) {
     var r = w.home.room, p = w.home.partner;
     var pinned = r.pinned.length ? '<div class="esu-pin">' + r.pinned.map(function (x) { return ext(x.url, esc(x.label), ''); }).join('<span aria-hidden="true">·</span>') + '</div>' : '';
-    var tabs = [['chat', 'Cohort Chat'], ['pair', 'Articulation Buddy'], ['jacob', 'Message Jacob']];
+    var tabs = [['chat', 'Cohort Chat'], ['pair', 'Practicum Pods'], ['jacob', 'Message Jacob']];
     var bar = '<div class="esu-rt" role="tablist">' + tabs.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (state.room === t[0]) + '" data-act="room" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>';
     var body;
     if (state.room === 'pair') {
@@ -464,11 +464,11 @@
       return '<li style="padding:10px 0;border-top:1px solid #E3D8C6"><div style="font-weight:600">' + esc(x.topic) + (x.mine ? ' <span class="esu-muted" style="font-weight:400">· yours</span>' : '') + '</div><div class="esu-muted" style="font-size:13px">Led by ' + esc(x.leader) + (x.schedule ? ' · ' + esc(x.schedule) : '') + ' · ' + esc(st) + '</div>' + (act ? '<div class="esu-acts" style="margin-top:6px">' + act + '</div>' : '') + '</li>';
     }).join('');
     var lead = d.leader === 'approved' ? '<p style="margin:10px 0 0;font-size:14px"><b>You can lead a pod.</b> ' + ext(d.url, 'Start one', 'esu-lnk') + '</p>' : d.leader === 'applied' ? '<p class="esu-muted" style="margin:10px 0 0;font-size:13px">Your request to lead a pod is with the team.</p>' : '<p class="esu-muted" style="margin:10px 0 0;font-size:13px">Would you like to host one? ' + ext(d.url, 'Ask to lead a pod', 'esu-lnk') + '</p>';
-    return '<section class="esu-card" data-g="pods"><div class="esu-hd"><h2 class="esu-h2">Study pods</h2>' + ext(d.url, 'See all', 'esu-lnk') + '</div>' +
+    return '<section class="esu-card" data-g="pods"><div class="esu-hd"><h2 class="esu-h2">Sādhana School Study Pods</h2><span style="white-space:nowrap">' + ext(d.url, 'See all', 'esu-lnk') + '</span></div>' +
       '<p class="esu-muted" style="font-size:13.5px;margin:0 0 4px">Small student-led groups that study something together. A pod begins at ' + d.min + ' people and meets in a Circle live room.</p>' +
       (rows ? '<ul style="list-style:none;margin:0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:8px 0 0">No pods are open yet.</p>') + lead + '</section>';
   }
-  // Practicum pods: mentees organise a time to practise teaching each other (no approval); others join. Different from articulation buddies (the pair or trio for the rotation).
+  // Practicum pods: mentees organize a time to practise teaching each other (no approval); others join. Different from articulation buddies (the pair or trio for the rotation).
   function ppWhen(iso) { return dmyT(iso) + ', ' + hmT(iso); }
   function practicumCard(w) {
     var d = state.pp; if (!d) return '';
@@ -484,14 +484,14 @@
       var room = x.canSetRoom ? '<details style="margin-top:8px"' + (x.roomUrl ? '' : ' open') + '><summary class="esu-muted" style="font-size:13px;cursor:pointer">' + (x.roomUrl ? 'Change the live room link' : 'Make a live room for your pod') + '</summary>' + ppRoomHelp() +
         '<div class="esu-say" style="margin-top:6px"><input id="esu-pp-room-' + esc(x.id) + '" type="text" data-in="pp-room:' + esc(x.id) + '" placeholder="Paste the live room link (https://…)" value="' + esc((state.ppRoom && state.ppRoom[x.id] != null) ? state.ppRoom[x.id] : x.roomUrl) + '" style="' + FIELD + '"><button type="button" class="esu-btn out" data-act="pp-room" data-id="' + esc(x.id) + '">Save</button></div></details>' : '';
       return '<li style="padding:12px 0;border-top:1px solid #E3D8C6"><div style="font-weight:600">' + esc(x.topic) + (x.mine ? ' <span class="esu-muted" style="font-weight:400">· you’re in</span>' : '') + '</div>' +
-        '<div class="esu-muted" style="font-size:13px"><b style="color:#1E1A14">' + esc(ppWhen(x.startsAt)) + '</b> · organised by ' + esc(x.organiser) + '</div><div class="esu-muted" style="font-size:13px">' + esc(st) + '</div>' +
+        '<div class="esu-muted" style="font-size:13px"><b style="color:#1E1A14">' + esc(ppWhen(x.startsAt)) + '</b> · organized by ' + esc(x.organiser) + '</div><div class="esu-muted" style="font-size:13px">' + esc(st) + '</div>' +
         (x.description ? '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap">' + esc(x.description) + '</div>' : '') + (x.mine && x.names.length ? '<div class="esu-muted" style="font-size:13px;margin-top:4px">In this pod: ' + esc(x.names.join(', ')) + '</div>' : '') +
         (act ? '<div class="esu-acts" style="margin-top:8px">' + act + '</div>' : '') + room + '</li>';
     }).join('');
-    return '<section class="esu-card" data-g="pp"><div class="esu-hd"><h2 class="esu-h2">Practicum pods</h2><button type="button" class="esu-btn pri" data-act="open-pp">Organise a pod</button></div>' +
-      '<p class="esu-muted" style="font-size:13.5px;margin:0 0 4px">Small groups of mentees who practise teaching each other. Anyone can organise one: choose a time, and others join. No approval needed. (Your articulation buddy is the person or pair you are matched with each rotation; this is separate.)</p>' +
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">Practicum Pods</div><h2 class="esu-h2">Practice Teaching Together</h2>' +
+      '<p class="esu-muted" style="font-size:13.5px;margin:0 0 4px">Your Articulation Buddy is who you practice explaining complex ideas with. Practicum pods are where someone teaches and the others give feedback.</p>' +
       (state.msg && state.msgFor === 'pp' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
-      (rows ? '<ul style="list-style:none;margin:0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:10px 0 0">No pods are planned yet. Be the first to organise one.</p>') + '</section>';
+      (rows ? '<ul style="list-style:none;margin:0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:10px 0 0">No pods are planned yet. Be the first to organize one.</p>') + '<div class="esu-btm"><button type="button" class="esu-btn pri" data-act="open-pp">Organize a pod</button></div></section>';
   }
   function ppRoomHelp() {
     return '<ol class="esu-muted" style="font-size:13px;margin:6px 0 0;padding-left:20px;display:grid;gap:3px"><li>In Circle, open the live rooms (look for “Live” or “Live rooms” in the sidebar, or the + button).</li><li>Start a new live room and name it after your pod.</li><li>Open the room’s share options and copy its link.</li><li>Paste the link below and press Save. Everyone in your pod then sees a “Join the live room” button.</li></ol>';
@@ -673,7 +673,7 @@
         '<p class="esu-muted" style="font-size:13px;margin:12px 0 14px">Logs the hours for everyone named, so your partner doesn’t log it again. Your before-and-after line goes into the cohort’s cue bank.</p>' +
         '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-articulation"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log this session') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else if (m.type === 'pp') {
-      body = '<h2 class="esu-h2">Organise a practicum pod</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">Choose a time to practise teaching with other mentees. Anyone in the cohort can join; there is room for ' + (state.pp ? state.pp.max : 6) + ' including you.</p>' +
+      body = '<h2 class="esu-h2">Organize a practicum pod</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">Choose a time to practise teaching with other mentees. Anyone in the cohort can join; there is room for ' + (state.pp ? state.pp.max : 6) + ' including you.</p>' +
         field('What will you practise?', '<input id="esu-pp-topic" type="text" maxlength="80" data-in="ppTopic" value="' + esc(f.ppTopic) + '" placeholder="e.g. Teaching the five-minute practice" style="' + FIELD + '">', 'esu-pp-topic') +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('When (your time)', '<input id="esu-pp-when" type="datetime-local" data-in="ppWhen" value="' + esc(f.ppWhen) + '" style="' + FIELD + '">', 'esu-pp-when') + '</div><div>' +
         field('How long', '<select id="esu-pp-min" data-in="ppMin" style="' + FIELD + '">' + ((state.pp && state.pp.minutes) || [30, 45, 60, 90, 120]).map(function (n) { return '<option value="' + n + '"' + (String(f.ppMin) === String(n) ? ' selected' : '') + '>' + n + ' minutes</option>'; }).join('') + '</select>', 'esu-pp-min') + '</div></div>' +
@@ -681,7 +681,7 @@
         '<details style="margin-top:12px"><summary class="esu-muted" style="font-size:13.5px;cursor:pointer">Make a live room now <span style="font-weight:400">(optional, you can do it later)</span></summary>' + ppRoomHelp() +
         '<input id="esu-pp-roomnew" type="text" data-in="ppRoom" value="' + esc(f.ppRoom) + '" placeholder="Paste the live room link (https://…)" style="' + FIELD + ';margin-top:6px"></details>' +
         (state.msg ? '<p class="esu-err" role="alert" style="margin-top:10px">' + esc(state.msg) + '</p>' : '') +
-        '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="save-pp"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Organise this pod') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
+        '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="save-pp"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Organize this pod') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else {
       var a = w.due.items.filter(function (x) { return x.id === m.id; })[0];
       if (!a) return '';
@@ -717,7 +717,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + guideCard(w) + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + podsCard(w) + partnerCard(w) + practicumCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + guideCard(w) + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + podsCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
   }
 
 

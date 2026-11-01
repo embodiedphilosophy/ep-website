@@ -142,6 +142,7 @@ assert.deepEqual(H.hoursSplit(null), { confirmed: 0, pending: 0, target: 100 });
 const hq = H.buildHome({ formation: form, due: { items: [] }, sessions: [], oneToOne: null }, { config: cfg, today: '2026-11-01', tz: 'UTC', partner: null, questions: [{ id: '1', title: 'Q1' }, { id: '2', title: 'Q2' }, { id: '3', title: 'Q3' }] }).home;
 assert.equal(hq.questions.on, true); assert.equal(hq.questions.latest.length, 2); assert.equal(hq.questions.total, 3);
 assert.equal(H.questionsFor([], config).on, false, 'no space id → card hidden');
+assert.equal(H.questionsFor([], config, 123).on, true, 'a space found by its address switches the card on');
 console.log('evergreen row: ok');
 
 // Rotations (two-month blocks), where people live, the pair chat, and the cohort for "add a third"

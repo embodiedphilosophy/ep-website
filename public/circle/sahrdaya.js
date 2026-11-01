@@ -9,8 +9,9 @@
   var API = 'https://www.embodiedphilosophy.com';
   var PAGE = /^\/c\/(mentorship|reflections)\/?$/;
   var isRefl = function () { return /^\/c\/reflections\/?$/.test(location.pathname); };
+  var isMentor = function () { return /^\/c\/mentorship\/?$/.test(location.pathname) && /[?&]view=mentor/.test(location.search) && state.admin === true; };
   var SKEY = 'ep_su_session';
-  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '', rf: { list: null, meta: null, detail: null, id: '', filter: 'cohort', mode: 'read', form: { title: '', body: '' }, vn: 0, ckind: 'landed', ctext: '', replyTo: '', reply: '', ticked: {}, post: false, busy: '', err: '' } };
+  var state = { admin: null, mt: { data: null, err: '', filter: 'all', open: '', busy: '', msg: '' }, session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '', rf: { list: null, meta: null, detail: null, id: '', filter: 'cohort', mode: 'read', form: { title: '', body: '' }, vn: 0, ckind: 'landed', ctext: '', replyTo: '', reply: '', ticked: {}, post: false, busy: '', err: '' } };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -56,8 +57,8 @@
       return fetch(API + '/api/member/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identityToken: u.identityToken }) }).then(function (r) { return r.json(); });
     }).then(function (r) {
       if (!r.session) throw new Error('not signed in');
-      state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee'));
-      store(SKEY, JSON.stringify({ session: r.session, first: state.first, ok: state.ok, until: Date.now() + 11 * 3600 * 1000 }));
+      state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee')); state.admin = !!r.admin;
+      store(SKEY, JSON.stringify({ session: r.session, first: state.first, ok: state.ok, admin: state.admin, until: Date.now() + 11 * 3600 * 1000 }));
     });
   }
   function call(path, body, again) {
@@ -105,6 +106,7 @@
       '.esu-ever .esu-poll{grid-column:1/-1}',
       '.esu-steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;margin:0 0 18px;overflow:hidden}.esu-st4{padding:12px 14px;font-size:13.5px;color:#5A5346;border-left:1px solid #E3D8C6}.esu-st4:first-child{border-left:0}.esu-st4 b{display:block;font:500 11px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.12em;color:#A5432A;margin-bottom:2px}.esu-st4.on{background:#F6EEDA;color:#1E1A14}',
       '.esu-rcols{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}.esu-rfl{display:grid;gap:10px}.esu-chips{display:flex;gap:8px;flex-wrap:wrap}',
+      '.esu-mq{display:grid;gap:0;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;overflow:hidden}.esu-mqi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 16px;border-top:1px solid #E3D8C6}.esu-mqi:first-child{border-top:0}.esu-mqi b{font-weight:600}.esu-age{font:500 12px "IBM Plex Mono",monospace;color:#5A5346;white-space:nowrap}.esu-age.old{color:#A5432A;font-weight:500}.esu-mqd{grid-column:1/-1;white-space:pre-wrap;color:#3a342b;font-size:14px}.esu-mt{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:8px 0 22px}.esu-tile{border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;padding:14px 16px}.esu-tile.behind{border-color:#A5432A}.esu-dots{display:flex;gap:6px;margin:8px 0 4px}.esu-dots i{width:12px;height:12px;border-radius:50%;border:1.5px solid #5B6343}.esu-dots i.f{background:#5B6343}',
       '.esu-chip{min-height:40px;padding:0 16px;border-radius:99px;border:1px solid #E3D8C6;background:#FBF6EE;color:#1E1A14;font:500 14px "IBM Plex Sans",system-ui,sans-serif;cursor:pointer}.esu-chip.on{background:#1E1A14;border-color:#1E1A14;color:#FBF6EE}',
       '.esu-ri{display:grid;gap:4px;text-align:left;padding:14px 16px;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;cursor:pointer;font:inherit;color:#1E1A14}.esu-ri.on{border-color:#A5432A}.esu-ri b{font:600 19px/1.2 "Cormorant Garamond",Georgia,serif}.esu-rim{display:flex;justify-content:space-between;gap:8px}.esu-rist{font-size:12.5px;color:#7A5A2E;font-weight:600;display:inline-flex;gap:6px;align-items:center}.esu-dotn{width:8px;height:8px;border-radius:50%;background:#A5432A;display:inline-block}',
       '.esu-rpane{background:#FBF6EE;border:1px solid #E3D8C6;border-radius:8px;padding:22px 26px;min-width:0}.esu-rt1{margin:2px 0 0;font:600 34px/1.1 "Cormorant Garamond",Georgia,serif}.esu-rbody{margin:16px 0}.esu-rbody p{font:400 19.5px/1.55 "Cormorant Garamond",Georgia,serif;margin:0 0 12px;padding:2px 0;max-width:660px}.esu-rbody p.ch{background:#F6EEDA;margin-left:-8px;margin-right:-8px;padding:4px 8px;border-radius:4px}',
@@ -487,6 +489,7 @@
 
   function html() {
     if (isRefl()) return reflHtml();
+    if (isMentor()) return mentorHtml();
     if (state.error && !state.data) return '<h1 class="esu-h1">Sahṛdaya Upāya</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
     var w = state.data, name = (w && w.greeting.firstName) || state.first;
     var head = function (sub, right) { return '<div class="esu-eye">Sahṛdaya Upāya · Teacher formation in SLBT</div><div class="esu-head"><div><h1 class="esu-h1">Your formation' + (name ? ', <em>' + esc(name) + '</em>' : '') + '.</h1>' + (sub ? '<div class="esu-sub">' + sub + '</div>' : '') + '</div>' + (right || '') + '</div>'; };
@@ -499,6 +502,51 @@
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
       evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
+  }
+
+
+  // ---- Jacob's view (Circle admins, /c/mentorship?view=mentor): the review queue, pair health, worth a word ----
+  var MT_KIND = { hours: 'Hours', handin: 'Hand-ins', reflection: 'Reflections' };
+  function mentorHtml() {
+    var m = state.mt, d = m.data;
+    var head = '<div class="esu-eye">Sahṛdaya Upāya · Mentor view</div><div class="esu-head"><div><h1 class="esu-h1">Your <em>review</em> queue.</h1><div class="esu-sub">' + (d ? esc(dayFmt(d.today, { weekday: 'long', day: 'numeric', month: 'long' })) + (d.rotation ? ' · rotation ' + d.rotation.n + ' ends ' + esc(dayFmt(d.rotation.to, { day: 'numeric', month: 'short' })) : '') : 'Opening…') + '</div></div><a class="esu-btn out" href="/c/mentorship">Back to my page</a></div>';
+    if (m.err && !d) return head + '<p class="esu-err" role="alert">' + esc(m.err) + '</p>';
+    if (!d) return head + '<div class="esu-sk"></div><div class="esu-sk"></div>';
+    var c = d.counts, tabs = [['all', 'All', c.all], ['hours', 'Hours', c.hours], ['handin', 'Hand-ins', c.handin], ['reflection', 'Reflections', c.reflection]];
+    var chips = '<div class="esu-chips" role="group" aria-label="Filter the queue">' + tabs.map(function (t) { return '<button type="button" class="esu-chip' + (m.filter === t[0] ? ' on' : '') + '" aria-pressed="' + (m.filter === t[0]) + '" data-act="mt-filter" data-f="' + t[0] + '">' + t[1] + ' · ' + t[2] + '</button>'; }).join('') + '</div>';
+    var list = d.queue.filter(function (x) { return m.filter === 'all' || x.kind === m.filter; });
+    var b = m.busy;
+    var rows = list.map(function (x) {
+      var btns = x.kind === 'hours' ? '<button type="button" class="esu-btn pri" data-act="mt-do" data-do="confirm" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Confirm</button> <button type="button" class="esu-btn out" data-act="mt-do" data-do="return-hours" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Return</button> <button type="button" class="esu-lnk" data-act="mt-do" data-do="decline" data-id="' + esc(x.id) + '">Decline</button>'
+        : x.kind === 'handin' ? '<button type="button" class="esu-btn out" data-act="mt-open" data-ref="' + esc(x.ref) + '">' + (m.open === x.ref ? 'Hide' : 'Read') + '</button> <button type="button" class="esu-btn pri" data-act="mt-do" data-do="return" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Return with notes</button>'
+        : '<a class="esu-btn out" href="/c/reflections">Read</a> <button type="button" class="esu-btn pri" data-act="mt-replied" data-id="' + esc(x.id) + '"' + (b ? ' disabled' : '') + '>Mark replied</button>';
+      var detail = x.kind === 'handin' && m.open === x.ref ? '<div class="esu-mqd">' + esc(x.fullText || x.detail) + (x.fileLink ? '\n' : '') + '</div>' + (x.fileLink ? '<div class="esu-mqd"><a href="' + esc(API + x.fileLink) + '" target="_blank" rel="noopener">Open the attached file</a></div>' : '') : '';
+      return '<li class="esu-mqi"><div><span class="esu-eye" style="color:#5A5346">' + esc(MT_KIND[x.kind === 'handin' ? 'handin' : x.kind]) + '</span><div><b>' + esc(x.mentee) + '</b> · ' + esc(x.item) + '</div>' + (x.kind !== 'handin' || m.open !== x.ref ? '<div class="esu-muted" style="font-size:13.5px">' + esc(x.detail) + '</div>' : '') + '</div><div style="text-align:right"><div class="esu-age' + (x.stale ? ' old' : '') + '">' + (x.age === 0 ? 'today' : x.age + (x.age === 1 ? ' day' : ' days')) + (x.stale ? ' · waiting' : '') + '</div></div>' + detail + '<div class="esu-acts" style="grid-column:1/-1">' + btns + '</div></li>';
+    }).join('');
+    var queue = '<section class="esu-card"><div class="esu-hd"><span class="esu-eye">Waiting for you</span></div>' + chips + (rows ? '<ul class="esu-mq" style="list-style:none;margin:12px 0 0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:14px 0 0">Nothing is waiting. New hours, hand-ins and shared reflections appear here, oldest first.</p>') + '</section>';
+    var tiles = d.tiles.length ? '<div class="esu-mt">' + d.tiles.map(function (t) {
+      return '<div class="esu-tile' + (t.state === 'behind' ? ' behind' : '') + '"><b>' + t.people.map(function (p) { return esc(p.name); }).join(' + ') + '</b><div class="esu-muted" style="font-size:13px">' + t.people.map(function (p) { return p.city ? esc(p.city) : ''; }).filter(Boolean).join(' · ') + '</div><div class="esu-dots" aria-hidden="true">' + Array.apply(null, Array(t.target)).map(function (_, i) { return '<i class="' + (i < t.count ? 'f' : '') + '"></i>'; }).join('') + '</div><div style="font-size:13.5px;color:' + (t.state === 'behind' ? '#A5432A' : '#5A5346') + '">' + esc(t.line) + '</div></div>';
+    }).join('') + '</div>' : '<p class="esu-muted">No pairs are set for this rotation yet.</p>';
+    var pairs = '<section class="esu-card" style="margin-top:18px"><div class="esu-hd"><span class="esu-eye">Pair health' + (d.rotation ? ' · rotation ' + d.rotation.n : '') + '</span>' + (d.nudges ? '<span class="esu-muted" style="font-size:12.5px">Gentle reminders are on</span>' : '<span class="esu-muted" style="font-size:12.5px">Gentle reminders are off</span>') + '</div>' + tiles + '</section>';
+    var words = '<section class="esu-card" style="margin-top:18px"><div class="esu-hd"><span class="esu-eye">Worth a word</span></div>' + (d.words.length ? '<ul style="list-style:none;margin:10px 0 0;padding:0">' + d.words.map(function (x) { return '<li style="padding:8px 0;border-top:1px solid #E3D8C6"><b>' + esc(x.name) + '</b> <span class="esu-muted">· ' + esc(x.why) + '</span></li>'; }).join('') + '</ul>' : '<p class="esu-muted" style="margin:10px 0 0">No one needs a word right now.</p>') + '</section>';
+    return head + (m.msg ? '<p class="esu-err" role="alert">' + esc(m.msg) + '</p>' : '') + queue + pairs + words;
+  }
+  function loadMentor() {
+    var mt = state.mt;
+    return call('/api/member/mentor?today=' + localToday()).then(function (d) { mt.data = d; mt.err = ''; }).catch(function (e) { mt.err = e.status === 403 ? 'This view is for mentors.' : e.message; });
+  }
+  function mentorClick(a, t) {
+    var mt = state.mt;
+    if (a === 'mt-filter') { mt.filter = t.dataset.f; render(); return; }
+    if (a === 'mt-open') { mt.open = mt.open === t.dataset.ref ? '' : t.dataset.ref; render(); return; }
+    var run = function (fn) { mt.busy = 'x'; mt.msg = ''; render(); return fn().then(function () { return loadMentor(); }).catch(function (e) { mt.msg = e.message; }).then(function () { mt.busy = ''; render(); }); };
+    if (a === 'mt-replied') { run(function () { return call('/api/member/mentor', { action: 'replied', id: t.dataset.id, today: localToday() }); }); return; }
+    if (a === 'mt-do') {
+      var what = t.dataset['do'], id = t.dataset.id, note = '';
+      if (what === 'decline' && !window.confirm('Decline this entry? It is removed and the mentee is not credited.')) return;
+      if (what === 'return-hours' || what === 'return') { note = window.prompt(what === 'return' ? 'A note for the mentee (optional):' : 'What should they check? They will see this and can send it again.', ''); if (note === null) return; }
+      run(function () { return call('/api/member/submissions', { action: what, id: id, note: note }); });
+    }
   }
 
   var root = null;
@@ -543,6 +591,7 @@
     var t = e.target.closest('[data-act]');
     if (!t || !root.contains(t)) return;
     var a = t.dataset.act;
+    if (a.indexOf('mt-') === 0) { mentorClick(a, t); return; }
     if (a.indexOf('rf-') === 0) { if (a === 'rf-post-close' && t.dataset.bg && e.target !== t) return; rfClick(a, t); return; }
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
     if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '', competencies: [], watcher: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
@@ -766,11 +815,11 @@
     started = true; css();
     state.data = cached();
     // A mentee seen before this session: take the space at once so the hub doesn't flash up first
-    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now()) setMentee(s.ok ? 'yes' : 'no'); } catch (e) {} }
+    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now()) { state.admin = !!s.admin; setMentee(s.ok ? 'yes' : 'no'); } } catch (e) {} }
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
-      mount(); render(); return isRefl() ? startRefl() : load();
+      mount(); render(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
     }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
       .then(function () { mount(); render(); });
   }
@@ -783,7 +832,7 @@
     timer = setTimeout(function () {
       timer = null;
       if (!PAGE.test(location.pathname)) { unmount(); return; }
-      if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root) render(); }
+      if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root && isMentor() && state.mt.data === null && !state.mt.err) loadMentor().then(render); else if (root) render(); }
     }, 250);
   }).observe(document.body, { childList: true, subtree: true });
   window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) unmount(); });

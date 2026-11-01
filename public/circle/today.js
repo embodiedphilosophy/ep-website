@@ -320,7 +320,7 @@
     var w = state.wait, nm = {};
     ((state.cohort && state.cohort.rows) || []).forEach(function (r) { nm[r.email] = r.name; });
     var who = function (e) { return esc(nm[e] || e); };
-    var out = '<section class="ept-card ept-wide" aria-labelledby="ept-wt"><div class="ept-ch"><h2 id="ept-wt" class="ept-h2">Waiting for you</h2><span class="ept-l">Hand-ins and hours</span></div>';
+    var out = '<section class="ept-card ept-wide" aria-labelledby="ept-wt"><div class="ept-ch"><h2 id="ept-wt" class="ept-h2">Waiting for you</h2><a class="ept-l" href="/c/mentorship?view=mentor">Open the review queue →</a></div>';
     if (!w) return out + '<span class="' + (state.waitErr ? 'ept-err' : 'ept-s') + '">' + esc(state.waitErr || 'Loading…') + '</span></section>';
     if (state.waitMsg) out += '<span class="ept-err">' + esc(state.waitMsg) + '</span>';
     if (!w.handins.length && !w.hours.length) return out + '<span class="ept-s">Nothing waiting. New hand-ins and logged hours appear here.</span></section>';

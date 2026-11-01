@@ -255,7 +255,7 @@ function ResourcesTab({ page }) {
           <h2>{c.href && c.state !== 'locked' ? <a href={c.href} target={c.file ? '_blank' : '_top'} rel={c.file ? 'noopener' : undefined}>{c.title}</a> : c.title}</h2>
           <p>{c.line}</p>
           {c.state === 'locked' && <p className="sch-meta">Not open to you yet.</p>}
-          {c.file && <a className="sch-btn ghost" href={c.href} target="_blank" rel="noopener">Open the PDF</a>}
+          {(c.file || c.pdf) && <a className="sch-btn ghost" href={c.file ? c.href : c.pdf} target="_blank" rel="noopener">{c.file ? 'Open the PDF' : 'Download the PDF'}</a>}
         </section>
       ))}
     </div>

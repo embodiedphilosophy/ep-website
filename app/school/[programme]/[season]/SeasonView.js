@@ -36,16 +36,16 @@ export default function SeasonView({ programme, slug, page, readings, initialTab
     if (key === 'week') u.searchParams.delete('tab'); else u.searchParams.set('tab', key);
     u.searchParams.delete('write');
     window.history.replaceState(null, '', u);
-    if (key === 'reflections' && page.reflections.count && !cleared[`refl-${seasonId}`]) markSeen(`refl-${seasonId}`);
+    if (key === 'reflections' && page.reflections.count && !cleared[page.reflections.seenKey]) markSeen(page.reflections.seenKey);
   };
-  useEffect(() => { if (initialTab === 'reflections' && page.reflections.count) markSeen(`refl-${seasonId}`); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (initialTab === 'reflections' && page.reflections.count) markSeen(page.reflections.seenKey); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const h = page.header;
   const firstWed = page.rows.find(r => r.kind === 'session');
   const rhythm = firstWed ? `${fmt(firstWed.at, tz, { weekday: 'long' })}s ${clock(firstWed.at, tz)} your time` : '';
   const sub = [h.short, h.subtitle, h.started ? (h.ended ? 'season complete' : `week ${h.week} of ${h.of}`) : `starts ${fmt(`${h.startsOn}T12:00:00Z`, 'UTC', { day: 'numeric', month: 'long' })}`, rhythm].filter(Boolean).join(' · ');
   const tabs = [...page.tabs, ...extraTabs.map(k => ({ key: k, label: 'Study pods', count: 0 }))];
-  const count = t => (t.key === 'reflections' && cleared[`refl-${seasonId}`] ? 0 : t.key === 'kula' ? page.kula.cards.reduce((n, c) => n + (cleared[c.spaceId] ? 0 : c.newCount), 0) : t.count);
+  const count = t => (t.key === 'reflections' && cleared[page.reflections.seenKey] ? 0 : t.key === 'kula' ? page.kula.cards.reduce((n, c) => n + (cleared[c.spaceId] ? 0 : c.newCount), 0) : t.count);
   const ctx = { page, tz, now, pick, markSeen, cleared };
 
   return (
@@ -172,7 +172,7 @@ function WeekTab({ page, tz, now, pick, markSeen, cleared }) {
           <section className="ss-card">
             <div className="ss-hd"><h2>New in Reflections</h2><button type="button" className="ss-link" onClick={() => pick('reflections')}>All</button></div>
             {page.reflections.latest.length === 0 ? <p className="sch-meta">Be the first to share a reflection.</p> : page.reflections.latest.map(p => (
-              <div key={p.id} className="ss-mini"><b>{p.who}</b><h3>{p.title}</h3><span className="sch-meta">{p.replies ? `${p.replies} ${p.replies === 1 ? 'reply' : 'replies'}` : 'No replies yet'}</span></div>
+              <div key={p.id} className="ss-mini"><b>{p.who}</b><Role role={p.role} small /><h3>{p.title}</h3><span className="sch-meta">{p.replies ? `${p.replies} ${p.replies === 1 ? 'reply' : 'replies'}` : 'No replies yet'}</span></div>
             ))}
           </section>
           {page.kula.cards.length > 0 && (() => {
@@ -213,8 +213,7 @@ function SessionsTab({ page, tz, now }) {
                 <div className="ss-when"><b>{r.tbd ? dayShort(r.at, 'UTC') : dayShort(r.at, tz)}</b><span>{r.tbd ? 'Weekend' : [clock(r.at, tz), hrs(r.minutes)].filter(Boolean).join(' · ')}</span></div>
                 <div className="ss-what">
                   <b>{r.kind === 'weekend' ? r.title : `Session ${r.n || ''}`.trim()}{r.focus ? ` · ${r.focus}` : ''}</b>
-                  {r.tag && <span className="ss-tag">{r.tag}</span>}
-                  <span>{r.kind === 'weekend' ? 'Immersion weekend' : r.teacher ? `With ${r.teacher}` : ''}</span>
+                                  <span>{r.kind === 'weekend' ? 'Immersion weekend' : r.teacher ? `With ${r.teacher}` : ''}</span>
                 </div>
                 <div className="ss-act">{act}</div>
               </li>
@@ -253,34 +252,125 @@ function ResourcesTab({ page }) {
       {page.resources.map(c => (
         <section key={c.key} className={`ss-card${c.state === 'locked' ? ' dashed' : ''}`}>
           <span className="ss-eye">{c.eyebrow}</span>
-          <h2>{c.href && c.state !== 'locked' ? <a href={c.href} target="_top">{c.title}</a> : c.title}</h2>
+          <h2>{c.href && c.state !== 'locked' ? <a href={c.href} target={c.file ? '_blank' : '_top'} rel={c.file ? 'noopener' : undefined}>{c.title}</a> : c.title}</h2>
           <p>{c.line}</p>
           {c.state === 'locked' && <p className="sch-meta">Not open to you yet.</p>}
+          {c.file && <a className="sch-btn ghost" href={c.href} target="_blank" rel="noopener">Open the PDF</a>}
         </section>
       ))}
     </div>
   );
 }
 
-// Reflections: the existing list and composer for now (the threaded view comes next)
+// Reflections: anyone in the season can post one and reply in a thread. Reflections posted from the Sahṛdaya Upāya page carry the mentee badge.
+const FILTERS = [['all', 'All'], ['mentees', 'From the mentees'], ['mine', 'Mine']];
+// A badge for teachers and for mentees, wherever they write
+const Role = ({ role, small }) => (role === 'teacher' ? <span className={`ss-mchip teacher${small ? ' small' : ''}`}>Teacher</span> : role === 'mentee' ? <span className={`ss-mchip${small ? ' small' : ''}`}>{small ? 'Mentee' : 'Sahṛdaya Upāya mentee'}</span> : null);
 function ReflectionsTab({ page, tz, programme, slug, composer, setComposer, mine, setMine }) {
-  const list = [...mine.map(m => ({ id: m.id, title: m.title, who: 'You', at: new Date(m.at).toISOString(), replies: 0, url: '' })), ...page.reflections.list];
+  const [filter, setFilter] = useState('all');
+  const fresh = mine.map(m => ({ id: m.id, title: m.title, who: 'You', authorId: page.reflections.memberId, at: new Date(m.at).toISOString(), week: 0, replies: 0, url: '', excerpt: m.body || '', role: '', fromCohort: false, mine: true, justPosted: true }));
+  const all = [...fresh, ...page.reflections.list];
+  const list = filter === 'mentees' ? all.filter(p => p.role === 'mentee') : filter === 'mine' ? all.filter(p => p.mine) : all;
   return (
-    <>
-      {page.reflections.canPost && (composer ? <Composer programme={programme} slug={slug} onPosted={m => setMine(x => [{ ...m, id: `new${x.length}`, at: Date.now() }, ...x])} /> : <p><button type="button" className="sch-btn" onClick={() => setComposer(true)}>Write a reflection</button></p>)}
-      {list.length === 0 ? <p className="sch-empty">Be the first to share a reflection for this season.</p> : (
-        <ul className="sch-list">
-          {list.map(p => (
-            <li key={p.id} className="sch-card" style={{ gridTemplateColumns: 'minmax(0,1fr)' }}>
-              <div className="sch-card-main">
-                <h2>{p.url ? <a href={p.url} target="_top">{p.title}</a> : p.title}</h2>
-                <p className="sch-meta">{[p.who && `Started by ${p.who}`, p.replies ? `${p.replies} ${p.replies === 1 ? 'reply' : 'replies'}` : '', fmt(p.at, tz, { day: 'numeric', month: 'short', year: 'numeric' })].filter(Boolean).join(' · ')}</p>
-              </div>
-            </li>
+    <div className="ss-cols">
+      <div>
+        <div className="ss-filters">
+          <div role="group" aria-label="Show">
+            {FILTERS.map(([k, l]) => <button key={k} type="button" className={`ss-chipbtn${filter === k ? ' on' : ''}`} aria-pressed={filter === k} onClick={() => setFilter(k)}>{l}</button>)}
+          </div>
+          {page.reflections.canPost && !composer && <button type="button" className="sch-btn" onClick={() => setComposer(true)}>Write a reflection</button>}
+        </div>
+        {page.reflections.canPost && composer && <Composer programme={programme} slug={slug} onPosted={m => setMine(x => [{ ...m, id: `new${x.length}`, at: Date.now() }, ...x])} />}
+        {list.length === 0
+          ? <p className="sch-empty">{filter === 'mentees' ? 'No reflections from the mentees yet.' : filter === 'mine' ? 'You haven’t posted a reflection this season yet.' : 'Be the first to share a reflection for this season.'}</p>
+          : <ul className="ss-refl">{list.map((p, i) => <Reflection key={p.id} p={p} tz={tz} programme={programme} slug={slug} openFirst={i === 0 && filter === 'mentees'} />)}</ul>}
+      </div>
+      <aside className="ss-card ss-about">
+        <span className="ss-eye">About reflections</span>
+        <p>Anyone in the season can post a reflection on the week’s reading or practice, and reply to others in a thread.</p>
+        <p>Posts marked <span className="ss-mchip teacher">Teacher</span> come from the school’s teachers. Posts marked <span className="ss-mchip">Sahṛdaya Upāya mentee</span> come from students in teacher formation. They’ve already been through a round of feedback in their cohort, and they’d value yours.</p>
+      </aside>
+    </div>
+  );
+}
+
+function Avatar({ name, k }) { return <span className="ss-av" style={{ background: colour(k || name) }} aria-hidden="true">{initials(name)}</span>; }
+const initials = name => { const w = String(name || '?').trim().split(/\s+/).filter(Boolean); return ((w[0]?.[0] || '?') + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase(); };
+const COLOURS = ['#A5432A', '#2E5A4B', '#7A5A2E', '#3E4C7A', '#6B3E5A', '#20302A'];
+const colour = key => { let h = 0; for (const c of String(key)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLOURS[h % COLOURS.length]; };
+
+function Reflection({ p, tz, programme, slug, openFirst }) {
+  const [open, setOpen] = useState(false);
+  const [th, setTh] = useState(null); // { threads, count } once loaded
+  const [err, setErr] = useState('');
+  const [to, setTo] = useState(null); // the comment being answered, or null for the post
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState('');
+  const base = `post=${encodeURIComponent(p.id)}`;
+
+  async function load() {
+    setErr('');
+    const r = await fetch(`/api/school/reflection?${base}`).catch(() => null);
+    const j = await r?.json().catch(() => ({}));
+    if (r?.ok) setTh(j); else setErr(j?.error || 'We could not load the replies. Please try again.');
+  }
+  function toggle() { const o = !open; setOpen(o); if (o && !th && !p.justPosted) load(); }
+  useEffect(() => { if (openFirst) toggle(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  async function send(e) {
+    e.preventDefault();
+    setBusy('send'); setErr('');
+    const r = await fetch('/api/school/reflection/reply', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ post: p.id, parent: to?.id || '', text }) }).catch(() => null);
+    const j = await r?.json().catch(() => ({}));
+    setBusy('');
+    if (r?.ok) { setTh(j); setText(''); setTo(null); } else setErr(j?.error || 'We could not post your reply. Please try again.');
+  }
+  const n = th ? th.count : p.replies;
+  const label = open ? 'Hide replies' : n ? `${n} ${n === 1 ? 'reply' : 'replies'} · show` : 'Reply';
+  const Comment = ({ c, nested }) => (
+    <div className={`ss-cm${nested ? ' nested' : ''}`}>
+      <Avatar name={c.who} k={c.authorId || c.who} />
+      <div>
+        <p className="ss-cmh"><b>{c.who}</b><Role role={c.role} small /><span>{dayShort(c.at, tz)}</span></p>
+        <p className="ss-cmb">{c.to && <span className="ss-to">@{c.to} </span>}{c.text}</p>
+        <button type="button" className="ss-link plain" onClick={() => { setTo(c); document.getElementById(`ss-r-${p.id}`)?.focus(); }}>Reply</button>
+      </div>
+    </div>
+  );
+  return (
+    <li className={`ss-rcard${p.role === 'mentee' ? ' mentee' : ''}`}>
+      <div className="ss-rhead">
+        <Avatar name={p.who} k={p.authorId || p.who} />
+        <div>
+          <p className="ss-rname"><b>{p.who}</b><Role role={p.role} /></p>
+          <p className="sch-meta">{[dayShort(p.at, tz), p.week ? `week ${p.week}` : '', p.fromCohort ? 'posted from the Sahṛdaya Upāya cohort' : ''].filter(Boolean).join(' · ')}</p>
+        </div>
+      </div>
+      <h3>{p.title}</h3>
+      {p.excerpt && <p className="ss-ex">{p.excerpt}</p>}
+      {p.fromCohort && <p className="ss-shaped">Shaped with feedback from the Sahṛdaya Upāya cohort before it was posted here</p>}
+      {!p.justPosted && <p className="ss-tg"><button type="button" className="ss-link plain" onClick={toggle} aria-expanded={open}>{label}</button>{p.url && <> · <a className="ss-quiet" href={p.url} target="_top">Open in Circle</a></>}</p>}
+      {p.justPosted && <p className="sch-meta">Posted just now. It is in Circle too.</p>}
+      {open && (
+        <div className="ss-thread">
+          {!th && !err && <p className="sch-meta">Loading the replies…</p>}
+          {th && th.threads.map(t => (
+            <div key={t.id}>
+              <Comment c={t} />
+              {t.replies.map(r => <Comment key={r.id} c={r} nested />)}
+            </div>
           ))}
-        </ul>
+          {th && th.threads.length === 0 && <p className="sch-meta">No replies yet.</p>}
+          <form className="ss-replybox" onSubmit={send}>
+            {to && <p className="sch-meta">Replying to {to.who} · <button type="button" className="ss-link plain" onClick={() => setTo(null)}>reply to the post instead</button></p>}
+            <div>
+              <input id={`ss-r-${p.id}`} value={text} onChange={e => setText(e.target.value)} placeholder={`Respond to ${to ? to.who : p.who}…`} maxLength={4000} aria-label={`Your reply to ${to ? to.who : p.who}`} />
+              <button className="sch-btn" disabled={busy === 'send' || !text.trim()}>{busy === 'send' ? 'Sending…' : 'Reply'}</button>
+            </div>
+          </form>
+          {err && <p className="sch-err" role="alert">{err}</p>}
+        </div>
       )}
-    </>
+    </li>
   );
 }
 
@@ -292,7 +382,7 @@ function Composer({ programme, slug, onPosted }) {
     e.preventDefault();
     setState({ busy: true, msg: '', ok: false });
     const r = await fetch('/api/school/reflection', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ programme, season: slug, title, body }) }).catch(() => null);
-    if (r?.ok) { onPosted({ title: title.trim() || 'Reflection' }); setTitle(''); setBody(''); setState({ busy: false, ok: true, msg: 'Posted. It is now in Circle too.' }); }
+    if (r?.ok) { onPosted({ title: title.trim() || 'Reflection', body: body.trim().slice(0, 300) }); setTitle(''); setBody(''); setState({ busy: false, ok: true, msg: 'Posted. It is now in Circle too.' }); }
     else setState({ busy: false, ok: false, msg: (await r?.json().catch(() => ({})))?.error || 'We could not post your reflection. Please try again.' });
   }
   return (

@@ -16,9 +16,9 @@ const resolved = resolveItems(items, seasons);
 const states = member => { const m = new Set(member), plan = planOf(resolved, m); return { plan, by: Object.fromEntries(resolved.map(r => [r.key, stateOf(r, m, plan, day)])) }; };
 
 // the one-page config: no hub-only rows are left
-assert.deepEqual(cfg.items.map(i => i.key), ['fall-2026', 'winter-2027', 'spring-2027', 'summer-2027', 'announcements', 'welcome-orientation', 'reflections', 'kula-chat', 'practice-resources', 'practice-portfolio', 'saturday-open-sessions', 'sourcebook', 'song-of-sadhana']);
+assert.deepEqual(cfg.items.map(i => i.key), ['fall-2026', 'winter-2027', 'spring-2027', 'summer-2027', 'announcements', 'welcome-orientation', 'reflections', 'kula-chat', 'practice-portfolio', 'saturday-open-sessions', 'sourcebook', 'song-of-sadhana', 'inner-travelogue']);
 assert.equal(cfg.settings.reflections_space_id, 2896660, 'Kula Commentary is the Reflections space'); assert.ok(cfg.settings.mentee_space_id);
-assert.deepEqual(cfg.items.filter(i => i.kind === 'file').map(i => i.key), ['sourcebook', 'song-of-sadhana'], 'the Sourcebook and Song of Sādhana are PDFs, not spaces');
+assert.deepEqual(cfg.items.filter(i => i.kind === 'file').map(i => i.key), ['sourcebook', 'song-of-sadhana', 'inner-travelogue'], 'the Sourcebook, Song of Sādhana and the Inner Travelogue are PDFs, not spaces');
 assert.ok(cfg.settings.upgrade_url, 'the full-year line needs an upgrade address');
 assert.ok(!JSON.stringify(cfg).match(/mentee_marker|collapse_to|always_locked|today-in-school|mentorship/), 'nothing left of the mentor tab or Today in School');
 

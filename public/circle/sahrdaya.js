@@ -7,7 +7,12 @@
   if (window.__epSahrdaya) return; window.__epSahrdaya = true;
 
   var API = 'https://www.embodiedphilosophy.com';
-  var PAGE = /^\/c\/(mentorship|reflections)\/?$/;
+  // The Workbook's address is the one in data/mentee.json `workbook_url` (also sent as home.workbookUrl); it is written once here for the script to know before any data arrives
+  var WORKBOOK = 'https://ss.embodiedphilosophy.com/c/apprentice-workbook', WBPATH = WORKBOOK.replace(/^https?:\/\/[^\/]+/, '').replace(/\/$/, '');
+  var LESSON = /\/sections\/\d+\/lessons\/\d+/;
+  var isWorkbook = function () { return location.pathname.replace(/\/$/, '') === WBPATH; };
+  var isLesson = function () { return location.pathname.indexOf(WBPATH + '/') === 0 && LESSON.test(location.pathname); };
+  var PAGE = { test: function (p) { p = String(p).replace(/\/$/, ''); return /^\/c\/(mentorship|reflections)$/.test(p) || p === WBPATH || (p.indexOf(WBPATH + '/') === 0 && LESSON.test(p)); } };
   var isRefl = function () { return /^\/c\/reflections\/?$/.test(location.pathname); };
   var isMentor = function () { return /^\/c\/mentorship\/?$/.test(location.pathname) && /[?&]view=mentor/.test(location.search) && state.admin === true; };
   var SKEY = 'ep_su_session';
@@ -157,6 +162,17 @@
       '.esu-stag{font:500 10px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:2px 8px;margin-right:6px;display:inline-block}.esu-stag.pod{background:#E4EEE8;color:#2E5A4B}.esu-stag.pod.mine{background:#2E5A4B;color:#fff}.esu-stag.one{background:#F6EBD8;color:#7A5A2E}.esu-in-ok{font:500 12px "IBM Plex Mono",monospace;color:#2E5A4B}',
       '.esu-sblock{list-style:none;background:#22352D;color:#F4EDE1;border-radius:10px;padding:16px 18px;margin:12px 0;border-bottom:0}.esu-sbh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}.esu-sbh .ey{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#D9B36A}.esu-sess{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 0;border-top:1px solid rgba(244,237,225,.18)}.esu-sess .esu-db{background:rgba(244,237,225,.1);color:#C9D1CB}.esu-sess .esu-db b{color:#FBF6EE}',
       '.esu-sfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid #E3D8C6}',
+      '.esu-wg{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#5A5346;margin:20px 0 4px}.esu-wlist{list-style:none;margin:0;padding:0}',
+      '.esu-wl{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:14px 0;border-bottom:1px solid #E3D8C6}.esu-wl .esu-rw-d{margin:0}',
+      '.esu-wi{display:grid;grid-template-columns:44px minmax(0,220px) minmax(0,1fr);gap:8px 16px;align-items:center;padding:14px 0;border-bottom:1px solid #E3D8C6}.esu-wi.far{opacity:.72}',
+      '.esu-wi .n{width:44px;height:44px;border-radius:50%;background:#F1E9DC;display:flex;align-items:center;justify-content:center;font:600 22px "Cormorant Garamond",Georgia,serif}.esu-wi .tt{display:flex;flex-direction:column;min-width:0}.esu-wi .nm{font:600 20px/1.15 "Cormorant Garamond",Georgia,serif}.esu-wi .dd{font-size:13px;color:#5A5346}.esu-wi .ey{font:500 10.5px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#D9B36A}',
+      '.esu-wi .pl{display:flex;gap:8px;flex-wrap:wrap}.esu-wi.cur{background:#22352D;color:#F4EDE1;border-radius:10px;padding:18px 20px;margin:6px 0;border-bottom:0}.esu-wi.cur .n{background:#D9B36A;color:#22352D}.esu-wi.cur .nm{color:#FBF6EE}.esu-wi.cur .dd{color:#C9D1CB}',
+      '.esu-pill{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 13px;border-radius:99px;font:500 13px "IBM Plex Sans",system-ui,sans-serif;text-decoration:none;white-space:nowrap}',
+      '.esu-pill.done{background:#E4EEE8;color:#2E5A4B!important}.esu-pill.open{background:#D9B36A;color:#22352D!important;font-weight:600}.esu-pill.due{border:1px solid #B9AC94;color:#1E1A14!important}.esu-pill.lock{border:1px dashed #B9AC94;color:#5A5346}',
+      '.esu-wi.cur .esu-pill.done{background:rgba(228,238,232,.18);color:#E4EEE8!important}.esu-wi.cur .esu-pill.due{border-color:rgba(244,237,225,.5);color:#F4EDE1!important}.esu-wi.cur .esu-pill.lock{border-color:rgba(244,237,225,.4);color:#C9D1CB}',
+      '.esu-strip{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;background:#FBF6EE;border-bottom:1px solid #E3D8C6;padding:10px 24px;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:14px;color:#1E1A14}.esu-strip *{box-sizing:border-box}',
+      '.esu-strip .back{color:#A5432A;font-weight:600;text-decoration:none;white-space:nowrap}.esu-strip .cr{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#5A5346;flex:1;min-width:0}',
+      '.esu-strip .esu-seg{margin:0;max-width:none;flex:none}.esu-seg.sm a{min-height:34px;font-size:13px;padding:0 12px}.esu-strip .esu-badge{color:#fff}',
       '.esu-bring{background:#F1E9DC;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:14px}.esu-bring ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px}',
       '.esu-tiles{display:grid;gap:12px;margin-top:12px}.esu-ptile{border:1px solid #E3D8C6;border-radius:8px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:4px}.esu-ptile .k{font:500 10.5px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#5A5346}.esu-ptile .lk{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:4px}',
       '.esu-mprog{background:#F6EEDA;border-radius:8px;padding:12px 16px;margin-top:14px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}',
@@ -197,6 +213,7 @@
       '.esu{padding:24px 16px 56px}.esu-h1{font-size:36px}',
       '.esu-ln-d{display:none}.esu-ln-p{display:block}',
       '.esu-grid2,.esu-six{grid-template-columns:minmax(0,1fr)}.esu-hero-t{font-size:24px}.esu-mrow.hero .bt{align-items:flex-start}',
+      '.esu-wi{grid-template-columns:44px minmax(0,1fr)}.esu-wi .pl{grid-column:1 / -1}.esu-strip{padding:10px 16px}.esu-strip .cr{display:none}.esu-strip .esu-seg{width:100%;max-width:100%}',
       '.esu-srow,.esu-sess{grid-template-columns:56px minmax(0,1fr)}.esu-srow > .bt,.esu-sess > .bt{grid-column:2}',
       '.esu-tiles3{grid-template-columns:minmax(0,1fr)}.esu-tiles3 .esu-rec,.esu-reclist .esu-rec{flex-direction:row}.esu-rec .th{height:auto;min-height:92px;width:112px;flex:none}',
       '.esu-month .esu-mrow{grid-template-columns:22px minmax(0,1fr)}.esu-month .esu-mrow > .tx,.esu-month .esu-mrow > .bt{grid-column:1 / -1}',
@@ -713,13 +730,13 @@
   }
 
   // ---- The page switch: This month | Schedule | Reflections (real links; the first two switch in place, Reflections is its own page) ----
-  var MP = '/c/mentorship', WORKBOOK = 'https://ss.embodiedphilosophy.com/c/apprentice-workbook';
-  function currentView() { if (isRefl()) return 'reflections'; if (state.view) return state.view; return /[?&]view=schedule/.test(location.search) ? 'schedule' : 'month'; }
-  function pageSwitch(cur) {
+  var MP = '/c/mentorship';
+  function currentView() { if (isRefl()) return 'reflections'; if (isWorkbook()) return 'workbook'; if (state.view) return state.view; return /[?&]view=schedule/.test(location.search) ? 'schedule' : 'month'; }
+  function pageSwitch(cur, compact) {
     var w = state.data, rurl = (w && w.home && safeUrl(w.home.reflection.url)) || '/c/reflections', un = w && w.home ? w.home.reflection.unread : 0;
-    var item = function (key, label, href, extra) { return '<a href="' + esc(href) + '" target="_top"' + (cur === key ? ' aria-current="page"' : '') + (key === 'month' || key === 'schedule' ? ' data-act="view" data-view="' + key + '"' : '') + '>' + label + (extra || '') + '</a>'; };
+    var item = function (key, label, href, extra) { return '<a href="' + esc(href) + '" target="_top"' + (cur === key ? ' aria-current="page"' : '') + ((cur === 'month' || cur === 'schedule') && (key === 'month' || key === 'schedule') ? ' data-act="view" data-view="' + key + '"' : '') + '>' + label + (extra || '') + '</a>'; };
     var wb = (w && w.home && safeUrl(w.home.workbookUrl)) || WORKBOOK;
-    return '<nav class="esu-seg" aria-label="Pages">' + item('month', 'This month', MP) + item('schedule', 'Schedule', MP + '?view=schedule') +
+    return '<nav class="esu-seg' + (compact ? ' sm' : '') + '" aria-label="Pages">' + item('month', 'This month', MP) + item('schedule', 'Schedule', MP + '?view=schedule') +
       item('reflections', 'Reflections', rurl, un > 0 ? '<span class="esu-badge" aria-label="' + un + ' unread">' + un + '</span>' : '') + item('workbook', 'Workbook', wb) + '</nav>';
   }
   function loadSched() { if (state.sched || state.schedBusy) return Promise.resolve(); state.schedBusy = true; return call('/api/member/mentee-schedule?' + tzq()).then(function (d) { state.sched = d; state.schedErr = ''; }).catch(function (e) { state.schedErr = e.message; }).then(function () { state.schedBusy = false; render(); }); }
@@ -783,6 +800,72 @@
       '<p class="esu-rw-d" style="margin:0">Everything else at Embodied Philosophy is on the ' + '<a class="esu-alink" href="/c/schedule" target="_top">main schedule</a>' + '.</p>';
   }
 
+
+  // ---- The Apprentice Workbook, in the same skin (/c/apprentice-workbook), and a slim strip on its lesson pages ----
+  function loadWb() {
+    state.wbBusy = true;
+    return call('/api/member/workbook?' + tzq()).then(function (d) { state.wb = d.view; state.wbErr = ''; }).catch(function (e) { state.wb = state.wb || null; state.wbErr = e.message || 'The Workbook couldn’t be loaded just now.'; }).then(function () { state.wbBusy = false; render(); drawStrip(); });
+  }
+  var KINDLBL = { prepare: 'Prepare', practicum: 'Practicum', integrate: 'Integrate' };
+  var LOCKI = '<svg width="10" height="11" viewBox="0 0 11 12" aria-hidden="true"><rect x="1.5" y="5" width="8" height="6" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3.3 5V3.6a2.2 2.2 0 0 1 4.4 0V5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>';
+  function lessonPill(im, k) {
+    var l = im.lessons[k]; if (!l) return '';
+    var lbl = KINDLBL[k];
+    if (l.state === 'locked') {
+      var suffix = k === 'prepare' ? ' · opens ' + dm(l.opensOn) : im.current ? (k === 'practicum' ? ' · ' + dmy(im.sun) : ' · after the weekend') : '';
+      return '<span class="esu-pill lock" aria-disabled="true">' + LOCKI + esc(lbl + suffix) + '</span>';
+    }
+    return '<a class="esu-pill ' + l.state + '" href="' + esc(l.url) + '" target="_top">' + (l.state === 'done' ? '<svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 6.4l2.5 2.5 4.7-5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') + esc(lbl) + '</a>';
+  }
+  function lessonRow(l) {
+    return '<li class="esu-wl"><span class="esu-ring' + (l.done ? ' done' : '') + '" aria-hidden="true">' + (l.done ? TICK : '') + '</span><div><span class="esu-rw-t">' + esc(l.name) + '</span>' + (l.note ? '<p class="esu-rw-d">' + esc(l.note) + '</p>' : '') + '</div>' + (l.url && !l.locked ? '<a class="esu-tlink" href="' + esc(l.url) + '" target="_top">' + (l.done ? 'Read again' : 'Read') + '</a>' : '') + '</li>';
+  }
+  function immRow(im, today) {
+    var d = Math.round((Date.parse(im.sat + 'T00:00:00Z') - Date.parse(today + 'T00:00:00Z')) / 864e5), ig = im.lessons.integrate;
+    var eye = !im.current ? '' : ig && (ig.state === 'open' || ig.state === 'due') && im.sun < today ? 'Integrate now' : today >= im.sat ? 'This weekend' : d === 1 ? 'Next · tomorrow' : 'Next · in ' + d + ' days';
+    return '<li class="esu-wi' + (im.current ? ' cur' : '') + (im.n >= 4 && !im.current ? ' far' : '') + '"><span class="n">' + im.n + '</span><div class="tt">' + (eye ? '<span class="ey">' + esc(eye) + '</span>' : '') + '<span class="nm">' + esc(im.title) + '</span><span class="dd">' + esc(dmy(im.sat) + ' – ' + dmy(im.sun)) + '</span></div><div class="pl">' + ['prepare', 'practicum', 'integrate'].map(function (k) { return lessonPill(im, k); }).join('') + '</div></li>';
+  }
+  function workbookCard(w) {
+    var v = state.wb, today = (w && w.today) || localToday();
+    var card = function (inner) { return '<section class="esu-card" aria-labelledby="esu-wb-h">' + inner + '</section>'; };
+    if (!v) {
+      if (state.wbErr) return card('<h2 class="esu-h2" id="esu-wb-h">Apprentice Workbook</h2><p class="esu-err" role="alert" style="margin-top:8px">' + esc(state.wbErr) + '</p><p><a class="esu-alink" href="' + esc(WORKBOOK) + '?native=1" target="_top">Open it in Circle</a></p>');
+      return card('<h2 class="esu-h2" id="esu-wb-h">Apprentice Workbook</h2><div class="esu-sk esu-skrow"></div><div class="esu-sk esu-skrow"></div><div class="esu-sk esu-skrow"></div>');
+    }
+    var right = v.done > 0 ? '<span class="esu-mono">' + v.done + ' of ' + v.total + ' lessons done</span>' : v.total ? '<span class="esu-mono">' + v.total + ' lessons</span>' : '';
+    var bar = v.done > 0 && v.total ? '<div class="esu-bar" role="img" aria-label="' + v.done + ' of ' + v.total + ' lessons done"><i style="width:' + Math.round(v.done / v.total * 100) + '%;background:#2E5A4B"></i></div>' : '';
+    var grp = function (t) { return '<p class="esu-wg">' + t + '</p>'; };
+    return card('<div class="esu-hd" style="margin-bottom:2px;flex-wrap:wrap"><h2 class="esu-h2" id="esu-wb-h">Apprentice Workbook</h2>' + right + '</div>' +
+      '<p class="esu-rw-d" style="margin:0 0 8px">The lessons for each immersion open as the year goes: Prepare two weeks before, Practicum on the weekend, Integrate after.</p>' + bar +
+      (v.start.length ? grp('Start here') + '<ul class="esu-wlist">' + v.start.map(lessonRow).join('') + '</ul>' : '') +
+      (v.immersions.length ? grp('The eight immersions') + '<ul class="esu-wlist">' + v.immersions.map(function (im) { return immRow(im, today); }).join('') + '</ul>' : '') +
+      (v.requirements.length ? grp('Completing the year') + '<ul class="esu-wlist">' + v.requirements.map(lessonRow).join('') + '</ul>' : '') +
+      (state.wbErr ? '<p class="esu-err" role="alert">' + esc(state.wbErr) + '</p>' : ''));
+  }
+  function workbookHtml(w) {
+    return pageHead(w) + pageSwitch('workbook') + '<div class="esu-stack">' + workbookCard(w) + '</div>' +
+      (state.admin ? '<p class="esu-rw-d" style="margin:14px 0 0">Jacob: <a class="esu-alink" href="' + esc(WORKBOOK) + '?native=1" target="_top">edit the lessons in Circle</a> <span class="esu-mono" style="margin-left:6px">· shown to admins only</span></p>' : '');
+  }
+  // The strip at the top of a lesson page: back to all lessons, where you are, and the switch
+  function crumb() {
+    var v = state.wb, m = /\/sections\/(\d+)\/lessons\/(\d+)/.exec(location.pathname), out = 'Workbook';
+    if (!v || !m) return out;
+    var hit = function (l) { return l && l.url && l.url.indexOf('/sections/' + m[1] + '/lessons/' + m[2]) >= 0; };
+    if (v.start.some(hit)) return out + ' · Start here';
+    if (v.requirements.some(hit)) return out + ' · Completing the year';
+    for (var i = 0; i < v.immersions.length; i++) for (var k in v.immersions[i].lessons) if (hit(v.immersions[i].lessons[k])) return out + ' · Immersion ' + v.immersions[i].n + ' · ' + KINDLBL[k];
+    return out;
+  }
+  function stripHtml() { return '<a class="back" href="' + esc(WORKBOOK) + '" target="_top">← All lessons</a><span class="cr">' + esc(crumb()) + '</span>' + pageSwitch('workbook', true); }
+  function drawStrip() {
+    var el = document.getElementById('esu-strip');
+    if (!isLesson() || state.ok !== true) { if (el) el.remove(); return; }
+    var box = document.querySelector(HOST) || pageContainer(); if (!box) return;
+    if (!el) { el = document.createElement('div'); el.id = 'esu-strip'; el.className = 'esu-strip'; box.insertBefore(el, box.firstChild); }
+    else if (el.parentNode !== box) box.insertBefore(el, box.firstChild);
+    var h = stripHtml(); if (el.__h !== h) { el.innerHTML = h; el.__h = h; }
+  }
+
   // The header: a welcome in the first month, then "Your formation"; where you are in one line; one link to the manual and the year
   function pageHead(w) {
     var name = (w && w.greeting.firstName) || state.first, fm = (w && w.home.formation) || { n: 0 }, im = w && w.home.immersion, parts = [];
@@ -795,6 +878,7 @@
   function html() {
     if (isRefl()) return reflHtml();
     if (isMentor()) return mentorHtml();
+    if (isWorkbook() && !(state.error && !state.data)) return workbookHtml(state.data);
     if (state.error && !state.data) return '<h1 class="esu-h1">Sahṛdaya Upāya</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
     var w = state.data;
     if (!w) return pageHead(null) + pageSwitch(currentView()) + (currentView() === 'schedule' ? '<div class="esu-stack">' + scheduleCard(null) + '</div>' : '') + (currentView() === 'schedule' ? '' : '<div class="esu-stack"><div class="esu-card">' + '<div class="esu-sk esu-skrow"></div>'.repeat(5) + '</div><div class="esu-card"><div class="esu-sk" style="height:120px"></div></div><div class="esu-sk" style="height:220px"></div><div class="esu-sk" style="height:180px"></div></div>');
@@ -1132,6 +1216,11 @@
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
   function mount() {
     if (!PAGE.test(location.pathname) || state.ok !== true) return;
+    // Circle's own page, with Edit lessons, when asked for (?native=1)
+    if (/[?&]native=1/.test(location.search)) { unmount(); drawStrip(); return; }
+    // A lesson page stays Circle's own; it only gets the strip at the top
+    if (isLesson()) { if (root) unmount(); drawStrip(); return; }
+    drawStrip();
     if (root && document.body.contains(root)) return;
     var box = document.querySelector(HOST) || pageContainer();
     if (!box) return;
@@ -1143,6 +1232,7 @@
     render();
   }
   function unmount() {
+    var sp = document.getElementById('esu-strip'); if (sp && !isLesson()) sp.remove();
     if (!root) return;
     var box = root.__box; root.remove(); root = null;
     if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = '';
@@ -1161,7 +1251,8 @@
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
-      mount(); render(); loadPods(); loadPp(); if (currentView() === 'schedule') loadSched(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
+      if (isLesson()) { mount(); return loadWb(); }
+      mount(); render(); if (isWorkbook()) { if (state.ok) loadWb(); return load(); } loadPods(); loadPp(); if (currentView() === 'schedule') loadSched(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
     }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
       .then(function () { mount(); render(); });
   }
@@ -1173,13 +1264,14 @@
   var timer = null, lastPath = location.pathname;
   new MutationObserver(function (muts) {
     if (root && muts.every(function (m) { return root.contains(m.target); })) return;
+    var stp = document.getElementById('esu-strip'); if (stp && muts.every(function (m) { return stp.contains(m.target); })) return;
     if (timer) return;
     timer = setTimeout(function () {
       timer = null;
       if (!PAGE.test(location.pathname)) { unmount(); return; }
       var moved = location.pathname !== lastPath; lastPath = location.pathname;
-      if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root && isMentor() && state.mt.data === null && !state.mt.err) loadMentor().then(render); else if (root && moved) render(); }
+      if (!started) start(); else { if (moved && state.ok === true && (isWorkbook() || isLesson())) { loadWb(); if (isWorkbook() && !state.data) load(); } mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root && isMentor() && state.mt.data === null && !state.mt.err) loadMentor().then(render); else if (root && moved) render(); }
     }, 250);
   }).observe(document.body, { childList: true, subtree: true });
-  window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) { unmount(); return; } state.view = /[?&]view=schedule/.test(location.search) ? 'schedule' : 'month'; if (state.view === 'schedule') loadSched(); render(); });
+  window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) { unmount(); return; } state.view = /[?&]view=schedule/.test(location.search) ? 'schedule' : 'month'; if (state.view === 'schedule') loadSched(); render(); drawStrip(); });
 })();

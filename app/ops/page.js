@@ -20,8 +20,8 @@ import TaskList from './TaskList';
 import Note from './Note';
 import Meetings from './Meetings';
 import { flagOf } from './SocialGrid';
-import menteeYear from '@/data/mentee-year.json';
-import { nextSteps, currentMonth, daysUntil, PROJECTS } from '@/lib/ops/menteeyear';
+import { PROJECTS } from '@/lib/ops/menteeyear';
+import { loadOpsYear } from '@/lib/ops/menteeyearops';
 
 const dayLong = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).replace(',', '');
 const shortDate = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -53,6 +53,7 @@ export default async function Home({ searchParams }) {
   const needsYou = [...b.pastDue, ...b.thisWeek, ...blocked];
   const later = b.upcoming.filter(t => t.due <= addDays(todayET(), 35) && !blocked.includes(t)).length;
   const cal = await loadCalendar().catch(() => []);
+  const year = isStaff(user) && viewing === user ? await loadOpsYear({ today: todayET() }).catch(e => { console.error('mentee year card', e.message); return null; }) : null;
   const o2o = triageOn ? await oneToOnes({ days: 21 }).catch(() => ({ configured: false, items: [] })) : { configured: false, items: [] };
   const groups = groupByEvent(needsYou, cal);
 
@@ -176,15 +177,23 @@ export default async function Home({ searchParams }) {
           <p className="ops-more"><a href="/ops/one-to-ones">All one-to-ones →</a></p>
         </section></div>)}
         <Meetings programming={programming} team={meetings} director={user.director} stacked />
-        {isStaff(user) && viewing === user && (() => {
-          const steps = nextSteps(menteeYear.steps, todayET(), 3), mo = currentMonth(menteeYear.months, todayET());
-          return (<div className="ops-week stacked" style={{ marginTop: 28 }}><section>
-            <h2>Mentee year</h2>
-            {mo && <p className="ops-empty">{mo.title.split(' ')[0]}: {mo.theme}</p>}
-            {steps.length > 0 && <ul className="ops-my-steps compact">{steps.map((st, i) => (
-              <li key={i} className="ops-my-step"><span className="when"><b>{new Date(`${st.date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(',', '')}</b><small>in {daysUntil(st.date, todayET())} days</small></span><span className="what"><span className={`ops-my-proj ${st.project}`}><i />{PROJECTS[st.project]}</span>{st.title}</span></li>
-            ))}</ul>}
-            <p className="ops-more"><a href="/ops/mentee-year">The mentee year →</a></p>
+        {isStaff(user) && viewing === user && year && (() => {
+          const d3 = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(',', '');
+          const dot = c => c.count === c.of && c.of ? 'ok' : c.count && c.step.date < year.today ? 'risk' : 'none';
+          const names = list => list.slice(0, 2).map(x => x.name).join(', ') + (list.length > 2 ? `, +${list.length - 2}` : '');
+          const od = year.overdue, ns = year.noSummary, rv = year.review;
+          return (<div className="ops-week stacked" style={{ marginTop: 28 }}><section className="ops-today-card">
+            <h2>Mentee year <a className="ops-my-open" href="/ops/mentee-year">Open</a></h2>
+            {year.month && <p className="ops-empty">{year.month.title.split(' ')[0]} · {year.month.theme}</p>}
+            {year.upcoming.length > 0 && <><h3 className="ops-my-h">Next three project steps</h3><ul className="ops-my-steps compact">{year.upcoming.map(c => (
+              <li key={c.step.id} className="ops-my-step"><span className="when"><b>{d3(c.step.date)}</b></span><span className="what"><span className={`ops-my-proj ${c.step.project}`}><i />{PROJECTS[c.step.project]}</span><b>{c.step.title}</b></span><span className={`ops-my-count ${dot(c)}`}><i />{c.count} of {c.of}</span></li>
+            ))}</ul></>}
+            <h3 className="ops-my-h">Waiting on mentees</h3>
+            <ul className="ops-my-wait">
+              <li><i className={od.length ? 'risk' : 'none'} /><span>Steps overdue</span><b>{od.length ? `${od.length} · ${names(od)}` : 'None'}</b></li>
+              {year.configured && <li><i className={ns.length ? 'soon' : 'none'} /><span>One-to-ones without a summary</span><b>{ns.length ? `${ns.length} · next on ${d3(new Date(ns[0].start).toISOString().slice(0, 10))}` : 'None'}</b></li>}
+              {rv && <li><i className={rv.opens ? 'none' : 'soon'} /><span>{rv.name} review</span><b>{rv.opens ? `Opens ${new Date(`${rv.opensOn}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}` : `${rv.progress.filter(x => x.state === 'ready').length} of ${rv.progress.length} ready`}</b></li>}
+            </ul>
           </section></div>);
         })()}
         {isTeacher(user) && <p className="ops-more"><a href="/ops/team">Contacts and your teacher guide →</a></p>}

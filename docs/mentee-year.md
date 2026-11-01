@@ -8,3 +8,6 @@ A staff version of the Sahṛdaya Upāya "Mentee year" page (Nov 2026): what eac
 - **Code:** `lib/ops/menteeyear.js` (pure helpers), `app/ops/mentee-year/page.js`, styles at the end of `app/ops/ops.css`. Everything is read-only; nothing is written anywhere.
 - **Tests:** `node --import ./scripts/ce-test/register.mjs scripts/ops-test/mentee-year.mjs` (content integrity, next steps, current month, reviews, lanes); the pages in the ops test harness (`bash scripts/ops-test/run.sh`, then open `/ops/mentee-year`).
 - Not built here (the design handoff for the widgets was not attached): per-mentee step status, the Ledger tabs (Schedule, Months, Step status), and the nudges and Monday digest lines. This page is the shared reference they would hang on.
+
+## Cohort numbers (widgets PR)
+The Now and Final projects tabs now read the Mentee Schedule and Mentee Step Status tabs (falling back to `data/mentee-year.json` for steps and months): see "Mentee year widgets" in `docs/sahrdaya-upaya-page.md`. The Immersion numbering in the month cards now follows `data/mentee.json` (Immersion 1 is in November).

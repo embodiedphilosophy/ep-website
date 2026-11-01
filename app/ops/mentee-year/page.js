@@ -2,6 +2,7 @@ import data from '@/data/mentee-year.json';
 import { isStaff } from '@/lib/ops/nav';
 import { todayET } from '@/lib/events';
 import { segments, nextSteps, currentMonth, reviewFor, daysUntil, PROJECTS, laneStyle } from '@/lib/ops/menteeyear';
+import { loadOpsYear } from '@/lib/ops/menteeyearops';
 import Shell, { opsUser } from '../Shell';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +32,10 @@ export default async function MenteeYear({ searchParams }) {
   const tab = TABS.some(t => t[0] === sp?.tab) ? sp.tab : 'now';
   const filter = ['talk', 'offering'].includes(sp?.p) ? sp.p : 'all';
   const today = todayET();
-  const month = currentMonth(data.months, today), next = nextSteps(data.steps, today, 3), review = reviewFor(data.reviews, today);
+  const year = await loadOpsYear({ today, withBookings: false });
+  const baseMonth = currentMonth(data.months, today), month = baseMonth && { ...baseMonth, theme: year.month?.theme || baseMonth.theme, focus: year.month?.focus || baseMonth.focus };
+  const doneDate = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'America/New_York' }) : '';
+  const dotOf = c => c.count === c.of && c.of ? 'ok' : c.count && c.step.date < today ? 'risk' : 'none';
   const href = (t, extra = '') => `/ops/mentee-year${t === 'now' && !extra ? '' : `?tab=${t}${extra}`}`;
 
   return (
@@ -42,11 +46,20 @@ export default async function MenteeYear({ searchParams }) {
       {tab === 'now' && (<div className="ops-my-cols">
         <section>
           <h2>Next three project steps</h2>
-          {next.length === 0 ? <p className="ops-empty">Every step is past its date: the year is complete.</p> : <ul className="ops-my-steps">{next.map((s, i) => <Step key={i} s={s} today={today} detail />)}</ul>}
+          {year.upcoming.length === 0 ? <p className="ops-empty">Every step is past its date: the year is complete.</p> : <ul className="ops-my-steps">{year.upcoming.map(c => (
+            <li key={c.step.id} className="ops-my-step">
+              <span className="when"><b>{dayFmt(c.step.date)}</b><small>{daysUntil(c.step.date, today) === 0 ? 'today' : `in ${daysUntil(c.step.date, today)} days`}</small></span>
+              <span className="what"><Proj p={c.step.project} /><b>{c.step.title}</b>{c.step.detail && <span className="det">{c.step.detail}</span>}{c.step.evidence && <span className="ev">Evidence: {c.step.evidence}</span>}
+                <details className="ops-my-who"><summary><span className={`ops-my-count ${dotOf(c)}`}><i />{c.count} of {c.of} done</span></summary>
+                  <ul className="ops-my-grid">{year.mentees.map(m => { const d = c.doneBy.find(x => x.email === m.email); return <li key={m.email}><span>{m.name}</span><b className={d ? 'ok' : ''}>{d ? `Done${d.at ? ` · ${doneDate(d.at)}` : ''}` : 'Not yet'}</b></li>; })}</ul>
+                </details></span>
+            </li>))}</ul>}
+          {year.overdue.length > 0 && <p className="ops-note" role="status">Overdue: {year.overdue.length} {year.overdue.length === 1 ? 'step' : 'steps'} ({[...new Set(year.overdue.map(o => o.name))].slice(0, 4).join(', ')}{new Set(year.overdue.map(o => o.name)).size > 4 ? ', …' : ''})</p>}
           <p className="ops-more"><a href={href('projects')}>All dated steps →</a></p>
-          {review && (<div className="ops-my-review">
-            <h2>{review.month === today.slice(0, 7) ? 'Quarterly review this month' : 'Next quarterly review'} <span>{review.title}</span></h2>
-            <ul>{review.checks.map((c, i) => <li key={i}><i aria-hidden="true" />{c}</li>)}</ul>
+          {year.review && (<div className="ops-my-review">
+            <h2>{year.review.name} review <span>{year.review.opens ? `opens ${new Date(`${year.review.opensOn}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}` : `${year.review.progress.filter(x => x.state === 'ready').length} of ${year.review.progress.length} ready`}</span></h2>
+            <ul className="ops-my-grid">{year.review.progress.map(x => <li key={x.email}><span>{x.name}</span><b className={`st ${x.state}`}>{x.state === 'ready' ? 'Ready' : x.state === 'progress' ? `In progress · ${x.ticked} of ${x.total}` : x.state === 'risk' ? `Not finished · ${x.ticked} of ${x.total}` : `Not started · 0 of ${x.total}`}</b></li>)}</ul>
+            <p className="ops-more">The checks: {year.review.checks.map(c => c.text).join(' · ')}</p>
           </div>)}
         </section>
         {month && (<section className="ops-my-card current">
@@ -89,10 +102,10 @@ export default async function MenteeYear({ searchParams }) {
         </div>
         <p className="ops-note">{data.spacing}</p>
         <nav className="ops-filters" aria-label="Filter steps">{[['all', 'All steps'], ['talk', '60-min talk'], ['offering', 'Three-session offering']].map(([k, l]) => <a key={k} href={href('projects', k === 'all' ? '' : `&p=${k}`)} aria-current={filter === k ? 'page' : undefined}>{l}</a>)}</nav>
-        <ul className="ops-my-steps full">{data.steps.filter(s => filter === 'all' || s.project === filter || s.project === 'both').map((s, i) => (
-          <li key={i} className={`ops-my-step${s.date < today ? ' past' : ''}`}>
-            <span className="when"><b>{dayYear(s.date)}</b></span>
-            <span className="what"><Proj p={s.project} /><b>{s.title}</b><span className="det">{s.detail}</span><span className="ev">Evidence: {s.evidence}</span></span>
+        <ul className="ops-my-steps full">{year.cohort.filter(c => filter === 'all' || c.step.project === filter || c.step.project === 'both').map(c => (
+          <li key={c.step.id} className={`ops-my-step${c.step.date < today ? ' past' : ''}`}>
+            <span className="when"><b>{dayYear(c.step.date)}</b></span>
+            <span className="what"><Proj p={c.step.project} /><b>{c.step.title}</b><span className="det">{c.step.detail}</span><span className="ev">Evidence: {c.step.evidence}</span><span className={`ops-my-count ${dotOf(c)}`}><i />{c.count} of {c.of} done</span></span>
           </li>
         ))}</ul>
       </section>)}

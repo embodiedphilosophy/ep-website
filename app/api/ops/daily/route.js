@@ -13,6 +13,7 @@ import { joinUrlFor, seriesLinksOf, inCircle } from '@/lib/ops/joinurl';
 import { todayET, reminderRows, emailsOf } from '@/lib/events';
 import { longDate } from '@/lib/dates';
 import { jobsHere, SKIPPED } from '@/lib/crongate';
+import { runNudges, mondayLines } from '@/lib/mentee/yearjobs';
 
 // Daily (vercel.json cron): fill Motion from the calendar and send teaching reminders.
 // Emails it sends: one nudge to a task's owners when it is 3 days overdue, reminders to the addresses in each session’s Teacher/Host Emails column, a slides request
@@ -209,8 +210,17 @@ export async function GET(req) {
     }
   } catch (e) { out.errors.push('Course pages: ' + e.message); }
 
-  // 6) Jacob's overview in Motion (only once tasks live in the dashboard's database)
-  try { out.motionDigest = await sendMotionDigest({ tasks, team: await loadTeam(), base }); }
+  // 6) The mentee year: reminder emails to mentees (MENTEE_NUDGES=on; `dry` only lists them) and, on Mondays, a few lines for Jacob
+  let yearLines = [];
+  try { out.menteeNudges = await runNudges({ today }); } catch (e) { out.errors.push('Mentee reminders: ' + e.message); }
+  try { yearLines = await mondayLines({ today }); } catch (e) { out.errors.push('Mentee year digest: ' + e.message); }
+
+  // 7) Jacob's overview in Motion (only once tasks live in the dashboard's database); the mentee-year lines ride along, or go in one email if Motion isn't set up
+  try { out.motionDigest = await sendMotionDigest({ tasks, team: await loadTeam(), base, extra: yearLines.length ? ['', 'Mentee year', ...yearLines.map(l => `- ${l}`), `Open Mentee year: ${base}/ops/mentee-year`] : [] }); }
   catch (e) { out.errors.push('Motion digest: ' + e.message); }
+  if (yearLines.length && out.motionDigest?.skipped && !(out.motionDigest.why || '').includes('already')) {
+    try { const d = (await loadTeam()).find(m => m.director && m.email); if (d) { await sendEmail({ to: d.email.trim(), subject: 'Mentee year this week', html: layout('Mentee year this week', `<ul>${yearLines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>${button(`${base}/ops/mentee-year`, 'Open Mentee year')}`) }); out.menteeDigest = { emailed: d.email.trim(), lines: yearLines.length }; } }
+    catch (e) { out.errors.push('Mentee year email: ' + e.message); }
+  } else if (yearLines.length) out.menteeDigest = { inMotionDigest: true, lines: yearLines.length };
   return NextResponse.json(out);
 }

@@ -107,6 +107,14 @@
       '.esu-steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;margin:0 0 18px;overflow:hidden}.esu-st4{padding:12px 14px;font-size:13.5px;color:#5A5346;border-left:1px solid #E3D8C6}.esu-st4:first-child{border-left:0}.esu-st4 b{display:block;font:500 11px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.12em;color:#A5432A;margin-bottom:2px}.esu-st4.on{background:#F6EEDA;color:#1E1A14}',
       '.esu-rcols{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}.esu-rfl{display:grid;gap:10px}.esu-chips{display:flex;gap:8px;flex-wrap:wrap}',
       '.esu-mq{display:grid;gap:0;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;overflow:hidden}.esu-mqi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 16px;border-top:1px solid #E3D8C6}.esu-mqi:first-child{border-top:0}.esu-mqi b{font-weight:600}.esu-age{font:500 12px "IBM Plex Mono",monospace;color:#5A5346;white-space:nowrap}.esu-age.old{color:#A5432A;font-weight:500}.esu-mqd{grid-column:1/-1;white-space:pre-wrap;color:#3a342b;font-size:14px}.esu-mt{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:8px 0 22px}.esu-tile{border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;padding:14px 16px}.esu-tile.behind{border-color:#A5432A}.esu-dots{display:flex;gap:6px;margin:8px 0 4px}.esu-dots i{width:12px;height:12px;border-radius:50%;border:1.5px solid #5B6343}.esu-dots i.f{background:#5B6343}',
+      '.esu-proj{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:600;color:#5A5346}.esu-proj i{width:8px;height:8px;border-radius:50%;display:inline-block}.esu-in{width:100%;background:#fff;border:1px solid #E3D8C6;border-radius:8px;padding:10px 12px;font-size:14px;min-height:44px;font-family:inherit}',
+      '.esu-sl{list-style:none;margin:0;padding:0}.esu-st{display:grid;grid-template-columns:108px minmax(0,1fr) auto;gap:6px 16px;align-items:start;padding:14px 0;border-top:1px solid #E3D8C6}.esu-st.late{background:#FBEFEA;border-left:3px solid #A5432A;padding-left:12px;margin:0 -12px 0 -12px;padding-right:12px;border-radius:0 8px 8px 0}.esu-sw{display:flex;flex-direction:column;gap:2px}.esu-sd{color:#5A5346;font-weight:600;text-transform:uppercase;letter-spacing:.06em}.esu-sn{font-size:12.5px;color:#5A5346}.esu-sm{display:flex;flex-direction:column;gap:3px;min-width:0}.esu-stt{font-weight:600;font-size:15px}.esu-sb{display:flex;justify-content:flex-end}',
+      '.esu-zero{background:#F1E9DC;border-radius:8px;padding:18px;color:#5A5346;text-align:center}',
+      '.esu-dl{margin:0;display:grid;grid-template-columns:96px minmax(0,1fr)}.esu-dt{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:10px 0;border-top:1px solid #E3D8C6}.esu-dd{margin:0;padding:9px 0;border-top:1px solid #E3D8C6;font-size:14px;display:flex;flex-direction:column;gap:1px}.esu-rowb{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:1px;width:100%}.esu-rowb:focus-visible{outline:2px solid #A5432A;outline-offset:2px}',
+      '.esu-lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:#5A5346;margin:0 0 12px}.esu-lg span{display:inline-flex;gap:6px;align-items:center}.esu-ldot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none;box-sizing:border-box}',
+      '.esu-ln{display:grid;border-top:1px solid #E3D8C6}.esu-lh{text-align:center;padding:8px 0 6px;font:500 11px "IBM Plex Mono",monospace;letter-spacing:.08em;color:#5A5346;border-radius:6px 6px 0 0}.esu-lh.cur{color:#A5432A;background:#F6EEDA}.esu-lr{padding:10px 8px 10px 0;border-top:1px solid #E3D8C6;display:flex;flex-direction:column;gap:2px}.esu-lc{border-top:1px solid #E3D8C6;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:58px}.esu-lc.cur{background:#F6EEDA}.esu-lp{font-size:10.5px;color:#5A5346;text-align:center;line-height:1.2}.esu-lds{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}',
+      '.esu-ln-p{display:none}.esu-lp3{display:grid;grid-template-columns:46px minmax(0,1fr) minmax(0,1fr);border-top:1px solid #E3D8C6}.esu-lpm{padding:10px 0;font-size:11px;letter-spacing:.06em;color:#5A5346}.esu-lpm.cur{color:#A5432A}.esu-lpc{padding:8px 6px;display:flex;flex-direction:column;gap:4px}.esu-lpc.cur{background:#F6EEDA}.esu-lpl{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;line-height:1.3}.esu-lpl .esu-ldot{margin-top:2px}.esu-lp3>.esu-proj{padding:8px 6px}',
+      '.esu-rck{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;padding:10px 0;align-items:start;font-size:14px;cursor:pointer}.esu-rck.dis{cursor:default;color:#8A8072}.esu-rck input{width:18px;height:18px;margin:1px 0 0;accent-color:#2E5A4B}.esu-clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}',
       '.esu-chip{min-height:40px;padding:0 16px;border-radius:99px;border:1px solid #E3D8C6;background:#FBF6EE;color:#1E1A14;font:500 14px "IBM Plex Sans",system-ui,sans-serif;cursor:pointer}.esu-chip.on{background:#1E1A14;border-color:#1E1A14;color:#FBF6EE}',
       '.esu-ri{display:grid;gap:4px;text-align:left;padding:14px 16px;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;cursor:pointer;font:inherit;color:#1E1A14}.esu-ri.on{border-color:#A5432A}.esu-ri b{font:600 19px/1.2 "Cormorant Garamond",Georgia,serif}.esu-rim{display:flex;justify-content:space-between;gap:8px}.esu-rist{font-size:12.5px;color:#7A5A2E;font-weight:600;display:inline-flex;gap:6px;align-items:center}.esu-dotn{width:8px;height:8px;border-radius:50%;background:#A5432A;display:inline-block}',
       '.esu-rpane{background:#FBF6EE;border:1px solid #E3D8C6;border-radius:8px;padding:22px 26px;min-width:0}.esu-rt1{margin:2px 0 0;font:600 34px/1.1 "Cormorant Garamond",Georgia,serif}.esu-rbody{margin:16px 0}.esu-rbody p{font:400 19.5px/1.55 "Cormorant Garamond",Georgia,serif;margin:0 0 12px;padding:2px 0;max-width:660px}.esu-rbody p.ch{background:#F6EEDA;margin-left:-8px;margin-right:-8px;padding:4px 8px;border-radius:4px}',
@@ -159,12 +167,13 @@
       '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
       '.esu-dlg{background:#FBF6EE;border-radius:8px;padding:22px 24px;width:100%;max-width:560px;margin:auto}',
       '@media (max-width:760px){',
-      '.esu-cue{grid-template-columns:minmax(0,1fr)}.esu-steps4{grid-template-columns:repeat(2,minmax(0,1fr))}.esu-rcols,.esu-ed2{grid-template-columns:minmax(0,1fr)}.esu-rpane{padding:16px}.esu-rt1{font-size:28px}',
+      '.esu-st{grid-template-columns:minmax(0,1fr) auto}.esu-sw{grid-column:1/-1;flex-direction:row;gap:8px;align-items:baseline}.esu-cue{grid-template-columns:minmax(0,1fr)}.esu-steps4{grid-template-columns:repeat(2,minmax(0,1fr))}.esu-rcols,.esu-ed2{grid-template-columns:minmax(0,1fr)}.esu-rpane{padding:16px}.esu-rt1{font-size:28px}',
       '.esu{padding:24px 16px 56px}.esu-h1{font-size:36px}.esu-tabs{display:flex;gap:6px;margin:0 0 14px;background:#E3D8C6;border-radius:99px;padding:4px}',
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
       '.esu-cols>*,.esu-c1>*,.esu-c2>*{order:0}',
-      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=assign]{order:2}[data-g=one]{order:3}[data-g=books]{order:4}[data-g=partner]{order:5}[data-g=hours]{order:6}[data-g=feedback]{order:7}[data-g=room]{order:8}',
+      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=month]{order:2}[data-g=steps]{order:3}[data-g=one]{order:4}[data-g=review]{order:5}[data-g=lanes]{order:6}[data-g=assign]{order:7}[data-g=partner]{order:8}[data-g=hours]{order:9}[data-g=feedback]{order:10}[data-g=room]{order:11}',
+      '.esu-ln-d{display:none}.esu-ln-p{display:block}',
       '.esu[data-tab=formation] [data-g=room]{display:none}.esu[data-tab=room] [data-g]:not([data-g=room]){display:none}',
       '.esu-steps{grid-template-columns:minmax(0,1fr)}.esu-grid2{grid-template-columns:minmax(0,1fr)}.esu-h3{font-size:30px}}'
     ].join('\n');
@@ -387,31 +396,164 @@
       (safeUrl(h.workbookUrl) ? '<p style="margin:12px 0 0;font-size:13px">' + ext(h.workbookUrl, 'Programme expectations and full briefs, in the Workbook.', '') + '</p>' : '') + '</section>';
   }
 
-  // After booking: what the mentee sent for Jacob, or a box to add it if the booking has none
-  function summaryBlock(bk) {
-    if (bk.summary && bk.summary.length) return '<div class="esu-sum"><div class="esu-eye" style="color:#2E5A4B">Sent to Jacob ✓</div>' + bk.summary.map(function (x) { return '<p style="margin:4px 0;font-size:13.5px"><span class="esu-muted">' + esc(x.q) + '</span><br>' + esc(x.a) + '</p>'; }).join('') + '</div>';
-    return '<div class="esu-sum"><div class="esu-eye">Add a few lines for Jacob</div><p class="esu-muted" style="font-size:13px;margin:2px 0 6px">What you’d like to work on, discuss, or are finding hard. He reads it before you meet.</p>' +
-      '<textarea id="esu-note" rows="3" maxlength="3000" data-in="note" aria-label="What you want to work on" style="' + FIELD + '">' + esc(state.note || '') + '</textarea>' +
-      '<div class="esu-acts" style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="save-note"' + (state.busy === 'note' ? ' disabled' : '') + '>' + (state.busy === 'note' ? 'Sending…' : 'Send to Jacob') + '</button></div>' + (state.msg && state.msgFor === 'note' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') + '</div>';
+  // ---- The mentee year: next project steps, this month, the two lanes, the quarterly review, and the one-to-one summary (docs/sahrdaya-upaya-page.md) ----
+  var PROJ = { both: ['Both projects', '#4B4F8C'], talk: ['60-minute talk', '#B8801C'], offering: ['Three-session offering', '#2F6B4F'] };
+  var yrState = { all: false, keep: {}, editing: false, text: '', msg: '', busy: '' };
+  function dmy(d) { return wd(d) + ' ' + dayFmt(d, { month: 'short' }); }
+  function dm(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'short' }); }
+  function dml(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'long' }); }
+  function dmyT(iso) { return fmtTime(iso, { weekday: 'short' }) + ' ' + fmtTime(iso, { day: 'numeric' }) + ' ' + fmtTime(iso, { month: 'short' }); }
+  function hmT(iso) { return hmT(iso); }
+  var YR = function (w) { return w && w.home && w.home.year; };
+  function projChip(p) { var x = PROJ[p] || PROJ.both; return '<span class="esu-proj"><i style="background:' + x[1] + '"></i>' + x[0] + '</span>'; }
+  function whenText(s) { var n = s.daysTo; return n < 0 ? Math.abs(n) + (n === -1 ? ' day overdue' : ' days overdue') : n === 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }
+  function nextSteps(y) {
+    var list = y.allSteps.filter(function (s) { return s.status !== 'done' || yrState.keep[s.id]; });
+    var od = list.filter(function (s) { return s.overdue && s.status !== 'done'; }), rest = list.filter(function (s) { return !(s.overdue && s.status !== 'done'); });
+    return od.concat(rest).slice(0, 3);
+  }
+  function stepRow(s, y, flat) {
+    var late = s.overdue && s.status !== 'done', done = s.status === 'done';
+    var btn = y.ticksOk === false ? '' : '<button type="button" class="esu-tk" aria-pressed="' + done + '" data-act="yr-tick" data-id="' + esc(s.id) + '"' + (yrState.busy === s.id ? ' disabled' : '') + '>' + (done ? 'Done ✓' : 'Mark done') + '</button>';
+    return '<li class="esu-st' + (late ? ' late' : '') + '"><span class="esu-sw"><span class="esu-mono esu-sd"' + (late ? ' style="color:#A5432A"' : '') + '>' + esc(dmy(s.date)) + '</span><span class="esu-sn"' + (late ? ' style="color:#A5432A"' : '') + '>' + (done ? 'done' : whenText(s)) + '</span></span>' +
+      '<span class="esu-sm">' + projChip(s.project) + '<span class="esu-stt">' + esc(s.title) + '</span>' + (flat ? '' : (s.detail ? '<span class="esu-muted" style="font-size:13.5px">' + esc(s.detail) + '</span>' : '') + (s.evidence ? '<span class="esu-muted" style="font-size:12.5px"><span class="esu-mono" style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase">Evidence</span> · ' + esc(s.evidence) + '</span>' : '')) + '</span>' + (btn ? '<span class="esu-sb">' + btn + '</span>' : '') + '</li>';
+  }
+  function stepsCard(w) {
+    var y = YR(w); if (!y) return '';
+    var head = '<div class="esu-hd"><h2 class="esu-h2">Your next project steps</h2>' + (y.started ? '<button type="button" class="esu-lnk" style="color:#A5432A;font-weight:600;text-decoration:none" data-act="yr-all">All ' + y.total + ' steps</button>' : '') + '</div>';
+    if (!y.started) return '<section class="esu-card" data-g="steps">' + head + '<div class="esu-zero">Your project steps start in November.</div></section>';
+    var list = nextSteps(y), body;
+    if (!list.length) body = '<div class="esu-zero">You’re up to date. Your next step appears here when it’s close.</div>';
+    else body = (y.ticksOk === false ? '<p class="esu-err" style="margin-bottom:6px">Your ticks couldn’t be loaded just now. The steps are still right.</p>' : '') + '<ul class="esu-sl">' + list.map(function (s) { return stepRow(s, y); }).join('') + '</ul>';
+    return '<section class="esu-card" data-g="steps">' + head + body + (yrState.msg && yrState.msgFor === 'tick' ? '<p class="esu-err" role="alert" style="margin-top:8px">' + esc(yrState.msg) + '</p>' : '') +
+      '<p class="esu-muted" style="font-size:13px;margin-top:10px">Ticking a step tells Jacob you’ve done it. Bring the evidence to your next one-to-one.</p>' +
+      '<p id="reminders" class="esu-muted" style="font-size:13px;margin-top:6px">Reminders by email: <b>' + (y.reminders ? 'on' : 'off') + '</b> · <button type="button" class="esu-lnk" data-act="yr-remind">' + (y.reminders ? 'Turn off' : 'Turn on') + '</button></p></section>';
+  }
+  function allStepsModal(w) {
+    var y = YR(w); if (!y || !yrState.all) return '';
+    var by = {}; y.allSteps.forEach(function (s) { (by[s.month] = by[s.month] || []).push(s); });
+    var months = (y.months || []).filter(function (m) { return by[m.id]; });
+    var body = months.map(function (m) {
+      return '<div style="margin-top:14px"><div class="esu-eye" style="color:#5A5346">' + esc(m.title) + '</div>' + (m.theme ? '<div class="esu-h2" style="font-size:19px;font-style:italic;margin:2px 0 0">' + esc(m.theme) + '</div>' : '') + '<ul class="esu-sl">' + by[m.id].map(function (s) { return stepRow(s, y, true); }).join('') + '</ul></div>';
+    }).join('');
+    return '<div class="esu-ov" data-act="yr-close" data-bg="1"><div class="esu-dlg" role="dialog" aria-modal="true" aria-label="The year ahead" style="max-width:680px"><div class="esu-hd"><h2 class="esu-h2">The year ahead</h2><button type="button" class="esu-btn out" data-act="yr-close">Close</button></div>' +
+      '<p class="esu-muted" style="font-size:13px">' + y.doneCount + ' of ' + y.total + ' project steps done.</p>' + body + '</div></div>';
+  }
+  function lastMonday(ym) { var p = ym.split('-').map(Number), d = new Date(Date.UTC(p[0], p[1], 0)); while (d.getUTCDay() !== 1) d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); }
+  function dotRow(label, dot, main, sub, act) {
+    var inner = '<span style="display:flex;gap:6px;align-items:center">' + (dot ? '<i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + dot + '"></i>' : '') + '<span style="font-weight:600">' + main + '</span></span>' + (sub ? '<span style="font-size:12.5px;color:#5A5346">' + sub + '</span>' : '');
+    return '<dt class="esu-mono esu-dt">' + label + '</dt><dd class="esu-dd">' + (act ? '<button type="button" class="esu-rowb" data-act="' + act + '">' + inner + '</button>' : inner) + '</dd>';
+  }
+  function monthCard(w) {
+    var y = YR(w); if (!y || !y.started || !y.month) return '';
+    var m = y.month, h = w.home, rows = '', G = '#B5A88F', A = '#B8801C', OK = '#2E5A4B';
+    var monthName = dayFmt(w.today.slice(0, 7) + '-01', { month: 'long' });
+    var im = h.immersion;
+    if (im && (im.sat.slice(0, 7) === w.today.slice(0, 7) || im.happening)) rows += dotRow('Immersion', '', esc(im.n + ' · ' + im.title), esc(wd(im.sat) + ' – ' + dmy(im.sun) + ' · ' + (im.happening ? 'this weekend' : im.daysTo === 1 ? 'tomorrow' : 'in ' + im.daysTo + ' days')));
+    var bk = h.books && h.books.current;
+    if (bk && bk.required.length) rows += dotRow('Read', '', esc(bk.required[0].title), esc((bk.required[0].author ? bk.required[0].author + ' · ' : '') + 'required' + (bk.suggested.length ? '. Suggested: ' + bk.suggested[0].title + (bk.suggested[0].author ? ', ' + bk.suggested[0].author : '') : '')), 'all-books');
+    var rf = h.reflection && h.reflection.mine, due = m.reflectionDue || lastMonday(w.today.slice(0, 7));
+    rows += dotRow('Reflection', rf && rf.status === 'posted' ? OK : rf ? A : G, 'Due ' + esc(dmy(due)), rf ? (rf.status === 'posted' ? 'Posted to Sādhana School' : rf.status === 'shared' ? 'Shared with the cohort, ready to post' : 'Draft saved') : 'Not started yet');
+    var p = h.partner, a = h.articulation;
+    if (p) rows += dotRow('Partner', '', esc(p.name), esc((a.rotation ? 'Rotation ' + a.rotation.n + ', until ' + dm(a.rotation.to) + ' · ' : '') + a.sessions + ' of ' + a.target + ' sessions'));
+    var o = h.oneToOne.booked, has = y.oneToOne.summary;
+    rows += o ? dotRow('One-to-one', has ? OK : A, 'Booked ' + esc(dmyT(o.start) + ', ' + hmT(o.start)), has ? 'Summary sent' : 'Summary needed') : dotRow('One-to-one', G, 'Not booked yet', '');
+    if (y.review && y.review.state === 'open') rows += dotRow('Review', A, esc(y.review.name + ' review'), y.review.ticked + ' of ' + y.review.total + ' ticked');
+    else { var ns = y.steps[0]; if (ns) rows += dotRow('Project step', ns.overdue ? '#A5432A' : '', esc(ns.title), (ns.overdue ? 'was due ' : 'due ') + esc(dmy(ns.date))); }
+    return '<section class="esu-card" data-g="month"><div class="esu-hd" style="margin-bottom:4px"><p class="esu-eye">' + esc(monthName) + ' · Month ' + m.n + ' of ' + m.of + '</p><button type="button" class="esu-lnk" data-act="yr-all">The year</button></div>' +
+      '<h2 class="esu-h2" style="font-style:italic;font-size:23px">' + esc(m.theme) + '</h2>' + (m.focus ? '<p class="esu-muted" style="font-size:13.5px;margin:6px 0 4px">' + esc(m.focus) + '</p>' : '') + '<dl class="esu-dl">' + rows + '</dl></section>';
+  }
+  var LS = { done: 'background:#2E5A4B;border:2px solid #2E5A4B', due: 'background:#fff;border:2px solid #D2A65A', overdue: 'background:#A5432A;border:2px solid #A5432A', coming: 'background:#fff;border:1.5px solid #B5A88F' };
+  var LL = { done: 'Done', due: 'Due this month', overdue: 'Overdue', coming: 'Coming up' };
+  function ld(s) { return '<i class="esu-ldot" style="' + LS[s] + '"></i>'; }
+  function lanesCard(w) {
+    var y = YR(w); if (!y) return '';
+    var head = '<div class="esu-hd"><h2 class="esu-h2">Your two final projects</h2>' + (y.lanes ? '<span class="esu-mono">' + y.lanes.doneCount + ' of ' + y.lanes.total + ' steps done</span>' : '') + '</div>';
+    if (!y.lanes) return '<section class="esu-card" data-g="lanes">' + head + '<div class="esu-zero">Your project steps start in November.</div></section>';
+    var L = y.lanes, st = function (id) { var m = y.allSteps.filter(function (s) { return s.id === id; })[0]; return m ? (m.status === 'done' ? 'done' : m.overdue ? 'overdue' : m.month === w.today.slice(0, 7) ? 'due' : 'coming') : 'coming'; };
+    var legend = '<div class="esu-lg">' + ['done', 'due', 'overdue', 'coming'].map(function (k) { return '<span>' + ld(k) + LL[k] + '</span>'; }).join('') + '</div>';
+    var cols = L.months.length, grid = '<div class="esu-ln esu-ln-d" role="table" aria-label="Final projects by month" style="grid-template-columns:118px repeat(' + cols + ',minmax(0,1fr))"><span role="columnheader"></span>' +
+      L.months.map(function (m) { return '<span role="columnheader" class="esu-lh' + (m.current ? ' cur' : '') + '">' + esc(m.label.toUpperCase()) + '</span>'; }).join('');
+    [L.talk, L.offering].forEach(function (ln) {
+      grid += '<span role="rowheader" class="esu-lr">' + projChip(ln.key) + '</span>';
+      for (var c = 0; c < cols; c++) {
+        var here = ln.steps.filter(function (s) { return s.col === c; }), ph = ln.phases.filter(function (p) { return p.from === c; });
+        grid += '<span class="esu-lc' + (L.months[c].current ? ' cur' : '') + '">' + (ph.length ? '<span class="esu-lp">' + esc(ph[0].label) + '</span>' : '') + '<span class="esu-lds">' + here.map(function (s) { var k = st(s.id); return '<span title="' + esc(s.title + ' · ' + LL[k]) + '" role="img" aria-label="' + esc(s.title + ', ' + LL[k]) + '">' + ld(k) + '</span>'; }).join('') + '</span></span>';
+      }
+    });
+    grid += '</div>';
+    var phone = '<div class="esu-ln-p"><div class="esu-lp3"><span></span>' + projChip('talk').replace('60-minute talk', 'Talk') + projChip('offering').replace('Three-session offering', 'Offering') + '</div>' + L.months.map(function (m, c) {
+      var cell = function (ln) { return '<span class="esu-lpc' + (m.current ? ' cur' : '') + '">' + ln.steps.filter(function (s) { return s.col === c; }).map(function (s) { return '<span class="esu-lpl">' + ld(st(s.id)) + esc(s.title.length > 42 ? s.title.slice(0, 40) + '…' : s.title) + '</span>'; }).join('') + '</span>'; };
+      return '<div class="esu-lp3"><span class="esu-mono esu-lpm' + (m.current ? ' cur' : '') + '">' + esc(m.label.toUpperCase()) + '</span>' + cell(L.talk) + cell(L.offering) + '</div>';
+    }).join('') + '</div>';
+    return '<section class="esu-card" data-g="lanes">' + head + legend + grid + phone + (L.here ? '<p class="esu-muted" style="font-size:13px;margin-top:10px">' + esc(L.here) + '</p>' : '') + '</section>';
+  }
+  var LOCK = '<svg width="11" height="12" viewBox="0 0 11 12" aria-hidden="true" style="flex:none"><rect x="1.5" y="5" width="8" height="6" rx="1.2" fill="none" stroke="#8A8072" stroke-width="1.3"/><path d="M3.3 5V3.6a2.2 2.2 0 0 1 4.4 0V5" fill="none" stroke="#8A8072" stroke-width="1.3"/></svg>';
+  function reviewCard(w) {
+    var y = YR(w), r = y && y.review; if (!r) return '';
+    var st = r.state, col = st === 'complete' ? '#2E5A4B' : st === 'open' ? '#B8801C' : '#8A8072', bd = st === 'complete' ? '#BFD3C6' : st === 'open' ? '#D2A65A' : '#E3D8C6';
+    var tag = st === 'locked' ? 'Opens ' + dm(r.opensOn) : st === 'complete' ? 'Complete' : r.ticked + ' of ' + r.total;
+    var when = dayFmt(r.month + '-15', { month: 'long' });
+    var intro = st === 'locked' ? 'A look back at your ' + (r.key === 'q1' ? 'first quarter' : r.key === 'mid' ? 'first half of the year' : 'year') + ', before your ' + when + ' one-to-one. You can tick these from ' + dml(r.opensOn) + '.' : 'Tick each one as you do it. Take your answers to your ' + when + ' one-to-one.';
+    var items = r.checks.map(function (c) { return '<li style="border-top:1px solid #E3D8C6"><label class="esu-rck' + (st === 'locked' ? ' dis' : '') + '"><input type="checkbox" ' + (c.done ? 'checked ' : '') + (st === 'locked' || y.ticksOk === false ? 'disabled ' : '') + 'data-act="yr-rv" data-id="' + esc(c.id) + '">' + esc(c.text) + '</label></li>'; }).join('');
+    var note = st === 'locked' ? 'Nothing to do yet.' : st === 'complete' ? 'All done. Jacob has been told your ' + r.name + ' review is ready, and you’ll talk it through at your ' + when + ' one-to-one.' : 'When every box is ticked, Jacob sees that your review is ready.';
+    var later = (y.later || []).filter(function (l) { return l.key !== r.key && l.month > r.month; }).map(function (l) { return '<span style="display:inline-flex;gap:6px;align-items:center">' + LOCK + esc(l.name + ' review · end of ' + dayFmt(l.month + '-15', { month: 'long' }) + ' · opens ' + dml(l.opensOn)) + '</span>'; }).join('');
+    return '<section class="esu-card" data-g="review" style="border-color:' + bd + '"><div class="esu-hd" style="margin-bottom:2px"><p class="esu-eye">Quarterly review · ' + esc(r.name) + '</p><span style="font-size:12.5px;font-weight:600;color:' + col + ';display:inline-flex;gap:6px;align-items:center"><i style="width:8px;height:8px;border-radius:50%;background:' + col + ';display:inline-block"></i>' + esc(tag) + '</span></div>' +
+      '<h2 class="esu-h2" style="font-size:22px">End of ' + esc(when) + '</h2><p class="esu-muted" style="font-size:13px;margin:4px 0 8px">' + esc(intro) + '</p><ul style="list-style:none;margin:0;padding:0">' + items + '</ul>' +
+      '<div style="background:' + (st === 'complete' ? '#E4EDE8' : '#F1E9DC') + ';border-radius:8px;padding:10px 12px;font-size:13px;margin-top:6px">' + esc(note) + '</div>' + (yrState.msg && yrState.msgFor === 'review' ? '<p class="esu-err" role="alert" style="margin-top:6px">' + esc(yrState.msg) + '</p>' : '') +
+      (later ? '<div style="display:flex;flex-direction:column;gap:2px;margin-top:10px;font-size:12.5px;color:#5A5346">' + later + '</div>' : '') + '</section>';
   }
   function oneCard(w) {
-    var o = w.home.oneToOne, win = o.window, city = myZone().split('/').pop().replace(/_/g, ' ');
-    var inWindow = win && w.today >= win.from, bk = o.booked;
-    var out = hd('One-to-one with Jacob', '<span class="esu-mono">45 MIN</span>');
+    var o = w.home.oneToOne, win = o.window, city = myZone().split('/').pop().replace(/_/g, ' '), y = YR(w) || { oneToOne: {} };
+    var inWindow = win && w.today >= win.from, bk = o.booked, sum = y.oneToOne.summary;
+    var out = hd('One-to-one with Jacob', '<span class="esu-mono" style="text-align:right">45<br>MIN</span>');
     if (bk) {
-      out += '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">Booked:</b> ' + esc(fmtTime(bk.start, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + ' your time. The Zoom link is on the event and in your email.</p>' +
-        '<div class="esu-acts">' + ext(o.bookingUrl, 'Change time', 'esu-btn out') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>' + summaryBlock(bk);
+      out += '<p style="margin:0 0 ' + (sum ? '2px' : '10px') + ';font-size:14px"><b>Booked:</b> ' + esc(dmyT(bk.start) + ' · ' + hmT(bk.start)) + ' your time · with Jacob</p>';
+      var until = y.oneToOne.editableUntil ? dmyT(y.oneToOne.editableUntil) : '';
+      var tpl = (y.oneToOne.template || []).join(' ');
+      if (yrState.editing || (!sum && y.oneToOne.canEdit)) {
+        out += '<div style="background:#FBEFD9;border:1px solid #E8C98A;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px"><label for="esu-sum" style="display:flex;flex-direction:column;gap:6px;font-size:14px"><span><b>' + (sum ? 'Edit your summary' : 'Add your summary') + '</b>' + (sum ? '' : ' · needed before you meet') + '</span><span style="font-size:13px;color:#5A5346">What would you like to work on, discuss, or are you struggling with?' + (until ? ' Send it by ' + esc(until) + ' so Jacob can prepare.' : '') + '</span></label>' +
+          '<textarea id="esu-sum" class="esu-in" rows="4" maxlength="2000" data-in="yr-text" placeholder="' + esc(tpl) + '" style="min-height:110px">' + esc(yrState.text) + '</textarea>' +
+          (yrState.msg && yrState.msgFor === 'sum' ? '<p class="esu-err" role="alert">' + esc(yrState.msg) + '</p>' : '') + '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="yr-save-sum"' + (yrState.busy === 'sum' ? ' disabled' : '') + '>' + (yrState.busy === 'sum' ? 'Sending…' : 'Send to Jacob') + '</button>' + (sum ? '<button type="button" class="esu-btn out" data-act="yr-edit-cancel">Cancel</button>' : '') + '</div></div>';
+      } else if (sum) {
+        out += '<p class="esu-muted" style="font-size:13px;margin:0 0 10px">The Zoom link is in your email and on the booking.</p><div style="border-left:3px solid #2E5A4B;background:#F1E9DC;border-radius:0 8px 8px 0;padding:10px 12px;margin:0 0 10px"><p class="esu-eye" style="color:#2E5A4B;margin-bottom:4px">Your summary' + (sum.source === 'calendly' ? ' · from your booking' : '') + '</p><p class="esu-clamp" style="margin:0;font-size:14px;white-space:pre-wrap">' + esc(sum.text) + '</p></div>' +
+          '<div class="esu-acts">' + (y.oneToOne.canEdit ? '<button type="button" class="esu-tk" data-act="yr-edit">Edit summary</button>' + (until ? '<span style="font-size:12.5px;color:#5A5346">You can edit it until ' + esc(until) + '.</span>' : '') : '<span style="font-size:12.5px;color:#5A5346">It’s close to your session, so this is now fixed. Message Jacob if something changed.</span>') + '</div>';
+      } else out += '<p class="esu-muted" style="font-size:13px">Your session is close, so there’s no time to add a summary here. Message Jacob if you’d like him to know what you want to work on.</p>';
+      out += '<div class="esu-acts" style="margin-top:10px">' + ext(o.bookingUrl, 'Change time', 'esu-btn out') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>';
       return '<section class="esu-card" data-g="one">' + out + '</section>';
     }
-    out += '<p class="esu-muted" style="margin-bottom:10px;font-size:13px">When you book, Calendly asks what you’d like to work on, discuss, or are finding hard. A few lines helps Jacob prepare before you meet.</p>';
-    out += win ? '<p class="esu-muted" style="margin-bottom:12px"><b style="color:#1E1A14">' + esc(dayFmt(win.from, { month: 'long' })) + ' window:</b> ' + esc(wd(win.from) + ' – ' + wd(win.to) + ' ' + dayFmt(win.to, { month: 'short' })) + ', UK evenings.<br>Times are shown in your time (' + esc(city) + ').</p>'
-      : '<p class="esu-muted" style="margin-bottom:12px">The next window will be announced here.</p>';
+    out += win ? '<p style="margin:0 0 4px;font-size:14px"><b>' + esc(dayFmt(win.from, { month: 'long' })) + ' window:</b> ' + esc(wd(win.from) + ' – ' + wd(win.to) + ' ' + dayFmt(win.to, { month: 'short' })) + ', UK evenings.</p><p class="esu-muted" style="font-size:13.5px;margin:0 0 12px">Times are shown in your time (' + esc(city) + ').</p>' : '<p class="esu-muted" style="margin-bottom:12px">The next window will be announced here.</p>';
+    out += '<div style="background:#F1E9DC;border-radius:8px;padding:12px 14px;margin:0 0 12px"><p class="esu-eye" style="color:#5A5346;margin-bottom:4px">When you book, you’ll be asked</p><p style="margin:0;font-weight:600;font-size:14px">What would you like to work on, discuss, or are you struggling with?</p><p class="esu-muted" style="font-size:13px;margin-top:4px">A few lines is enough. Jacob reads it before you meet. Some prompts: what you want to work on · one thing from your practice log · where you are on the talk · where you are on the offering.</p></div>';
     if (o.slots && o.slots.length) out += '<div class="esu-slots">' + o.slots.map(function (sl) {
-      return ext(sl.url, esc(fmtTime(sl.start, { weekday: 'short', day: 'numeric', month: 'short' })) + ' · ' + esc(fmtTime(sl.start, { hour: 'numeric', minute: '2-digit' })), 'esu-slot');
+      return ext(sl.url, esc(dmyT(sl.start)) + ' · ' + esc(hmT(sl.start)), 'esu-slot');
     }).join('') + '</div>';
     else if (win && inWindow) out += '<p class="esu-muted" style="margin-bottom:12px">No open times are showing right now.</p>';
     out += '<div class="esu-acts">' + ext(o.bookingUrl, o.slots && o.slots.length ? 'More times' : inWindow ? 'Book your one-to-one' : 'See times', o.slots && o.slots.length ? 'esu-btn out' : 'esu-btn pri') + ext(o.messageUrl, 'Message Jacob', 'esu-btn out') + '</div>';
     return '<section class="esu-card" data-g="one">' + out + '</section>';
+  }
+  // Ticks save at once on the page and are rolled back with a message if the save fails
+  function yrTick(id, kind) {
+    var y = YR(state.data); if (!y) return;
+    var s = y.allSteps.filter(function (x) { return x.id === id; })[0], c = y.review && y.review.checks.filter(function (x) { return x.id === id; })[0];
+    var item = s || c; if (!item) return;
+    var was = s ? s.status === 'done' : c.done, now = !was;
+    var set = function (v) { if (s) { s.status = v ? 'done' : 'open'; var n = y.steps.filter(function (x) { return x.id === id; })[0]; if (n) n.status = s.status; if (v) yrState.keep[id] = true; else delete yrState.keep[id]; y.doneCount += v ? 1 : -1; if (y.lanes) y.lanes.doneCount += v ? 1 : -1; } else { c.done = v; y.review.ticked += v ? 1 : -1; y.review.state = y.review.ticked === y.review.total ? 'complete' : 'open'; } };
+    set(now); yrState.msg = ''; yrState.busy = ''; render();
+    call('/api/member/year/tick', { id: id, done: now, today: localToday() }).catch(function (e) { set(was); yrState.msg = e.message || 'That didn’t save. Please try again.'; yrState.msgFor = s ? 'tick' : 'review'; render(); });
+  }
+  function yrClick(a, t, e) {
+    var y = YR(state.data);
+    if (a === 'yr-tick' || a === 'yr-rv') { yrTick(t.dataset.id); return; }
+    if (a === 'yr-all') { yrState.all = true; render(); return; }
+    if (a === 'yr-close') { if (t.dataset.bg && e.target !== t) return; yrState.all = false; render(); return; }
+    if (a === 'yr-remind') { var on = !y.reminders; y.reminders = on; render(); call('/api/member/year/prefs', { reminders: on }).catch(function () { y.reminders = !on; render(); }); return; }
+    if (a === 'yr-edit') { yrState.editing = true; yrState.text = y.oneToOne.summary ? y.oneToOne.summary.text : ''; yrState.msg = ''; render(); var ta = root.querySelector('#esu-sum'); if (ta) ta.focus(); return; }
+    if (a === 'yr-edit-cancel') { yrState.editing = false; yrState.msg = ''; render(); return; }
+    if (a === 'yr-save-sum') {
+      var tx = yrState.text; yrState.busy = 'sum'; yrState.msg = ''; yrState.msgFor = 'sum'; render();
+      call('/api/member/year/summary', { text: tx }).then(function (r) { y.oneToOne.summary = r.summary; if (state.data.home.oneToOne.booked) state.data.home.oneToOne.booked.summary = [{ q: 'What you sent', a: r.summary.text }]; yrState.editing = false; yrState.text = ''; })
+        .catch(function (e) { yrState.msg = e.message; }).then(function () { yrState.busy = ''; render(); });
+    }
   }
 
   function partnerCard(w) {
@@ -501,7 +643,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
   }
 
 
@@ -557,7 +699,7 @@
     if (k.indexOf('rf-') === 0) { var q = state.rf; if (k === 'rf-title') q.form.title = e.target.value; else if (k === 'rf-body') q.form.body = e.target.value; else if (k === 'rf-ctext') q.ctext = e.target.value; else if (k === 'rf-reply') q.reply = e.target.value; else if (k.indexOf('rf-tick:') === 0) q.ticked[k.slice(8)] = e.target.checked; return; }
     if (k === 'say') { state.say = e.target.value; return; }
     if (k === 'ask') { state.ask = e.target.value; return; }
-    if (k === 'note') { state.note = e.target.value; return; }
+    if (k === 'yr-text') { yrState.text = e.target.value; return; }
     if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
     if (k.indexOf('with:') === 0) { (state.form.with = state.form.with || {})[k.slice(5)] = e.target.checked; render(); return; }
     if (k.indexOf('term:') === 0) { (state.form.terms = state.form.terms || {})[k.slice(5)] = e.target.value; return; }
@@ -592,6 +734,7 @@
     if (!t || !root.contains(t)) return;
     var a = t.dataset.act;
     if (a.indexOf('mt-') === 0) { mentorClick(a, t); return; }
+    if (a.indexOf('yr-') === 0) { yrClick(a, t, e); return; }
     if (a.indexOf('rf-') === 0) { if (a === 'rf-post-close' && t.dataset.bg && e.target !== t) return; rfClick(a, t); return; }
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
     if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '', competencies: [], watcher: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
@@ -615,7 +758,6 @@
       act('ask', function () { return call('/api/member/this-week/question', { text: qt }).then(function (r) { state.ask = ''; state.questions = r.questions; return null; }); });
       return;
     }
-    if (a === 'save-note') { var nt = state.note; state.msgFor = 'note'; act('note', function () { return call('/api/member/this-week/booking-note', { note: nt, today: localToday(), tz: myZone() }).then(function (d) { state.note = ''; return d; }); }); return; }
     if (a === 'all-books') { state.books = true; render(); return; }
     if (a === 'close-books') { if (t.dataset.bg && e.target !== t) return; state.books = false; render(); return; }
     if (a === 'pick') {
@@ -807,7 +949,7 @@
   }
 
   // Escape closes a popup (the key listener is on the document: the page re-draws itself, so focus can sit outside it)
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root && document.body.contains(root) && (state.books || state.modal || state.rf.post)) { state.books = false; state.modal = null; state.rf.post = false; render(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root && document.body.contains(root) && (state.books || state.modal || state.rf.post || yrState.all)) { yrState.all = false; state.books = false; state.modal = null; state.rf.post = false; render(); } });
 
   var started = false;
   function start() {

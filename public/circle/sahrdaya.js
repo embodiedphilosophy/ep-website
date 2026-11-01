@@ -460,7 +460,7 @@
     rows += o ? dotRow('One-to-one', has ? OK : A, 'Booked ' + esc(dmyT(o.start) + ', ' + hmT(o.start)), has ? 'Summary sent' : 'Summary needed') : dotRow('One-to-one', G, 'Not booked yet', '');
     if (y.review && y.review.state === 'open') rows += dotRow('Review', A, esc(y.review.name + ' review'), y.review.ticked + ' of ' + y.review.total + ' ticked');
     else { var ns = y.steps[0]; if (ns) rows += dotRow('Project step', ns.overdue ? '#A5432A' : '', esc(ns.title), (ns.overdue ? 'was due ' : 'due ') + esc(dmy(ns.date))); }
-    return '<section class="esu-card" data-g="month"><div class="esu-hd" style="margin-bottom:4px"><p class="esu-eye">' + esc(monthName) + ' · Month ' + m.n + ' of ' + m.of + '</p><button type="button" class="esu-lnk" data-act="yr-all">The year</button></div>' +
+    return '<section class="esu-card" data-g="month"><div class="esu-hd" style="margin-bottom:4px"><p class="esu-eye">' + esc(monthName) + ' · Month ' + m.n + ' of ' + m.of + '</p>' + ext(API + '/school/mentee-year', 'The year', 'esu-lnk') + '</div>' +
       '<h2 class="esu-h2" style="font-style:italic;font-size:23px">' + esc(m.theme) + '</h2>' + (m.focus ? '<p class="esu-muted" style="font-size:13.5px;margin:6px 0 4px">' + esc(m.focus) + '</p>' : '') + '<dl class="esu-dl">' + rows + '</dl></section>';
   }
   var LS = { done: 'background:#2E5A4B;border:2px solid #2E5A4B', due: 'background:#fff;border:2px solid #D2A65A', overdue: 'background:#A5432A;border:2px solid #A5432A', coming: 'background:#fff;border:1.5px solid #B5A88F' };

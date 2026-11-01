@@ -265,7 +265,7 @@ function ResourcesTab({ page }) {
 // Reflections: anyone in the season can post one and reply in a thread. Reflections posted from the Sahṛdaya Upāya page carry the mentee badge.
 const FILTERS = [['all', 'All'], ['mentees', 'From the mentees'], ['mine', 'Mine']];
 // A badge for teachers and for mentees, wherever they write
-const Role = ({ role, small }) => (role === 'teacher' ? <span className={`ss-mchip teacher${small ? ' small' : ''}`}>Teacher</span> : role === 'mentee' ? <span className={`ss-mchip${small ? ' small' : ''}`}>{small ? 'Mentee' : 'Sahṛdaya Upāya mentee'}</span> : null);
+const Role = ({ role, small }) => (role === 'teacher' ? <span className={`ss-mchip teacher${small ? ' small' : ''}`}>Teacher</span> : role === 'mentee' ? <span className={`ss-mchip${small ? ' small' : ''}`}>Mentee</span> : null);
 function ReflectionsTab({ page, tz, programme, slug, composer, setComposer, mine, setMine }) {
   const [filter, setFilter] = useState('all');
   const fresh = mine.map(m => ({ id: m.id, title: m.title, who: 'You', authorId: page.reflections.memberId, at: new Date(m.at).toISOString(), week: 0, replies: 0, url: '', excerpt: m.body || '', role: '', fromCohort: false, mine: true, justPosted: true }));
@@ -288,7 +288,7 @@ function ReflectionsTab({ page, tz, programme, slug, composer, setComposer, mine
       <aside className="ss-card ss-about">
         <span className="ss-eye">About reflections</span>
         <p>Anyone in the season can post a reflection on the week’s reading or practice, and reply to others in a thread.</p>
-        <p>Posts marked <span className="ss-mchip teacher">Teacher</span> come from the school’s teachers. Posts marked <span className="ss-mchip">Sahṛdaya Upāya mentee</span> come from students in teacher formation. They’ve already been through a round of feedback in their cohort, and they’d value yours.</p>
+        <p>Posts marked <span className="ss-mchip teacher">Teacher</span> come from the school’s teachers. Posts marked <span className="ss-mchip">Mentee</span> come from students in teacher formation. They’ve already been through a round of feedback in their cohort, and they’d value yours.</p>
       </aside>
     </div>
   );
@@ -301,6 +301,7 @@ const colour = key => { let h = 0; for (const c of String(key)) h = (h * 31 + c.
 
 function Reflection({ p, tz, programme, slug, openFirst }) {
   const [open, setOpen] = useState(false);
+  const [whole, setWhole] = useState(false); // the whole reflection, opened from its title or opening lines
   const [th, setTh] = useState(null); // { threads, count } once loaded
   const [err, setErr] = useState('');
   const [to, setTo] = useState(null); // the comment being answered, or null for the post
@@ -345,8 +346,10 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
           <p className="sch-meta">{[dayShort(p.at, tz), p.week ? `week ${p.week}` : '', p.fromCohort ? 'posted from the Sahṛdaya Upāya cohort' : ''].filter(Boolean).join(' · ')}</p>
         </div>
       </div>
-      <h3>{p.title}</h3>
-      {p.excerpt && <p className="ss-ex">{p.excerpt}</p>}
+      <h3>{p.full ? <button type="button" className="ss-rt" onClick={() => setWhole(!whole)} aria-expanded={whole}>{p.title}</button> : p.title}</h3>
+      {whole && p.full
+        ? <div className="ss-ex whole">{p.full.split(/\n{2,}/).map((t, i) => <p key={i}>{t}</p>)}<button type="button" className="ss-link plain" onClick={() => setWhole(false)}>Show less</button></div>
+        : p.excerpt && <p className="ss-ex"><button type="button" className="ss-exb" onClick={() => setWhole(true)} aria-expanded={false}>{p.excerpt}</button>{(p.full || '').length > p.excerpt.length && <> <button type="button" className="ss-link plain" onClick={() => setWhole(true)}>Read the whole reflection</button></>}</p>}
       {p.fromCohort && <p className="ss-shaped">Shaped with feedback from the Sahṛdaya Upāya cohort before it was posted here</p>}
       {!p.justPosted && <p className="ss-tg"><button type="button" className="ss-link plain" onClick={toggle} aria-expanded={open}>{label}</button>{p.url && <> · <a className="ss-quiet" href={p.url} target="_top">Open in Circle</a></>}</p>}
       {p.justPosted && <p className="sch-meta">Posted just now. It is in Circle too.</p>}

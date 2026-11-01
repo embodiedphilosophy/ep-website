@@ -1,6 +1,7 @@
 import { redirect, notFound } from 'next/navigation';
 import { currentMember, missingReason } from '@/lib/school/session';
-import { headlessConfigured, joinedSpaces, eventList, spacePosts, latestPosts } from '@/lib/school/circle';
+import { headlessConfigured, joinedSpaces, eventList, spacePosts, latestPosts, myMemberId } from '@/lib/school/circle';
+import { menteePostIds } from '@/lib/school/menteeposts';
 import { PROGRAMMES, findSeason, isWired, nyDay } from '@/lib/school/config';
 import { hubItems, hubSettings, hubSeasons } from '@/lib/school/hubconfig';
 import { readingPlan, sessionDatesOf, READINGS_TAB } from '@/lib/school/readings';
@@ -57,14 +58,16 @@ export default async function Page({ params, searchParams }) {
 
   // The latest posts of the spaces behind the announcement line, Kula and Resources: one read each, and one that fails only blanks its card
   const ids = wantedSpaces(items, seasons, member, today);
-  const [lists, seen, rows] = await Promise.all([
+  const [lists, seen, rows, menteePosts, memberId] = await Promise.all([
     Promise.all(ids.map(id => latestPosts(me.email, id).catch(() => undefined))),
     seenOf(me.email),
     readTab(READINGS_TAB).catch(() => []),
+    menteePostIds(),
+    myMemberId(me.email).catch(() => null),
   ]);
   const byId = {}; ids.forEach((id, i) => { if (lists[i]) byId[id] = lists[i]; });
   const readings = readingPlan(rows, season.slug, sessionDatesOf(buildItems(season, events, posts, now)));
-  const page = buildSeasonPage({ season, seasons, items, settings, member, spaceUrls, events, posts, spacePosts: byId, seen, readings, weekends: (mentee.immersions || []).map(i => ({ day: i.sat, title: i.title })), today, now });
+  const page = buildSeasonPage({ season, seasons, items, settings, member, spaceUrls, events, posts, spacePosts: byId, seen, readings, menteePosts, memberId, weekends: (mentee.immersions || []).map(i => ({ day: i.sat, title: i.title })), today, now });
 
   const extra = podsEnabled() ? ['pods'] : [];
   const view = seasonTabKey(tab, extra);

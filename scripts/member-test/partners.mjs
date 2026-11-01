@@ -27,7 +27,7 @@ assert.throws(() => P.pairsOf([['a@x.com', 'b@x.com', 'c@x.com', 'd@x.com']]), /
 const nameOf = e => ({ 'a@x.com': 'Ann', 'g@x.com': 'Gus', 'f@x.com': 'Fay', 'e@x.com': 'Eli' })[e] || e;
 const d = P.diffPairs(ex, [['a@x.com', 'b@x.com'], ['e@x.com', 'f@x.com'], ['g@x.com', 'a@x.com']], { ym: '2026-11', season: 'fall-2026', nameOf });
 assert.deepEqual(d.updates.map(u => [u.row, u.changes.publish]), [[3, 'FALSE'], [5, '']], 'c–d is hidden, e–f comes back');
-assert.deepEqual(d.adds, [{ season: 'fall-2026', month: '2026-11', email_a: 'g@x.com', email_b: 'a@x.com', name_a: 'Gus', name_b: 'Ann', publish: '' }]);
+assert.deepEqual(d.adds, [{ season: 'fall-2026', month: '2026-11', email_a: 'g@x.com', email_b: 'a@x.com', name_a: 'Gus', name_b: 'Ann', publish: '', rotation: '', chat_url: '' }]);
 assert.deepEqual(P.diffPairs(ex.filter(r => !r.hidden), [['a@x.com', 'b@x.com'], ['c@x.com', 'd@x.com']], { ym: '2026-11', season: 'fall-2026' }), { updates: [], adds: [] }, 'saving with no change changes nothing');
 assert.equal(P.diffPairs([...ex, { row: 9, a: 'b@x.com', b: 'a@x.com', hidden: false, values: {} }], [['a@x.com', 'b@x.com']], { ym: '2026-11', season: 'x' }).updates.filter(u => u.row === 9).length, 1, 'a duplicate row is hidden');
 
@@ -51,4 +51,19 @@ const pa = C.partnerFor(rows, 'A@x.com', 'fall-2026', '2026-11-03');
 assert.deepEqual(pa.partners.map(p => p.name), ['Bo', 'Cy']); assert.equal(pa.name, 'Bo and Cy'); assert.equal(pa.month, 'november');
 assert.deepEqual(C.partnerFor(rows, 'c@x.com', 'fall-2026', '2026-11-03').partners.map(p => p.name), ['Ann', 'Bo']);
 assert.equal(C.partnerFor(rows, 'a@x.com', 'fall-2026', '2026-12-03'), null, 'nothing for December');
+
+// Rotations: two-month blocks. Saving for a rotation writes both months with the rotation number; chat links belong to a group
+const rots = [{ n: 1, from: '2026-10-01', to: '2026-11-30', label: 'Oct–Nov' }, { n: 2, from: '2026-12-01', to: '2027-01-31', label: 'Dec–Jan' }];
+assert.deepEqual(P.rotationMonths(rots, '2026-11'), { n: 1, label: 'Oct–Nov', months: ['2026-10', '2026-11'] });
+assert.deepEqual(P.rotationMonths(rots, '2026-12'), { n: 2, label: 'Dec–Jan', months: ['2026-12', '2027-01'] }, 'a rotation can run over the new year');
+assert.equal(P.rotationMonths(rots, '2027-03'), null); assert.equal(P.rotationMonths(rots, 'soon'), null);
+const rr = [{ row: 2, a: 'a@x.com', b: 'b@x.com', hidden: false, values: { rotation: '', chat_url: '' } }, { row: 3, a: 'a@x.com', b: 'c@x.com', hidden: false, values: { rotation: '1', chat_url: 'https://ss.x/chat/old' } }, { row: 4, a: 'b@x.com', b: 'c@x.com', hidden: false, values: {} }];
+assert.deepEqual(P.chatsFrom(rr.map(r => ({ ...r, values: { ...r.values, chat_url: r.values.chat_url === 'https://ss.x/chat/old' ? r.values.chat_url : 'http://insecure' } })), [['a@x.com', 'b@x.com', 'c@x.com'], ['z@x.com', 'y@x.com']]), { 'a@x.com|b@x.com|c@x.com': 'https://ss.x/chat/old' }, 'the first https link among the rows of a group');
+assert.equal(P.groupKey(['B@x.com', 'a@x.com']), 'a@x.com|b@x.com');
+const chats = { 'a@x.com|b@x.com|c@x.com': 'https://ss.x/chat/1' };
+const trio = ['a@x.com', 'b@x.com', 'c@x.com'], chatOf = (a, b) => (trio.includes(a) && trio.includes(b) ? chats[P.groupKey(trio)] : '') || '';
+const dr = P.diffPairs(rr, [['a@x.com', 'b@x.com'], ['a@x.com', 'c@x.com'], ['b@x.com', 'c@x.com'], ['d@x.com', 'e@x.com']], { ym: '2026-11', season: 'fall-2026', rotation: 1, chatOf });
+assert.deepEqual(dr.updates.map(u => [u.row, Object.keys(u.changes).sort().join()]), [[2, 'chat_url,rotation'], [3, 'chat_url'], [4, 'chat_url,rotation']], 'existing rows get the rotation and the chat link; row 3 already had rotation 1');
+assert.deepEqual(dr.adds, [{ season: 'fall-2026', month: '2026-11', email_a: 'd@x.com', email_b: 'e@x.com', name_a: 'd@x.com', name_b: 'e@x.com', publish: '', rotation: '1', chat_url: '' }]);
+assert.deepEqual(P.diffPairs(rr.map(r => ({ ...r, values: { rotation: '1', chat_url: '' } })), [['a@x.com', 'b@x.com'], ['a@x.com', 'c@x.com'], ['b@x.com', 'c@x.com']], { ym: '2026-11', season: 'fall-2026', rotation: 1 }), { updates: [], adds: [] }, 'nothing to change, nothing written');
 console.log('partners: ok');

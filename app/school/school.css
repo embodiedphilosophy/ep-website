@@ -3,7 +3,7 @@
 body:has(.sch-root){background:#F0E8D8}
 body:has(.sch-root) > :not(main){display:none !important}
 .sch-root{--ink5:#5A5346;background:#F0E8D8;color:var(--ink,#2a2620);font-family:var(--font-sans),sans-serif;min-height:100vh}
-.sch-main{max-width:980px;margin:0 auto;padding:44px 40px 72px}
+.sch-main{max-width:1120px;margin:0 auto;padding:28px 24px 64px}
 .sch-head{margin-bottom:26px;position:relative}
 .sch-eyebrow{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--terra-deep,#83341F);font-weight:700;margin:0 0 6px}
 .sch-head h1,.sch-empty-page h1,.sch-center h1{font-family:var(--font-serif),serif;font-weight:600;font-size:46px;line-height:1.05;margin:0;color:var(--ink,#1E1A14)}

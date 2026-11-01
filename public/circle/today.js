@@ -21,6 +21,20 @@
   var added = {};
   function addScript(name) { if (added[name]) return; added[name] = true; var el = document.createElement('script'); el.src = BASE + name + '.js'; el.defer = true; document.head.appendChild(el); }
   function loadFor(path) { for (var i = 0; i < LAZY.length; i++) if (LAZY[i][0].test(path)) addScript(LAZY[i][1]); }
+  // Sahṛdaya Upāya (/c/mentorship, /c/reflections): hide Circle's own space page until sahrdaya.js has drawn the mentee page or
+  // found the member isn't a mentee (window.__epMentee = 'no'), so Circle's feed doesn't flash up first. sahrdaya.js removes it;
+  // a 12-second fallback gives Circle's page back if anything goes wrong.
+  var SU = /^\/c\/(mentorship|reflections|apprentice-workbook)\/?$/, suT = null; // (the Workbook's own lesson pages stay Circle's, so they are not cloaked)
+  function suCloak(path) {
+    var el = document.getElementById('ep-su-cloak'), on = SU.test(path) && window.__epMentee !== 'no' && !/[?&]native=1/.test(location.search);
+    if (on && !el) {
+      el = document.createElement('style'); el.id = 'ep-su-cloak';
+      el.textContent = '[data-testid="circle-ai-shell-workspace-body"] > :not(.esu), div[class*="container-type:inline-size"][class*="bg-secondary"] > :not(.esu){visibility:hidden!important}';
+      document.head.appendChild(el);
+      clearTimeout(suT); suT = setTimeout(function () { var x = document.getElementById('ep-su-cloak'); if (x) x.remove(); }, 12000);
+    } else if (!on && el) el.remove();
+  }
+  suCloak(location.pathname);
   function prefetchRest() {
     LAZY.forEach(function (x) { if (added[x[1]]) return; var l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'script'; l.href = BASE + x[1] + '.js'; document.head.appendChild(l); });
     setTimeout(function () { addScript('probe'); }, 1500); // the "Copy page structure" helper (shows only with ?epdebug=1 or Ctrl+Option+P)
@@ -1120,7 +1134,7 @@
   }
   function syncPath() {
     var p = location.pathname; if (p === lastPath) return; lastPath = p;
-    loadFor(p);
+    loadFor(p); suCloak(p);
     if (onToday()) whenUser(function () { if (onToday()) { earlyStyle(true); mountPage(); begin(); } }); else { abandon(); restoreBanners(); } // leaving Today: Circle's own content and banner come back
   }
   var savedLen = parseInt(local('ep_timer_len'), 10); if ([10, 20, 30, 45].indexOf(savedLen) >= 0) state.len = savedLen;

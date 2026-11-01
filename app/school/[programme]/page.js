@@ -4,6 +4,7 @@ import { headlessConfigured, joinedSpaces } from '@/lib/school/circle';
 import { PROGRAMMES, defaultSeason, nyDay } from '@/lib/school/config';
 import { hubSeasons } from '@/lib/school/hubconfig';
 import { landingSeason, seasonTabKey } from '@/lib/school/season';
+import { podsEnabled } from '@/lib/pods/logic';
 import Shell from '../Shell';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,6 @@ export default async function Page({ params, searchParams }) {
     }
   }
   if (!target) notFound();
-  const t = seasonTabKey(tab);
+  const t = seasonTabKey(tab, podsEnabled() ? ['pods'] : []); // keep ?tab=pods (the Study pods links) instead of falling back to This week
   redirect(`/school/${programme}/${target.slug}${t === 'week' ? '' : `?tab=${t}`}`);
 }

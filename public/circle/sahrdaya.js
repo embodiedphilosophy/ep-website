@@ -46,7 +46,9 @@
     return b.asin ? 'https://' + host + '/dp/' + b.asin : 'https://' + host + '/s?k=' + encodeURIComponent(b.search) + '&i=stripbooks';
   }
   function amazonLabel() { return /amazon\.co\.uk/.test(amazonUrl({ search: 'x' })) ? 'Amazon.co.uk' : 'Amazon.com'; }
-  function setMentee(v) { window.__epMentee = v; }
+  function setMentee(v) { window.__epMentee = v; if (v === 'no') uncloak(); }
+  // today.js hides Circle's own page here until we know (no flash of the space's feed); once our page is in, or it isn't ours, show again
+  function uncloak() { var el = document.getElementById('ep-su-cloak'); if (el) el.remove(); }
 
   // ---- sign-in: Circle's identity token → our bearer session (same as This week) ----
   function waitForUser(tries) {
@@ -55,15 +57,16 @@
     if (tries <= 0) return Promise.reject(new Error('not signed in'));
     return new Promise(function (res) { setTimeout(res, 400); }).then(function () { return waitForUser(tries - 1); });
   }
+  // The saved session belongs to one Circle member: when the signed-in member changes (e.g. an admin using Circle's "View as"), sign in again
   function signIn() {
-    var saved = store(SKEY);
-    if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now()) { state.session = s.session; state.first = s.first || ''; state.ok = !!s.ok; return Promise.resolve(); } } catch (e) {} }
     return waitForUser(25).then(function (u) {
-      return fetch(API + '/api/member/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identityToken: u.identityToken }) }).then(function (r) { return r.json(); });
-    }).then(function (r) {
-      if (!r.session) throw new Error('not signed in');
-      state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee')); state.admin = !!r.admin;
-      store(SKEY, JSON.stringify({ session: r.session, first: state.first, ok: state.ok, admin: state.admin, until: Date.now() + 11 * 3600 * 1000 }));
+      var who = String(u.email || '').toLowerCase(), saved = store(SKEY);
+      if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now() && s.who === who) { state.session = s.session; state.first = s.first || ''; state.ok = !!s.ok; state.admin = !!s.admin; return; } } catch (e) {} }
+      return fetch(API + '/api/member/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identityToken: u.identityToken }) }).then(function (r) { return r.json(); }).then(function (r) {
+        if (!r.session) throw new Error('not signed in');
+        state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee')); state.admin = !!r.admin;
+        store(SKEY, JSON.stringify({ who: who, session: r.session, first: state.first, ok: state.ok, admin: state.admin, until: Date.now() + 11 * 3600 * 1000 }));
+      });
     });
   }
   function call(path, body, again) {
@@ -293,7 +296,7 @@
 
   // The notes to bring to a one-to-one (nothing to tick). The mid-year and readiness months add one line.
   function bringBox(y) {
-    var items = ['Where you are on your two final projects', 'One thing you noticed in your practice', 'A question you’re holding'];
+    var items = ['Ideas for your final project', 'One thing you’re struggling with in your practice', 'One thing you want to develop as a teacher or professional'];
     if (y && y.bring === 'mid') items.push('Your hours so far, and the six competencies, to look at together with Jacob');
     if (y && y.bring === 'readiness') items.push('Your plan for July: the talk date and the three sessions');
     return '<div class="esu-bring"><b>Bring to your one-to-one</b> <span class="esu-mono">· nothing to tick</span><ul>' + items.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>';
@@ -307,11 +310,18 @@
   }
 
   // ---- the rows ----
+  // This month's book. When next month's book starts partway through this month (Mentee Books `starts`, e.g. after an immersion
+  // weekend), both show: this one "Now", the next "From <date>". A book's `note` (Mentee Books) is shown under it.
   function readRow(w) {
-    var bk = w.home.books && w.home.books.current;
-    if (!bk || !bk.required.length) return null;
-    var b = bk.required[0], cy = w.home.books.carry;
-    return { k: '0-a', w1: 'All month', tx: rwText('Read ' + esc(b.title), (b.author ? esc(b.author) + '. ' : '') + 'About 30 minutes most days.' + (cy && cy.required.length ? ' Last month’s book is there if you’d like it.' : '')), bt: btnA('all-books', 'The book') };
+    var B = w.home.books || {}, bk = B.current, nx = B.next, ym = w.today.slice(0, 7), out = [];
+    var line = function (b, extra) { return (b.author ? esc(b.author) + '. ' : '') + (b.note ? esc(b.note) + ' ' : '') + extra; };
+    var soon = nx && nx.required.length && nx.starts.slice(0, 7) === ym;
+    if (bk && bk.required.length) {
+      var b = bk.required[0], cy = B.carry, midStart = bk.starts.slice(0, 7) === ym && bk.starts.slice(8) !== '01';
+      out.push({ k: '0-a', w1: soon ? 'Now' : midStart ? 'From ' + dm(bk.starts) : 'All month', tx: rwText('Read ' + esc(b.title), line(b, 'About 30 minutes most days.' + (cy && cy.required.length ? ' Last month’s book is there if you’d like it.' : ''))), bt: btnA('all-books', 'The book') });
+    }
+    if (soon) { var n = nx.required[0]; out.push({ k: '0-a2', w1: 'From ' + dm(nx.starts), tx: rwText('Read ' + esc(n.title), line(n, '')), bt: btnA('all-books', 'The book') }); }
+    return out;
   }
   function buddyRow(w) {
     var h = w.home, p = h.partner, a = h.articulation, mo = (a && a.month) || { sessions: 0, last: '' };
@@ -369,7 +379,7 @@
     var fresh = r.unread ? '<p class="esu-rw-d">New in the cohort: ' + r.unread + (r.unread === 1 ? ' reflection' : ' reflections') + ' you haven’t read.</p>' : '';
     var open = function (label, cls) { return link(r.url, label, cls || 'esu-btn out sm'); };
     if (mine && mine.status === 'posted') return { k: '1-' + due, done: true, w1: 'Done', w2: mine.postedDay ? dm(mine.postedDay) : '', tx: rwText(title, 'Posted to Sādhana School.', fresh) };
-    var line = !mine ? 'On the book, in your own words. Share it with the cohort when you’re ready.' : mine.status === 'shared' ? 'Shared with the cohort. Post it to Sādhana School when you’re ready.' : 'A draft is saved.';
+    var line = !mine ? 'Choose one or a few things from the assigned books that shifted your understanding, and deepen that shift with your reflection. Share it with the cohort when you’re ready.' : mine.status === 'shared' ? 'Shared with the cohort. Post it to Sādhana School when you’re ready.' : 'A draft is saved.';
     var bt = !safeUrl(r.url) ? '' : !mine ? open('Start writing') : mine.status === 'shared' ? link(r.url + (r.url.indexOf('?') < 0 ? '?' : '&') + 'post=' + encodeURIComponent(mine.id), 'Post to SS', 'esu-btn out sm') : open('Keep writing');
     return { k: '1-' + due, w1: 'By ' + dm(due), w2: dayFmt(due, { weekday: 'short' }), tx: rwText(title, line, fresh), bt: bt };
   }
@@ -388,7 +398,7 @@
     if (y && !y.started && w.today < y.startsOn) return '<section class="esu-card esu-month"><h2 class="esu-h2">This month</h2><p class="esu-muted" style="margin-top:6px">Your first month starts on ' + esc(dml(y.startsOn)) + '.</p></section>';
     if (y && !y.started) return '<section class="esu-card esu-month"><h2 class="esu-h2">This month</h2><p class="esu-muted" style="margin-top:6px">The year is complete. Thank you for your presence.</p></section>';
     var rows = [], add = function (r) { if (r) rows.push(r); };
-    add(readRow(w)); add(buddyRow(w)); immersionRows(w).forEach(add); add(oneRow(w)); add(reflectionRow(w)); handinRows(w).forEach(add);
+    readRow(w).forEach(add); add(buddyRow(w)); immersionRows(w).forEach(add); add(oneRow(w)); add(reflectionRow(w)); handinRows(w).forEach(add);
     rows.sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
     var done = rows.filter(function (r) { return r.done; }).length, n = rows.length, th = y && y.month && y.month.theme;
     var eye = dayFmt(ym + '-01', { month: 'long' }) + (fm.n >= 1 ? ' · month ' + fm.n + ' of your formation' : '');
@@ -448,7 +458,7 @@
     } else tiles += tile('Articulation practice', 'Your buddy is on the way', 'Jacob pairs everyone at the start of each rotation.', '');
     // 2. Practicum pods: from Immersion 1
     var beforeI1 = !!im && im.n === 1 && !im.happening, d = state.pp, line = 'One teaches, the others give feedback.', links;
-    if (beforeI1) { line += ' From Immersion 1.'; links = tlink('pp-about', 'What a pod is'); }
+    if (beforeI1) { line += ' From Immersion 1.'; links = tlink('open-pp', 'Schedule a Practicum Pod'); }
     else {
       var now = Date.now(), next = d && (d.pods || []).filter(function (x) { return Date.parse(x.startsAt) > now; }).sort(function (x, y) { return Date.parse(x.startsAt) - Date.parse(y.startsAt); })[0];
       if (next) line += ' Next: ' + esc(ppWhen(next.startsAt)) + ', ' + places(next.spots) + '.';
@@ -457,7 +467,7 @@
     tiles += tile('Teach a group class', 'Practicum pods', line, links);
     // 3. Study pods with Sādhana School students (hidden when they are off)
     var sp = state.pods;
-    if (sp && sp.on) tiles += tile('Optional deepening', 'Study pods', 'Small groups with Sādhana School students.', ext(sp.url, 'Browse', 'esu-tlink'));
+    if (sp && sp.on) tiles += tile('Optional deepening', 'Study pods', 'Small groups with Sādhana School students.', link(sp.url, 'Browse current Pods', 'esu-tlink'));
     return '<section class="esu-card" aria-labelledby="esu-p-h"><h2 class="esu-h2" id="esu-p-h">Practice with others</h2><p class="esu-rw-d" style="margin-top:4px">Three ways to practice between immersions. Start with your buddy.</p><div class="esu-tiles">' + tiles + '</div></section>';
   }
   // The practicum pods in full (opened from "See all pods"), and a short explainer (opened from "What a pod is")
@@ -863,7 +873,7 @@
     var box = document.querySelector(HOST) || pageContainer(); if (!box) return;
     if (!el) { el = document.createElement('div'); el.id = 'esu-strip'; el.className = 'esu-strip'; box.insertBefore(el, box.firstChild); }
     else if (el.parentNode !== box) box.insertBefore(el, box.firstChild);
-    var h = stripHtml(); if (el.__h !== h) { el.innerHTML = h; el.__h = h; }
+    var h = stripHtml(); if (el.__h !== h) { el.innerHTML = h; el.__h = h; seatSwitch(el.querySelector('.esu-seg')); }
   }
 
   // The header: a welcome in the first month, then "Your formation"; where you are in one line; one link to the manual and the year
@@ -938,7 +948,9 @@
   }
 
   var root = null;
-  function render() { if (root && document.body.contains(root)) { root.innerHTML = html(); var ch = root.querySelector('.esu-chat'); if (ch) ch.scrollTop = ch.scrollHeight; } }
+  function render() { if (root && document.body.contains(root)) { root.innerHTML = html(); var ch = root.querySelector('.esu-chat'); if (ch) ch.scrollTop = ch.scrollHeight; seatSwitch(root.querySelector('.esu-seg')); } }
+  // On a narrow screen the switch scrolls inside its own track: keep the selected item in view
+  function seatSwitch(seg) { if (!seg || seg.scrollWidth <= seg.clientWidth) return; var c = seg.querySelector('[aria-current=page]'); if (c) seg.scrollLeft = Math.max(0, c.offsetLeft - 12); }
   function onInput(e) {
     var k = e.target && e.target.dataset && e.target.dataset.in;
     if (!k) return;
@@ -1229,10 +1241,11 @@
     root.className = 'esu'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'Sahṛdaya Upāya');
     root.addEventListener('click', onClick); root.addEventListener('input', onInput); root.addEventListener('change', onInput);
     box.insertBefore(root, box.firstChild);
-    render();
+    render(); uncloak();
   }
   function unmount() {
     var sp = document.getElementById('esu-strip'); if (sp && !isLesson()) sp.remove();
+    uncloak();
     if (!root) return;
     var box = root.__box; root.remove(); root = null;
     if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = '';
@@ -1247,7 +1260,7 @@
     started = true; css();
     state.data = cached();
     // A mentee seen before this session: take the space at once so the hub doesn't flash up first
-    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now()) { state.admin = !!s.admin; setMentee(s.ok ? 'yes' : 'no'); } } catch (e) {} }
+    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now() && s.who === String((window.circleUser && window.circleUser.email) || '').toLowerCase()) { state.admin = !!s.admin; setMentee(s.ok ? 'yes' : 'no'); } } catch (e) {} }
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }

@@ -29,7 +29,7 @@
   var KINDS = {
     observation: ['Observation', 'Watching a senior teacher lead, with notes. Up to 10 hours.', 'Who and what you observed'],
     'practice-teaching': ['Practice-teaching', 'Teaching or co-holding a session. Up to 10 hours.', 'Who and what you taught'],
-    peer: ['Peer articulation', 'Partnered or small-group practice between immersions. Up to 8 hours.', 'Who you practised with, and on what'],
+    peer: ['Peer articulation', 'Time with your articulation buddy between immersions. Up to 8 hours.', 'Who you practised with, and on what'],
     retreat: ['Retreat practicum', 'The summer retreat, in person or online. Up to 11 hours.', 'Which retreat sessions']
   };
   function fmtTime(iso, opts) { try { return new Date(iso).toLocaleString(undefined, Object.assign({ timeZone: myZone() }, opts)); } catch (e) { return ''; } }
@@ -177,7 +177,7 @@
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
       '.esu-cols>*,.esu-c1>*,.esu-c2>*{order:0}',
-      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=guide]{order:2}[data-g=month]{order:3}[data-g=steps]{order:4}[data-g=one]{order:5}[data-g=review]{order:6}[data-g=lanes]{order:7}[data-g=assign]{order:8}[data-g=partner]{order:9}[data-g=pods]{order:10}[data-g=hours]{order:11}[data-g=feedback]{order:12}[data-g=room]{order:13}',
+      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=guide]{order:2}[data-g=month]{order:3}[data-g=steps]{order:4}[data-g=one]{order:5}[data-g=review]{order:6}[data-g=lanes]{order:7}[data-g=assign]{order:8}[data-g=partner]{order:9}[data-g=pp]{order:10}[data-g=pods]{order:11}[data-g=hours]{order:12}[data-g=feedback]{order:13}[data-g=room]{order:14}',
       '.esu-ln-d{display:none}.esu-ln-p{display:block}',
       '.esu[data-tab=formation] [data-g=room]{display:none}.esu[data-tab=room] [data-g]:not([data-g=room]){display:none}',
       '.esu-steps{grid-template-columns:minmax(0,1fr)}.esu-grid2{grid-template-columns:minmax(0,1fr)}.esu-h3{font-size:30px}}'
@@ -408,7 +408,7 @@
   function dm(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'short' }); }
   function dml(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'long' }); }
   function dmyT(iso) { return fmtTime(iso, { weekday: 'short' }) + ' ' + fmtTime(iso, { day: 'numeric' }) + ' ' + fmtTime(iso, { month: 'short' }); }
-  function hmT(iso) { return hmT(iso); }
+  function hmT(iso) { return fmtTime(iso, { hour: 'numeric', minute: '2-digit' }); }
   var YR = function (w) { return w && w.home && w.home.year; };
   function projChip(p) { var x = PROJ[p] || PROJ.both; return '<span class="esu-proj"><i style="background:' + x[1] + '"></i>' + x[0] + '</span>'; }
   function whenText(s) { var n = s.daysTo; return n < 0 ? Math.abs(n) + (n === -1 ? ' day overdue' : ' days overdue') : n === 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }
@@ -468,6 +468,35 @@
       '<p class="esu-muted" style="font-size:13.5px;margin:0 0 4px">Small student-led groups that study something together. A pod begins at ' + d.min + ' people and meets in a Circle live room.</p>' +
       (rows ? '<ul style="list-style:none;margin:0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:8px 0 0">No pods are open yet.</p>') + lead + '</section>';
   }
+  // Practicum pods: mentees organise a time to practise teaching each other (no approval); others join. Different from articulation buddies (the pair or trio for the rotation).
+  function ppWhen(iso) { return dmyT(iso) + ', ' + hmT(iso); }
+  function practicumCard(w) {
+    var d = state.pp; if (!d) return '';
+    var rows = (d.pods || []).map(function (x) {
+      var st = x.count + (x.count === 1 ? ' person' : ' people') + ' · ' + (x.spots > 0 ? x.spots + ' places left' : 'full') + ' · ' + x.minutes + ' min';
+      var act = '';
+      if (x.mine && x.roomUrl) act += ext(x.roomUrl, 'Join the live room', 'esu-btn pri') + ' ';
+      if (x.mine && x.chatUrl) act += ext(x.chatUrl, 'Pod chat', 'esu-btn out') + ' ';
+      if (x.canJoin) act += '<button type="button" class="esu-btn out" data-act="pp-join" data-id="' + esc(x.id) + '"' + (state.busy === 'pp' ? ' disabled' : '') + '>Join</button> ';
+      if (x.mine) act += '<button type="button" class="esu-lnk" data-act="pp-hours">Log practice-teaching hours</button> ';
+      if (x.canLeave) act += '<button type="button" class="esu-lnk" data-act="pp-leave" data-id="' + esc(x.id) + '">Leave</button> ';
+      if (x.canCancel) act += '<button type="button" class="esu-lnk" data-act="pp-cancel" data-id="' + esc(x.id) + '">Cancel this pod</button>';
+      var room = x.canSetRoom ? '<details style="margin-top:8px"' + (x.roomUrl ? '' : ' open') + '><summary class="esu-muted" style="font-size:13px;cursor:pointer">' + (x.roomUrl ? 'Change the live room link' : 'Make a live room for your pod') + '</summary>' + ppRoomHelp() +
+        '<div class="esu-say" style="margin-top:6px"><input id="esu-pp-room-' + esc(x.id) + '" type="text" data-in="pp-room:' + esc(x.id) + '" placeholder="Paste the live room link (https://…)" value="' + esc((state.ppRoom && state.ppRoom[x.id] != null) ? state.ppRoom[x.id] : x.roomUrl) + '" style="' + FIELD + '"><button type="button" class="esu-btn out" data-act="pp-room" data-id="' + esc(x.id) + '">Save</button></div></details>' : '';
+      return '<li style="padding:12px 0;border-top:1px solid #E3D8C6"><div style="font-weight:600">' + esc(x.topic) + (x.mine ? ' <span class="esu-muted" style="font-weight:400">· you’re in</span>' : '') + '</div>' +
+        '<div class="esu-muted" style="font-size:13px"><b style="color:#1E1A14">' + esc(ppWhen(x.startsAt)) + '</b> · organised by ' + esc(x.organiser) + '</div><div class="esu-muted" style="font-size:13px">' + esc(st) + '</div>' +
+        (x.description ? '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap">' + esc(x.description) + '</div>' : '') + (x.mine && x.names.length ? '<div class="esu-muted" style="font-size:13px;margin-top:4px">In this pod: ' + esc(x.names.join(', ')) + '</div>' : '') +
+        (act ? '<div class="esu-acts" style="margin-top:8px">' + act + '</div>' : '') + room + '</li>';
+    }).join('');
+    return '<section class="esu-card" data-g="pp"><div class="esu-hd"><h2 class="esu-h2">Practicum pods</h2><button type="button" class="esu-btn pri" data-act="open-pp">Organise a pod</button></div>' +
+      '<p class="esu-muted" style="font-size:13.5px;margin:0 0 4px">Small groups of mentees who practise teaching each other. Anyone can organise one: choose a time, and others join. No approval needed. (Your articulation buddy is the person or pair you are matched with each rotation; this is separate.)</p>' +
+      (state.msg && state.msgFor === 'pp' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
+      (rows ? '<ul style="list-style:none;margin:0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:10px 0 0">No pods are planned yet. Be the first to organise one.</p>') + '</section>';
+  }
+  function ppRoomHelp() {
+    return '<ol class="esu-muted" style="font-size:13px;margin:6px 0 0;padding-left:20px;display:grid;gap:3px"><li>In Circle, open the live rooms (look for “Live” or “Live rooms” in the sidebar, or the + button).</li><li>Start a new live room and name it after your pod.</li><li>Open the room’s share options and copy its link.</li><li>Paste the link below and press Save. Everyone in your pod then sees a “Join the live room” button.</li></ol>';
+  }
+  function loadPp() { return call('/api/member/practicum').then(function (d) { state.pp = d; render(); }).catch(function () { state.pp = null; }); }
   function monthCard(w) {
     var y = YR(w); if (!y || !y.started || !y.month) return '';
     var m = y.month, h = w.home, rows = '', G = '#B5A88F', A = '#B8801C', OK = '#2E5A4B';
@@ -603,7 +632,7 @@
     return '<section class="esu-card" data-g="partner"><div class="esu-eye" style="color:#5A5346">' + esc(eye.toUpperCase()) + '</div><h2 class="esu-h2" style="margin:6px 0 2px">' + esc(p.name) + '</h2>' +
       list.map(function (x) { return x.where ? '<p class="esu-muted" style="margin:0 0 2px">' + (many ? esc(String(x.name).split(' ')[0]) + ': ' : '') + esc(x.where) + '</p>' : ''; }).join('') +
       '<div style="margin-top:10px">' + win + '</div><div class="esu-dots" style="margin:8px 0"><span aria-hidden="true" style="display:inline-flex;gap:6px">' + dots + '</span><span class="esu-muted" style="margin-left:6px;font-size:13.5px">' + Math.min(a.sessions, a.target) + ' of ' + a.target + ' sessions · about an hour each</span></div>' +
-      '<div class="esu-acts" style="margin-top:6px">' + (p.chatUrl ? ext(p.chatUrl, 'Open your pair chat', 'esu-btn out') : '') + list.map(function (x) { return ext('mailto:' + x.email, 'Message ' + esc(String(x.name).split(' ')[0]), 'esu-btn out'); }).join('') + '</div>' + next + '</section>';
+      '<div class="esu-acts" style="margin-top:6px">' + (p.chatUrl ? ext(p.chatUrl, 'Open your buddy chat', 'esu-btn out') : '') + list.map(function (x) { return ext('mailto:' + x.email, 'Message ' + esc(String(x.name).split(' ')[0]), 'esu-btn out'); }).join('') + '</div>' + next + '</section>';
   }
 
   var FIELD = 'display:block;width:100%;font:16px IBM Plex Sans,system-ui,sans-serif;padding:10px 12px;border:1px solid #E3D8C6;border-radius:8px;background:#fff;color:#1E1A14;min-height:44px';
@@ -643,6 +672,16 @@
         field('What your partner reflected back <span style="font-weight:400;color:#5A5346">(one sentence, optional)</span>', '<input id="esu-refl" type="text" maxlength="300" data-in="reflected" value="' + esc(f.reflected) + '" style="' + FIELD + '">', 'esu-refl') +
         '<p class="esu-muted" style="font-size:13px;margin:12px 0 14px">Logs the hours for everyone named, so your partner doesn’t log it again. Your before-and-after line goes into the cohort’s cue bank.</p>' +
         '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-articulation"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log this session') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
+    } else if (m.type === 'pp') {
+      body = '<h2 class="esu-h2">Organise a practicum pod</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">Choose a time to practise teaching with other mentees. Anyone in the cohort can join; there is room for ' + (state.pp ? state.pp.max : 6) + ' including you.</p>' +
+        field('What will you practise?', '<input id="esu-pp-topic" type="text" maxlength="80" data-in="ppTopic" value="' + esc(f.ppTopic) + '" placeholder="e.g. Teaching the five-minute practice" style="' + FIELD + '">', 'esu-pp-topic') +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('When (your time)', '<input id="esu-pp-when" type="datetime-local" data-in="ppWhen" value="' + esc(f.ppWhen) + '" style="' + FIELD + '">', 'esu-pp-when') + '</div><div>' +
+        field('How long', '<select id="esu-pp-min" data-in="ppMin" style="' + FIELD + '">' + ((state.pp && state.pp.minutes) || [30, 45, 60, 90, 120]).map(function (n) { return '<option value="' + n + '"' + (String(f.ppMin) === String(n) ? ' selected' : '') + '>' + n + ' minutes</option>'; }).join('') + '</select>', 'esu-pp-min') + '</div></div>' +
+        field('Anything to know? <span style="font-weight:400;color:#5A5346">(optional)</span>', '<textarea id="esu-pp-desc" rows="3" maxlength="600" data-in="ppDesc" placeholder="e.g. Bring a five-minute teaching you want feedback on." style="' + FIELD + '">' + esc(f.ppDesc) + '</textarea>', 'esu-pp-desc') +
+        '<details style="margin-top:12px"><summary class="esu-muted" style="font-size:13.5px;cursor:pointer">Make a live room now <span style="font-weight:400">(optional, you can do it later)</span></summary>' + ppRoomHelp() +
+        '<input id="esu-pp-roomnew" type="text" data-in="ppRoom" value="' + esc(f.ppRoom) + '" placeholder="Paste the live room link (https://…)" style="' + FIELD + ';margin-top:6px"></details>' +
+        (state.msg ? '<p class="esu-err" role="alert" style="margin-top:10px">' + esc(state.msg) + '</p>' : '') +
+        '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="save-pp"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Organise this pod') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else {
       var a = w.due.items.filter(function (x) { return x.id === m.id; })[0];
       if (!a) return '';
@@ -678,7 +717,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + guideCard(w) + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + podsCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + guideCard(w) + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + podsCard(w) + partnerCard(w) + practicumCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
   }
 
 
@@ -735,6 +774,7 @@
     if (k === 'say') { state.say = e.target.value; return; }
     if (k === 'ask') { state.ask = e.target.value; return; }
     if (k === 'yr-text') { yrState.text = e.target.value; return; }
+    if (k.indexOf('pp-room:') === 0) { (state.ppRoom = state.ppRoom || {})[k.slice(8)] = e.target.value; return; }
     if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
     if (k.indexOf('with:') === 0) { (state.form.with = state.form.with || {})[k.slice(5)] = e.target.checked; render(); return; }
     if (k.indexOf('term:') === 0) { (state.form.terms = state.form.terms || {})[k.slice(5)] = e.target.value; return; }
@@ -772,6 +812,27 @@
     if (a.indexOf('yr-') === 0) { yrClick(a, t, e); return; }
     if (a.indexOf('rf-') === 0) { if (a === 'rf-post-close' && t.dataset.bg && e.target !== t) return; rfClick(a, t); return; }
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
+    if (a === 'open-pp') { var dflt = new Date(Date.now() + 2 * 864e5); dflt.setHours(18, 0, 0, 0); var pad = function (n) { return String(n).padStart(2, '0'); }; state.modal = { type: 'pp' }; state.msg = ''; state.form = { ppTopic: '', ppDesc: '', ppRoom: '', ppMin: '60', ppWhen: dflt.getFullYear() + '-' + pad(dflt.getMonth() + 1) + '-' + pad(dflt.getDate()) + 'T18:00' }; render(); var tt = root.querySelector('#esu-pp-topic'); if (tt) tt.focus(); return; }
+    if (a === 'save-pp') {
+      var g2 = state.form, when = g2.ppWhen ? new Date(g2.ppWhen) : null;
+      state.busy = 'modal'; state.msg = ''; render();
+      call('/api/member/practicum', { action: 'create', topic: g2.ppTopic, description: g2.ppDesc, startsAt: when && !isNaN(when) ? when.toISOString() : '', minutes: g2.ppMin, roomUrl: g2.ppRoom }).then(function (d) { state.pp = d; state.modal = null; state.form = {}; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
+      return;
+    }
+    if (a === 'pp-join' || a === 'pp-leave' || a === 'pp-cancel') {
+      if (a === 'pp-cancel' && !window.confirm('Cancel this pod? Everyone who joined will no longer see it.')) return;
+      if (a === 'pp-leave' && !window.confirm('Leave this pod?')) return;
+      state.busy = 'pp'; state.msg = ''; state.msgFor = 'pp'; render();
+      call('/api/member/practicum', { action: a.slice(3), id: t.dataset.id }).then(function (d) { state.pp = d; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
+      return;
+    }
+    if (a === 'pp-room') {
+      var rv = (state.ppRoom && state.ppRoom[t.dataset.id] != null) ? state.ppRoom[t.dataset.id] : ((state.pp.pods.filter(function (x) { return x.id === t.dataset.id; })[0] || {}).roomUrl || '');
+      state.busy = 'pp'; state.msg = ''; state.msgFor = 'pp'; render();
+      call('/api/member/practicum', { action: 'links', id: t.dataset.id, roomUrl: rv, chatUrl: ((state.pp.pods.filter(function (x) { return x.id === t.dataset.id; })[0] || {}).chatUrl || '') }).then(function (d) { state.pp = d; state.ppRoom = {}; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
+      return;
+    }
+    if (a === 'pp-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'practice-teaching', day: localToday(), hours: '', detail: '', notes: '', competencies: [], watcher: '' }; render(); return; }
     if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '', competencies: [], watcher: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
     if (a === 'open-handin') { var it = state.data.due.items.filter(function (x) { return x.id === t.dataset.id; })[0]; var sb = it && it.submission; state.modal = { type: 'handin', id: t.dataset.id }; state.msg = ''; state.form = { text: sb ? sb.text : '', logHours: !!(it && it.hoursComponent), existingName: sb && sb.hasFile ? sb.fileName : '', fileName: sb && sb.hasFile ? sb.fileName : '', existingPath: '' }; render(); return; }
     if (a === 'send-chat') {
@@ -1002,7 +1063,7 @@
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
-      mount(); render(); loadPods(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
+      mount(); render(); loadPods(); loadPp(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
     }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
       .then(function () { mount(); render(); });
   }

@@ -2,15 +2,13 @@
   "settings": {
     "upgrade_label": "Upgrade to the full year",
     "upgrade_url": "https://enroll.embodiedphilosophy.com/sadhana-school",
-    "join_url": "https://enroll.embodiedphilosophy.com/sadhana-school",
-    "formation_url": "https://www.embodiedphilosophy.com/sahrdaya-upaya"
+    "reflections_space_id": 2896660,
+    "mentee_space_id": 2896670,
+    "teacher_member_ids": []
   },
   "items": [
     {
       "key": "fall-2026",
-      "tabs": [
-        "seasons"
-      ],
       "kind": "season",
       "season": "fall-2026",
       "audience_note": "Fall term",
@@ -22,9 +20,6 @@
     },
     {
       "key": "winter-2027",
-      "tabs": [
-        "seasons"
-      ],
       "kind": "season",
       "season": "winter-2027",
       "audience_note": "Full year",
@@ -36,9 +31,6 @@
     },
     {
       "key": "spring-2027",
-      "tabs": [
-        "seasons"
-      ],
       "kind": "season",
       "season": "spring-2027",
       "audience_note": "Full year",
@@ -50,9 +42,6 @@
     },
     {
       "key": "summer-2027",
-      "tabs": [
-        "seasons"
-      ],
       "kind": "season",
       "season": "summer-2027",
       "audience_note": "Full year",
@@ -63,24 +52,8 @@
       "cta_url": ""
     },
     {
-      "key": "today-in-school",
-      "tabs": [
-        "home"
-      ],
-      "kind": "space",
-      "title": "Today in School",
-      "circle_space_ids": [
-        2909890
-      ],
-      "audience_note": "Sādhana School",
-      "description": "What is happening across the school today.",
-      "order": 10
-    },
-    {
       "key": "announcements",
       "tabs": [
-        "home",
-        "kula",
         "announcements"
       ],
       "kind": "space",
@@ -95,8 +68,6 @@
     {
       "key": "welcome-orientation",
       "tabs": [
-        "home",
-        "practice",
         "resources"
       ],
       "kind": "space",
@@ -109,17 +80,17 @@
       "order": 12
     },
     {
-      "key": "kula-commentary",
+      "key": "reflections",
       "tabs": [
-        "kula"
+        "reflections"
       ],
       "kind": "space",
-      "title": "Kula Commentary",
+      "title": "Reflections",
       "circle_space_ids": [
         2896660
       ],
       "audience_note": "Sādhana School",
-      "description": "Notes and commentary from the kula.",
+      "description": "Reflections from across Sādhana School, with replies.",
       "order": 20
     },
     {
@@ -139,7 +110,6 @@
     {
       "key": "practice-resources",
       "tabs": [
-        "practice",
         "resources"
       ],
       "kind": "space",
@@ -154,7 +124,6 @@
     {
       "key": "practice-portfolio",
       "tabs": [
-        "practice",
         "resources"
       ],
       "kind": "space",
@@ -169,8 +138,7 @@
     {
       "key": "saturday-open-sessions",
       "tabs": [
-        "home",
-        "workshops"
+        "sessions"
       ],
       "kind": "events",
       "title": "Saturday Open Sessions",
@@ -178,126 +146,35 @@
         2897912
       ],
       "weekday": 6,
-      "requires_plan": "full-year",
-      "audience_note": "Full year",
-      "description": "Open practice and conversation on Saturdays.",
-      "preview": "",
-      "cta_label": "Upgrade to the full year",
-      "cta_url": "",
+      "audience_note": "Sādhana School",
+      "description": "Open practice and conversation on Saturdays, within the weeks of your season.",
       "order": 40
-    },
-    {
-      "key": "sunday-practicum",
-      "tabs": [
-        "workshops"
-      ],
-      "kind": "events",
-      "title": "Sunday Practicum",
-      "circle_space_ids": [
-        2897912
-      ],
-      "weekday": 0,
-      "requires_plan": "mentee",
-      "audience_note": "Sahṛdaya Upāya",
-      "description": "A guided practicum for those in formation.",
-      "preview": "",
-      "cta_label": "Learn about formation",
-      "cta_url": "",
-      "order": 41
-    },
-    {
-      "key": "mentorship-circle",
-      "tabs": [
-        "mentor"
-      ],
-      "kind": "space",
-      "title": "Mentorship Circle",
-      "circle_space_ids": [
-        2896670
-      ],
-      "mentee_marker": true,
-      "audience_note": "Sahṛdaya Upāya",
-      "description": "Your mentorship circle.",
-      "preview": "",
-      "cta_label": "Learn about formation",
-      "cta_url": "",
-      "order": 50,
-      "collapse_to": "formation"
-    },
-    {
-      "key": "mentorship-sessions",
-      "tabs": [
-        "mentor"
-      ],
-      "kind": "events",
-      "title": "Mentorship Sessions",
-      "circle_space_ids": [
-        2896671
-      ],
-      "audience_note": "Sahṛdaya Upāya",
-      "description": "Live mentorship sessions.",
-      "preview": "",
-      "cta_label": "Learn about formation",
-      "cta_url": "",
-      "order": 51,
-      "collapse_to": "formation"
-    },
-    {
-      "key": "apprentice-workbook",
-      "tabs": [
-        "mentor"
-      ],
-      "kind": "space",
-      "title": "Apprentice Workbook",
-      "circle_space_ids": [
-        2900305
-      ],
-      "audience_note": "Sahṛdaya Upāya",
-      "description": "Your workbook for the apprenticeship.",
-      "preview": "",
-      "cta_label": "Learn about formation",
-      "cta_url": "",
-      "order": 52,
-      "collapse_to": "formation"
-    },
-    {
-      "key": "formation",
-      "tabs": [
-        "mentor"
-      ],
-      "kind": "info",
-      "title": "Sahṛdaya Upāya",
-      "always_locked": true,
-      "audience_note": "Full year",
-      "description": "A year of mentored formation: a small circle, regular mentorship sessions and an apprentice workbook, alongside the school.",
-      "preview": "",
-      "cta_label": "Learn about formation",
-      "cta_url": "",
-      "order": 53
     },
     {
       "key": "sourcebook",
       "tabs": [
         "resources"
       ],
-      "kind": "space",
+      "kind": "file",
       "title": "The Sādhaka's Sourcebook",
-      "circle_space_ids": [],
       "audience_note": "Sādhana School",
       "description": "The year's readings, in one place.",
-      "order": 54
+      "order": 54,
+      "source_title": "The Sādhaka's Sourcebook",
+      "url": ""
     },
     {
       "key": "song-of-sadhana",
       "tabs": [
         "resources"
       ],
-      "kind": "space",
+      "kind": "file",
       "title": "Song of Sādhana",
-      "circle_space_ids": [],
       "audience_note": "Sādhana School",
       "description": "The chantbook and recordings.",
-      "order": 55
+      "order": 55,
+      "source_title": "Song of Sādhana",
+      "url": ""
     }
   ]
 }

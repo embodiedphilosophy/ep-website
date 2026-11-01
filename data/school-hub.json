@@ -108,20 +108,6 @@
       "order": 21
     },
     {
-      "key": "practice-resources",
-      "tabs": [
-        "resources"
-      ],
-      "kind": "space",
-      "title": "Practice Resources",
-      "circle_space_ids": [
-        2896661
-      ],
-      "audience_note": "Sādhana School",
-      "description": "Guided practices, texts and tools for your own sādhana.",
-      "order": 30
-    },
-    {
       "key": "practice-portfolio",
       "tabs": [
         "resources"
@@ -133,7 +119,8 @@
       ],
       "audience_note": "Sādhana School",
       "description": "Your practice record, kept in one place.",
-      "order": 31
+      "order": 31,
+      "pdf": "https://assets-v2.circle.so/1n7219z1xh2mfal1a5n1nyxuxioh"
     },
     {
       "key": "saturday-open-sessions",
@@ -174,7 +161,19 @@
       "description": "The chantbook and recordings.",
       "order": 55,
       "source_title": "Song of Sādhana",
-      "url": ""
+      "url": "https://assets-v2.circle.so/vo2cyhoy37ljoncivfjd7k9ofvcw"
+    },
+    {
+      "key": "inner-travelogue",
+      "tabs": [
+        "resources"
+      ],
+      "kind": "file",
+      "title": "The Inner Travelogue",
+      "audience_note": "Sādhana School",
+      "description": "A daily letter to the Divine, in the spirit of īśvara-praṇidhāna.",
+      "order": 56,
+      "url": "https://assets-v2.circle.so/z7l40hi72md237ij98abbg4qvt6b"
     }
   ]
 }

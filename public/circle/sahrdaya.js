@@ -408,7 +408,7 @@
   function dm(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'short' }); }
   function dml(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'long' }); }
   function dmyT(iso) { return fmtTime(iso, { weekday: 'short' }) + ' ' + fmtTime(iso, { day: 'numeric' }) + ' ' + fmtTime(iso, { month: 'short' }); }
-  function hmT(iso) { return hmT(iso); }
+  function hmT(iso) { return fmtTime(iso, { hour: 'numeric', minute: '2-digit' }); }
   var YR = function (w) { return w && w.home && w.home.year; };
   function projChip(p) { var x = PROJ[p] || PROJ.both; return '<span class="esu-proj"><i style="background:' + x[1] + '"></i>' + x[0] + '</span>'; }
   function whenText(s) { var n = s.daysTo; return n < 0 ? Math.abs(n) + (n === -1 ? ' day overdue' : ' days overdue') : n === 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }

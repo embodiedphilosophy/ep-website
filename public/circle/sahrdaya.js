@@ -41,7 +41,9 @@
     return b.asin ? 'https://' + host + '/dp/' + b.asin : 'https://' + host + '/s?k=' + encodeURIComponent(b.search) + '&i=stripbooks';
   }
   function amazonLabel() { return /amazon\.co\.uk/.test(amazonUrl({ search: 'x' })) ? 'Amazon.co.uk' : 'Amazon.com'; }
-  function setMentee(v) { window.__epMentee = v; }
+  function setMentee(v) { window.__epMentee = v; if (v === 'no') uncloak(); }
+  // today.js hides Circle's own page here until we know (no flash of the space's feed); once our page is in, or it isn't ours, show again
+  function uncloak() { var el = document.getElementById('ep-su-cloak'); if (el) el.remove(); }
 
   // ---- sign-in: Circle's identity token → our bearer session (same as This week) ----
   function waitForUser(tries) {
@@ -1034,9 +1036,10 @@
     root.className = 'esu'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'Sahṛdaya Upāya');
     root.addEventListener('click', onClick); root.addEventListener('input', onInput); root.addEventListener('change', onInput);
     box.insertBefore(root, box.firstChild);
-    render();
+    render(); uncloak();
   }
   function unmount() {
+    uncloak();
     if (!root) return;
     var box = root.__box; root.remove(); root = null;
     if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = '';

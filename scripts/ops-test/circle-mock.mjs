@@ -85,6 +85,7 @@ http.createServer(async (req, res) => {
     if (req.method === 'POST') { log.push(`POST post ${body}`); console.log('WROTE post', body); posts.unshift({ id: 99, name: JSON.parse(body).name, topics: JSON.parse(body).topic_ids, created_at: day(0) }); return send({ id: 99 }, 201); }
     return send({ records: spacesFor[who].includes(Number(m[1])) ? (Number(m[1]) === 2897427 ? wsPosts : posts) : [], has_next_page: false });
   }
+  if ((m = p.match(/^\/posts\/(\d+)$/)) && req.method === 'DELETE') { console.log('WROTE delete post', m[1], who); return send({}, 200); }
   if ((m = p.match(/^\/events\/(\d+)\/event_attendees$/)) && req.method === 'POST') { console.log('WROTE rsvp', m[1], who); return send({ ok: true }, 201); }
   send({ error: 'not mocked ' + p }, 404);
 }).listen(4600, () => console.log('circle mock on 4600'));

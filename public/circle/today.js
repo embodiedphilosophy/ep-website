@@ -16,7 +16,7 @@
   var LAZY = [
     [/^\/c\/ce-credits\/?$/, 'ce'], [/^\/c\/portfolio\/?$/, 'portfolio'], [/^\/c\/daily-practice\/?$/, 'practice'], [/^\/c\/schedule\/?$/, 'schedule'],
     [/^\/c\/my-practice(-[a-z0-9]{3,10})?\/?$/, 'my-practice'], [/^\/c\/library(-[a-z0-9]{3,10})?\/?$/, 'library'], [/^\/c\/this-week(-[a-z0-9]{3,10})?\/?$/, 'this-week'],
-    [/^\/c\/mentorship\/?$/, 'sahrdaya']
+    [/^\/c\/mentorship\/?$/, 'sahrdaya'], [/^\/c\/reflections\/?$/, 'sahrdaya']
   ];
   var added = {};
   function addScript(name) { if (added[name]) return; added[name] = true; var el = document.createElement('script'); el.src = BASE + name + '.js'; el.defer = true; document.head.appendChild(el); }

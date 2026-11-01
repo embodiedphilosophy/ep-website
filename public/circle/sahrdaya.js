@@ -7,9 +7,10 @@
   if (window.__epSahrdaya) return; window.__epSahrdaya = true;
 
   var API = 'https://www.embodiedphilosophy.com';
-  var PAGE = /^\/c\/mentorship\/?$/;
+  var PAGE = /^\/c\/(mentorship|reflections)\/?$/;
+  var isRefl = function () { return /^\/c\/reflections\/?$/.test(location.pathname); };
   var SKEY = 'ep_su_session';
-  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '' };
+  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '', rf: { list: null, meta: null, detail: null, id: '', filter: 'cohort', mode: 'read', form: { title: '', body: '' }, vn: 0, ckind: 'landed', ctext: '', replyTo: '', reply: '', ticked: {}, post: false, busy: '', err: '' } };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -102,6 +103,15 @@
       '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}.esu-tot span{font-size:13px;color:#5A5346}',
       '.esu-ever{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
       '.esu-ever .esu-poll{grid-column:1/-1}',
+      '.esu-steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;margin:0 0 18px;overflow:hidden}.esu-st4{padding:12px 14px;font-size:13.5px;color:#5A5346;border-left:1px solid #E3D8C6}.esu-st4:first-child{border-left:0}.esu-st4 b{display:block;font:500 11px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.12em;color:#A5432A;margin-bottom:2px}.esu-st4.on{background:#F6EEDA;color:#1E1A14}',
+      '.esu-rcols{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}.esu-rfl{display:grid;gap:10px}.esu-chips{display:flex;gap:8px;flex-wrap:wrap}',
+      '.esu-chip{min-height:40px;padding:0 16px;border-radius:99px;border:1px solid #E3D8C6;background:#FBF6EE;color:#1E1A14;font:500 14px "IBM Plex Sans",system-ui,sans-serif;cursor:pointer}.esu-chip.on{background:#1E1A14;border-color:#1E1A14;color:#FBF6EE}',
+      '.esu-ri{display:grid;gap:4px;text-align:left;padding:14px 16px;border:1px solid #E3D8C6;border-radius:8px;background:#FBF6EE;cursor:pointer;font:inherit;color:#1E1A14}.esu-ri.on{border-color:#A5432A}.esu-ri b{font:600 19px/1.2 "Cormorant Garamond",Georgia,serif}.esu-rim{display:flex;justify-content:space-between;gap:8px}.esu-rist{font-size:12.5px;color:#7A5A2E;font-weight:600;display:inline-flex;gap:6px;align-items:center}.esu-dotn{width:8px;height:8px;border-radius:50%;background:#A5432A;display:inline-block}',
+      '.esu-rpane{background:#FBF6EE;border:1px solid #E3D8C6;border-radius:8px;padding:22px 26px;min-width:0}.esu-rt1{margin:2px 0 0;font:600 34px/1.1 "Cormorant Garamond",Georgia,serif}.esu-rbody{margin:16px 0}.esu-rbody p{font:400 19.5px/1.55 "Cormorant Garamond",Georgia,serif;margin:0 0 12px;padding:2px 0;max-width:660px}.esu-rbody p.ch{background:#F6EEDA;margin-left:-8px;margin-right:-8px;padding:4px 8px;border-radius:4px}',
+      '.esu-obar{background:#F1E9DC;border-radius:8px;padding:14px 16px;margin:6px 0 18px}.esu-fb{border-top:1px solid #E3D8C6;padding-top:16px}.esu-cmt{display:flex;gap:12px;margin:14px 0}.esu-cmt.nested{margin:10px 0 0 6px}.esu-av{display:inline-flex;flex:none;width:34px;height:34px;border-radius:50%;align-items:center;justify-content:center;color:#fff;font:600 12px "IBM Plex Sans",system-ui,sans-serif}.esu-cmh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:14px}.esu-cmb{font-size:15px;white-space:pre-wrap;word-break:break-word;margin:2px 0}.esu-cma{display:flex;gap:14px;align-items:center}',
+      '.esu-kind{font:500 10px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;border-radius:3px;padding:1px 6px}.esu-offer{margin-top:18px;padding-top:14px;border-top:1px dashed #E3D8C6}',
+      '.esu-ed2{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start}.esu-aside{display:grid;gap:8px}.esu-fbc{display:flex;gap:10px;background:#EADDC6;border-radius:8px;padding:10px 12px;font-size:13.5px;cursor:pointer}.esu-fbc input{width:20px;height:20px;flex:none;margin-top:2px}',
+      '.esu-prev{border:1px solid #E3D8C6;border-radius:8px;padding:14px 16px;background:#fff}.esu-rhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.esu-mchip{background:#20302A;color:#F6EFE2;border-radius:4px;padding:2px 8px;font:500 10px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em}',
       '.esu-win{background:#F1E9DC;border-radius:8px;padding:10px 14px;margin-bottom:6px}.esu-win b{display:block;font-size:15px}.esu-cues{display:grid;gap:10px;max-height:340px;overflow-y:auto}.esu-cue{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:10px 12px;background:#F6EFE2;border-radius:8px;font-size:14.5px}.esu-cue .esu-eye{margin:0 0 2px}.esu-cuew{grid-column:1/-1;color:#5A5346}.esu-who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}.esu-who label{display:inline-flex;gap:6px;align-items:center;border:1px solid #E3D8C6;border-radius:99px;padding:6px 12px;background:#fff;font-size:14px}.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
       '.esu-q{padding:8px 0;border-top:1px solid #E3D8C6;font-size:14px;line-height:1.35}.esu-q a{color:#1E1A14;text-decoration:none;font-weight:500}.esu-q small{display:block;font-size:12px;color:#5A5346;margin-top:2px}.esu-q small b{color:#2E5A4B;font-weight:600}',
       '.esu-bar{height:6px;background:#E3D8C6;border-radius:99px;overflow:hidden;margin-top:6px}.esu-bar i{display:block;height:100%;background:#A5432A;min-width:0}',
@@ -143,7 +153,7 @@
       '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
       '.esu-dlg{background:#FBF6EE;border-radius:8px;padding:22px 24px;width:100%;max-width:560px;margin:auto}',
       '@media (max-width:760px){',
-      '.esu-cue{grid-template-columns:minmax(0,1fr)}',
+      '.esu-cue{grid-template-columns:minmax(0,1fr)}.esu-steps4{grid-template-columns:repeat(2,minmax(0,1fr))}.esu-rcols,.esu-ed2{grid-template-columns:minmax(0,1fr)}.esu-rpane{padding:16px}.esu-rt1{font-size:28px}',
       '.esu{padding:24px 16px 56px}.esu-h1{font-size:36px}.esu-tabs{display:flex;gap:6px;margin:0 0 14px;background:#E3D8C6;border-radius:99px;padding:4px}',
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
@@ -237,10 +247,11 @@
       (state.msg && state.msgFor === 'ask' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') + '</section>';
   }
   function reflectionCard(w) {
-    var r = w.home.reflection, month = dayFmt(r.month + '-01', { month: 'long' });
-    return '<section class="esu-card" data-g="ever"><div class="esu-eye">Your ' + esc(month) + ' reflection</div><h2 class="esu-h2">Write your ' + esc(month) + ' reflection</h2>' +
-      '<p class="esu-muted" style="font-size:13.5px">Write it, share it with the cohort, and revise it from what they say.</p>' +
-      (safeUrl(r.url) ? '<div class="esu-btm esu-acts">' + link(r.url, 'Open Reflections', 'esu-btn pri') + '</div>' : '<p class="esu-muted esu-btm" style="font-size:13px">Reflections opens here soon.</p>') + '</section>';
+    var r = w.home.reflection, month = dayFmt(r.month + '-01', { month: 'long' }), m = r.mine;
+    var body = m ? '<h2 class="esu-h2">' + esc(m.title) + '</h2><p class="esu-muted" style="font-size:13.5px">' + esc(r.line) + '</p>' : '<h2 class="esu-h2">Write your ' + esc(month) + ' reflection</h2><p class="esu-muted" style="font-size:13.5px">Write it, share it with the cohort, and revise it from what they say.</p>';
+    var fresh = r.unread ? '<p class="esu-muted" style="font-size:13.5px">New in the cohort: ' + r.unread + (r.unread === 1 ? ' reflection' : ' reflections') + ' you haven’t read</p>' : '';
+    var btns = safeUrl(r.url) ? '<div class="esu-btm esu-acts">' + link(r.url, 'Open Reflections', 'esu-btn pri') + (m && m.status === 'shared' ? link(r.url + (r.url.indexOf('?') < 0 ? '?' : '&') + 'post=' + encodeURIComponent(m.id), 'Post to SS', 'esu-btn out') : '') + '</div>' : '<p class="esu-muted esu-btm" style="font-size:13px">Reflections opens here soon.</p>';
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">Your ' + esc(month) + ' reflection</div>' + body + fresh + btns + '</section>';
   }
   function evergreen(w) { return '<div class="esu-ever">' + articulationCard(w) + questionsCard(w) + reflectionCard(w) + pollCards(w) + '</div>'; }
 
@@ -438,6 +449,7 @@
   }
 
   function html() {
+    if (isRefl()) return reflHtml();
     if (state.error && !state.data) return '<h1 class="esu-h1">Sahṛdaya Upāya</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
     var w = state.data, name = (w && w.greeting.firstName) || state.first;
     var head = function (sub, right) { return '<div class="esu-eye">Sahṛdaya Upāya · Teacher formation in SLBT</div><div class="esu-head"><div><h1 class="esu-h1">Your formation' + (name ? ', <em>' + esc(name) + '</em>' : '') + '.</h1>' + (sub ? '<div class="esu-sub">' + sub + '</div>' : '') + '</div>' + (right || '') + '</div>'; };
@@ -457,6 +469,7 @@
   function onInput(e) {
     var k = e.target && e.target.dataset && e.target.dataset.in;
     if (!k) return;
+    if (k.indexOf('rf-') === 0) { var q = state.rf; if (k === 'rf-title') q.form.title = e.target.value; else if (k === 'rf-body') q.form.body = e.target.value; else if (k === 'rf-ctext') q.ctext = e.target.value; else if (k === 'rf-reply') q.reply = e.target.value; else if (k.indexOf('rf-tick:') === 0) q.ticked[k.slice(8)] = e.target.checked; return; }
     if (k === 'say') { state.say = e.target.value; return; }
     if (k === 'ask') { state.ask = e.target.value; return; }
     if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
@@ -492,6 +505,7 @@
     var t = e.target.closest('[data-act]');
     if (!t || !root.contains(t)) return;
     var a = t.dataset.act;
+    if (a.indexOf('rf-') === 0) { if (a === 'rf-post-close' && t.dataset.bg && e.target !== t) return; rfClick(a, t); return; }
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
     if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
     if (a === 'open-handin') { var it = state.data.due.items.filter(function (x) { return x.id === t.dataset.id; })[0]; var sb = it && it.submission; state.modal = { type: 'handin', id: t.dataset.id }; state.msg = ''; state.form = { text: sb ? sb.text : '', logHours: !!(it && it.hoursComponent), existingName: sb && sb.hasFile ? sb.fileName : '', fileName: sb && sb.hasFile ? sb.fileName : '', existingPath: '' }; render(); return; }
@@ -547,6 +561,132 @@
     }
   }
 
+
+  // ---- Reflections (/c/reflections): write, share with the cohort, revise from their feedback, post to Sādhana School ----
+  var RK = { landed: ['What landed', 'Quote a line that stayed with you, and say why.', '#2E5A4B', '#E3EEE7'], question: ['A question', 'Ask what you’d want to know more about.', '#3E4C7A', '#E4E8F3'], suggestion: ['A suggestion', 'One thing the next version could try.', '#A5432A', '#F4E4DC'] };
+  function rfFlash() { return state.rf.err ? '<p class="esu-err" role="alert">' + esc(state.rf.err) + '</p>' : ''; }
+  function rfApply(d) { var r = state.rf; r.list = d.list || r.list; r.meta = d.meta || r.meta; if ('detail' in d) { r.detail = d.detail; if (d.detail) { r.id = d.detail.id; r.vn = d.detail.versions.length ? d.detail.versions[d.detail.versions.length - 1].n : 0; } else { r.id = ''; } } }
+  function loadRefl(id) {
+    return call('/api/member/reflections?' + tzq() + (id ? '&id=' + encodeURIComponent(id) : '')).then(function (d) { state.rf.err = ''; rfApply(d); }).catch(function (e) { state.rf.err = e.message; }).then(render);
+  }
+  function rfAct(action, extra) {
+    var r = state.rf; r.busy = action; r.err = ''; render();
+    return call('/api/member/reflections', Object.assign({ action: action, id: r.id, today: localToday(), tz: myZone() }, extra || {})).then(function (d) { rfApply(d); return d; })
+      .catch(function (e) { r.err = e.message; }).then(function (d) { r.busy = ''; render(); return d; });
+  }
+  function rfMonth(m) { return dayFmt(m + '-01', { month: 'long' }); }
+  function statusLabel(x) { return x.status === 'posted' ? 'Posted to SS' : x.status === 'draft' ? 'Draft' : x.sharedVersions > 1 ? 'Revised · v' + x.version : 'Shared · v' + x.version; }
+  function rfSteps() {
+    var d = state.rf.detail, step = d && d.mine ? d.step : 0, S = (state.rf.meta && state.rf.meta.steps) || [];
+    return '<div class="esu-steps4">' + S.map(function (x, i) { return '<div class="esu-st4' + (step === i + 1 ? ' on' : '') + '"><b>' + (i + 1) + ' · ' + esc(x[0].toUpperCase()) + '</b>' + esc(x[1]) + '</div>'; }).join('') + '</div>';
+  }
+  function rfList() {
+    var r = state.rf, L = r.list || [], m = r.meta ? r.meta.month : '';
+    var shown = L.filter(function (x) { return r.filter === 'mine' ? x.mine : r.filter === 'posted' ? x.status === 'posted' : x.month === m; });
+    var chips = [['cohort', (m ? rfMonth(m) : 'This month') + ' · cohort'], ['mine', 'Mine'], ['posted', 'Posted to SS']].map(function (c) { return '<button type="button" class="esu-chip' + (r.filter === c[0] ? ' on' : '') + '" aria-pressed="' + (r.filter === c[0]) + '" data-act="rf-filter" data-f="' + c[0] + '">' + c[1] + '</button>'; }).join('');
+    return '<div class="esu-rfl"><div class="esu-chips">' + chips + '</div>' + (shown.length ? shown.map(function (x) {
+      return '<button type="button" class="esu-ri' + (x.id === r.id ? ' on' : '') + '" data-act="rf-open" data-id="' + esc(x.id) + '"><span class="esu-rim"><span class="esu-eye" style="color:#5A5346">' + esc(rfMonth(x.month)) + '</span><span class="esu-rist">' + (x.unread ? '<i class="esu-dotn" aria-label="New"></i>' : '') + esc(statusLabel(x)) + '</span></span><b>' + esc(x.title || 'Untitled') + '</b><span class="esu-muted" style="font-size:13px">' + esc(x.mine ? 'You' : x.author) + ' · ' + (x.comments ? x.comments + (x.comments === 1 ? ' comment' : ' comments') : 'no comments yet') + '</span></button>';
+    }).join('') : '<p class="esu-muted" style="margin:10px 0">' + (r.list ? (r.filter === 'mine' ? 'You haven’t written one yet.' : r.filter === 'posted' ? 'Nothing posted to Sādhana School yet.' : 'No reflections from the cohort this month yet.') : 'Loading…') + '</p>') + '</div>';
+  }
+  function rfComment(c, d, all) {
+    var k = RK[c.kind], mine = d.mine, replies = all.filter(function (x) { return x.parent === c.id; });
+    var out = '<div class="esu-cmt"><span class="esu-av" style="background:#' + (c.byAuthor ? 'A5432A' : '3E4C7A') + '">' + esc(String(c.who).split(' ').map(function (x) { return x[0]; }).join('').slice(0, 2).toUpperCase()) + '</span><div><div class="esu-cmh"><b>' + esc(c.who) + '</b> <span class="esu-muted">' + esc(fmtTime(c.at, { weekday: 'short', day: 'numeric', month: 'short' })) + '</span>' + (k ? ' <span class="esu-kind" style="color:' + k[2] + ';background:' + k[3] + '">' + esc(k[0].toUpperCase()) + '</span>' : '') + '</div><div class="esu-cmb">' + esc(c.body) + '</div>' +
+      '<div class="esu-cma"><button type="button" class="esu-lnk" data-act="rf-replyto" data-id="' + esc(c.id) + '">Reply</button>' + (c.addressedIn ? '<span class="esu-ok" style="font-size:13px">Addressed in version ' + c.addressedIn + '</span>' : '') + '</div>' +
+      replies.map(function (x) { return '<div class="esu-cmt nested"><span class="esu-av" style="background:#' + (x.byAuthor ? 'A5432A' : '3E4C7A') + '">' + esc(String(x.who).split(' ').map(function (y) { return y[0]; }).join('').slice(0, 2).toUpperCase()) + '</span><div><div class="esu-cmh"><b>' + esc(x.who) + '</b> <span class="esu-muted">' + esc(fmtTime(x.at, { weekday: 'short', day: 'numeric', month: 'short' })) + '</span></div><div class="esu-cmb">' + esc(x.body) + '</div></div></div>'; }).join('') +
+      (state.rf.replyTo === c.id ? '<div class="esu-say" style="margin-top:8px"><input id="esu-rr" type="text" maxlength="3000" data-in="rf-reply" placeholder="Respond to ' + esc(String(c.who).split(' ')[0]) + '…" value="' + esc(state.rf.reply) + '" style="' + FIELD + '"><button type="button" class="esu-btn pri" data-act="rf-reply-send"' + (state.rf.busy ? ' disabled' : '') + '>Reply</button></div>' : '') + '</div></div>';
+    return out;
+  }
+  function rfReader() {
+    var r = state.rf, d = r.detail;
+    if (!d) return '<div class="esu-rpane"><div class="esu-empty">' + (r.list ? 'Choose a reflection to read, or write your own.' : 'Loading…') + '</div></div>';
+    var v = d.versions.filter(function (x) { return x.n === r.vn; })[0] || d.versions[d.versions.length - 1];
+    var chips = d.versions.map(function (x) { return '<button type="button" class="esu-chip' + (x.n === v.n ? ' on' : '') + '" aria-pressed="' + (x.n === v.n) + '" data-act="rf-ver" data-n="' + x.n + '">Version ' + x.n + (x.shared ? '' : ' · draft') + '</button>'; }).join('');
+    var hl = v.n > 1 ? '<span class="esu-muted" style="font-size:13px">Highlighted: changed since version ' + (v.n - 1) + '</span>' : '';
+    var meta = (d.mine ? 'You' : d.author) + (d.sharedAt ? ' · shared with the cohort ' + fmtTime(d.sharedAt, { weekday: 'short', day: 'numeric', month: 'short' }) : '') + (d.versions.filter(function (x) { return x.shared; }).length > 1 ? ' · revised ' + fmtTime(d.versions.filter(function (x) { return x.shared; }).pop().sharedAt, { weekday: 'short', day: 'numeric', month: 'short' }) : '') + (d.mine ? ' · counts toward your monthly reflections once posted' : '');
+    var bar = '';
+    if (d.mine) {
+      var hasDraft = d.workingN && d.workingN === (d.versions[d.versions.length - 1] || {}).n && !d.versions[d.versions.length - 1].shared;
+      bar = '<div class="esu-obar"><div class="esu-acts">' + (hasDraft ? '<button type="button" class="esu-btn pri" data-act="rf-edit">Continue your draft</button>' : d.status !== 'draft' ? '<button type="button" class="esu-btn out" data-act="rf-revise">Revise</button>' : '') +
+        (d.status === 'shared' ? '<button type="button" class="esu-btn pri" data-act="rf-post-open">Post to Sādhana School</button>' : '') +
+        (d.status === 'posted' ? '<span class="esu-ok">Posted to Sādhana School · ' + esc(fmtTime(d.postedAt, { day: 'numeric', month: 'short' })) + ' ✓</span>' + (safeUrl(d.postedUrl) ? ext(d.postedUrl, 'View the post', 'esu-btn out') : '') + '<button type="button" class="esu-lnk" data-act="rf-takedown">Take it down</button>' : '') +
+        (d.status === 'draft' ? '<button type="button" class="esu-btn out" data-act="rf-discard">Delete this draft</button>' : '') + '</div>' +
+        '<p class="esu-muted" style="font-size:13px;margin-top:8px">' + (d.status === 'shared' ? 'Posts version ' + d.versions.filter(function (x) { return x.shared; }).length + ' to the Reflections in Sādhana School. The cohort’s comments stay here.' : d.status === 'posted' ? 'The cohort’s feedback and your earlier versions stay here. You can take the post down from Sādhana School at any time.' : 'Only you can see this draft until you share it with the cohort.') + '</p></div>';
+    }
+    var top = d.comments.filter(function (c) { return !c.parent; });
+    var fb = d.status === 'draft' ? '' : '<div class="esu-fb"><div class="esu-hd"><h3 class="esu-h2" style="font-size:22px">Feedback from the cohort</h3><span class="esu-muted" style="font-size:13px">' + top.length + (top.length === 1 ? ' comment' : ' comments') + ' · only Sahṛdaya Upāya mentees and Jacob see this</span></div>' +
+      (top.length ? top.map(function (c) { return rfComment(c, d, d.comments); }).join('') : '<p class="esu-muted">' + (d.mine ? 'No feedback yet.' : 'Be the first to offer feedback.') + '</p>');
+    if (d.status !== 'draft' && !d.mine) {
+      var k = RK[r.ckind];
+      fb += '<div class="esu-offer"><div class="esu-eye" style="color:#5A5346">Offer feedback</div><div class="esu-chips">' + Object.keys(RK).map(function (x) { return '<button type="button" class="esu-chip' + (r.ckind === x ? ' on' : '') + '" aria-pressed="' + (r.ckind === x) + '" data-act="rf-kind" data-k="' + x + '">' + RK[x][0] + '</button>'; }).join('') + '</div><p class="esu-muted" style="font-size:13.5px;margin:6px 0">' + esc(k[1]) + '</p>' +
+        '<textarea id="esu-cm" rows="3" maxlength="3000" data-in="rf-ctext" aria-label="Your feedback" style="' + FIELD + '">' + esc(r.ctext) + '</textarea><div class="esu-acts" style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="rf-comment"' + (r.busy ? ' disabled' : '') + '>Send feedback</button></div><p class="esu-muted" style="font-size:12.5px;margin-top:6px">Be specific and kind. Speak to the writing, not the person.</p></div>';
+    }
+    fb += '</div>';
+    return '<div class="esu-rpane"><div class="esu-eye">' + esc(rfMonth(d.month)) + (d.topic ? ' · ' + esc(d.topic) : '') + '</div><h2 class="esu-rt1">' + esc(v.title) + '</h2><p class="esu-muted" style="font-size:13px;margin:2px 0 10px">' + esc(meta) + '</p>' +
+      '<div class="esu-chips" style="align-items:center">' + chips + hl + '</div><div class="esu-rbody">' + v.paragraphs.map(function (p) { return '<p class="' + (p.changed ? 'ch' : '') + '">' + esc(p.text) + '</p>'; }).join('') + '</div>' + bar + rfFlash() + fb + '</div>';
+  }
+  function rfEditor() {
+    var r = state.rf, d = r.detail, f = r.form, n = d && d.workingN ? d.workingN : 1, revising = n > 1;
+    var aside = revising ? '<aside class="esu-aside"><div class="esu-eye" style="color:#5A5346">Feedback to work from</div>' + d.comments.filter(function (c) { return !c.parent; }).map(function (c) {
+      var k = RK[c.kind], on = r.ticked[c.id] != null ? r.ticked[c.id] : c.addressedIn === n;
+      return '<label class="esu-fbc"><input type="checkbox" data-in="rf-tick:' + esc(c.id) + '"' + (on ? ' checked' : '') + '><span><b>' + esc(c.who) + '</b> · ' + (k ? '<span style="color:' + k[2] + '">' + esc(k[0].toUpperCase()) + '</span>' : '') + '<br>' + esc(c.body) + '</span></label>';
+    }).join('') + '<p class="esu-muted" style="font-size:12.5px">Tick what you’ve addressed. The commenter sees “addressed in version ' + n + '”.</p></aside>' : '';
+    return '<div class="esu-rpane"><div class="esu-hd"><h2 class="esu-rt1" style="font-size:26px">' + (revising ? 'Revising · version ' + n : d ? 'Your draft' : 'Write ' + (r.meta ? rfMonth(r.meta.month) : 'this month') + '’s reflection') + '</h2><span class="esu-muted" style="font-size:13px">' + (revising ? 'Version ' + (n - 1) + ' stays as it was; the cohort sees what changed' : 'Only you can see it until you share it') + '</span></div>' +
+      '<div class="' + (revising ? 'esu-ed2' : '') + '"><div>' + field('Title', '<input id="esu-rtitle" type="text" maxlength="120" data-in="rf-title" value="' + esc(f.title) + '" style="' + FIELD + ';font-family:Cormorant Garamond,Georgia,serif;font-size:20px">', 'esu-rtitle') +
+      field('Your reflection', '<textarea id="esu-rbody" rows="14" maxlength="20000" data-in="rf-body" style="' + FIELD + ';font-family:Cormorant Garamond,Georgia,serif;font-size:19px;line-height:1.5">' + esc(f.body) + '</textarea>', 'esu-rbody') + '</div>' + aside + '</div>' + rfFlash() +
+      '<div class="esu-acts" style="margin-top:12px"><button type="button" class="esu-btn pri" data-act="rf-share"' + (r.busy ? ' disabled' : '') + '>' + (revising ? 'Share version ' + n + ' with the cohort' : 'Share with the cohort') + '</button><button type="button" class="esu-btn out" data-act="rf-save"' + (r.busy ? ' disabled' : '') + '>Save as draft</button><button type="button" class="esu-btn out" data-act="rf-cancel">Cancel</button></div></div>';
+  }
+  function rfPostModal() {
+    var r = state.rf, d = r.detail;
+    if (!r.post || !d) return '';
+    var v = d.versions.filter(function (x) { return x.shared; }).pop(), name = (state.first || (state.data && state.data.greeting && state.data.greeting.firstName) || 'You');
+    var excerpt = v.body.length > 240 ? v.body.slice(0, 240).replace(/\s+\S*$/, '') + '…' : v.body;
+    return '<div class="esu-ov" data-act="rf-post-close" data-bg="1"><div class="esu-dlg" role="dialog" aria-modal="true" aria-label="Post to Sādhana School"><h2 class="esu-h2">Post to Sādhana School?</h2>' +
+      '<p class="esu-muted" style="margin:8px 0 12px">Version ' + v.n + ' goes to <b>Reflections</b> in Sādhana School, where the whole school can read it and reply. This is how it will look:</p>' +
+      '<div class="esu-prev"><div class="esu-rhead"><span class="esu-av" style="background:#A5432A">' + esc(String(name).slice(0, 2).toUpperCase()) + '</span><b>' + esc(name) + '</b><span class="esu-muted" style="font-size:13px">in Reflections</span><span class="esu-mchip">FROM THE SAHṚDAYA UPĀYA COHORT</span></div><h3 class="esu-rt1" style="font-size:22px;margin:8px 0 4px">' + esc(v.title) + '</h3><p style="font-size:15px;line-height:1.45;margin:0">' + esc(excerpt) + '</p></div>' +
+      '<p class="esu-muted" style="font-size:13px;margin:12px 0">The cohort’s feedback and your earlier versions stay here. You can take the post down from Sādhana School at any time.</p>' + rfFlash() +
+      '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="rf-post-confirm"' + (r.busy ? ' disabled' : '') + '>' + (r.busy === 'post' ? 'Posting…' : 'Post to Sādhana School') + '</button><button type="button" class="esu-btn out" data-act="rf-post-close">Not yet</button></div></div></div>';
+  }
+  function reflHtml() {
+    var r = state.rf, m = r.meta ? rfMonth(r.meta.month) : 'this month', mineNow = (r.list || []).filter(function (x) { return x.mine && r.meta && x.month === r.meta.month; })[0];
+    if (state.error && !r.list) return '<h1 class="esu-h1">Reflections</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
+    return '<div class="esu-eye">Sahṛdaya Upāya · The cohort’s reflections</div><div class="esu-head"><div><h1 class="esu-h1">Reflections</h1><div class="esu-sub">Write, share it with the cohort, revise from their feedback, then post it to Sādhana School.</div></div>' +
+      (mineNow ? '<button type="button" class="esu-btn pri" data-act="rf-open" data-id="' + esc(mineNow.id) + '">Open your ' + esc(m) + ' reflection</button>' : '<button type="button" class="esu-btn pri" data-act="rf-new">Write ' + esc(m) + '’s reflection</button>') + '</div>' +
+      rfSteps() + (r.list === null && r.err ? rfFlash() : '') + '<div class="esu-rcols">' + rfList() + (r.mode === 'edit' ? rfEditor() : rfReader()) + '</div>' + rfPostModal();
+  }
+  function rfClick(a, t) {
+    var r = state.rf;
+    if (a === 'rf-filter') { r.filter = t.dataset.f; render(); return true; }
+    if (a === 'rf-new') { r.detail = null; r.id = ''; r.mode = 'edit'; r.form = { title: '', body: '' }; r.err = ''; r.ticked = {}; render(); return true; }
+    if (a === 'rf-open') { r.mode = 'read'; r.err = ''; r.replyTo = ''; loadRefl(t.dataset.id); return true; }
+    if (a === 'rf-ver') { r.vn = Number(t.dataset.n); render(); return true; }
+    if (a === 'rf-cancel') { r.mode = 'read'; r.err = ''; render(); return true; }
+    if (a === 'rf-edit') { var v = r.detail.versions[r.detail.versions.length - 1]; r.form = { title: v.title, body: v.body }; r.mode = 'edit'; r.ticked = {}; render(); return true; }
+    if (a === 'rf-revise') { rfAct('revise').then(function () { var d = state.rf.detail; if (d) { var v2 = d.versions[d.versions.length - 1]; state.rf.form = { title: v2.title, body: v2.body }; state.rf.mode = 'edit'; state.rf.ticked = {}; render(); } }); return true; }
+    if (a === 'rf-save' || a === 'rf-share') {
+      var f = r.form, share = a === 'rf-share', n = r.detail && r.detail.workingN ? r.detail.workingN : 1;
+      rfAct('save', { title: f.title, body: f.body }).then(function (d) {
+        if (!d || !d.ok) return;
+        var go = share ? rfAct('share') : Promise.resolve(d);
+        return go.then(function (d2) {
+          if (!d2 || !d2.ok) return;
+          var ids = Object.keys(state.rf.ticked).filter(function (k) { return state.rf.ticked[k]; });
+          return (n > 1 ? rfAct('address', { comments: ids, n: n }) : Promise.resolve()).then(function () { if (!state.rf.err) { state.rf.mode = 'read'; render(); } });
+        });
+      });
+      return true;
+    }
+    if (a === 'rf-discard') { if (window.confirm('Delete this draft?')) rfAct('discard').then(function () { state.rf.mode = 'read'; render(); }); return true; }
+    if (a === 'rf-kind') { r.ckind = t.dataset.k; render(); return true; }
+    if (a === 'rf-comment') { rfAct('comment', { kind: r.ckind, body: r.ctext }).then(function (d) { if (d && d.ok && !state.rf.err) { state.rf.ctext = ''; render(); } }); return true; }
+    if (a === 'rf-replyto') { r.replyTo = r.replyTo === t.dataset.id ? '' : t.dataset.id; r.reply = ''; render(); var inp = root.querySelector('#esu-rr'); if (inp) inp.focus(); return true; }
+    if (a === 'rf-reply-send') { rfAct('comment', { parentId: r.replyTo, body: r.reply }).then(function (d) { if (d && d.ok && !state.rf.err) { state.rf.reply = ''; state.rf.replyTo = ''; render(); } }); return true; }
+    if (a === 'rf-post-open') { r.post = true; r.err = ''; render(); return true; }
+    if (a === 'rf-post-close') { r.post = false; r.err = ''; render(); return true; }
+    if (a === 'rf-post-confirm') { rfAct('post').then(function () { if (!state.rf.err) { state.rf.post = false; render(); } }); return true; }
+    if (a === 'rf-takedown') { if (window.confirm('Take this reflection down from Sādhana School? It stays here, with the cohort’s feedback.')) rfAct('takedown'); return true; }
+    return false;
+  }
+
   // The page area Circle draws a space into (same lookup as the Schedule and This week pages)
   function pageContainer() {
     var all = document.querySelectorAll('div');
@@ -573,7 +713,7 @@
   }
 
   // Escape closes a popup (the key listener is on the document: the page re-draws itself, so focus can sit outside it)
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root && document.body.contains(root) && (state.books || state.modal)) { state.books = false; state.modal = null; render(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root && document.body.contains(root) && (state.books || state.modal || state.rf.post)) { state.books = false; state.modal = null; state.rf.post = false; render(); } });
 
   var started = false;
   function start() {
@@ -585,10 +725,11 @@
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
-      mount(); render(); return load();
+      mount(); render(); return isRefl() ? startRefl() : load();
     }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
       .then(function () { mount(); render(); });
   }
+  function startRefl() { var m = /[?&]post=(\d+)/.exec(location.search); return loadRefl(m ? m[1] : '').then(function () { if (m && state.rf.detail && state.rf.detail.mine && state.rf.detail.status === 'shared') { state.rf.post = true; render(); } }); }
   start();
   // Circle is a single-page app: draw when someone navigates here, give Circle's own page back when they leave
   var timer = null;
@@ -597,7 +738,7 @@
     timer = setTimeout(function () {
       timer = null;
       if (!PAGE.test(location.pathname)) { unmount(); return; }
-      if (!started) start(); else mount();
+      if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root) render(); }
     }, 250);
   }).observe(document.body, { childList: true, subtree: true });
   window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) unmount(); });

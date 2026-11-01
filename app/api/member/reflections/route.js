@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 // Reflections are the cohort's: only Sahṛdaya Upāya mentees and Circle admins (Jacob) get in (menteeFromBearer).
 // Where final reflections are posted: the Reflections space of Sādhana School (Kula Commentary). data/school-hub.json settings, else data/mentee.json
 const reflectionsSpace = () => hubSettings().reflections_space_id || config.reflections_space_id || null;
-const last = new Map(); // email → time of the last write, so a double click cannot post twice
+const last = new Map(); // email + action → time of that write, so a double click cannot post twice (Share's save → share chain still goes through)
 const KNOWN = /^(Write|Keep|Choose|Press|Only|Couldn|This |Share |Unknown|That )|find that/;
 
 async function meta(today) {
@@ -43,8 +43,9 @@ export async function POST(req) {
   if (!reflectionsAvailable()) return reply(req, { error: 'The reflections aren’t connected yet.' }, 503);
   const b = await req.json().catch(() => ({})), today = cleanToday(b.today), who = { email: me.email, name: me.firstName };
   const writes = b.action !== 'read';
-  if (writes && Date.now() - (last.get(me.email) || 0) < 1500) return reply(req, { error: 'One moment, then try again.' }, 429);
-  if (writes) last.set(me.email, Date.now());
+  const lastKey = `${me.email}:${b.action}`;
+  if (writes && Date.now() - (last.get(lastKey) || 0) < 1500) return reply(req, { error: 'One moment, then try again.' }, 429);
+  if (writes) last.set(lastKey, Date.now());
   try {
     let id = b.id ? String(b.id) : '';
     switch (b.action) {

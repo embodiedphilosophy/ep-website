@@ -7,6 +7,7 @@ import AddTask from './AddTask';
 import { teamHours, clockAvailable } from '@/lib/ops/hours';
 import { HoursDecide } from './hours/HoursActions';
 import { waitingOnYou } from '@/lib/ops/waiting';
+import { oneToOnes } from '@/lib/ops/onetoones';
 import { todayET } from '@/lib/events';
 import { onboardingState } from '@/lib/teach';
 import { upcomingSocial } from '@/lib/social';
@@ -52,6 +53,7 @@ export default async function Home({ searchParams }) {
   const needsYou = [...b.pastDue, ...b.thisWeek, ...blocked];
   const later = b.upcoming.filter(t => t.due <= addDays(todayET(), 35) && !blocked.includes(t)).length;
   const cal = await loadCalendar().catch(() => []);
+  const o2o = triageOn ? await oneToOnes({ days: 21 }).catch(() => ({ configured: false, items: [] })) : { configured: false, items: [] };
   const groups = groupByEvent(needsYou, cal);
 
   const roleNames = {};
@@ -163,6 +165,15 @@ export default async function Home({ searchParams }) {
             </li>
           ))}</ul>
           <p className="ops-more"><a href="/ops/hours">All hours →</a></p>
+        </section></div>)}
+        {triageOn && o2o.configured && (<div className="ops-week stacked" style={{ marginBottom: 28 }}><section>
+          <h2>One-to-ones <span>{o2o.items.length}</span></h2>
+          {o2o.items.length === 0 ? <p className="ops-empty">Nothing booked in the next three weeks.</p> : (<ul className="ops-o2o">{o2o.items.slice(0, 4).map(x => (
+            <li key={x.uuid} className={x.summary.length ? '' : 'none'}>
+              <div className="h"><b>{x.name || x.email}</b><span>{new Date(x.start).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span></div>
+              <p>{x.summary.length ? (x.summary[0].a.length > 140 ? `${x.summary[0].a.slice(0, 140)}…` : x.summary[0].a) : 'No summary yet'}</p>
+            </li>))}</ul>)}
+          <p className="ops-more"><a href="/ops/one-to-ones">All one-to-ones →</a></p>
         </section></div>)}
         <Meetings programming={programming} team={meetings} director={user.director} stacked />
         {isStaff(user) && viewing === user && (() => {

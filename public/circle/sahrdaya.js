@@ -248,7 +248,7 @@
     var a = w.home.articulation, r = a.rotation;
     var eye = 'Articulation' + (r ? ' · Rotation ' + r.n + ' · ' + r.weeksLeft + (r.weeksLeft === 1 ? ' week' : ' weeks') + ' left' : '');
     var dots = ''; for (var i = 0; i < a.target; i++) dots += '<span class="esu-dot' + (i < a.sessions ? ' on' : '') + '"></span>';
-    return '<section class="esu-card" data-g="ever"><div class="esu-eye">' + esc(eye) + '</div><h2 class="esu-h2">Log a Session with your Articulation Buddy</h2>' +
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">' + esc(eye) + '</div><h2 class="esu-h2">Articulation Practice</h2>' +
       '<p class="esu-muted" style="font-size:13.5px">Choose a concept or an idea from what you’ve learned in Sādhana School and demonstrate your understanding by explaining the ideas and refining if your buddy doesn’t quite follow.</p>' +
       '<div class="esu-dots" aria-hidden="true">' + dots + '<span class="esu-muted" style="margin-left:6px;font-size:13.5px">' + Math.min(a.sessions, a.target) + ' of ' + a.target + ' this rotation · ' + a.hours + ' of ' + a.hoursTarget + ' hrs for the year</span></div>' +
       '<div class="esu-btm"><button type="button" class="esu-btn pri" data-act="open-articulation">Log an articulation session</button></div></section>';
@@ -505,6 +505,7 @@
     if (im && (im.sat.slice(0, 7) === w.today.slice(0, 7) || im.happening)) rows += dotRow('Immersion', '', esc(im.n + ' · ' + im.title), esc(wd(im.sat) + ' – ' + dmy(im.sun) + ' · ' + (im.happening ? 'this weekend' : im.daysTo === 1 ? 'tomorrow' : 'in ' + im.daysTo + ' days')));
     var bk = h.books && h.books.current;
     if (bk && bk.required.length) rows += dotRow('Read', '', esc(bk.required[0].title), esc((bk.required[0].author ? bk.required[0].author + ' · ' : '') + 'required' + (bk.suggested.length ? '. Suggested: ' + bk.suggested[0].title + (bk.suggested[0].author ? ', ' + bk.suggested[0].author : '') : '')), 'all-books');
+    var cy = h.books && h.books.carry; if (cy && cy.required.length) rows += dotRow('Also reading', '', esc(cy.required[0].title), esc((cy.required[0].author ? cy.required[0].author + ' · ' : '') + 'still on your list until ' + dm(cy.until)), 'all-books');
     var rf = h.reflection && h.reflection.mine, due = m.reflectionDue || lastMonday(w.today.slice(0, 7));
     rows += dotRow('Reflection', rf && rf.status === 'posted' ? OK : rf ? A : G, 'Due ' + esc(dmy(due)), rf ? (rf.status === 'posted' ? 'Posted to Sādhana School' : rf.status === 'shared' ? 'Shared with the cohort, ready to post' : 'Draft saved') : 'Not started yet');
     var p = h.partner, a = h.articulation;

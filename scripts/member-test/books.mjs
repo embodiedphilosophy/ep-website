@@ -21,6 +21,12 @@ assert.equal(b.current.month, 2, 'the month moves on by itself'); assert.equal(b
 assert.deepEqual([b.current.required.map(x => x.title), b.current.suggested.map(x => x.title)], [['The Truth of Yoga'], ['Yoga Body']], 'suggested rows join the month of their number');
 assert.equal(b.current.required[0].audio, 'Audible'); assert.equal(b.next.month, 3);
 assert.deepEqual(b.all.map(m => [m.month, m.now, m.past]), [[1, false, true], [2, true, false], [3, false, false]]);
+// the last month's reading stays listed until mid-month (the 15th of the new month, or an `until` date)
+b = B.booksFrom(rows, '2026-11-05'); assert.equal(b.carry.required[0].title, 'Education’s End'); assert.equal(b.carry.until, '2026-11-15');
+assert.equal(B.booksFrom(rows, '2026-11-15').carry.month, 1, 'still on the 15th'); assert.equal(B.booksFrom(rows, '2026-11-16').carry, null, 'gone on the 16th');
+assert.equal(B.booksFrom(rows, '2026-10-25').carry, null, 'the first month has nothing before it');
+b = B.booksFrom(rows.map(r => (r.month === '1' ? { ...r, until: '2026-11-30' } : r)), '2026-11-20'); assert.equal(b.carry.until, '2026-11-30', 'an until date on the old month wins');
+assert.equal(B.booksFrom([{ month: '1', starts: '2026-10-01', title: 'A', kind: 'required' }, { month: '2', starts: '2026-11-20', title: 'B', kind: 'required' }], '2026-11-25').carry.until, '2026-12-04', 'a month starting after the 15th carries for 14 days');
 b = B.booksFrom(rows, '2027-02-01'); assert.equal(b.current.month, 3, 'after the last start date the last month stays'); assert.equal(b.next, null);
 b = B.booksFrom(rows, '2026-09-01'); assert.equal(b.current, null, 'before the first month nothing is current'); assert.equal(b.next.month, 1);
 assert.equal(B.booksFrom([], '2026-10-21').current, null);

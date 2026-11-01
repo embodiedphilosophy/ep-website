@@ -84,6 +84,7 @@
           .catch(function (e) { if (!state.data) fail(e); else if (state.data.pending) { state.data.pending = false; state.data.unavailable = (state.data.unavailable || []).concat(['sessions']); } });
       });
   }
+  function loadPods() { return call('/api/member/pods').then(function (d) { state.pods = d; render(); }).catch(function () { state.pods = null; }); }
   function act(key, fn) {
     state.busy = key; state.msg = ''; render();
     return fn().then(function (d) { if (d && d.home) { state.data = d; keep(d); } }).catch(function (e) { state.msg = e.message; })
@@ -176,7 +177,7 @@
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
       '.esu-cols>*,.esu-c1>*,.esu-c2>*{order:0}',
-      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=guide]{order:2}[data-g=month]{order:3}[data-g=steps]{order:4}[data-g=one]{order:5}[data-g=review]{order:6}[data-g=lanes]{order:7}[data-g=assign]{order:8}[data-g=partner]{order:9}[data-g=hours]{order:10}[data-g=feedback]{order:11}[data-g=room]{order:12}',
+      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=guide]{order:2}[data-g=month]{order:3}[data-g=steps]{order:4}[data-g=one]{order:5}[data-g=review]{order:6}[data-g=lanes]{order:7}[data-g=assign]{order:8}[data-g=partner]{order:9}[data-g=pods]{order:10}[data-g=hours]{order:11}[data-g=feedback]{order:12}[data-g=room]{order:13}',
       '.esu-ln-d{display:none}.esu-ln-p{display:block}',
       '.esu[data-tab=formation] [data-g=room]{display:none}.esu[data-tab=room] [data-g]:not([data-g=room]){display:none}',
       '.esu-steps{grid-template-columns:minmax(0,1fr)}.esu-grid2{grid-template-columns:minmax(0,1fr)}.esu-h3{font-size:30px}}'
@@ -454,6 +455,19 @@
       '<p class="esu-muted" style="font-size:14px;margin:0 0 12px">The whole year on one page: the monthly rhythm, every project step with its date, and the one-to-one template. And the formation manual, with the Sanskrit sources in full, to read here or download as a PDF.</p>' +
       '<div class="esu-acts">' + ext(API + '/school/mentee-year', 'See your year', 'esu-btn pri') + ext(API + '/school/mentee-year?tab=manual', 'Read the manual', 'esu-btn out') + '</div></section>';
   }
+  // Study pods: who is hosting and how to join (read only here; joining happens on the Study pods tab)
+  function podsCard(w) {
+    var d = state.pods; if (!d || !d.on) return '';
+    var rows = d.pods.map(function (x) {
+      var st = x.started ? x.count + ' in · ' + (x.spots > 0 ? x.spots + ' places left' : 'full') : x.count + ' of ' + d.min + ' to begin · ' + x.needs + ' more needed';
+      var act = x.mine ? (x.roomUrl ? ext(x.roomUrl, 'Join the live room', 'esu-btn pri') : '') + (x.chatUrl ? ' ' + ext(x.chatUrl, 'Pod chat', 'esu-btn out') : '') : x.canJoin ? ext(d.url, 'Join', 'esu-btn out') : '';
+      return '<li style="padding:10px 0;border-top:1px solid #E3D8C6"><div style="font-weight:600">' + esc(x.topic) + (x.mine ? ' <span class="esu-muted" style="font-weight:400">· yours</span>' : '') + '</div><div class="esu-muted" style="font-size:13px">Led by ' + esc(x.leader) + (x.schedule ? ' · ' + esc(x.schedule) : '') + ' · ' + esc(st) + '</div>' + (act ? '<div class="esu-acts" style="margin-top:6px">' + act + '</div>' : '') + '</li>';
+    }).join('');
+    var lead = d.leader === 'approved' ? '<p style="margin:10px 0 0;font-size:14px"><b>You can lead a pod.</b> ' + ext(d.url, 'Start one', 'esu-lnk') + '</p>' : d.leader === 'applied' ? '<p class="esu-muted" style="margin:10px 0 0;font-size:13px">Your request to lead a pod is with the team.</p>' : '<p class="esu-muted" style="margin:10px 0 0;font-size:13px">Would you like to host one? ' + ext(d.url, 'Ask to lead a pod', 'esu-lnk') + '</p>';
+    return '<section class="esu-card" data-g="pods"><div class="esu-hd"><h2 class="esu-h2">Study pods</h2>' + ext(d.url, 'See all', 'esu-lnk') + '</div>' +
+      '<p class="esu-muted" style="font-size:13.5px;margin:0 0 4px">Small student-led groups that study something together. A pod begins at ' + d.min + ' people and meets in a Circle live room.</p>' +
+      (rows ? '<ul style="list-style:none;margin:0;padding:0">' + rows + '</ul>' : '<p class="esu-muted" style="margin:8px 0 0">No pods are open yet.</p>') + lead + '</section>';
+  }
   function monthCard(w) {
     var y = YR(w); if (!y || !y.started || !y.month) return '';
     var m = y.month, h = w.home, rows = '', G = '#B5A88F', A = '#B8801C', OK = '#2E5A4B';
@@ -664,7 +678,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + guideCard(w) + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + guideCard(w) + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + podsCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
   }
 
 
@@ -984,7 +998,7 @@
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
-      mount(); render(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
+      mount(); render(); loadPods(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
     }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
       .then(function () { mount(); render(); });
   }

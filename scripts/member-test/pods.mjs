@@ -1,4 +1,4 @@
-// Study pods against an in-memory Postgres (PGlite) with the real code: leaders, pods, joining, the 5-to-begin and 10-to-fill rules.
+// Study pods against an in-memory Postgres (PGlite) with the real code: leaders, pods, joining, the 4-to-begin and 10-to-fill rules.
 // Run: npm i --no-save @electric-sql/pglite && node --import ./scripts/ce-test/register.mjs scripts/member-test/pods.mjs
 import assert from 'assert/strict';
 import { PGlite } from '@electric-sql/pglite';
@@ -11,7 +11,7 @@ S._setSql((strings, ...vals) => db.sql(strings, ...vals).then(r => r.rows));
 const user = (n, extra = {}) => ({ uid: 'u' + n, email: `s${n}@x.com`, name: 'Student' + n, ...extra });
 
 // Rules
-assert.equal(L.MIN, 5); assert.equal(L.MAX, 10);
+assert.equal(L.MIN, 4); assert.equal(L.MAX, 10);
 assert.ok(L.eligible('ss_season') && L.eligible('ss_year') && L.eligible('mentee') && L.eligible('none', true), 'a season, the full year, mentees and admins');
 assert.ok(!L.eligible('wisdom') && !L.eligible('none') && !L.eligible(undefined), 'not other programmes');
 assert.throws(() => L.cleanPod({ topic: 'hi', description: 'x'.repeat(30) }), /topic/); assert.throws(() => L.cleanPod({ topic: 'Reading the Śiva Sūtras', description: 'short' }), /sentence/);
@@ -31,22 +31,29 @@ await S.apply(user(9), 'Please let me lead one.'); await S.decideLeader('u9', fa
 await S.apply(user(9), 'I would still love to, I have more experience now.'); assert.equal((await S.leaderOf('u9')).status, 'applied', 'a declined student can ask again');
 assert.deepEqual((await S.leaders()).map(l => l.uid), ['u9', 'u1'], 'requests waiting come first');
 
-// A pod: the leader is the first member; it begins at 5 (leader included) and holds 10
+// A pod: the leader is the first member; it begins at 4 (leader included) and holds 10
 const id = await S.createPod(lead, { topic: 'Śiva Sūtras group', description: 'We read one sūtra a week and talk it through.', schedule: 'Thursdays 7pm UK' });
 let { pods, membersBy } = await S.listPods();
 assert.equal(pods[0].status, 'open'); assert.equal(membersBy[id].length, 1);
 await S.createPod(lead, { topic: 'Second pod', description: 'A second group for the same leader.' });
 await assert.rejects(() => S.createPod(lead, { topic: 'Third pod', description: 'One too many for one leader.' }), /up to 2 pods/);
-for (const n of [2, 3, 4]) assert.equal((await S.join(user(n), id)).started, false, `${n} people: not yet`);
+for (const n of [2, 3]) assert.equal((await S.join(user(n), id)).started, false, `${n + 0} joined: not yet`);
 await assert.rejects(() => S.join(user(2), id), /already in this pod/);
-assert.equal((await S.join(user(5), id)).started, true, 'the fifth person begins the pod');
+assert.equal((await S.join(user(4), id)).started, true, 'the fourth person begins the pod');
 ({ pods, membersBy } = await S.listPods());
 const p = pods.find(x => String(x.id) === id); assert.equal(p.status, 'active'); assert.ok(p.started_at);
-assert.equal((await S.join(user(6), id)).started, false, 'later joiners just join');
-for (const n of [7, 8, 9, 10]) await S.join(user(n), id);
+assert.equal((await S.join(user(5), id)).started, false, 'later joiners just join');
+for (const n of [6, 7, 8, 9, 10]) await S.join(user(n), id);
 ({ membersBy } = await S.listPods()); assert.equal(membersBy[id].length, 10);
 await assert.rejects(() => S.join(user(11), id), /full \(10 people\)/);
 await assert.rejects(() => S.join(user(11), '9999'), /isn’t open/);
+
+// The pod's own live room: the leader (or staff) sets it; only members see it
+await assert.rejects(() => S.setRoomUrl(user(3), id, 'https://room.example/x'), /As the leader/);
+await assert.rejects(() => S.setRoomUrl(lead, id, 'javascript:1'), /full link/);
+await S.setRoomUrl(lead, id, 'https://ss.embodiedphilosophy.com/c/live-rooms/pod-1');
+{ const t = await S.listPods(); const m = L.podsFor(t.pods, t.membersBy, user(3)).find(x => x.id === id), o = L.podsFor(t.pods, t.membersBy, user(20)).find(x => x.id === id), l = L.podsFor(t.pods, t.membersBy, lead).find(x => x.id === id);
+  assert.equal(m.roomUrl, 'https://ss.embodiedphilosophy.com/c/live-rooms/pod-1'); assert.equal(o.roomUrl, '', 'not for outsiders'); assert.equal(l.canSetRoom, true); assert.equal(m.canSetRoom, false); }
 
 // What each person sees: only members get the chat link and the names
 await S.setChatUrl(id, 'https://ss.embodiedphilosophy.com/c/pod-1');

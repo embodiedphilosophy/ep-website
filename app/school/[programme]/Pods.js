@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 
 // Study pods on the Sādhana School dashboard: student-led study groups. Anyone with Sādhana School (a season or the full year) can join one;
-// approved leaders open them; a pod begins at 5 people (the leader included) and holds up to 10. Rules: lib/pods/logic.js.
+// approved leaders open them; a pod begins at 4 people (the leader included) and holds up to 10. Rules: lib/pods/logic.js.
 const post = body => fetch('/api/school/pods', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
 export default function Pods() {
@@ -85,6 +85,19 @@ export default function Pods() {
   );
 }
 
+// The leader pastes the link of the pod's own live room (made in Circle's live rooms) so members can join their calls from here
+function RoomLink({ p, data, act, busy }) {
+  const [v, setV] = useState(p.roomUrl || '');
+  return (
+    <div style={{ marginTop: 12 }}>
+      <label className="sch-meta" htmlFor={`room-${p.id}`}>{p.roomUrl ? 'Your pod’s live room' : 'Where will your pod meet?'}</label>
+      <p className="sch-meta" style={{ margin: '2px 0 6px' }}>In Circle, {data.liveRoomsUrl ? <a href={data.liveRoomsUrl} target="_top">open the live rooms</a> : 'open the live rooms'} and start a room for your pod, then paste its link here. Members of the pod will see a button to join it.</p>
+      <div className="sch-composer-row"><input id={`room-${p.id}`} value={v} onChange={e => setV(e.target.value)} placeholder="https://…" />
+        <button type="button" className="sch-btn ghost" disabled={!!busy} onClick={() => act('room' + p.id, { action: 'room', id: p.id, url: v }, v ? 'Saved: your members can now join the live room.' : 'The live room link was removed.')}>Save</button></div>
+    </div>
+  );
+}
+
 function PodCard({ p, data, busy, act }) {
   const progress = p.started ? `${p.count} of ${data.max} places taken · this pod has begun` : `${p.count} of ${data.min} to begin · ${p.needs} more needed`;
   return (
@@ -96,8 +109,10 @@ function PodCard({ p, data, busy, act }) {
         <p className="sch-meta" aria-label="Progress">{progress}</p>
         {p.mine && p.names.length > 0 && <p className="sch-meta">In this pod: {p.names.join(', ')}</p>}
         {p.mine && p.started && (p.chatUrl
-          ? <p style={{ margin: '10px 0 0' }}><a className="sch-btn" href={p.chatUrl} target="_top">Open the pod chat</a>{data.liveRoomsUrl && <> <a className="sch-btn ghost" href={data.liveRoomsUrl} target="_top">Circle live rooms</a></>}</p>
+          ? <p style={{ margin: '10px 0 0' }}><a className="sch-btn" href={p.chatUrl} target="_top">Open the pod chat</a></p>
           : <p className="sch-meta" style={{ marginTop: 8 }}>Your pod has begun. Its group chat is being set up and its link will appear here soon.</p>)}
+        {p.mine && (p.roomUrl || data.liveRoomsUrl) && <p style={{ margin: '10px 0 0' }}><a className="sch-btn ghost" href={p.roomUrl || data.liveRoomsUrl} target="_top">{p.roomUrl ? 'Join the pod’s live room' : 'Circle live rooms'}</a></p>}
+        {p.canSetRoom && <RoomLink p={p} data={data} act={act} busy={busy} />}
         {p.mine && !p.started && <p className="sch-meta" style={{ marginTop: 8 }}>You are in. The group chat opens as soon as {p.needs} more {p.needs === 1 ? 'person joins' : 'people join'}.</p>}
       </div>
       <div>

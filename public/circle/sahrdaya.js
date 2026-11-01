@@ -95,7 +95,7 @@
     if (!document.querySelector('link[href*="Cormorant+Garamond"]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap'; document.head.appendChild(l); }
     var s = document.createElement('style'); s.id = 'esu-css';
     s.textContent = [
-      '.esu{font-family:"IBM Plex Sans",system-ui,sans-serif;color:#1E1A14;max-width:980px;margin:0 auto;padding:44px 40px 72px;line-height:1.5;font-size:15px;background:#F1E9DC}',
+      '.esu{font-family:"IBM Plex Sans",system-ui,sans-serif;color:#1E1A14;max-width:1120px;margin:0 auto;padding:28px 24px 64px;line-height:1.5;font-size:15px;background:#F1E9DC}',
       '.esu *{box-sizing:border-box}.esu a{color:#A5432A}.esu a.esu-btn{color:inherit}.esu :focus-visible{outline:2px solid #A5432A;outline-offset:2px}',
       '.esu-eye{font:500 11px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:#A5432A}',
       '.esu-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 28px;flex-wrap:wrap;margin:6px 0 20px}',
@@ -951,8 +951,8 @@
     return null;
   }
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
-  // The Sahṛdaya Upāya Manual (Google Doc), linked at the top of the mentee page
-  var MANUAL = 'https://docs.google.com/document/d/1u9O7F59dnj0I6mo0u0wIZ_SVjfbIMRZpcIsVzpnYuOw/edit?usp=sharing';
+  // The Sahṛdaya Upāya formation manual (the manual tab on the site), linked at the top of the mentee page
+  var MANUAL = 'https://www.embodiedphilosophy.com/school/mentee-year?tab=manual';
   function mount() {
     if (!PAGE.test(location.pathname) || state.ok !== true) return;
     if (root && document.body.contains(root)) return;

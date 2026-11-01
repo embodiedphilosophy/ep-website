@@ -880,9 +880,10 @@
       bar = '<div class="esu-obar"><div class="esu-acts">' + (hasDraft ? '<button type="button" class="esu-btn pri" data-act="rf-edit">Continue your draft</button>' : d.status !== 'draft' ? '<button type="button" class="esu-btn out" data-act="rf-revise">Revise</button>' : '') +
         (d.status === 'shared' ? '<button type="button" class="esu-btn pri" data-act="rf-post-open">Post to Sādhana School</button>' : '') +
         (d.status === 'posted' ? '<span class="esu-ok">Posted to Sādhana School · ' + esc(fmtTime(d.postedAt, { day: 'numeric', month: 'short' })) + ' ✓</span>' + (safeUrl(d.postedUrl) ? ext(d.postedUrl, 'View the post', 'esu-btn out') : '') + '<button type="button" class="esu-lnk" data-act="rf-takedown">Take it down</button>' : '') +
-        (d.status === 'draft' ? '<button type="button" class="esu-btn out" data-act="rf-discard">Delete this draft</button>' : '') + '</div>' +
+        (d.status === 'draft' ? '<button type="button" class="esu-btn out" data-act="rf-discard">Delete this draft</button>' : '<button type="button" class="esu-lnk" data-act="rf-delete">Delete</button>') + '</div>' +
         '<p class="esu-muted" style="font-size:13px;margin-top:8px">' + (d.status === 'shared' ? 'Posts version ' + d.versions.filter(function (x) { return x.shared; }).length + ' to the Reflections in Sādhana School. The cohort’s comments stay here.' : d.status === 'posted' ? 'The cohort’s feedback and your earlier versions stay here. You can take the post down from Sādhana School at any time.' : 'Only you can see this draft until you share it with the cohort.') + '</p></div>';
     }
+    else if (state.admin) bar = '<div class="esu-obar"><div class="esu-acts"><button type="button" class="esu-lnk" data-act="rf-delete">Delete this reflection</button></div><p class="esu-muted" style="font-size:13px;margin-top:8px">Only you see this, as an admin.</p></div>';
     var top = d.comments.filter(function (c) { return !c.parent; });
     var fb = d.status === 'draft' ? '' : '<div class="esu-fb"><div class="esu-hd"><h3 class="esu-h2" style="font-size:22px">Feedback from the cohort</h3><span class="esu-muted" style="font-size:13px">' + top.length + (top.length === 1 ? ' comment' : ' comments') + ' · only Sahṛdaya Upāya mentees and Jacob see this</span></div>' +
       (top.length ? top.map(function (c) { return rfComment(c, d, d.comments); }).join('') : '<p class="esu-muted">' + (d.mine ? 'No feedback yet.' : 'Be the first to offer feedback.') + '</p>');
@@ -954,6 +955,7 @@
     if (a === 'rf-post-open') { r.post = true; r.err = ''; render(); return true; }
     if (a === 'rf-post-close') { r.post = false; r.err = ''; render(); return true; }
     if (a === 'rf-post-confirm') { rfAct('post').then(function () { if (!state.rf.err) { state.rf.post = false; render(); } }); return true; }
+    if (a === 'rf-delete') { var dd = r.detail; if (window.confirm(dd && dd.status === 'posted' ? 'Delete this reflection for good? It also comes down from Sādhana School, and the cohort’s feedback goes with it.' : 'Delete this reflection for good? The cohort’s feedback on it goes with it.')) rfAct('delete').then(function () { state.rf.mode = 'read'; render(); }); return true; }
     if (a === 'rf-takedown') { if (window.confirm('Take this reflection down from Sādhana School? It stays here, with the cohort’s feedback.')) rfAct('takedown'); return true; }
     return false;
   }

@@ -53,7 +53,7 @@ export default function Pods() {
             <label htmlFor="pod-sched">Rough schedule (optional)</label>
             <input id="pod-sched" value={f.schedule} maxLength={200} onChange={set('schedule')} placeholder="e.g. Thursdays, 7pm UK, every week" />
             <div className="sch-composer-row">
-              <button type="button" className="sch-btn" disabled={busy === 'create'} onClick={async () => { if (await act('create', { action: 'create', topic: f.topic, description: f.description, schedule: f.schedule }, 'Your pod is open. Students can join it now.')) { setForm(null); setF({ note: '', topic: '', description: '', schedule: '' }); } }}>{busy === 'create' ? 'Opening…' : 'Open the pod'}</button>
+              <button type="button" className="sch-btn" disabled={busy === 'create'} onClick={async () => { if (await act('create', { action: 'create', topic: f.topic, description: f.description, schedule: f.schedule }, 'Your pod is open. Next, make its live room (the steps are on your pod). Students can join it now.')) { setForm(null); setF({ note: '', topic: '', description: '', schedule: '' }); } }}>{busy === 'create' ? 'Opening…' : 'Open the pod'}</button>
               <button type="button" className="sch-btn ghost" onClick={() => setForm(null)}>Cancel</button>
             </div>
           </>) : <div><button type="button" className="sch-btn" onClick={() => { setForm('create'); setMsg(null); }}>Start a study pod</button></div>}
@@ -85,15 +85,24 @@ export default function Pods() {
   );
 }
 
-// The leader pastes the link of the pod's own live room (made in Circle's live rooms) so members can join their calls from here
+// The leader makes a room for the pod in Circle's live rooms and pastes its link here, so members can join the calls from their pod
 function RoomLink({ p, data, act, busy }) {
   const [v, setV] = useState(p.roomUrl || '');
   return (
-    <div style={{ marginTop: 12 }}>
-      <label className="sch-meta" htmlFor={`room-${p.id}`}>{p.roomUrl ? 'Your pod’s live room' : 'Where will your pod meet?'}</label>
-      <p className="sch-meta" style={{ margin: '2px 0 6px' }}>In Circle, {data.liveRoomsUrl ? <a href={data.liveRoomsUrl} target="_top">open the live rooms</a> : 'open the live rooms'} and start a room for your pod, then paste its link here. Members of the pod will see a button to join it.</p>
-      <div className="sch-composer-row"><input id={`room-${p.id}`} value={v} onChange={e => setV(e.target.value)} placeholder="https://…" />
-        <button type="button" className="sch-btn ghost" disabled={!!busy} onClick={() => act('room' + p.id, { action: 'room', id: p.id, url: v }, v ? 'Saved: your members can now join the live room.' : 'The live room link was removed.')}>Save</button></div>
+    <div style={{ marginTop: 14 }}>
+      <label className="sch-meta" htmlFor={`room-${p.id}`}><strong>{p.roomUrl ? 'Your pod’s live room' : 'Where will your pod meet?'}</strong></label>
+      <details open={!p.roomUrl} style={{ margin: '6px 0 8px' }}>
+        <summary className="sch-meta" style={{ cursor: 'pointer' }}>How to make your pod’s room in Circle</summary>
+        <ol className="sch-meta" style={{ margin: '6px 0 0', paddingLeft: 20, display: 'grid', gap: 4, maxWidth: '62ch' }}>
+          <li>{data.liveRoomsUrl ? <>Open <a href={data.liveRoomsUrl} target="_top">Circle’s live rooms</a>.</> : 'In Circle, open the live rooms (look for “Live” or “Live rooms” in the sidebar, or the + button).'}</li>
+          <li>Start a new live room and name it after your pod, for example “{p.topic}”.</li>
+          <li>Open the room’s share options and copy its link. Make sure the members of your pod can open it.</li>
+          <li>Paste that link in the box below and press Save. Your members then see a “Join the pod’s live room” button on their pod.</li>
+          <li>Tell your members the day and time in the pod chat. Anyone can use the same room each week.</li>
+        </ol>
+      </details>
+      <div className="sch-composer-row"><input id={`room-${p.id}`} value={v} onChange={e => setV(e.target.value)} placeholder="Paste the live room link here (https://…)" />
+        <button type="button" className="sch-btn ghost" disabled={!!busy} onClick={() => act('room' + p.id, { action: 'room', id: p.id, url: v }, v ? 'Saved. Your members can now join the live room.' : 'The live room link was removed.')}>Save</button></div>
     </div>
   );
 }

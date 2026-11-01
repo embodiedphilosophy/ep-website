@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation';
 import { currentMember, missingReason } from '@/lib/school/session';
 import { headlessConfigured, joinedSpaces, eventList, spacePosts, latestPosts, myMemberId } from '@/lib/school/circle';
 import { menteePostIds } from '@/lib/school/menteeposts';
+import { peopleIds } from '@/lib/school/people';
 import { PROGRAMMES, findSeason, isWired, nyDay } from '@/lib/school/config';
 import { hubItems, hubSettings, hubSeasons } from '@/lib/school/hubconfig';
 import { readingPlan, sessionDatesOf, READINGS_TAB } from '@/lib/school/readings';
@@ -58,22 +59,25 @@ export default async function Page({ params, searchParams }) {
 
   // The latest posts of the spaces behind the announcement line, Kula and Resources: one read each, and one that fails only blanks its card
   const ids = wantedSpaces(items, seasons, member, today);
-  const [lists, seen, rows, menteePosts, memberId] = await Promise.all([
+  const reflSpace = settings.reflections_space_id;
+  const [lists, seen, rows, menteePosts, memberId, people, reflectionPosts] = await Promise.all([
     Promise.all(ids.map(id => latestPosts(me.email, id).catch(() => undefined))),
     seenOf(me.email),
     readTab(READINGS_TAB).catch(() => []),
     menteePostIds(),
     myMemberId(me.email).catch(() => null),
+    peopleIds(),
+    reflSpace && member.has(String(reflSpace)) ? spacePosts(me.email, reflSpace).catch(() => []) : [],
   ]);
   const byId = {}; ids.forEach((id, i) => { if (lists[i]) byId[id] = lists[i]; });
   const readings = readingPlan(rows, season.slug, sessionDatesOf(buildItems(season, events, posts, now)));
-  const page = buildSeasonPage({ season, seasons, items, settings, member, spaceUrls, events, posts, spacePosts: byId, seen, readings, menteePosts, memberId, weekends: (mentee.immersions || []).map(i => ({ day: i.sat, title: i.title })), today, now });
+  const page = buildSeasonPage({ season, seasons, items, settings, member, spaceUrls, events, posts, spacePosts: byId, seen, readings, menteePosts, ids: people, reflectionPosts, memberId, weekends: (mentee.immersions || []).map(i => ({ day: i.sat, title: i.title })), today, now });
 
   const extra = podsEnabled() ? ['pods'] : [];
   const view = seasonTabKey(tab, extra);
   return (
     <Shell>
-      <SeasonView programme={programme} slug={slug} page={page} readings={readings} initialTab={view} extraTabs={extra} openComposer={write === '1'} seasonId={season.hub_space_id} />
+      <SeasonView programme={programme} slug={slug} page={page} readings={readings} initialTab={view} extraTabs={extra} openComposer={write === '1'} seasonId={page.reflections.seenKey} />
     </Shell>
   );
 }

@@ -184,3 +184,4 @@ body:has(.sch-root) > :not(main){display:none !important}
 .ss-replybox>div{display:flex;gap:10px}.ss-replybox input{flex:1;min-width:0;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:6px;background:#fff;font:16px var(--font-sans),sans-serif}.ss-replybox p{margin:0 0 6px}
 .ss-about{position:sticky;top:12px}.ss-about p{font-size:14.5px;line-height:1.5}
 @media (max-width:700px){.ss-rcard{padding:16px}.ss-rcard h3{font-size:23px}.ss-replybox>div{flex-direction:column}.ss-replybox .sch-btn{width:100%}.ss-cm.nested{margin-left:20px}.ss-about{position:static}}
+.ss-mchip.teacher{background:#D2A65A;color:#20302A}

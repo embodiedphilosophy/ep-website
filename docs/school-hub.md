@@ -22,7 +22,7 @@ Plan label (header): in all four seasons = Full year; in some = "Fall term" or "
 | `requires_plan` | `full-year` keeps a row locked for term students who may be in its space. Not used by any row now: the Saturday Open Sessions belong to every season's weeks |
 | `cta_label`, `cta_url`, `preview` | kept for locked cards; the season page does not use them yet |
 
-To add the Song of Sādhana PDF: put its address in `url` of that row (or upload it in Ops → Reading assignments as a "What you'll need" reading called "Song of Sādhana" and the Sourcebook works the same way).
+To add the Song of Sādhana PDF: put its address in `url` of that row (or upload it in Ops → Reading assignments as a "What you'll need" reading called "Song of Sādhana" and the Sourcebook works the same way). Done: it is set to the Circle post in Practice Resources (the PDF is attached there), so students open it in Circle.
 
 ## New-item counts
 Circle shows no unread dots once a space is hidden from the sidebar, and its API gives no per-member counts, so the page keeps its own: when a member opens a space from the page (`POST /api/school/seen`), `school_seen (email, space_id, at)` in Neon records it. New = posts in that space newer than that time (a space never opened counts the last 14 days). The Reflections tab uses the key `refl-<Reflections space id>`, written when the tab is opened. Counts show on the Reflections and Kula tabs and on the Kula card. Without `DATABASE_URL` no counts are shown. Only posts are counted, not replies.

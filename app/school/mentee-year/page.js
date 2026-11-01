@@ -22,7 +22,7 @@ const Back = () => <a className="sch-btn ghost" href={CIRCLE} target="_top">← 
 const PDF = '/school/sahrdaya-upaya-formation-manual.pdf';
 const upd = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 const Download = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 8 }}><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16" /></svg>;
-const Tabs = ({ tab }) => <nav className="sch-tabs" aria-label="Page sections"><a href="?tab=manual" aria-current={tab === 'manual' ? 'page' : undefined}>The formation manual</a><a href="?tab=year" aria-current={tab === 'year' ? 'page' : undefined}>The mentee year</a></nav>;
+const Tabs = ({ tab }) => <nav className="my-tabs" aria-label="Page sections"><a href="?tab=manual" aria-current={tab === 'manual' ? 'page' : undefined}>The formation manual</a><a href="?tab=year" aria-current={tab === 'year' ? 'page' : undefined}>The mentee year</a></nav>;
 
 export default async function MenteeYearPage({ searchParams }) {
   const sp = await searchParams, tab = sp?.tab === 'manual' ? 'manual' : 'year';

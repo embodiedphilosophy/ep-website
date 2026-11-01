@@ -11,7 +11,7 @@
   var isRefl = function () { return /^\/c\/reflections\/?$/.test(location.pathname); };
   var isMentor = function () { return /^\/c\/mentorship\/?$/.test(location.pathname) && /[?&]view=mentor/.test(location.search) && state.admin === true; };
   var SKEY = 'ep_su_session';
-  var state = { admin: null, mt: { data: null, err: '', filter: 'all', open: '', busy: '', msg: '' }, session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, room: 'chat', rec: {}, modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '', rf: { list: null, meta: null, detail: null, id: '', filter: 'cohort', mode: 'read', form: { title: '', body: '' }, vn: 0, ckind: 'landed', ctext: '', replyTo: '', reply: '', ticked: {}, post: false, busy: '', err: '' } };
+  var state = { admin: null, mt: { data: null, err: '', filter: 'all', open: '', busy: '', msg: '' }, session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, room: 'chat', rec: {}, view: '', sFilter: 'all', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '', rf: { list: null, meta: null, detail: null, id: '', filter: 'cohort', mode: 'read', form: { title: '', body: '' }, vn: 0, ckind: 'landed', ctext: '', replyTo: '', reply: '', ticked: {}, post: false, busy: '', err: '' } };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -148,6 +148,15 @@
       '.esu-mrow .ey{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#D9B36A}.esu-hero-t{margin:4px 0 0;font:600 27px/1.1 "Cormorant Garamond",Georgia,serif;color:#FBF6EE}.esu-hero-d{margin:4px 0 0;max-width:62ch;font-size:14px;color:#C9D1CB}',
       '.esu-mrow.hero .bt{display:flex;flex-direction:column;gap:6px;align-items:flex-end}.esu-mrow .bt:empty{display:none}',
       '.esu-rw-t{display:block;margin:0;font-weight:600;font-size:15.5px}.esu-rw-d{margin:2px 0 0;color:#5A5346;font-size:14px}',
+      '.esu-tiles3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.esu-reclist{display:grid;gap:12px;margin-top:10px}.esu-rec{border:1px solid #E3D8C6;border-radius:8px;background:#fff;overflow:hidden;display:flex;flex-direction:column;min-width:0}',
+      '.esu-rec .th{position:relative;height:92px;background:#2B4238;display:flex;align-items:center;justify-content:center}.esu-rec .th.wait{background:#EADDC6}.esu-rec .th .du{position:absolute;right:8px;bottom:6px;font:500 11px "IBM Plex Mono",monospace;color:#F4EDE1}.esu-rec .th .oi{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#5A5346}',
+      '.esu-rec .bd{padding:12px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}.esu-tlink.on-dark{color:#D9B36A;font-size:inherit;display:inline;font-weight:500}',
+      '.esu-seg{display:flex;gap:4px;background:#E3D8C6;border-radius:99px;padding:4px;margin:0 0 18px;max-width:560px;overflow-x:auto}.esu-seg a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:99px;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;text-decoration:none;white-space:nowrap}.esu-seg a[aria-current=page]{background:#20302A;color:#fff}.esu-badge{background:#A5432A;color:#fff;border-radius:99px;padding:0 7px;font:500 11px/18px "IBM Plex Mono",monospace}',
+      '.esu-smon{font:600 21px "Cormorant Garamond",Georgia,serif;margin:22px 0 6px}.esu-smon .none{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#5A5346;margin-left:6px}.esu-slist{list-style:none;margin:0;padding:0;border-top:1px solid #E3D8C6}',
+      '.esu-srow{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:14px 0;border-bottom:1px solid #E3D8C6}.esu-db{width:56px;height:56px;border-radius:8px;background:#F1E9DC;display:flex;flex-direction:column;align-items:center;justify-content:center;font:500 10px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#5A5346}.esu-db b{font:600 24px/1 "Cormorant Garamond",Georgia,serif;color:#1E1A14;letter-spacing:0}',
+      '.esu-stag{font:500 10px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:2px 8px;margin-right:6px;display:inline-block}.esu-stag.pod{background:#E4EEE8;color:#2E5A4B}.esu-stag.pod.mine{background:#2E5A4B;color:#fff}.esu-stag.one{background:#F6EBD8;color:#7A5A2E}.esu-in-ok{font:500 12px "IBM Plex Mono",monospace;color:#2E5A4B}',
+      '.esu-sblock{list-style:none;background:#22352D;color:#F4EDE1;border-radius:10px;padding:16px 18px;margin:12px 0;border-bottom:0}.esu-sbh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}.esu-sbh .ey{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#D9B36A}.esu-sess{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 0;border-top:1px solid rgba(244,237,225,.18)}.esu-sess .esu-db{background:rgba(244,237,225,.1);color:#C9D1CB}.esu-sess .esu-db b{color:#FBF6EE}',
+      '.esu-sfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid #E3D8C6}',
       '.esu-bring{background:#F1E9DC;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:14px}.esu-bring ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px}',
       '.esu-tiles{display:grid;gap:12px;margin-top:12px}.esu-ptile{border:1px solid #E3D8C6;border-radius:8px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:4px}.esu-ptile .k{font:500 10.5px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#5A5346}.esu-ptile .lk{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:4px}',
       '.esu-mprog{background:#F6EEDA;border-radius:8px;padding:12px 16px;margin-top:14px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}',
@@ -188,6 +197,8 @@
       '.esu{padding:24px 16px 56px}.esu-h1{font-size:36px}',
       '.esu-ln-d{display:none}.esu-ln-p{display:block}',
       '.esu-grid2,.esu-six{grid-template-columns:minmax(0,1fr)}.esu-hero-t{font-size:24px}.esu-mrow.hero .bt{align-items:flex-start}',
+      '.esu-srow,.esu-sess{grid-template-columns:56px minmax(0,1fr)}.esu-srow > .bt,.esu-sess > .bt{grid-column:2}',
+      '.esu-tiles3{grid-template-columns:minmax(0,1fr)}.esu-tiles3 .esu-rec,.esu-reclist .esu-rec{flex-direction:row}.esu-rec .th{height:auto;min-height:92px;width:112px;flex:none}',
       '.esu-month .esu-mrow{grid-template-columns:22px minmax(0,1fr)}.esu-month .esu-mrow > .tx,.esu-month .esu-mrow > .bt{grid-column:1 / -1}',
       '}',
       '@media (max-width:860px){.esu-duo{grid-template-columns:minmax(0,1fr)}}'
@@ -304,11 +315,11 @@
       var when = im.happening ? 'this weekend' : im.daysTo === 1 ? 'tomorrow' : 'in ' + im.daysTo + ' days';
       var line = (im.n === 1 ? 'Your first weekend together: the Open Session' : 'The Open Session') + ' with the whole school on Saturday, and the Practicum on Sunday. Before then, one short Prepare lesson.' + (p.open ? '' : ' The Prepare lesson opens ' + esc(dml(p.opens)) + '.');
       var rsvp = pr ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn lite sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP for Sunday’s Practicum</button>') : '';
-      var bt = (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn out' : 'esu-btn gold') : '') + rsvp;
+      var bt = (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn out' : 'esu-btn gold') : '') + rsvp + '<a class="esu-tlink on-dark" href="' + MP + '?view=schedule" data-act="view" data-view="schedule">Full schedule</a>';
       out.push({ k: '1-' + im.sat, hero: true, html: heroRow({ w1: span(im.sat, im.sun), w2: 'Sat & Sun', ey: 'Next immersion · ' + im.n + ' of ' + im.of + ' · ' + when, title: im.title, line: line, bt: bt }) });
     }
     var g = h.integrate;
-    if (g) out.push({ k: '1-' + (g.sat || w.today), hero: true, html: heroRow({ w1: g.sat ? span(g.sat, g.sun) : '', w2: 'Sat & Sun', ey: 'Integrate · Immersion ' + g.n, title: g.title, line: 'Take a few quiet minutes to integrate the weekend.', bt: ext(g.url, 'Open the Integrate lesson', 'esu-btn gold') }) });
+    if (g) out.push({ k: '1-' + (g.sat || w.today), hero: true, html: heroRow({ w1: g.sat ? span(g.sat, g.sun) : '', w2: 'Sat & Sun', ey: 'Integrate · Immersion ' + g.n, title: g.title, line: 'Take a few quiet minutes to integrate the weekend.' + (h.recordings && h.recordings.items.length ? ' <button type="button" class="esu-tlink on-dark" data-act="goto-rec">Missed a part? The recordings are just below.</button>' : ''), bt: ext(g.url, 'Open the Integrate lesson', 'esu-btn gold') }) });
     var d = h.integrated;
     if (d) out.push({ k: '1-' + d.sat, done: true, w1: 'Done', w2: dm(d.sun), tx: rwText('Immersion ' + d.n + ' · ' + esc(d.title), 'You’ve completed the weekend and its Integrate lesson.') });
     return out;
@@ -367,6 +378,24 @@
     return '<section class="esu-card esu-month" aria-labelledby="esu-m-h"><div class="esu-hd" style="margin-bottom:2px"><div><p class="esu-eye">' + esc(eye) + '</p><h2 class="esu-h2" id="esu-m-h" style="margin-top:4px;font-size:27px">' + (done ? 'This month' : 'This month, ' + (NUM[n] || n) + (n === 1 ? ' thing' : ' things')) + '</h2></div>' + (done ? '<span class="esu-mono">' + done + ' of ' + n + ' done</span>' : '') + '</div>' +
       (th ? '<p class="esu-rw-d" style="font-style:italic;margin-top:2px">' + esc(th) + '</p>' : '') +
       '<ul class="esu-mlist">' + rows.map(function (r) { return r.html || mrow(r); }).join('') + '</ul></section>';
+  }
+
+  // ---- Recordings: the newest three, filled in automatically after every weekend (lib/mentee/recordings.js) ----
+  var PLAY = '<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="17" fill="#F4EDE1"/><path d="M14 10.5l9.5 6.5-9.5 6.5z" fill="#2B4238"/></svg>';
+  var dur = function (sec) { if (!sec) return ''; var m = Math.round(sec / 60), h = Math.floor(m / 60); return h ? h + ':' + String(m % 60).padStart(2, '0') + ' h' : m + ' min'; };
+  function recTile(x) {
+    var ready = x.state === 'ready';
+    var th = '<div class="th' + (ready ? '' : ' wait') + '">' + (ready ? PLAY + (x.duration ? '<span class="du">' + esc(dur(x.duration)) + '</span>' : '') : '<span class="oi">On its way</span>') + '</div>';
+    return '<div class="esu-rec">' + th + '<div class="bd"><span class="esu-mono" style="text-transform:uppercase;letter-spacing:.06em">' + esc(dmy(x.day)) + '</span><span class="esu-rw-t">' + esc(x.title) + '</span>' + (x.sub ? '<span class="esu-rw-d" style="margin:0">' + esc(x.sub) + '</span>' : '') +
+      (ready ? (x.url ? link(x.url, 'Watch', 'esu-tlink') : '') : '<span class="esu-rw-d" style="margin:0">Usually here within a day.</span>') + '</div></div>';
+  }
+  function recordingsCard(w) {
+    var r = w.home.recordings;
+    if (!r) return w.pending ? '<section class="esu-card" id="recordings"><h2 class="esu-h2">Recordings</h2><div class="esu-tiles3"><div class="esu-sk" style="height:120px"></div><div class="esu-sk" style="height:120px"></div><div class="esu-sk" style="height:120px"></div></div></section>' : '';
+    if (!r.items.length) return '';
+    return '<section class="esu-card" id="recordings" aria-labelledby="esu-rec-h"><div class="esu-hd" style="margin-bottom:2px"><h2 class="esu-h2" id="esu-rec-h">Recordings</h2><button type="button" class="esu-tlink" data-act="rec-all">All recordings (' + r.count + ')</button></div>' +
+      '<p class="esu-rw-d" style="margin:0 0 12px">' + (r.after ? 'Every Open Session and Practicum, added here within a day of the weekend.' : 'After each immersion, the Open Session and the Practicum appear here within a day.') + '</p>' +
+      '<div class="esu-tiles3">' + r.items.slice(0, 3).map(recTile).join('') + '</div></section>';
   }
 
   // ---- The mentorship room: the cohort's chat, and a private line to Jacob ----
@@ -596,6 +625,9 @@
       body = '<h2 class="esu-h2">Practicum pods</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">One person teaches, the others give feedback. Anyone in the cohort can organize one; no approval is needed.</p>' +
         (ppRows(pl) ? '<ul style="list-style:none;margin:8px 0 0;padding:0">' + ppRows(pl) + '</ul>' : '<p class="esu-muted" style="margin:12px 0 0">Nothing is planned yet. Be the first to organize one.</p>') +
         '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="open-pp">Organize a pod</button><button type="button" class="esu-btn out" data-act="close-modal">Close</button></div>';
+    } else if (m.type === 'rec-all') {
+      var ri = (w.home.recordings && w.home.recordings.items) || [];
+      body = '<div class="esu-hd"><h2 class="esu-h2">All recordings</h2><button type="button" class="esu-btn out" data-act="close-modal">Close</button></div><div class="esu-reclist">' + ri.map(recTile).join('') + '</div>';
     } else if (m.type === 'pp-about') {
       body = '<h2 class="esu-h2">What a practicum pod is</h2><p style="margin:10px 0 0">A small group of mentees who meet to practice teaching. One person teaches a short piece, the others give feedback, and you take turns.</p>' +
         '<p style="margin:10px 0 0">Anyone in the cohort can organize a pod, with no approval needed, and pods begin after Immersion 1. Your articulation buddy is someone to explain ideas with; a pod is where you teach a group.</p>' +
@@ -680,6 +712,77 @@
     }).join('') + '</ul><div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" data-act="close-modal">Close</button></div>';
   }
 
+  // ---- The page switch: This month | Schedule | Reflections (real links; the first two switch in place, Reflections is its own page) ----
+  var MP = '/c/mentorship', WORKBOOK = 'https://ss.embodiedphilosophy.com/c/apprentice-workbook';
+  function currentView() { if (isRefl()) return 'reflections'; if (state.view) return state.view; return /[?&]view=schedule/.test(location.search) ? 'schedule' : 'month'; }
+  function pageSwitch(cur) {
+    var w = state.data, rurl = (w && w.home && safeUrl(w.home.reflection.url)) || '/c/reflections', un = w && w.home ? w.home.reflection.unread : 0;
+    var item = function (key, label, href, extra) { return '<a href="' + esc(href) + '" target="_top"' + (cur === key ? ' aria-current="page"' : '') + (key === 'month' || key === 'schedule' ? ' data-act="view" data-view="' + key + '"' : '') + '>' + label + (extra || '') + '</a>'; };
+    var wb = (w && w.home && safeUrl(w.home.workbookUrl)) || WORKBOOK;
+    return '<nav class="esu-seg" aria-label="Pages">' + item('month', 'This month', MP) + item('schedule', 'Schedule', MP + '?view=schedule') +
+      item('reflections', 'Reflections', rurl, un > 0 ? '<span class="esu-badge" aria-label="' + un + ' unread">' + un + '</span>' : '') + item('workbook', 'Workbook', wb) + '</nav>';
+  }
+  function loadSched() { if (state.sched || state.schedBusy) return Promise.resolve(); state.schedBusy = true; return call('/api/member/mentee-schedule?' + tzq()).then(function (d) { state.sched = d; state.schedErr = ''; }).catch(function (e) { state.schedErr = e.message; }).then(function () { state.schedBusy = false; render(); }); }
+
+  // ---- The Schedule view: every immersion, practicum pod and one-to-one window, in the mentee's time ----
+  var rangeT = function (a, b) { return hmT(a) + (b ? '–' + hmT(b) : ''); };
+  var monthLong = function (ym) { return dayFmt(ym + '-01', { month: 'long' }); };
+  function dateBlock(day) { return '<span class="esu-db"><b>' + esc(dayFmt(day, { day: 'numeric' })) + '</b>' + esc(dayFmt(day, { weekday: 'short' })) + '</span>'; }
+  function srow(day, tag, tagCls, title, line, act) {
+    return '<li class="esu-srow">' + dateBlock(day) + '<div class="tx"><span class="esu-stag ' + tagCls + '">' + tag + '</span> <span class="esu-rw-t" style="display:inline">' + title + '</span><p class="esu-rw-d">' + line + '</p></div><div class="bt">' + (act || '') + '</div></li>';
+  }
+  function immBlock(i, isNext, w) {
+    var p = i.prepare, os = i.openSession, pr = i.practicum, now = Date.now(), im = w && w.home.immersion, d = isNext && im && im.n === i.n ? im.daysTo : null;
+    var eye = 'Immersion ' + i.n + ' of ' + (state.sched.immersions.length) + (isNext && d !== null ? ' · ' + (d === 0 ? 'this weekend' : d === 1 ? 'tomorrow' : 'in ' + d + ' days') : '');
+    var prep = p.open && safeUrl(p.url) ? ext(p.url, p.done ? 'Prepare lesson done ✓' : 'Prepare lesson is open', 'esu-tlink on-dark') : p.open ? '<span class="esu-onlist">Prepare lesson is open</span>' : '<span class="esu-onlist">Prepare lesson opens ' + esc(dmy(p.opens)) + '</span>';
+    var sess = function (day, name, who, s, actHtml) {
+      return '<div class="esu-sess">' + dateBlock(day) + '<div><span class="esu-rw-t" style="color:#FBF6EE">' + name + '</span><p class="esu-rw-d" style="color:#C9D1CB">' + (s && s.start ? esc(rangeT(s.start, s.end)) + ' · ' : '') + who + '</p></div><div class="bt">' + (actHtml || '') + '</div></div>';
+    };
+    var satAct = os && os.today && os.url ? ext(os.url, 'Join', 'esu-btn gold sm') : '<span class="esu-onlist">Join link here on the day</span>';
+    var sunAct = pr && pr.id ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn gold sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP</button>') : '';
+    return '<li class="esu-sblock"><div class="esu-sbh"><span class="ey">' + esc(eye) + '</span>' + prep + '</div><p class="esu-hero-t" style="margin:2px 0 8px">' + esc(i.title) + '</p>' +
+      sess(i.sat, 'Open Session', 'with the whole school', os, satAct) + sess(i.sun, 'Practicum', 'mentees only, teaching under supervision', pr, sunAct) + '</li>';
+  }
+  function podRow(x, d) {
+    var end = new Date(Date.parse(x.startsAt) + (Number(x.minutes) || 60) * 60000).toISOString(), live = Date.now() > Date.parse(x.startsAt) - 15 * 60000 && Date.now() < Date.parse(end);
+    var act = x.mine ? (x.roomUrl && live ? ext(x.roomUrl, 'Join the live room', 'esu-btn pri sm') : '<span class="esu-in-ok">You’re in ✓</span>') : x.canJoin ? '<button type="button" class="esu-btn out sm" data-act="pp-join" data-id="' + esc(x.id) + '"' + (state.busy === 'pp' ? ' disabled' : '') + '>Join</button>' : '';
+    return srow(localDay(x.startsAt), 'Practicum pod', x.mine ? 'pod mine' : 'pod', esc(x.topic), esc(rangeT(x.startsAt, end)) + ' · organized by ' + esc(firstName(x.organiser)) + ' · ' + x.count + ' of ' + d.max + ' places taken', act);
+  }
+  function oneRowS(wn, o) {
+    var bk = o.booked, inWin = bk && localDay(bk.start) >= wn.from && localDay(bk.start) <= wn.to;
+    var act = inWin ? '<span class="esu-in-ok">Booked ' + esc(fmtTime(bk.start, { weekday: 'short' }) + ' ' + fmtTime(bk.start, { day: 'numeric' }) + ', ' + hmT(bk.start)) + '</span>' : wn.open && safeUrl(o.bookingUrl) ? ext(o.bookingUrl, 'See times', 'esu-btn out sm') : '';
+    return srow(wn.from, 'One-to-ones', 'one', 'One-to-one window · until ' + esc(dmy(wn.to)), '45 minutes with Jacob, UK evenings.' + (wn.open && !inWin ? ' Booking is open.' : ''), act);
+  }
+  function scheduleCard(w) {
+    var S = state.sched, h = w ? w.home : null, f = state.sFilter || 'all', today = (w && w.today) || localToday();
+    if (!S) return '<section class="esu-card"><h2 class="esu-h2">Schedule</h2>' + (state.schedErr ? '<p class="esu-err" role="alert">' + esc(state.schedErr) + '</p>' : '<div class="esu-sk" style="height:200px;margin-top:10px"></div><div class="esu-sk" style="height:200px;margin-top:10px"></div>') + '</section>';
+    var o = h ? h.oneToOne : { booked: null, bookingUrl: '' }, pp = state.pp, pods = pp && pp.pods ? pp.pods.filter(function (x) { return Date.parse(x.startsAt) > Date.now() - 3 * 3600e3; }) : [];
+    var next = S.immersions.filter(function (i) { return i.sun >= today; })[0], items = [];
+    S.immersions.filter(function (i) { return !i.past; }).forEach(function (i) { items.push({ day: i.sat, kind: 'imm', html: immBlock(i, next && next.n === i.n, w) }); });
+    if (S.retreat) items.push({ day: S.retreat.date, kind: 'imm', html: srow(S.retreat.date, 'Retreat', 'one', esc(S.retreat.title), esc(dm(S.retreat.date) + (S.retreat.end !== S.retreat.date ? ' – ' + dm(S.retreat.end) : '')), '') });
+    pods.forEach(function (x) { items.push({ day: localDay(x.startsAt), kind: 'pod', html: podRow(x, pp) }); });
+    if (f === 'all') S.windows.forEach(function (wn) { items.push({ day: wn.from, kind: 'one', html: oneRowS(wn, o) }); });
+    items = items.filter(function (it) { return f === 'all' || it.kind === (f === 'imm' ? 'imm' : 'pod'); }).sort(function (a, b) { return a.day < b.day ? -1 : a.day > b.day ? 1 : a.kind === 'imm' ? -1 : 1; });
+    var months = []; items.forEach(function (it) { var m = it.day.slice(0, 7); if (months.indexOf(m) < 0) months.push(m); });
+    var shown = state.sAll ? months : months.slice(0, 3), hidden = months.slice(3);
+    var seq = []; if (months.length) { var cur = shown[0]; var last = shown[shown.length - 1]; while (cur <= last) { seq.push(cur); var p = cur.split('-').map(Number); cur = p[1] === 12 ? (p[0] + 1) + '-01' : p[0] + '-' + String(p[1] + 1).padStart(2, '0'); } }
+    var body = seq.map(function (m) {
+      var its = items.filter(function (it) { return it.day.slice(0, 7) === m; });
+      return '<h3 class="esu-smon">' + esc(monthLong(m) + ' ' + m.slice(0, 4)) + (its.length ? '' : (f === 'all' ? ' <span class="none">nothing scheduled yet</span>' : '')) + '</h3>' + (its.length ? '<ul class="esu-slist">' + its.map(function (it) { return it.html; }).join('') + '</ul>' : '');
+    }).join('') || '<p class="esu-muted" style="margin:14px 0">Nothing is scheduled yet.</p>';
+    var hiddenImm = hidden.length ? items.filter(function (it) { return hidden.indexOf(it.day.slice(0, 7)) >= 0 && it.kind === 'imm'; }) : [];
+    var nImm = hiddenImm.filter(function (it) { return /esu-sblock/.test(it.html); }).length, hasRet = hiddenImm.some(function (it) { return !/esu-sblock/.test(it.html); });
+    var more = hidden.length ? '<button type="button" class="esu-tlink" data-act="s-all">Show ' + esc(monthLong(hidden[0])) + (hidden.length > 1 ? ' to ' + esc(monthLong(hidden[hidden.length - 1])) : '') + (nImm || hasRet ? ' (' + (nImm ? nImm + ' more immersion' + (nImm === 1 ? '' : 's') : '') + (nImm && hasRet ? ', ' : '') + (hasRet ? 'the retreat' : '') + ')' : '') + '</button>' : state.sAll && months.length > 3 ? '<button type="button" class="esu-tlink" data-act="s-all">Show fewer</button>' : '<span></span>';
+    var rec = h && h.recordings && h.recordings.items.length ? h.recordings.items : [];
+    var chips = [['all', 'All'], ['imm', 'Immersions'], ['pod', 'Practicum pods']].map(function (c) { return '<button type="button" class="esu-chip' + (f === c[0] ? ' on' : '') + '" aria-pressed="' + (f === c[0]) + '" data-act="s-filter" data-f="' + c[0] + '">' + c[1] + '</button>'; }).join('');
+    var city = myZone().split('/').pop().replace(/_/g, ' ');
+    return '<section class="esu-card" aria-labelledby="esu-s-h"><div class="esu-hd" style="align-items:flex-start;flex-wrap:wrap"><div><h2 class="esu-h2" id="esu-s-h">Schedule</h2><p class="esu-rw-d">Every immersion, practicum pod and one-to-one window, in your time (' + esc(city) + ')</p></div><span style="display:inline-flex;gap:14px;align-items:center;flex-wrap:wrap">' + (safeUrl(S.feed) ? ext(S.feed, 'Add to your calendar', 'esu-alink') : '') + '<button type="button" class="esu-btn pri sm" data-act="open-pp">Organize a pod</button></span></div>' +
+      '<div class="esu-chips" role="group" aria-label="Filter the schedule" style="margin:12px 0 4px">' + chips + '</div>' + (S.unavailable && S.unavailable.length ? '<p class="esu-note" style="margin:10px 0 0">Some times couldn’t be loaded just now (' + esc(S.unavailable.join(', ')) + ').</p>' : '') + body +
+      '<div class="esu-sfoot">' + more + (rec.length ? '<button type="button" class="esu-tlink" data-act="s-earlier" aria-expanded="' + !!state.sEarlier + '">Earlier, with recordings</button>' : '') + '</div>' +
+      (state.sEarlier && rec.length ? '<div class="esu-reclist">' + rec.map(recTile).join('') + '</div>' : '') + '</section>' +
+      '<p class="esu-rw-d" style="margin:0">Everything else at Embodied Philosophy is on the ' + '<a class="esu-alink" href="/c/schedule" target="_top">main schedule</a>' + '.</p>';
+  }
+
   // The header: a welcome in the first month, then "Your formation"; where you are in one line; one link to the manual and the year
   function pageHead(w) {
     var name = (w && w.greeting.firstName) || state.first, fm = (w && w.home.formation) || { n: 0 }, im = w && w.home.immersion, parts = [];
@@ -694,13 +797,14 @@
     if (isMentor()) return mentorHtml();
     if (state.error && !state.data) return '<h1 class="esu-h1">Sahṛdaya Upāya</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
     var w = state.data;
-    if (!w) return pageHead(null) + '<div class="esu-stack"><div class="esu-card">' + '<div class="esu-sk esu-skrow"></div>'.repeat(5) + '</div><div class="esu-sk" style="height:220px"></div><div class="esu-sk" style="height:180px"></div></div>';
+    if (!w) return pageHead(null) + pageSwitch(currentView()) + (currentView() === 'schedule' ? '<div class="esu-stack">' + scheduleCard(null) + '</div>' : '') + (currentView() === 'schedule' ? '' : '<div class="esu-stack"><div class="esu-card">' + '<div class="esu-sk esu-skrow"></div>'.repeat(5) + '</div><div class="esu-card"><div class="esu-sk" style="height:120px"></div></div><div class="esu-sk" style="height:220px"></div><div class="esu-sk" style="height:180px"></div></div>');
     var y = YR(w);
-    return pageHead(w) +
+    if (currentView() === 'schedule') return pageHead(w) + pageSwitch('schedule') + '<div class="esu-stack">' + (state.msg && !state.modal ? '<p class="esu-err" role="alert" style="margin:0">' + esc(state.msg) + '</p>' : '') + scheduleCard(w) + '</div>' + modal(w);
+    return pageHead(w) + pageSwitch('month') +
       '<div class="esu-stack">' +
       (w.unavailable.length ? '<p class="esu-note" role="status" style="margin:0">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert" style="margin:0">' + esc(state.msg) + '</p>' : '') +
-      pollCards(w) + cosignCard(w) + monthSection(w) +
+      pollCards(w) + cosignCard(w) + monthSection(w) + recordingsCard(w) +
       '<div class="esu-duo">' + roomCard(w) + practiceCard(w) + '</div>' +
       (y && y.started ? lanesCard(w) : '') + recordCard(w) + '</div>' + modal(w) + booksModal(w) + allStepsModal(w);
   }
@@ -867,8 +971,18 @@
     }
     if (a === 'submit-handin') { sendHandIn('submitted'); return; }
     if (a === 'draft-handin') { sendHandIn('draft'); return; }
-    if (a === 'room') { state.room = t.dataset.tab; render(); }
+    if (a === 'view') {
+      e.preventDefault(); var vw = t.dataset.view; state.view = vw; state.modal = null; state.msg = '';
+      try { history.pushState(null, '', MP + (vw === 'schedule' ? '?view=schedule' : '')); } catch (x) {}
+      render(); if (vw === 'schedule') loadSched(); if (root && root.scrollIntoView) root.scrollIntoView({ block: 'start' });
+    }
+    else if (a === 's-filter') { state.sFilter = t.dataset.f; render(); }
+    else if (a === 's-all') { state.sAll = !state.sAll; render(); }
+    else if (a === 's-earlier') { state.sEarlier = !state.sEarlier; render(); }
+    else if (a === 'room') { state.room = t.dataset.tab; render(); }
     else if (a === 'rec-add' || a === 'rec-full') { var kk = a === 'rec-add' ? 'add' : 'full'; state.rec[kk] = !state.rec[kk]; render(); }
+    else if (a === 'rec-all') { state.modal = { type: 'rec-all' }; state.msg = ''; render(); }
+    else if (a === 'goto-rec') { var rc = root.querySelector('#recordings'); if (rc && rc.scrollIntoView) rc.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     else if (a === 'fb-open') { state.modal = { type: 'feedback' }; state.msg = ''; render(); }
     else if (a === 'pp-list' || a === 'pp-about') { state.modal = { type: a }; state.msg = ''; render(); }
     else if (a === 'tick') {
@@ -971,7 +1085,7 @@
     if (state.error && !r.list) return '<h1 class="esu-h1">Reflections</h1><p class="esu-muted" style="margin-top:8px">' + esc(state.error) + '</p>';
     return '<div class="esu-eye">Sahṛdaya Upāya · The cohort’s reflections</div><div class="esu-head"><div><h1 class="esu-h1">Reflections</h1><div class="esu-sub">Write, share it with the cohort, revise from their feedback, then post it to Sādhana School.</div></div>' +
       (mineNow ? '<button type="button" class="esu-btn pri" data-act="rf-open" data-id="' + esc(mineNow.id) + '">Open your ' + esc(m) + ' reflection</button>' : '<button type="button" class="esu-btn pri" data-act="rf-new">Write ' + esc(m) + '’s reflection</button>') + '</div>' +
-      rfSteps() + (r.list === null && r.err ? rfFlash() : '') + '<div class="esu-rcols">' + rfList() + (r.mode === 'edit' ? rfEditor() : rfReader()) + '</div>' + rfPostModal();
+      pageSwitch('reflections') + rfSteps() + (r.list === null && r.err ? rfFlash() : '') + '<div class="esu-rcols">' + rfList() + (r.mode === 'edit' ? rfEditor() : rfReader()) + '</div>' + rfPostModal();
   }
   function rfClick(a, t) {
     var r = state.rf;
@@ -1047,7 +1161,7 @@
     signIn().then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
-      mount(); render(); loadPods(); loadPp(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
+      mount(); render(); loadPods(); loadPp(); if (currentView() === 'schedule') loadSched(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
     }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
       .then(function () { mount(); render(); });
   }
@@ -1067,5 +1181,5 @@
       if (!started) start(); else { mount(); if (root && isRefl() && state.rf.list === null && state.ok === true) startRefl(); else if (root && isMentor() && state.mt.data === null && !state.mt.err) loadMentor().then(render); else if (root && moved) render(); }
     }, 250);
   }).observe(document.body, { childList: true, subtree: true });
-  window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) unmount(); });
+  window.addEventListener('popstate', function () { if (!PAGE.test(location.pathname)) { unmount(); return; } state.view = /[?&]view=schedule/.test(location.search) ? 'schedule' : 'month'; if (state.view === 'schedule') loadSched(); render(); });
 })();

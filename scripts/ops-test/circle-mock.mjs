@@ -97,15 +97,7 @@ http.createServer(async (req, res) => {
     if (req.method === 'POST') { log.push(`POST post ${body}`); console.log('WROTE post', body); posts.unshift({ id: 99, name: JSON.parse(body).name, topics: JSON.parse(body).topic_ids, created_at: day(0) }); return send({ id: 99 }, 201); }
     return send({ records: spacesFor[who].includes(Number(m[1])) ? (Number(m[1]) === 2897427 ? wsPosts : posts) : [], has_next_page: false });
   }
-  if ((m = p.match(/^\/posts\/(\d+)\/comments$/))) {
-    if (req.method === 'POST') {
-      const b = JSON.parse(body || '{}'); const text = (b.tiptap_body?.body?.content || []).map(x => (x.content || []).map(y => y.text).join('')).join('\n');
-      console.log('WROTE comment', m[1], who, 'parent=' + (b.parent_comment_id ?? '-'), JSON.stringify(text));
-      (comments[m[1]] ||= []).push({ id: 400 + (comments[m[1]] || []).length, parent_comment_id: b.parent_comment_id, body: text, author: { community_member_id: who === 'hubfull@test' ? 501 : 900, name: who }, created_at: day(0) });
-      return send({ id: 999 }, 201);
-    }
-    return send({ records: comments[m[1]] || [], has_next_page: false });
-  }
+  if ((m = p.match(/^\/posts\/(\d+)$/)) && req.method === 'DELETE') { console.log('WROTE delete post', m[1], who); return send({}, 200); }
   if ((m = p.match(/^\/events\/(\d+)\/event_attendees$/)) && req.method === 'POST') { console.log('WROTE rsvp', m[1], who); return send({ ok: true }, 201); }
   send({ error: 'not mocked ' + p }, 404);
 }).listen(4600, () => console.log('circle mock on 4600'));

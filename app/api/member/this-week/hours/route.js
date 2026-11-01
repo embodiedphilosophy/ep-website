@@ -18,6 +18,7 @@ export async function POST(req) {
     if (b.remove) await removePending(me.email, b.remove);
     else if (b.cosign) await cosign(me.email, b.cosign, !!b.ok);
     else {
+      if (!Array.isArray(b.competencies)) b.competencies = []; // the form always sends them; observation needs at least one
       const partners = b.component === 'practice-teaching' ? await currentPartnerEmails(me.email, cleanToday(b.today)) : [];
       if (b.resend) await resendEntry(me.email, b.resend, b, { partners }); else await addPending(me.email, b, { partners });
     }

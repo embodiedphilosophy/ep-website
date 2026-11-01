@@ -11,6 +11,8 @@ const obs = { component: 'observation', hours: 1.5, day: '2026-10-28', detail: '
 assert.equal(F.COMPETENCIES.length, 6);
 // observation needs a competency; unknown ones are dropped
 await assert.rejects(() => F.addPending(maya, { ...obs, competencies: [] }), /at least one competency/); await assert.rejects(() => F.addPending(maya, { ...obs, competencies: ['bogus'] }), /at least one competency/);
+await F.addPending(maya, { component: 'observation', hours: 0.5, day: '2026-10-01' }); // a hand-in that offers hours sends no competencies and is not asked
+await F.removePending(maya, (await F.formationFor(maya)).entries[0].id);
 let f = await F.addPending(maya, obs);
 assert.deepEqual(f.entries[0].competencies, ['attunement', 'speech'], 'competencies kept, unknown ones dropped'); assert.equal(f.entries[0].status, 'pending');
 const c = f.components.find(x => x.id === 'observation'); assert.deepEqual([c.credited, c.pending], [0, 1.5], 'logged hours show as pending, not as credited');

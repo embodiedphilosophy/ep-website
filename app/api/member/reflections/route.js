@@ -1,5 +1,5 @@
 import { menteeFromBearer, reply, preflight } from '@/lib/mentee/bearer';
-import { reflectionsAvailable, listReflections, getReflection, createDraft, saveDraft, startRevision, shareVersion, discardDraft, addComment, setAddressed, finalVersion, postedState, markPosted, markUnposted } from '@/lib/mentee/reflectionstore';
+import { reflectionsAvailable, listReflections, getReflection, createDraft, saveDraft, startRevision, shareVersion, discardDraft, deleteReflection, addComment, setAddressed, finalVersion, postedState, markPosted, markUnposted } from '@/lib/mentee/reflectionstore';
 import { postContent, monthOf, STEPS } from '@/lib/mentee/reflections';
 import { createPost, deletePost, headlessConfigured } from '@/lib/school/circle';
 import { hubSettings } from '@/lib/school/hubconfig';
@@ -11,7 +11,7 @@ import config from '@/data/mentee.json';
 export const dynamic = 'force-dynamic';
 
 // The mentee Reflections page (public/circle/sahrdaya.js on /c/reflections). GET ?today=&month=&id= → { list, detail?, meta }.
-// POST { action, … } with action: save (create or update the draft), revise, share, discard, comment, address, post, takedown, read.
+// POST { action, … } with action: save (create or update the draft), revise, share, discard, delete, comment, address, post, takedown, read.
 // Reflections are the cohort's: only Sahṛdaya Upāya mentees and Circle admins (Jacob) get in (menteeFromBearer).
 // Where final reflections are posted: the Reflections space of Sādhana School (Kula Commentary). data/school-hub.json settings, else data/mentee.json
 const reflectionsSpace = () => hubSettings().reflections_space_id || config.reflections_space_id || null;
@@ -41,7 +41,7 @@ export async function POST(req) {
   const { me, res } = menteeFromBearer(req);
   if (!me) return res;
   if (!reflectionsAvailable()) return reply(req, { error: 'The reflections aren’t connected yet.' }, 503);
-  const b = await req.json().catch(() => ({})), today = cleanToday(b.today), who = { email: me.email, name: me.firstName };
+  const b = await req.json().catch(() => ({})), today = cleanToday(b.today), who = { email: me.email, name: me.firstName, admin: me.admin };
   const writes = b.action !== 'read';
   const lastKey = `${me.email}:${b.action}`;
   if (writes && Date.now() - (last.get(lastKey) || 0) < 1500) return reply(req, { error: 'One moment, then try again.' }, 429);
@@ -57,6 +57,13 @@ export async function POST(req) {
       case 'revise': await startRevision(who, id); break;
       case 'share': await shareVersion(who, id); break;
       case 'discard': await discardDraft(who, id); id = ''; break;
+      case 'delete': { // a shared or posted reflection, by its author or a Circle admin: its Sādhana School post comes down first
+        const st = await postedState(who, id);
+        if (!st.author && !me.admin) throw new Error('Only the author can do that');
+        if (st.postId) await deletePost(me.email, st.postId);
+        await deleteReflection(who, id); id = '';
+        break;
+      }
       case 'comment': await addComment(who, id, b); break;
       case 'address': await setAddressed(who, id, b.comments, Number(b.n)); break;
       case 'read': break;
@@ -90,6 +97,6 @@ export async function POST(req) {
 function fail(req, e, what) {
   const known = KNOWN.test(e.message);
   if (!known) console.error('reflections', what, e.message);
-  return reply(req, { error: known ? e.message : what === 'post' || what === 'takedown' ? 'Couldn’t reach Sādhana School just now. Your reflection is safe: try again.' : 'We couldn’t do that just now. Please try again.' }, known ? 400 : 502);
+  return reply(req, { error: known ? e.message : what === 'post' || what === 'takedown' || what === 'delete' ? 'Couldn’t reach Sādhana School just now. Your reflection is safe: try again.' : 'We couldn’t do that just now. Please try again.' }, known ? 400 : 502);
 }
 export const OPTIONS = preflight;

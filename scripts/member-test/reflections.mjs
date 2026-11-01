@@ -65,4 +65,13 @@ assert.equal((await S.summaryFor(maya, '2026-11')).posted.length, 0, 'a taken-do
 // a draft can be deleted; a shared one cannot
 const id2 = await S.createDraft(maya, { body: 'Another one.' }, { month: '2026-12' }); await S.discardDraft(maya, id2); assert.equal((await S.listReflections(maya)).length, 1);
 assert.equal((await S.summaryFor(bo, '2026-11')).unread, 0, 'bo has read it');
+// a shared reflection can be deleted outright: by its author, or by a Circle admin, never by another mentee; its feedback goes with it
+const id3 = await S.createDraft(bo, { title: 'Test', body: 'A test.' }, { month: '2026-12' }); await S.shareVersion(bo, id3);
+await S.addComment(maya, id3, { kind: 'landed', body: 'Lovely.' });
+await assert.rejects(() => S.deleteReflection(maya, id3), /Only the author/);
+await S.deleteReflection(jacob, id3);
+await assert.rejects(() => S.getReflection(bo, id3), /Couldn’t find/);
+assert.equal((await db.query('SELECT COUNT(*)::int AS n FROM mentee_reflection_comments WHERE reflection_id = $1', [Number(id3)])).rows[0].n, 0, 'its feedback is gone too');
+const id4 = await S.createDraft(bo, { body: 'Mine to delete.' }, { month: '2026-12' }); await S.shareVersion(bo, id4); await S.deleteReflection(bo, id4);
+assert.ok(!(await S.listReflections(bo)).some(x => x.id === String(id4)), 'the author deleted their own shared reflection');
 console.log('reflections: ok');

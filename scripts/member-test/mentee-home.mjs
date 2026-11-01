@@ -27,7 +27,7 @@ const rows = [
   { season: 'fall-2026', month: 'December', email_a: 'maya@x.com', email_b: 'lee@x.com' },
   { season: 'fall-2026', month: '2026-11', email_a: 'hide@x.com', email_b: 'z@x.com', publish: 'FALSE' },
 ];
-assert.deepEqual(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-11-03'), { month: 'november', name: 'Sam', email: 'sam@x.com', partners: [{ name: 'Sam', email: 'sam@x.com' }] });
+assert.deepEqual(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-11-03'), { month: 'november', rotation: null, name: 'Sam', email: 'sam@x.com', partners: [{ name: 'Sam', email: 'sam@x.com', city: '', tz: '' }], chatUrl: '' });
 assert.equal(C.partnerFor(rows, 'sam@x.com', 'fall-2026', '2026-11-03').email, 'maya@x.com');
 assert.equal(C.partnerFor(rows, 'maya@x.com', 'fall-2026', '2026-10-21'), null, 'nothing set for October → card hidden');
 assert.equal(C.partnerFor(rows, 'hide@x.com', 'fall-2026', '2026-11-03'), null);
@@ -137,3 +137,19 @@ assert.equal(hq.questions.on, true); assert.equal(hq.questions.latest.length, 2)
 assert.equal(H.questionsFor([], config).on, false, 'no space id → card hidden');
 assert.equal(H.questionsFor([], config, 123).on, true, 'a space found by its address switches the card on');
 console.log('evergreen row: ok');
+
+// Rotations (two-month blocks), where people live, the pair chat, and the cohort for "add a third"
+const prof = C.profilesFrom([{ email: 'Sam@x.com', name: 'Sam', city: 'Milan', tz: 'Europe/Rome' }, { email: 'bad@x.com', city: 'Nowhere', tz: 'Not/AZone' }, { email: '', city: 'x', tz: 'Europe/Rome' }]);
+assert.deepEqual(prof, { 'sam@x.com': { name: 'Sam', city: 'Milan', tz: 'Europe/Rome' }, 'bad@x.com': { name: '', city: 'Nowhere', tz: '' } }, 'a made-up zone is dropped, a blank email skipped');
+const rrows = [
+  { season: 'fall-2026', month: '', rotation: '1', email_a: 'maya@x.com', email_b: 'sam@x.com', name_b: 'Sam', chat_url: 'https://ss.x/chat/1' },
+  { season: 'fall-2026', month: 'December', rotation: '2', email_a: 'maya@x.com', email_b: 'lee@x.com' },
+  { season: 'fall-2026', month: 'November', email_a: 'maya@x.com', email_b: 'old@x.com', publish: 'FALSE' },
+  { season: 'fall-2026', rotation: '1', email_a: 'di@x.com', email_b: 'cy@x.com', name_a: 'Di', name_b: 'Cy' },
+];
+let pr = C.partnerFor(rrows, 'maya@x.com', 'fall-2026', '2026-11-03', { rotation: 1, profiles: prof });
+assert.equal(pr.rotation, 1); assert.equal(pr.name, 'Sam'); assert.deepEqual(pr.partners[0], { name: 'Sam', email: 'sam@x.com', city: 'Milan', tz: 'Europe/Rome' }); assert.equal(pr.chatUrl, 'https://ss.x/chat/1', 'rotation rows match whatever the month says; the pair chat comes with them');
+assert.equal(C.partnerFor(rrows, 'maya@x.com', 'fall-2026', '2026-12-03', { rotation: 2 }).name, 'lee@x.com', 'next rotation, a new partner');
+assert.equal(C.partnerFor([{ ...rrows[0], chat_url: 'http://insecure' }], 'maya@x.com', 'fall-2026', '2026-11-03', { rotation: 1 }).chatUrl, '', 'only https chat links');
+assert.deepEqual(C.cohortFrom(rrows, 'fall-2026', 'maya@x.com', ['sam@x.com']).map(c => c.email), ['cy@x.com', 'di@x.com', 'lee@x.com'], 'the cohort without me or my partner; hidden rows left out')
+console.log('rotations: ok');

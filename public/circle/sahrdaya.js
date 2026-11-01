@@ -102,7 +102,7 @@
       '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}.esu-tot span{font-size:13px;color:#5A5346}',
       '.esu-ever{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
       '.esu-ever .esu-poll{grid-column:1/-1}',
-      '.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
+      '.esu-win{background:#F1E9DC;border-radius:8px;padding:10px 14px;margin-bottom:6px}.esu-win b{display:block;font-size:15px}.esu-cues{display:grid;gap:10px;max-height:340px;overflow-y:auto}.esu-cue{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:10px 12px;background:#F6EFE2;border-radius:8px;font-size:14.5px}.esu-cue .esu-eye{margin:0 0 2px}.esu-cuew{grid-column:1/-1;color:#5A5346}.esu-who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}.esu-who label{display:inline-flex;gap:6px;align-items:center;border:1px solid #E3D8C6;border-radius:99px;padding:6px 12px;background:#fff;font-size:14px}.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
       '.esu-q{padding:8px 0;border-top:1px solid #E3D8C6;font-size:14px;line-height:1.35}.esu-q a{color:#1E1A14;text-decoration:none;font-weight:500}.esu-q small{display:block;font-size:12px;color:#5A5346;margin-top:2px}.esu-q small b{color:#2E5A4B;font-weight:600}',
       '.esu-bar{height:6px;background:#E3D8C6;border-radius:99px;overflow:hidden;margin-top:6px}.esu-bar i{display:block;height:100%;background:#A5432A;min-width:0}',
       '.esu-bar.sm{height:4px;margin-top:5px}',
@@ -143,6 +143,7 @@
       '.esu-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(32,48,42,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}',
       '.esu-dlg{background:#FBF6EE;border-radius:8px;padding:22px 24px;width:100%;max-width:560px;margin:auto}',
       '@media (max-width:760px){',
+      '.esu-cue{grid-template-columns:minmax(0,1fr)}',
       '.esu{padding:24px 16px 56px}.esu-h1{font-size:36px}.esu-tabs{display:flex;gap:6px;margin:0 0 14px;background:#E3D8C6;border-radius:99px;padding:4px}',
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
@@ -269,16 +270,37 @@
 
   // The mentorship room is one place: the whole cohort's chat (no separate tabs for the Mentorship Circle or a direct line)
   function roomCard(w) {
-    var r = w.home.room;
-    var pinned = r.pinned.length ? '<div class="esu-pin">' + r.pinned.map(function (p) { return ext(p.url, esc(p.label), ''); }).join('<span aria-hidden="true">·</span>') + '</div>' : '';
-    var body = (r.chat && r.chat.length ? '<div class="esu-chat" role="log" aria-label="Latest messages in the cohort chat">' + r.chat.slice(-8).map(function (m) {
-        return '<div class="esu-msg"><div class="esu-msgh"><b>' + esc(m.who) + '</b>' + (m.mentor ? '<span class="esu-tag">MENTOR</span>' : '') + '<span class="esu-mono">' + esc(fmtTime(m.at, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + '</span></div><div class="esu-msgb">' + esc(m.text) + '</div></div>';
-      }).join('') + '</div>' : '<div class="esu-empty">' + (w.pending ? 'Loading…' : 'Say hello to your cohort.') + '</div>') +
+    var r = w.home.room, p = w.home.partner;
+    var pinned = r.pinned.length ? '<div class="esu-pin">' + r.pinned.map(function (x) { return ext(x.url, esc(x.label), ''); }).join('<span aria-hidden="true">·</span>') + '</div>' : '';
+    var tabs = [['chat', 'Cohort chat'], ['pair', 'Pair chat'], ['cues', 'Cue bank'], ['circle', 'Mentorship Circle'], ['jacob', 'Jacob · direct']];
+    var bar = '<div class="esu-rt" role="tablist">' + tabs.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (state.room === t[0]) + '" data-act="room" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>';
+    var body;
+    if (state.room === 'pair') {
+      body = r.pairChatUrl
+        ? '<p class="esu-muted" style="margin-bottom:12px">Your own chat with ' + esc(p && p.name ? p.name : 'your partner') + ' for this rotation. Use it to find a time and to share what you are working on.</p><div class="esu-acts">' + ext(r.pairChatUrl, 'Open your pair chat', 'esu-btn pri') + '</div>'
+        : '<div class="esu-empty">' + (p ? 'Your pair chat will appear here once Jacob has opened it for this rotation.' : 'You’ll see your pair chat here once you have a partner.') + '</div>';
+    } else if (state.room === 'cues') {
+      body = '<p class="esu-muted" style="margin-bottom:10px">Every instruction line the cohort has rewritten in an articulation session, newest first. Add yours from the articulation card.</p>' +
+        (r.cues && r.cues.length ? '<div class="esu-cues">' + r.cues.map(function (c) {
+          return '<div class="esu-cue"><div><div class="esu-eye" style="color:#5A5346">Before</div>' + esc(c.before) + '</div><div><div class="esu-eye">After</div>' + esc(c.after) + '</div><div class="esu-mono esu-cuew">' + esc(c.who) + ' · ' + esc(dayFmt(c.day, { day: 'numeric', month: 'short' })) + '</div></div>';
+        }).join('') + '</div>' : '<div class="esu-empty">' + (w.pending ? 'Loading…' : 'No lines yet. The first one you rewrite goes here.') + '</div>');
+    } else if (state.room === 'circle') {
+      body = (r.circle && r.circle.length ? '<ul class="esu-rows">' + r.circle.map(function (c) {
+        return '<li><div class="l"><div class="t">' + (safeUrl(c.url) ? ext(c.url, esc(c.title), '') : esc(c.title)) + '</div><div class="u">' + esc([c.by, dayFmt(String(c.at).slice(0, 10), { day: 'numeric', month: 'short' })].filter(Boolean).join(' · ')) + '</div></div></li>';
+      }).join('') + '</ul>' : '<div class="esu-empty">' + (w.pending ? 'Loading…' : 'Nothing in the Mentorship Circle yet.') + '</div>') +
+        '<div class="esu-acts" style="margin-top:10px">' + ext(r.circleUrl, 'Open the Mentorship Circle', 'esu-btn out') + '</div>';
+    } else if (state.room === 'jacob') {
+      body = '<p class="esu-muted" style="margin-bottom:12px">A private message to Jacob in Circle, for anything you’d rather not put in the group.</p><div class="esu-acts">' + ext(r.messageUrl, 'Message Jacob', 'esu-btn pri') + '</div>';
+    } else {
+      body = (r.chat && r.chat.length ? '<div class="esu-chat" role="log" aria-label="Latest messages in the cohort chat">' + r.chat.slice(-8).map(function (m) {
+          return '<div class="esu-msg"><div class="esu-msgh"><b>' + esc(m.who) + '</b>' + (m.mentor ? '<span class="esu-tag">MENTOR</span>' : '') + '<span class="esu-mono">' + esc(fmtTime(m.at, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })) + '</span></div><div class="esu-msgb">' + esc(m.text) + '</div></div>';
+        }).join('') + '</div>' : '<div class="esu-empty">' + (w.pending ? 'Loading…' : 'Say hello to your cohort.') + '</div>') +
         '<div class="esu-say"><label for="esu-say" style="position:absolute;left:-9999px">Write to your cohort</label><textarea id="esu-say" rows="2" maxlength="1500" data-in="say" placeholder="Write to your cohort…" style="' + FIELD + '">' + esc(state.say) + '</textarea>' +
         '<button type="button" class="esu-btn pri" data-act="send-chat"' + (state.busy === 'chat' ? ' disabled' : '') + '>' + (state.busy === 'chat' ? 'Sending…' : 'Send') + '</button></div>' +
         (state.msg && state.room === 'chat' ? '<p class="esu-err" role="alert" style="margin-top:8px">' + esc(state.msg) + '</p>' : '') +
         '<div class="esu-acts" style="margin-top:10px">' + link(r.chatUrl, 'Open the full chat', 'esu-btn out') + '</div>';
-    return '<section class="esu-card" data-g="room">' + hd('The mentorship room') + pinned + body + '</section>';
+    }
+    return '<section class="esu-card" data-g="room">' + hd('The mentorship room') + bar + pinned + body + '</section>';
   }
 
   function hoursCard(w) {
@@ -289,12 +311,12 @@
     }).join('') + '</div>';
     var recent = w.home.recent, names = {}; f.components.forEach(function (c) { names[c.id] = c.name; });
     var rec = recent.length ? '<div class="esu-eye" style="color:#5A5346;margin:16px 0 4px">Recent entries</div><ul class="esu-rows">' + recent.map(function (e) {
-      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.note ? ' · ' + esc(e.note) : '') + '</div></div><span class="' + (e.state === 'pending' ? '' : 'esu-ok') + '" style="font-size:13px;' + (e.state === 'pending' ? 'color:#A5432A;font-weight:600' : '') + '">' + (e.state === 'pending' ? 'Pending Jacob · <button type="button" class="esu-lnk" data-act="remove-hours" data-id="' + esc(e.id) + '">Remove</button>' : 'Credited') + '</span></li>';
+      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.note ? ' · ' + esc(e.note) : '') + '</div></div><span class="' + (e.state === 'pending' ? '' : 'esu-ok') + '" style="font-size:13px;' + (e.state === 'pending' ? 'color:#A5432A;font-weight:600' : '') + '">' + (e.state === 'pending' ? 'Pending Jacob · <button type="button" class="esu-lnk" data-act="remove-hours" data-id="' + esc(e.id) + '">Remove</button>' : 'Credited' + (/^articulation:/.test(e.detail || '') ? ' · <button type="button" class="esu-lnk" data-act="take-back" data-id="' + esc(String(e.detail).split(':')[1]) + '">Take back</button>' : '')) + '</span></li>';
     }).join('') + '</ul>' : '<p class="esu-muted" style="margin-top:14px">Your record starts with your first observation or Practicum.</p>';
     return '<section class="esu-card" data-g="hours">' + hd('Formation hours', '<span class="esu-mono">' + f.total + ' of ' + f.target + '</span>') + '<div class="esu-bar" style="margin:0 0 14px" role="progressbar" aria-valuemin="0" aria-valuemax="' + f.target + '" aria-valuenow="' + f.total + '" aria-label="Formation hours"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div>' +
       comps + rec +
       '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" data-act="open-hours">Log hours</button></div>' +
-      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Log observation, practice-teaching, peer articulation and retreat practicum here.</p></section>';
+      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Log observation, practice-teaching and retreat practicum here. Peer articulation has its own card.</p></section>';
   }
 
   function feedbackCard(w) {
@@ -345,12 +367,19 @@
   }
 
   function partnerCard(w) {
-    var p = w.home.partner;
+    var p = w.home.partner, a = w.home.articulation;
     if (!p) return '';
-    var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email }], many = list.length > 1;
-    return '<section class="esu-card" data-g="partner"><div class="esu-eye" style="color:#5A5346">Your peer ' + (many ? 'group' : 'partner') + ' · ' + esc(p.month.toUpperCase()) + '</div><h2 class="esu-h2" style="margin:6px 0 2px">' + esc(p.name) + '</h2>' +
-      '<p class="esu-muted" style="margin-bottom:12px">' + (many ? 'The three of you: about an hour of articulation together before the immersion.' : 'About an hour of articulation before the immersion.') + '</p><div class="esu-acts">' +
-      list.map(function (x) { return ext('mailto:' + x.email, 'Message ' + esc(String(x.name).split(' ')[0]), 'esu-btn out'); }).join('') + '</div></section>';
+    var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email, where: '' }], many = list.length > 1, rot = a.rotation;
+    var eye = 'Articulation' + (rot ? ' · Rotation ' + rot.n + ' of ' + rot.of + (rot.label ? ' · ' + rot.label : '') : ' · ' + p.month);
+    var win = p.window ? '<div class="esu-win"><div class="esu-eye" style="color:#5A5346">A window that suits ' + (many ? 'all of you' : 'you both') + '</div><b>' + esc(p.window.days) + ', ' + esc(p.window.spans[0].text) + ' ' + esc(p.window.spans[0].label) + '</b>' +
+      '<div class="esu-muted">' + p.window.spans.slice(1).map(function (x) { return esc(x.text) + ' in ' + esc(x.label); }).join(' · ') + '</div></div>'
+      : (list.every(function (x) { return x.where; }) ? '<p class="esu-muted" style="margin-bottom:10px;font-size:13px">No two hours between 8 am and 9 pm suit everyone. Choose a time together in your chat.</p>' : '');
+    var dots = ''; for (var i = 0; i < a.target; i++) dots += '<span class="esu-dot' + (i < a.sessions ? ' on' : '') + '"></span>';
+    var next = rot && rot.next ? '<p class="esu-muted" style="font-size:13px;margin-top:10px">Rotation ' + rot.next.n + ' starts ' + esc(dayFmt(rot.next.from, { day: 'numeric', month: 'long' })) + ' with a new partner.</p>' : '';
+    return '<section class="esu-card" data-g="partner"><div class="esu-eye" style="color:#5A5346">' + esc(eye.toUpperCase()) + '</div><h2 class="esu-h2" style="margin:6px 0 2px">' + esc(p.name) + '</h2>' +
+      list.map(function (x) { return x.where ? '<p class="esu-muted" style="margin:0 0 2px">' + (many ? esc(String(x.name).split(' ')[0]) + ': ' : '') + esc(x.where) + '</p>' : ''; }).join('') +
+      '<div style="margin-top:10px">' + win + '</div><div class="esu-dots" style="margin:8px 0"><span aria-hidden="true" style="display:inline-flex;gap:6px">' + dots + '</span><span class="esu-muted" style="margin-left:6px;font-size:13.5px">' + Math.min(a.sessions, a.target) + ' of ' + a.target + ' sessions · about an hour each</span></div>' +
+      '<div class="esu-acts" style="margin-top:6px">' + (p.chatUrl ? ext(p.chatUrl, 'Open your pair chat', 'esu-btn out') : '') + list.map(function (x) { return ext('mailto:' + x.email, 'Message ' + esc(String(x.name).split(' ')[0]), 'esu-btn out'); }).join('') + '</div>' + next + '</section>';
   }
 
   var FIELD = 'display:block;width:100%;font:16px IBM Plex Sans,system-ui,sans-serif;padding:10px 12px;border:1px solid #E3D8C6;border-radius:8px;background:#fff;color:#1E1A14;min-height:44px';
@@ -362,7 +391,7 @@
     if (m.type === 'hours') {
       var k = KINDS[f.kind] || KINDS.observation;
       body = '<h2 class="esu-h2">Log hours</h2>' +
-        field('What kind of hours', '<select id="esu-kind" data-in="kind" style="' + FIELD + '">' + Object.keys(KINDS).map(function (x) { return '<option value="' + x + '"' + (x === f.kind ? ' selected' : '') + '>' + KINDS[x][0] + '</option>'; }).join('') + '</select>', 'esu-kind') +
+        field('What kind of hours', '<select id="esu-kind" data-in="kind" style="' + FIELD + '">' + Object.keys(KINDS).filter(function (x) { return x !== 'peer'; }).map(function (x) { return '<option value="' + x + '"' + (x === f.kind ? ' selected' : '') + '>' + KINDS[x][0] + '</option>'; }).join('') + '</select>', 'esu-kind') +
         '<p class="esu-muted" style="font-size:13px;margin-top:4px">' + esc(k[1]) + '</p>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('Date', '<input id="esu-day" type="date" data-in="day" value="' + esc(f.day) + '" max="' + esc(localToday()) + '" style="' + FIELD + '">', 'esu-day') + '</div><div>' +
         field('Hours', '<input id="esu-hrs" type="number" inputmode="decimal" step="0.25" min="0.25" max="12" data-in="hours" value="' + esc(f.hours) + '" style="' + FIELD + '">', 'esu-hrs') + '</div></div>' +
@@ -370,6 +399,24 @@
         field('Notes (optional)', '<textarea id="esu-notes" rows="3" maxlength="200" data-in="notes" style="' + FIELD + '">' + esc(f.notes) + '</textarea>', 'esu-notes') +
         '<p class="esu-muted" style="font-size:13px;margin:10px 0 14px">Jacob confirms each entry. It shows as pending until he does, then counts toward your 100 hours.</p>' +
         '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-hours"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log these hours') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
+    } else if (m.type === 'articulation') {
+      var p = w.home.partner, partners = (p && p.partners) || [], cohort = w.home.cohort || [], art = w.home.articulation, who = f.with || {};
+      var nameOf = function (e) { var x = partners.concat(cohort).filter(function (q) { return q.email === e; })[0]; return x ? String(x.name).split(' ')[0] : 'your partner'; };
+      var present = partners.map(function (q) { return q.email; }).filter(function (e) { return who[e] !== false; }).concat(f.third ? [f.third] : []);
+      body = '<div class="esu-eye">Articulation' + (art.rotation ? ' · Rotation ' + art.rotation.n : '') + '</div><h2 class="esu-h2" style="margin:2px 0 4px">Log an articulation session</h2>' +
+        '<p class="esu-muted" style="font-size:13px">One card logs the session for everyone who was there, so your partner doesn’t need to.</p>' +
+        '<div class="esu-eye" style="color:#5A5346;margin:14px 0 4px">Who was there</div><div class="esu-who"><span class="esu-tk on" style="cursor:default">You</span>' +
+        partners.map(function (q) { return '<label><input type="checkbox" data-in="with:' + esc(q.email) + '"' + (who[q.email] !== false ? ' checked' : '') + '> ' + esc(String(q.name).split(' ')[0]) + '</label>'; }).join('') +
+        (cohort.length && partners.length < 2 ? (f.addThird ? '<select id="esu-third" data-in="third" aria-label="A third person" style="' + FIELD + ';width:auto"><option value="">Choose a third person…</option>' + cohort.map(function (q) { return '<option value="' + esc(q.email) + '"' + (f.third === q.email ? ' selected' : '') + '>' + esc(q.name) + '</option>'; }).join('') + '</select>' : '<button type="button" class="esu-lnk" data-act="add-third">+ Add a third (trio)</button>') : '') + '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('Date', '<input id="esu-day" type="date" data-in="day" value="' + esc(f.day) + '" max="' + esc(localToday()) + '" style="' + FIELD + '">', 'esu-day') + '</div><div>' +
+        field('Length (hours)', '<input id="esu-hrs" type="number" inputmode="decimal" step="0.25" min="0.25" max="6" data-in="hours" value="' + esc(f.hours) + '" style="' + FIELD + '">', 'esu-hrs') + '</div></div>' +
+        field('What you articulated <span style="font-weight:400;color:#5A5346">(a term or passage, e.g. <i>paryavasāna</i>)</span>', '<input id="esu-mine" type="text" maxlength="300" data-in="mine" value="' + esc(f.mine) + '" style="' + FIELD + '">', 'esu-mine') +
+        present.map(function (e) { return field('What ' + esc(nameOf(e)) + ' articulated <span style="font-weight:400;color:#5A5346">(optional)</span>', '<input id="esu-t-' + esc(e) + '" type="text" maxlength="300" data-in="term:' + esc(e) + '" value="' + esc((f.terms || {})[e] || '') + '" style="' + FIELD + '">', 'esu-t-' + esc(e)); }).join('') +
+        '<div class="esu-eye" style="color:#5A5346;margin:16px 0 0">One instruction line, rewritten <span style="text-transform:none;letter-spacing:0">(optional)</span></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('Before', '<textarea id="esu-before" rows="2" maxlength="300" data-in="before" style="' + FIELD + '">' + esc(f.before) + '</textarea>', 'esu-before') + '</div><div>' + field('After', '<textarea id="esu-after" rows="2" maxlength="300" data-in="after" style="' + FIELD + '">' + esc(f.after) + '</textarea>', 'esu-after') + '</div></div>' +
+        field('What your partner reflected back <span style="font-weight:400;color:#5A5346">(one sentence, optional)</span>', '<input id="esu-refl" type="text" maxlength="300" data-in="reflected" value="' + esc(f.reflected) + '" style="' + FIELD + '">', 'esu-refl') +
+        '<p class="esu-muted" style="font-size:13px;margin:12px 0 14px">Logs the hours for everyone named, so your partner doesn’t log it again. Your before-and-after line goes into the cohort’s cue bank.</p>' +
+        '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-articulation"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log this session') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else {
       var a = w.due.items.filter(function (x) { return x.id === m.id; })[0];
       if (!a) return '';
@@ -413,8 +460,10 @@
     if (k === 'say') { state.say = e.target.value; return; }
     if (k === 'ask') { state.ask = e.target.value; return; }
     if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
+    if (k.indexOf('with:') === 0) { (state.form.with = state.form.with || {})[k.slice(5)] = e.target.checked; render(); return; }
+    if (k.indexOf('term:') === 0) { (state.form.terms = state.form.terms || {})[k.slice(5)] = e.target.value; return; }
     state.form[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    if (k === 'kind') render();
+    if (k === 'kind' || k === 'third') render();
   }
   // File uploads go straight from the browser to a private store: load the small upload helper on first use
   function loadBlob() {
@@ -451,7 +500,15 @@
       act('chat', function () { return call('/api/member/this-week/chat', { text: txt }).then(function (r) { state.say = ''; state.data.home.room.chat = r.chat; return null; }); });
       return;
     }
-    if (a === 'open-articulation') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'peer', day: localToday(), hours: '', detail: '', notes: '' }; render(); return; }
+    if (a === 'open-articulation') { state.modal = { type: 'articulation' }; state.msg = ''; state.form = { day: localToday(), hours: '1', mine: '', terms: {}, with: {}, third: '', addThird: false, before: '', after: '', reflected: '' }; render(); return; }
+    if (a === 'add-third') { state.form.addThird = true; render(); var th = root.querySelector('#esu-third'); if (th) th.focus(); return; }
+    if (a === 'take-back') { var aid = t.dataset.id; if (!window.confirm('Take this session back? The hours go for everyone who was there.')) return; act('articulation', function () { return call('/api/member/this-week/articulation', { remove: aid, today: localToday(), tz: myZone() }); }); return; }
+    if (a === 'save-articulation') {
+      var g = state.form, pp = (state.data.home.partner && state.data.home.partner.partners) || [];
+      var ppl = pp.map(function (q) { return q.email; }).filter(function (e) { return g.with[e] !== false; }).concat(g.third ? [g.third] : []);
+      act('modal', function () { return call('/api/member/this-week/articulation', { day: g.day, hours: g.hours, present: ppl, mine: g.mine, terms: g.terms, before: g.before, after: g.after, reflected: g.reflected, today: localToday(), tz: myZone() }).then(function (d) { state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });
+      return;
+    }
     if (a === 'ask') {
       var qt = state.ask; state.msgFor = 'ask';
       act('ask', function () { return call('/api/member/this-week/question', { text: qt }).then(function (r) { state.ask = ''; state.questions = r.questions; return null; }); });

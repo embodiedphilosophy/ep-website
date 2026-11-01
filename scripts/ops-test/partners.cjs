@@ -23,10 +23,20 @@ const cookie = require('fs').readFileSync(__dirname + '/out/cookie.txt', 'utf8')
       await p.click('text=Back to two'); // the third person becomes unpaired
       assert.match(await p.innerText('.ops-partners'), /3 pairs.*not yet paired: \w+/);
       await p.click('text=Suggest again'); // dirty → no confirm needed; new arrangement
+      assert.equal(await p.locator('text=Save for both months of the rotation').count(), 1, 'the rotation option is there');
+      await p.fill('input[aria-label="Group 1 chat link"]', 'https://ss.example/c/pair-1');
       await p.click('button.primary');
       await p.waitForSelector('text=Saved. Mentees see these partners now.');
       await p.screenshot({ path: `${__dirname}/out/partners-${vw}-saved.png`, fullPage: true });
+      const log = require('fs').readFileSync(__dirname + '/out/mock.log', 'utf8');
+      assert.ok((log.match(/APPENDED[^\n]*Mentee Partners/g) || []).length >= 6, 'three pairs written for each of the two months of the rotation');
+      assert.match(log, /pair-1/, 'the chat link is written to the pairs');
       await p.reload({ waitUntil: 'networkidle' }); await p.waitForSelector('.ops-pair');
+      assert.equal(await p.inputValue('input[aria-label="Group 1 chat link"]'), 'https://ss.example/c/pair-1', 'the chat link comes back');
+      // where everyone lives
+      await p.fill('input[aria-label^="City for"] >> nth=0', 'Milan'); await p.fill('input[aria-label^="Time zone for"] >> nth=0', 'Europe/Rome');
+      await p.click('text=Save places'); await p.waitForSelector('text=Saved. Mentees see the new places now.');
+      await p.fill('input[aria-label^="Time zone for"] >> nth=1', 'Mars/Olympus'); await p.click('text=Save places'); await p.waitForSelector('text=isn’t a time zone we know');
       assert.equal(await p.locator('.ops-pair').count(), 3, 'what was saved is what comes back');
       // change one person's partner, save: only that pair changes (the old pair is hidden, the new one added)
       await p.click('text=Remove >> nth=0'); await p.click('button.primary'); await p.waitForSelector('text=Saved.');

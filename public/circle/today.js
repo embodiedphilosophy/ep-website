@@ -244,6 +244,17 @@
     out.upNext = (h.nextFour || []).slice(0, 3);
     return out;
   }
+  // Study pods: a small card for Sādhana School students (the card stays away when pods are off or the member isn't eligible)
+  function podsHtml() {
+    var d = state.pods; if (!d || !d.on) return '';
+    var rows = d.pods.slice(0, 3).map(function (x) {
+      var st = x.started ? x.count + ' in' + (x.spots > 0 ? ' · ' + x.spots + ' places left' : ' · full') : x.count + ' of ' + d.min + ' to begin';
+      return '<div class="ept-fr"><span><span class="ept-t">' + esc(x.topic) + (x.mine ? ' · yours' : '') + '</span><span class="ept-s">Led by ' + esc(x.leader) + ' · ' + esc(st) + '</span></span>' + (x.mine && x.roomUrl ? '<a class="ept-btn" href="' + esc(x.roomUrl) + '" target="_top">Join the live room</a>' : x.canJoin ? '<a class="ept-q" href="' + esc(d.url) + '" target="_top">Join</a>' : '') + '</div>';
+    }).join('');
+    var lead = d.leader === 'approved' ? 'You can lead a pod. <a href="' + esc(d.url) + '" target="_top">Start one</a>' : d.leader === 'applied' ? 'Your request to lead a pod is with the team.' : 'Would you like to host one? <a href="' + esc(d.url) + '" target="_top">Ask to lead a pod</a>';
+    return '<section class="ept-card ept-wide" aria-labelledby="ept-pods"><div class="ept-ch"><h2 id="ept-pods" class="ept-h2">Study pods</h2><a class="ept-l" href="' + esc(d.url) + '" target="_top">See all →</a></div>' +
+      (rows || '<span class="ept-s">No pods are open yet.</span>') + '<span class="ept-s" style="display:block;margin-top:8px">' + lead + '</span></section>';
+  }
   function loadData() {
     return Promise.all([
       api('/api/member/today?today=' + localToday() + asParam(), { identity: true }).then(function (d) {
@@ -253,6 +264,7 @@
         loadWisdomHub(d);
         loadMeditationHub(d);
       }).catch(function (e) { state.error = e.message; state.failed = true; if (e.status === 401) store('ep_today_session', ''); }),
+      api('/api/member/pods').then(function (r) { state.pods = r; }).catch(function () { state.pods = null; }),
       mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
       mentorView() ? api('/api/member/submissions').then(function (r) { state.wait = r; }).catch(function (e) { state.waitErr = e.message; }) : null,
       mentorView() ? api('/api/member/portfolio?shared=1&today=' + localToday()).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
@@ -797,7 +809,7 @@
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
     if (!d) return state.failed ? out + '<p class="ept-err" role="status">We couldn’t load Today just now. Please refresh the page.</p>' : skeletonHtml();
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
-      heroHtml() + weekHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
+      heroHtml() + weekHtml() + podsHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
     if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + waitingHtml() + cohortHtml() + '</div>';
     return out;

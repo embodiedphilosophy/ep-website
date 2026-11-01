@@ -11,3 +11,5 @@ A staff version of the Sahṛdaya Upāya "Mentee year" page (Nov 2026): what eac
 
 ## Cohort numbers (widgets PR)
 The Now and Final projects tabs now read the Mentee Schedule and Mentee Step Status tabs (falling back to `data/mentee-year.json` for steps and months): see "Mentee year widgets" in `docs/sahrdaya-upaya-page.md`. The Immersion numbering in the month cards now follows `data/mentee.json` (Immersion 1 is in November).
+
+The mentee year page (`/school/mentee-year`) now has two tabs, the year and the formation manual: see "The formation manual" in `docs/sahrdaya-upaya-page.md`.

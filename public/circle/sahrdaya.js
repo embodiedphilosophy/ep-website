@@ -172,7 +172,7 @@
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
       '.esu-cols>*,.esu-c1>*,.esu-c2>*{order:0}',
-      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=month]{order:2}[data-g=steps]{order:3}[data-g=one]{order:4}[data-g=review]{order:5}[data-g=lanes]{order:6}[data-g=assign]{order:7}[data-g=partner]{order:8}[data-g=hours]{order:9}[data-g=feedback]{order:10}[data-g=room]{order:11}',
+      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=guide]{order:2}[data-g=month]{order:3}[data-g=steps]{order:4}[data-g=one]{order:5}[data-g=review]{order:6}[data-g=lanes]{order:7}[data-g=assign]{order:8}[data-g=partner]{order:9}[data-g=hours]{order:10}[data-g=feedback]{order:11}[data-g=room]{order:12}',
       '.esu-ln-d{display:none}.esu-ln-p{display:block}',
       '.esu[data-tab=formation] [data-g=room]{display:none}.esu[data-tab=room] [data-g]:not([data-g=room]){display:none}',
       '.esu-steps{grid-template-columns:minmax(0,1fr)}.esu-grid2{grid-template-columns:minmax(0,1fr)}.esu-h3{font-size:30px}}'
@@ -444,6 +444,12 @@
     var inner = '<span style="display:flex;gap:6px;align-items:center">' + (dot ? '<i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + dot + '"></i>' : '') + '<span style="font-weight:600">' + main + '</span></span>' + (sub ? '<span style="font-size:12.5px;color:#5A5346">' + sub + '</span>' : '');
     return '<dt class="esu-mono esu-dt">' + label + '</dt><dd class="esu-dd">' + (act ? '<button type="button" class="esu-rowb" data-act="' + act + '">' + inner + '</button>' : inner) + '</dd>';
   }
+  // A visible way into the year page and the manual (they live on /school/mentee-year; not drawn inside Circle)
+  function guideCard(w) {
+    return '<section class="esu-card" data-g="guide"><div class="esu-eye">Start here</div><h2 class="esu-h2" style="margin:6px 0 6px">Your year, and the manual</h2>' +
+      '<p class="esu-muted" style="font-size:14px;margin:0 0 12px">The whole year on one page: the monthly rhythm, every project step with its date, and the one-to-one template. And the formation manual, with the Sanskrit sources in full, to read here or download as a PDF.</p>' +
+      '<div class="esu-acts">' + ext(API + '/school/mentee-year', 'See your year', 'esu-btn pri') + ext(API + '/school/mentee-year?tab=manual', 'Read the manual', 'esu-btn out') + '</div></section>';
+  }
   function monthCard(w) {
     var y = YR(w); if (!y || !y.started || !y.month) return '';
     var m = y.month, h = w.home, rows = '', G = '#B5A88F', A = '#B8801C', OK = '#2E5A4B';
@@ -460,7 +466,7 @@
     rows += o ? dotRow('One-to-one', has ? OK : A, 'Booked ' + esc(dmyT(o.start) + ', ' + hmT(o.start)), has ? 'Summary sent' : 'Summary needed') : dotRow('One-to-one', G, 'Not booked yet', '');
     if (y.review && y.review.state === 'open') rows += dotRow('Review', A, esc(y.review.name + ' review'), y.review.ticked + ' of ' + y.review.total + ' ticked');
     else { var ns = y.steps[0]; if (ns) rows += dotRow('Project step', ns.overdue ? '#A5432A' : '', esc(ns.title), (ns.overdue ? 'was due ' : 'due ') + esc(dmy(ns.date))); }
-    return '<section class="esu-card" data-g="month"><div class="esu-hd" style="margin-bottom:4px"><p class="esu-eye">' + esc(monthName) + ' · Month ' + m.n + ' of ' + m.of + '</p>' + ext(API + '/school/mentee-year', 'The year', 'esu-lnk') + '</div>' +
+    return '<section class="esu-card" data-g="month"><div class="esu-hd" style="margin-bottom:4px"><p class="esu-eye">' + esc(monthName) + ' · Month ' + m.n + ' of ' + m.of + '</p>' + '<span>' + ext(API + '/school/mentee-year', 'The year', 'esu-lnk') + ' · ' + ext(API + '/school/mentee-year?tab=manual', 'The manual', 'esu-lnk') + '</span>' + '</div>' +
       '<h2 class="esu-h2" style="font-style:italic;font-size:23px">' + esc(m.theme) + '</h2>' + (m.focus ? '<p class="esu-muted" style="font-size:13.5px;margin:6px 0 4px">' + esc(m.focus) + '</p>' : '') + '<dl class="esu-dl">' + rows + '</dl></section>';
   }
   var LS = { done: 'background:#2E5A4B;border:2px solid #2E5A4B', due: 'background:#fff;border:2px solid #D2A65A', overdue: 'background:#A5432A;border:2px solid #A5432A', coming: 'background:#fff;border:1.5px solid #B5A88F' };
@@ -645,7 +651,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + stepsCard(w) + lanesCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + guideCard(w) + monthCard(w) + reviewCard(w) + assignCard(w) + oneCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w) + allStepsModal(w);
   }
 
 

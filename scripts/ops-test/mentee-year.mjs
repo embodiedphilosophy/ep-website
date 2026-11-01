@@ -29,10 +29,10 @@ assert.equal(currentMonth(data.months, '2026-11-15').id, '2026-11'); assert.equa
 
 // the quarterly reviews are tick-lists: December, March, June
 const rs = data.reviews;
-assert.deepEqual(rs.map(r => r.month), ['2026-12', '2027-03', '2027-06']); assert.match(rs[0].title, /December · Q1/);
+assert.deepEqual(rs.map(r => r.month), ['2026-11', '2027-03', '2027-06']); assert.match(rs[0].title, /November · Q1/);
 assert.ok(rs.every(r => r.checks.length >= 5 && r.checks.every(c => c[0] === c[0].toUpperCase())));
 assert.ok(rs[0].checks.some(c => /competenc/i.test(c)) && rs[1].checks.some(c => /attendance/i.test(c)) && rs[2].checks.some(c => /10 of 10/.test(c)));
-assert.equal(reviewFor(rs, '2026-12-10').month, '2026-12', 'this month’s review'); assert.equal(reviewFor(rs, '2026-11-01').month, '2026-12', 'otherwise the next one'); assert.equal(reviewFor(rs, '2027-07-01'), null);
+assert.equal(reviewFor(rs, '2026-11-10').month, '2026-11', 'this month’s review'); assert.equal(reviewFor(rs, '2026-10-01').month, '2026-11', 'otherwise the next one'); assert.equal(reviewFor(rs, '2027-07-01'), null);
 // the lanes sit in the right columns
 assert.deepEqual(laneStyle({ from: 0, to: 2 }), { gridColumn: '2 / 4' });
 assert.ok([...data.lanes.talk, ...data.lanes.offering].every(b => b.from >= 0 && b.to <= 9 && b.to > b.from));

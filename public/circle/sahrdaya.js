@@ -9,7 +9,7 @@
   var API = 'https://www.embodiedphilosophy.com';
   var PAGE = /^\/c\/mentorship\/?$/;
   var SKEY = 'ep_su_session';
-  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false };
+  var state = { session: null, first: '', ok: null, data: null, error: '', busy: '', msg: '', going: {}, tab: 'formation', room: 'chat', modal: null, form: {}, progress: '', say: '', picks: {}, books: false, ask: '' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
@@ -99,7 +99,11 @@
       '.esu-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 28px;flex-wrap:wrap;margin:6px 0 20px}',
       '.esu-h1{margin:0;font:600 48px/1.05 "Cormorant Garamond",Georgia,serif}.esu-h1 em{color:#A5432A;font-style:italic}',
       '.esu-sub{font-size:13.5px;color:#5A5346;margin-top:6px}',
-      '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif}.esu-tot span{font-size:13px;color:#5A5346}',
+      '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}.esu-tot span{font-size:13px;color:#5A5346}',
+      '.esu-ever{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
+      '.esu-ever .esu-poll{grid-column:1/-1}',
+      '.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
+      '.esu-q{padding:8px 0;border-top:1px solid #E3D8C6;font-size:14px;line-height:1.35}.esu-q a{color:#1E1A14;text-decoration:none;font-weight:500}.esu-q small{display:block;font-size:12px;color:#5A5346;margin-top:2px}.esu-q small b{color:#2E5A4B;font-weight:600}',
       '.esu-bar{height:6px;background:#E3D8C6;border-radius:99px;overflow:hidden;margin-top:6px}.esu-bar i{display:block;height:100%;background:#A5432A;min-width:0}',
       '.esu-bar.sm{height:4px;margin-top:5px}',
       '.esu-note{background:#EADDC6;border:1px solid #E3D8C6;border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:14px}.esu-err{color:#9b2c16;font-size:14px;margin:0 0 12px}',
@@ -130,7 +134,7 @@
       '.esu-tk{flex:none;min-height:36px;padding:0 14px;border-radius:99px;background:#FBF6EE;border:1px solid #E3D8C6;font:600 13px "IBM Plex Sans",system-ui,sans-serif;color:#1E1A14;cursor:pointer}.esu-tk:disabled{opacity:.55}',
       '.esu-tk.on{background:#20302A;color:#fff;border-color:#20302A}',
       '.esu-sk{height:150px;border-radius:8px;background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:esush 1.4s ease-in-out infinite}@keyframes esush{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.esu-sk{animation:none}}',
-      '.esu-chat{display:flex;flex-direction:column;gap:12px;margin:0 0 14px;max-height:340px;overflow-y:auto}.esu-msgh{display:flex;gap:8px;align-items:baseline;font-size:13.5px}.esu-msgh .esu-mono{margin-left:auto}.esu-msgb{font-size:14.5px;white-space:pre-wrap;word-break:break-word;margin-top:2px}.esu-tag{font:500 10px IBM Plex Mono,ui-monospace,monospace;letter-spacing:.1em;background:#A5432A;color:#fff;border-radius:99px;padding:1px 8px}',
+      '.esu-chat{display:flex;flex-direction:column;gap:14px;margin:0 -20px 14px;padding:16px 20px;max-height:340px;overflow-y:auto;background:#FBF6EE;color:#1E1A14;border-top:1px solid #E3D8C6;border-bottom:1px solid #E3D8C6}.esu-chat *{color:#1E1A14}.esu-chat .esu-mono{color:#5A5346}.esu-chat .esu-tag{color:#fff}.esu-msgh{display:flex;gap:8px;align-items:baseline;font-size:13.5px}.esu-msgh .esu-mono{margin-left:auto}.esu-msgb{font-size:14.5px;white-space:pre-wrap;word-break:break-word;margin-top:2px}.esu-tag{font:500 10px IBM Plex Mono,ui-monospace,monospace;letter-spacing:.1em;background:#A5432A;color:#fff;border-radius:99px;padding:1px 8px}',
       '.esu-say{display:flex;gap:10px;align-items:flex-end;margin:0 0 8px}.esu-say textarea{flex:1}',
       '.esu-slot.on{background:#20302A;border-color:#20302A;color:#fff!important}.esu-slot{cursor:pointer;font-family:inherit;min-height:40px}',
       '.esu-book{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0;border-top:1px solid #E3D8C6}.esu-book:first-of-type{border-top:0}.esu-bt{font-weight:600;font-size:16px;line-height:1.3}.esu-ba{font-size:13.5px;color:#5A5346}.esu-bm{padding:14px 0;border-top:1px solid #E3D8C6}.esu-bm.now{background:#F6EFE2;margin:0 -12px;padding:14px 12px;border-radius:8px;border-top:0}',
@@ -143,7 +147,7 @@
       '.esu-tabs button{flex:1;min-height:40px;border:0;border-radius:99px;background:transparent;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;cursor:pointer}.esu-tabs button[aria-selected=true]{background:#20302A;color:#fff}',
       '.esu-cols{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:14px}.esu-c1,.esu-c2{display:contents}',
       '.esu-cols>*,.esu-c1>*,.esu-c2>*{order:0}',
-      '[data-g=immersion]{order:1}[data-g=assign]{order:2}[data-g=one]{order:3}[data-g=books]{order:4}[data-g=partner]{order:5}[data-g=hours]{order:6}[data-g=feedback]{order:7}[data-g=room]{order:8}',
+      '[data-g=ever]{order:0}[data-g=immersion]{order:1}[data-g=assign]{order:2}[data-g=one]{order:3}[data-g=books]{order:4}[data-g=partner]{order:5}[data-g=hours]{order:6}[data-g=feedback]{order:7}[data-g=room]{order:8}',
       '.esu[data-tab=formation] [data-g=room]{display:none}.esu[data-tab=room] [data-g]:not([data-g=room]){display:none}',
       '.esu-steps{grid-template-columns:minmax(0,1fr)}.esu-grid2{grid-template-columns:minmax(0,1fr)}.esu-h3{font-size:30px}}'
     ].join('\n');
@@ -185,7 +189,7 @@
   function pollCards(w) {
     return (w.home.polls || []).map(function (p) {
       if (p.final) {
-        return '<section class="esu-card esu-poll" data-g="immersion" style="border-color:#D2A65A"><div class="esu-eye">' + esc(p.title) + '</div><h2 class="esu-h2" style="margin:4px 0 6px">' +
+        return '<section class="esu-card esu-poll" data-g="ever" style="border-color:#D2A65A"><div class="esu-eye">' + esc(p.title) + '</div><h2 class="esu-h2" style="margin:4px 0 6px">' +
           esc(fmtTime(p.final.start, { weekday: 'long', day: 'numeric', month: 'long' })) + ' · ' + esc(fmtTime(p.final.start, { hour: 'numeric', minute: '2-digit' })) + '</h2>' +
           '<p class="esu-muted" style="margin-bottom:12px">Confirmed, in your time (' + esc(myZone().split('/').pop().replace(/_/g, ' ')) + ').' + (p.note ? ' ' + esc(p.note) : '') + '</p>' +
           (p.final.link ? '<div class="esu-acts">' + ext(p.final.link, 'Open the meeting link', 'esu-btn pri') + '</div>' : '') + '</section>';
@@ -194,7 +198,7 @@
       var days = [], by = {};
       p.options.forEach(function (o) { var d = fmtTime(o.start, { weekday: 'long', day: 'numeric', month: 'long' }); if (!by[d]) { by[d] = []; days.push(d); } by[d].push(o); });
       var saved = p.options.filter(function (o) { return o.mine; }).map(function (o) { return o.start; }), dirty = chosen.slice().sort().join() !== saved.slice().sort().join();
-      return '<section class="esu-card esu-poll" data-g="immersion" style="border-color:#D2A65A"><div class="esu-eye">Quick question for you</div><h2 class="esu-h2" style="margin:4px 0 4px">' + esc(p.title) + '</h2>' +
+      return '<section class="esu-card esu-poll" data-g="ever" style="border-color:#D2A65A"><div class="esu-eye">Quick question for you</div><h2 class="esu-h2" style="margin:4px 0 4px">' + esc(p.title) + '</h2>' +
         '<p class="esu-muted" style="margin-bottom:10px">Which of these times could you join? Choose every one that works. Times are in your time (' + esc(myZone().split('/').pop().replace(/_/g, ' ')) + ').' + (p.note ? ' ' + esc(p.note) : '') + '</p>' +
         days.map(function (d) {
           return '<div class="esu-eye" style="color:#5A5346;margin:10px 0 6px">' + esc(d) + '</div><div class="esu-slots" role="group" aria-label="' + esc(d) + '">' + by[d].map(function (o) {
@@ -202,11 +206,42 @@
             return '<button type="button" class="esu-slot' + (on ? ' on' : '') + '" role="checkbox" aria-checked="' + on + '" data-act="pick" data-poll="' + esc(p.id) + '" data-slot="' + esc(o.start) + '">' + (on ? '✓ ' : '') + esc(fmtTime(o.start, { hour: 'numeric', minute: '2-digit' })) + '</button>';
           }).join('') + '</div>';
         }).join('') +
-        '<div class="esu-acts" style="margin-top:12px"><button type="button" class="esu-btn pri" data-act="save-poll" data-poll="' + esc(p.id) + '"' + (!dirty || state.busy === 'poll' ? ' disabled' : '') + '>' + (state.busy === 'poll' ? 'Saving…' : saved.length && !dirty ? 'Saved ✓' : 'Save my times') + '</button></div>' +
+        '<div class="esu-acts" style="margin-top:12px"><button type="button" class="esu-btn pri" data-act="save-poll" data-poll="' + esc(p.id) + '"' + (state.busy === 'poll' || (saved.length && !dirty) ? ' disabled' : '') + '>' + (state.busy === 'poll' ? 'Saving…' : saved.length && !dirty ? 'Saved ✓' : 'Save my times') + '</button>' + (!chosen.length && !saved.length ? '<span class="esu-muted" style="font-size:13px">Choose every time that works first</span>' : '') + '</div>' +
         (saved.length && !dirty ? '<p class="esu-muted" style="margin-top:8px;font-size:13px">Thank you. Jacob will confirm the time here. You can change your answer until then.</p>' : '') +
         (state.msg && state.msgFor === 'poll' ? '<p class="esu-err" role="alert" style="margin-top:8px">' + esc(state.msg) + '</p>' : '') + '</section>';
     }).join('');
   }
+
+  // The evergreen row: Articulation, Questions for the Group, this month's reflection, and a survey while one is open
+  function articulationCard(w) {
+    var a = w.home.articulation, r = a.rotation;
+    var eye = 'Articulation' + (r ? ' · Rotation ' + r.n + ' · ' + r.weeksLeft + (r.weeksLeft === 1 ? ' week' : ' weeks') + ' left' : '');
+    var dots = ''; for (var i = 0; i < a.target; i++) dots += '<span class="esu-dot' + (i < a.sessions ? ' on' : '') + '"></span>';
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">' + esc(eye) + '</div><h2 class="esu-h2">Had a session with your partner?</h2>' +
+      '<div class="esu-dots" aria-hidden="true">' + dots + '<span class="esu-muted" style="margin-left:6px;font-size:13.5px">' + Math.min(a.sessions, a.target) + ' of ' + a.target + ' this rotation · ' + a.hours + ' of ' + a.hoursTarget + ' hrs for the year</span></div>' +
+      '<p class="esu-muted" style="font-size:13.5px">One card logs it for both of you, and your rewritten cue goes into the cue bank.</p>' +
+      '<div class="esu-btm"><button type="button" class="esu-btn pri" data-act="open-articulation">Log an articulation session</button></div></section>';
+  }
+  function questionsCard(w) {
+    var q = w.home.questions;
+    if (!q.on) return '';
+    var list = state.questions || q.latest;
+    var rows = list.length ? list.map(function (p) {
+      return '<div class="esu-q">' + (safeUrl(p.url) ? ext(p.url, esc(p.title), '') : esc(p.title)) + '<small>' + esc(p.by || 'A mentee') + ' · ' + p.answers + (p.answers === 1 ? ' answer' : ' answers') + (p.staff ? ' · <b>Jacob answered</b>' : '') + '</small></div>';
+    }).join('') : '<p class="esu-muted" style="font-size:13.5px">No questions yet. Be the first to ask.</p>';
+    return '<section class="esu-card" data-g="ever"><div class="esu-hd" style="margin:0"><span class="esu-eye">Questions for the group</span>' + (safeUrl(q.url) && q.total ? ext(q.url, 'All ' + q.total, 'esu-lnk') : '') + '</div>' +
+      '<h2 class="esu-h2">Ask the cohort, or Jacob</h2>' + rows +
+      '<div class="esu-say esu-btm"><label for="esu-ask" style="position:absolute;left:-9999px">Ask the group</label><input id="esu-ask" type="text" maxlength="240" data-in="ask" value="' + esc(state.ask) + '" placeholder="Ask the group…" style="' + FIELD + '">' +
+      '<button type="button" class="esu-btn pri" data-act="ask"' + (state.busy === 'ask' ? ' disabled' : '') + '>' + (state.busy === 'ask' ? 'Asking…' : 'Ask') + '</button></div>' +
+      (state.msg && state.msgFor === 'ask' ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') + '</section>';
+  }
+  function reflectionCard(w) {
+    var r = w.home.reflection, month = dayFmt(r.month + '-01', { month: 'long' });
+    return '<section class="esu-card" data-g="ever"><div class="esu-eye">Your ' + esc(month) + ' reflection</div><h2 class="esu-h2">Write your ' + esc(month) + ' reflection</h2>' +
+      '<p class="esu-muted" style="font-size:13.5px">Write it, share it with the cohort, and revise it from what they say.</p>' +
+      (safeUrl(r.url) ? '<div class="esu-btm esu-acts">' + link(r.url, 'Open Reflections', 'esu-btn pri') + '</div>' : '<p class="esu-muted esu-btm" style="font-size:13px">Reflections opens here soon.</p>') + '</section>';
+  }
+  function evergreen(w) { return '<div class="esu-ever">' + articulationCard(w) + questionsCard(w) + reflectionCard(w) + pollCards(w) + '</div>'; }
 
   function immersionCard(w) {
     var im = w.home.immersion;
@@ -362,20 +397,21 @@
     if (!w) return head('Opening your page…') + '<div class="esu-cols"><div class="esu-c1"><div class="esu-sk"></div><div class="esu-sk"></div></div><div class="esu-c2"><div class="esu-sk"></div></div></div>';
     var g = w.greeting, im = w.home.immersion, f = w.formation;
     var sub = esc(dayFmt(w.today, { weekday: 'long', day: 'numeric', month: 'long' })) + (im ? ' · ' + (im.happening ? 'Immersion ' + im.n + ' is this weekend' : im.daysTo + ' days to Immersion ' + im.n) : '') + ' · week ' + g.week + ' of ' + esc(g.seasonTitle);
-    var tot = f ? '<div class="esu-tot"><b>' + f.total + '</b> <span>of ' + f.target + ' hours</span><div class="esu-bar"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div></div>' : '';
+    var hs = w.home.hours, tot = f ? '<div class="esu-tot"><b>' + hs.confirmed + '</b> <span>confirmed · ' + hs.pending + ' pending · of ' + f.target + ' hrs</span><div class="esu-bar"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div></div>' : '';
     return head(sub, tot) +
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      '<div class="esu-cols"><div class="esu-c1">' + pollCards(w) + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
   }
 
   var root = null;
-  function render() { if (root && document.body.contains(root)) { root.setAttribute('data-tab', state.tab); root.innerHTML = html(); } }
+  function render() { if (root && document.body.contains(root)) { root.setAttribute('data-tab', state.tab); root.innerHTML = html(); var ch = root.querySelector('.esu-chat'); if (ch) ch.scrollTop = ch.scrollHeight; } }
   function onInput(e) {
     var k = e.target && e.target.dataset && e.target.dataset.in;
     if (!k) return;
     if (k === 'say') { state.say = e.target.value; return; }
+    if (k === 'ask') { state.ask = e.target.value; return; }
     if (k === 'file') { var fl = e.target.files && e.target.files[0]; state.form.file = fl || null; state.form.fileName = fl ? fl.name : ''; render(); return; }
     state.form[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     if (k === 'kind') render();
@@ -415,6 +451,12 @@
       act('chat', function () { return call('/api/member/this-week/chat', { text: txt }).then(function (r) { state.say = ''; state.data.home.room.chat = r.chat; return null; }); });
       return;
     }
+    if (a === 'open-articulation') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'peer', day: localToday(), hours: '', detail: '', notes: '' }; render(); return; }
+    if (a === 'ask') {
+      var qt = state.ask; state.msgFor = 'ask';
+      act('ask', function () { return call('/api/member/this-week/question', { text: qt }).then(function (r) { state.ask = ''; state.questions = r.questions; return null; }); });
+      return;
+    }
     if (a === 'all-books') { state.books = true; render(); return; }
     if (a === 'close-books') { if (t.dataset.bg && e.target !== t) return; state.books = false; render(); return; }
     if (a === 'pick') {
@@ -426,6 +468,7 @@
     if (a === 'save-poll') {
       var pid = t.dataset.poll, picked = state.picks[pid] || [];
       state.msgFor = 'poll';
+      var pl0 = (state.data.home.polls || []).filter(function (x) { return x.id === pid; })[0]; if (!picked.length && !(pl0 && pl0.options.some(function (o) { return o.mine; }))) { state.msg = 'Choose every time that works first.'; render(); return; }
       act('poll', function () { return call('/api/member/this-week/poll', { poll: pid, slots: picked, today: localToday(), tz: myZone() }).then(function (d) { delete state.picks[pid]; return d; }); });
       return;
     }

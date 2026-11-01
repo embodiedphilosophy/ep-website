@@ -117,3 +117,22 @@ assert.deepEqual(sc.body, { rich_text_body: { body: { type: 'doc', content: [{ t
 await assert.rejects(() => CI.sendChatMessage('maya@x.com', 'not-a-room', 'x'), /Unknown chat room/);
 globalThis.fetch = f0; delete process.env.CIRCLE_HEADLESS_TOKEN;
 console.log('chat send: ok');
+
+// Round 2 · evergreen row: rotation, articulation dots, hours split, questions
+const cfg = { ...config, rotations: [{ n: 1, from: '2026-10-01', to: '2026-11-30', label: 'Oct–Nov' }, { n: 2, from: '2026-12-01', to: '2027-01-31', label: 'Dec–Jan' }], articulation_target: 2, questions_space_id: 99 };
+let rot = H.rotationFor(cfg.rotations, '2026-11-01');
+assert.equal(rot.n, 1); assert.equal(rot.weeksLeft, 5); assert.equal(rot.next.from, '2026-12-01');
+assert.equal(H.rotationFor(cfg.rotations, '2026-11-30').weeksLeft, 1, 'last day still counts as a week left');
+assert.equal(H.rotationFor(cfg.rotations, '2026-12-01').n, 2);
+assert.equal(H.rotationFor(cfg.rotations, '2027-02-01'), null);
+const form = { total: 0.5, target: 100, components: [{ id: 'peer', target: 8 }], entries: [
+  { component: 'peer', hours: 1, day: '2026-10-28', status: 'pending' }, { component: 'peer', hours: 1.5, day: '2026-09-01', status: 'credited' },
+  { component: 'observation', hours: 1.5, day: '2026-10-28', status: 'pending' }] };
+const art = H.articulationFor(form, cfg, '2026-11-01');
+assert.deepEqual([art.sessions, art.target, art.hours, art.hoursTarget], [1, 2, 2.5, 8], 'one session in this rotation; 2.5 hrs logged for the year');
+assert.deepEqual(H.hoursSplit(form), { confirmed: 0.5, pending: 2.5, target: 100 });
+assert.deepEqual(H.hoursSplit(null), { confirmed: 0, pending: 0, target: 100 });
+const hq = H.buildHome({ formation: form, due: { items: [] }, sessions: [], oneToOne: null }, { config: cfg, today: '2026-11-01', tz: 'UTC', partner: null, questions: [{ id: '1', title: 'Q1' }, { id: '2', title: 'Q2' }, { id: '3', title: 'Q3' }] }).home;
+assert.equal(hq.questions.on, true); assert.equal(hq.questions.latest.length, 2); assert.equal(hq.questions.total, 3);
+assert.equal(H.questionsFor([], config).on, false, 'no space id → card hidden');
+console.log('evergreen row: ok');

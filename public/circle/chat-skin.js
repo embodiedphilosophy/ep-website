@@ -31,6 +31,10 @@
   var CSS = [
     // the chat area sits on Circle's page colour, with the message list and composer on it
     '[data-testid=chat-room-wrapper],[data-testid=chat-room-wrapper] .bg-primary,[data-testid=chat-room-wrapper] .bg-secondary{background-color:#F2E8D6!important}',
+    // message text in ink on the cream page (a student saw white text on off-white): explicit colours, names and times a little softer
+    '[data-testid=chat-room-wrapper],[data-testid=message-item]{color:#1E1A14!important}',
+    '[data-testid=message-item] :is(.text-default,.text-primary,.text-body,p,span,div){color:#1E1A14!important}',
+    '[data-testid=message-item] :is(.text-secondary,.text-tertiary,time){color:#5A5346!important}',
     // day divider ("Today")
     '#message-scroll-view .border-b{border-color:#D8C9AE!important}',
     '#message-scroll-view .text-label-xs.text-tertiary{font-weight:600!important;letter-spacing:.14em!important;text-transform:uppercase!important;color:#5A5346!important}',

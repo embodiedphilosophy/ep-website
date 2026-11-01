@@ -42,6 +42,7 @@ export default async function MenteeYear({ searchParams }) {
     <Shell user={user} current="mentee-year" eyebrow="Sahṛdaya Upāya · 2026–27 cohort" title="The mentee year"
       head={<nav className="ops-filters" aria-label="Mentee year">{TABS.map(([k, l]) => <a key={k} href={href(k)} aria-current={tab === k ? 'page' : undefined}>{l}</a>)}</nav>}>
       <p className="ops-empty ops-my-lede">{data.lede}</p>
+      <p className="ops-more"><a href="/school/mentee-year" target="_blank" rel="noopener">View the mentee version (what mentees see) →</a></p>
 
       {tab === 'now' && (<div className="ops-my-cols">
         <section>

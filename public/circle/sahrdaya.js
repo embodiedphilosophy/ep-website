@@ -102,6 +102,10 @@
       '.esu-tot{min-width:210px}.esu-tot b{font:600 28px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}.esu-tot span{font-size:13px;color:#5A5346}',
       '.esu-ever{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:0 0 18px}.esu-ever .esu-card{display:flex;flex-direction:column;gap:6px}.esu-ever .esu-h2{font-size:21px}.esu-ever .esu-btm{margin-top:auto;padding-top:10px}',
       '.esu-ever .esu-poll{grid-column:1/-1}',
+      '.esu-bar2{display:flex;overflow:hidden}.esu-bar2 i{display:block;height:100%}.esu-bar2 i.c,.esu-leg i.c{background:#A5432A}.esu-bar2 i.p,.esu-leg i.p{background:#D2A65A}.esu-leg{display:inline-flex;gap:14px;font-size:12.5px;color:#5A5346}.esu-leg span{display:inline-flex;gap:6px;align-items:center}.esu-leg i{width:10px;height:10px;border-radius:2px;display:inline-block}.esu-how{font-size:12.5px;color:#5A5346;margin-top:3px}',
+      '.esu-mc{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px}.esu-mcd{width:22px;height:22px;border-radius:50%;border:1px solid #C9B79A;display:inline-flex;align-items:center;justify-content:center;font:500 10px "IBM Plex Mono",ui-monospace,monospace;color:#5A5346}.esu-mcd.on{background:#A5432A;border-color:#A5432A;color:#fff}.esu-mcd.now{box-shadow:0 0 0 2px #FBF6EE,0 0 0 3px #A5432A}',
+      '.esu-rnote{background:#F4E4DC;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:13.5px}.esu-co{padding:6px 0;border-top:1px solid #E3D8C6}.esu-co:first-of-type{border-top:0}',
+      '.esu-ccs{display:flex;gap:8px;flex-wrap:wrap}.esu-cc{min-height:40px;padding:0 14px;border-radius:99px;border:1px solid #E3D8C6;background:#fff;color:#1E1A14;font:500 13.5px "IBM Plex Sans",system-ui,sans-serif;cursor:pointer}.esu-cc.on{background:#20302A;border-color:#20302A;color:#fff}',
       '.esu-win{background:#F1E9DC;border-radius:8px;padding:10px 14px;margin-bottom:6px}.esu-win b{display:block;font-size:15px}.esu-cues{display:grid;gap:10px;max-height:340px;overflow-y:auto}.esu-cue{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:10px 12px;background:#F6EFE2;border-radius:8px;font-size:14.5px}.esu-cue .esu-eye{margin:0 0 2px}.esu-cuew{grid-column:1/-1;color:#5A5346}.esu-who{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}.esu-who label{display:inline-flex;gap:6px;align-items:center;border:1px solid #E3D8C6;border-radius:99px;padding:6px 12px;background:#fff;font-size:14px}.esu-dots{display:flex;gap:6px;align-items:center;margin:2px 0}.esu-dot{width:18px;height:18px;border-radius:50%;border:2px solid #A5432A;display:inline-block}.esu-dot.on{background:#A5432A}',
       '.esu-q{padding:8px 0;border-top:1px solid #E3D8C6;font-size:14px;line-height:1.35}.esu-q a{color:#1E1A14;text-decoration:none;font-weight:500}.esu-q small{display:block;font-size:12px;color:#5A5346;margin-top:2px}.esu-q small b{color:#2E5A4B;font-weight:600}',
       '.esu-bar{height:6px;background:#E3D8C6;border-radius:99px;overflow:hidden;margin-top:6px}.esu-bar i{display:block;height:100%;background:#A5432A;min-width:0}',
@@ -303,20 +307,43 @@
     return '<section class="esu-card" data-g="room">' + hd('The mentorship room') + bar + pinned + body + '</section>';
   }
 
+  var COMPS = [['genealogy', 'Genealogy & diagnosis'], ['attunement', 'Subtle attunement'], ['speech', 'Ethical speech'], ['transmission', 'Experience-based transmission'], ['curriculum', 'Curriculum design'], ['lineage', 'Lineage & creativity']];
+  var HOW = { immersions: 'Added for you from the Zoom attendance report', 'one-to-ones': 'Added for you when a booking is held', observation: 'You log it, with competencies · Jacob confirms', 'practice-teaching': 'You log it · a partner co-signs · Jacob confirms', peer: 'One of the pair logs a session · both are credited', reflections: 'Counted for you from Reflections · 9 posts', retreat: 'Summer retreat · added for you', assessment: 'Hand-in, assessed against the rubric · revisable once', report: 'Hand-in', competency: 'Open-book quiz' };
+  function compNames(ids) { return (ids || []).map(function (id) { var c = COMPS.filter(function (x) { return x[0] === id; })[0]; return c ? c[1] : ''; }).filter(Boolean).join(', '); }
+  function n2(v) { return Math.round(v * 100) / 100; }
+
+  // Entries waiting for the mentee's own answer: a partner asks them to confirm a class they watched
+  function cosignCard(w) {
+    var list = w.home.cosign || [];
+    if (!list.length) return '';
+    return '<section class="esu-card" data-g="cosign" style="border-color:#D2A65A"><div class="esu-eye">To confirm</div>' + list.map(function (c) {
+      return '<div class="esu-co"><p style="margin:6px 0"><b>' + esc(c.who) + '</b> says you watched their class on ' + esc(dayFmt(c.day, { day: 'numeric', month: 'long' })) + ' for ' + c.hours + (c.hours === 1 ? ' hr' : ' hrs') + '. Confirm?</p><div class="esu-acts"><button type="button" class="esu-btn pri" data-act="cosign" data-id="' + esc(c.id) + '" data-ok="1"' + (state.busy === 'hours' ? ' disabled' : '') + '>Confirm</button><button type="button" class="esu-btn out" data-act="cosign" data-id="' + esc(c.id) + '" data-ok="0"' + (state.busy === 'hours' ? ' disabled' : '') + '>That’s not right</button></div></div>';
+    }).join('') + '</section>';
+  }
+
   function hoursCard(w) {
     var f = w.formation;
     if (!f) return '<section class="esu-card" data-g="hours">' + hd('Formation hours') + '<p class="esu-muted">Your hours record isn’t available just now.</p></section>';
+    var rm = w.home.reflectionMonths, rurl = w.home.reflection && w.home.reflection.url;
     var comps = '<div class="esu-grid2">' + f.components.map(function (c) {
-      return '<div><div class="esu-comp"><span>' + esc(c.name) + '</span><span class="esu-mono">' + c.credited + ' / ' + c.target + '</span></div><div class="esu-bar sm"><i style="width:' + Math.min(100, Math.round(c.credited / c.target * 100)) + '%"></i></div></div>';
+      var conf = Math.min(100, Math.round(c.credited / c.target * 100)), pend = Math.min(100 - conf, Math.round((c.pending || 0) / c.target * 100));
+      var circles = c.id === 'reflections' && rm && rm.months.length ? '<div class="esu-mc" aria-label="Months with a reflection counted">' + rm.months.map(function (m) { return '<span class="esu-mcd' + (m.filled ? ' on' : '') + (m.now ? ' now' : '') + '" title="' + esc(m.ym) + '">' + esc(m.label) + '</span>'; }).join('') + (safeUrl(rurl) ? ' <a href="' + esc(rurl) + '" target="_top" style="font-size:12.5px">Reflections</a>' : '') + '</div>' : '';
+      return '<div><div class="esu-comp"><span>' + esc(c.name) + '</span><span class="esu-mono">' + (c.pending ? c.credited + ' + ' + n2(c.pending) : c.credited) + ' / ' + c.target + '</span></div><div class="esu-bar sm esu-bar2" role="img" aria-label="' + esc(c.name) + ': ' + c.credited + ' confirmed, ' + n2(c.pending || 0) + ' pending, of ' + c.target + '"><i class="c" style="width:' + conf + '%"></i><i class="p" style="width:' + pend + '%"></i></div><div class="esu-how">' + esc(HOW[c.id] || '') + '</div>' + circles + '</div>';
     }).join('') + '</div>';
     var recent = w.home.recent, names = {}; f.components.forEach(function (c) { names[c.id] = c.name; });
     var rec = recent.length ? '<div class="esu-eye" style="color:#5A5346;margin:16px 0 4px">Recent entries</div><ul class="esu-rows">' + recent.map(function (e) {
-      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.note ? ' · ' + esc(e.note) : '') + '</div></div><span class="' + (e.state === 'pending' ? '' : 'esu-ok') + '" style="font-size:13px;' + (e.state === 'pending' ? 'color:#A5432A;font-weight:600' : '') + '">' + (e.state === 'pending' ? 'Pending Jacob · <button type="button" class="esu-lnk" data-act="remove-hours" data-id="' + esc(e.id) + '">Remove</button>' : 'Credited' + (/^articulation:/.test(e.detail || '') ? ' · <button type="button" class="esu-lnk" data-act="take-back" data-id="' + esc(String(e.detail).split(':')[1]) + '">Take back</button>' : '')) + '</span></li>';
+      var st = e.state, tail = st === 'credited' ? '<span class="esu-ok" style="font-size:13px">' + (e.auto ? 'Counted' : 'Credited') + '</span>'
+        : st === 'returned' ? '<span style="font-size:13px;color:#A5432A;font-weight:600">Returned</span>'
+        : '<span style="font-size:13px;color:#7A5A2E;font-weight:600">' + (st === 'awaiting' ? 'Waiting for co-sign' : 'Pending Jacob') + ' · <button type="button" class="esu-lnk" data-act="remove-hours" data-id="' + esc(e.id) + '">Take back</button></span>';
+      var cn = compNames(e.competencies);
+      return '<li><div class="l"><div class="t">' + esc(names[e.component] || e.component) + ' · ' + e.hours + ' h</div><div class="u">' + esc(dayFmt(e.day, { day: 'numeric', month: 'short' })) + (e.detail ? ' · ' + esc(e.detail) : e.note ? ' · ' + esc(e.note) : '') + (cn ? ' · ' + esc(cn) : '') + '</div>' +
+        (st === 'returned' ? '<div class="esu-rnote">' + (e.returnNote ? esc(e.returnNote) : 'Please check this entry and send it again.') + '</div><button type="button" class="esu-tk" style="margin-top:6px" data-act="resend-hours" data-id="' + esc(e.id) + '">Edit and resend</button>' : '') + '</div>' + tail + '</li>';
     }).join('') + '</ul>' : '<p class="esu-muted" style="margin-top:14px">Your record starts with your first observation or Practicum.</p>';
-    return '<section class="esu-card" data-g="hours">' + hd('Formation hours', '<span class="esu-mono">' + f.total + ' of ' + f.target + '</span>') + '<div class="esu-bar" style="margin:0 0 14px" role="progressbar" aria-valuemin="0" aria-valuemax="' + f.target + '" aria-valuenow="' + f.total + '" aria-label="Formation hours"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div>' +
-      comps + rec +
-      '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" data-act="open-hours">Log hours</button></div>' +
-      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Log observation, practice-teaching and retreat practicum here. Peer articulation has its own card.</p></section>';
+    var hs = w.home.hours;
+    return '<section class="esu-card" data-g="hours">' + hd('Formation hours', '<span class="esu-leg"><span><i class="c"></i>Confirmed</span><span><i class="p"></i>Pending Jacob</span></span>') +
+      '<p class="esu-muted" style="margin:-6px 0 10px;font-size:13px">' + hs.confirmed + ' confirmed · ' + hs.pending + ' pending · of ' + f.target + ' hrs</p>' + comps + rec +
+      '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="open-hours">Log hours</button><button type="button" class="esu-btn out" data-act="open-articulation">Log an articulation session</button></div>' +
+      '<p class="esu-muted" style="margin-top:8px;font-size:13px">Immersions, Practicums and one-to-ones are added for you. Log observation, practice-teaching and retreat practicum here.</p></section>';
   }
 
   function feedbackCard(w) {
@@ -335,12 +362,12 @@
       if (it.type === 'handin') {
         var inn = sub && sub.status !== 'draft';
         status = !sub ? (due ? 'Due ' + due : (it.where || '')) : sub.status === 'draft' ? 'Draft saved' : sub.status === 'returned' ? 'Returned by Jacob · ' + dayFmt(sub.at.slice(0, 10), { day: 'numeric', month: 'short' }) : 'Handed in · ' + dayFmt(sub.at.slice(0, 10), { day: 'numeric', month: 'short' }) + ' · with Jacob';
-        action = '<button type="button" class="esu-tk' + (inn && sub.status === 'submitted' ? ' on' : '') + '" data-act="open-handin" data-id="' + esc(it.id) + '">' + (!sub ? 'Hand in' : sub.status === 'draft' ? 'Continue' : sub.status === 'returned' ? 'Hand in again' : 'View') + '</button>';
+        action = '<button type="button" class="esu-tk' + (inn && sub.status === 'submitted' ? ' on' : '') + '" data-act="open-handin" data-id="' + esc(it.id) + '">' + (!sub ? 'Hand in' : sub.status === 'draft' ? 'Continue' : sub.status === 'returned' ? 'Edit and resend' : 'View') + '</button>';
       } else {
         status = it.done ? 'Read' : (due ? 'Due ' + due : (it.where || ''));
         action = '<button type="button" class="esu-tk' + (it.done ? ' on' : '') + '" role="checkbox" aria-checked="' + it.done + '" data-act="tick" data-id="' + esc(it.id) + '" data-done="' + (it.done ? '0' : '1') + '"' + (state.busy === 'tick' + it.id ? ' disabled' : '') + '>' + (it.done ? 'Read ✓' : 'Mark read') + '</button>';
       }
-      return '<li class="' + (it.done ? 'done' : '') + '"><div class="l"><div class="t">' + t + '</div>' + (status ? '<div class="u">' + esc(status) + '</div>' : '') + '</div>' + action + '</li>';
+      return '<li class="' + (it.done ? 'done' : '') + '"><div class="l"><div class="t">' + t + '</div>' + (status ? '<div class="u"' + (sub && sub.status === 'returned' ? ' style="color:#A5432A"' : '') + '>' + esc(status) + '</div>' : '') + (sub && sub.status === 'returned' && sub.note ? '<div class="esu-rnote"><b>Jacob:</b> ' + esc(sub.note) + '</div>' : '') + '</div>' + action + '</li>';
     }).join('') + '</ul>' : '<p class="esu-muted">Nothing due this week. Start with <em>Start Here</em> in the Workbook' + (h.startLessons && h.startLessons.length ? ':</p><ul class="esu-rows" style="margin-top:6px">' + h.startLessons.map(function (l) { return '<li class="' + (l.done ? 'done' : '') + '"><div class="l"><div class="t">' + (safeUrl(l.url) ? ext(l.url, esc(l.name), '') : esc(l.name)) + '</div></div>' + (l.done ? '<span class="esu-ok" style="font-size:13px">Done ✓</span>' : '') + '</li>'; }).join('') + '</ul>' : ': How This Workbook Works, Your Year at a Glance, The Practice &amp; Study Imperative, and Your Monthly 1-on-1 with Jacob.</p>');
     return '<section class="esu-card" data-g="assign">' + hd('Assignments', d.total ? '<span class="esu-mono">' + d.done + ' / ' + d.total + ' IN</span>' : '') +
       '<p class="esu-muted" style="margin:-4px 0 8px;font-size:13px">' + sub + 'Everything you hand in goes to Jacob and into your formation record.</p>' + rows +
@@ -390,15 +417,17 @@
     var body = '', b = state.busy === 'modal';
     if (m.type === 'hours') {
       var k = KINDS[f.kind] || KINDS.observation;
-      body = '<h2 class="esu-h2">Log hours</h2>' +
+      body = '<h2 class="esu-h2">' + (m.resend ? 'Edit and resend' : 'Log hours') + '</h2>' + (m.resend && f.returnNote ? '<div class="esu-rnote" style="margin-top:8px">' + esc(f.returnNote) + '</div>' : '') +
         field('What kind of hours', '<select id="esu-kind" data-in="kind" style="' + FIELD + '">' + Object.keys(KINDS).filter(function (x) { return x !== 'peer'; }).map(function (x) { return '<option value="' + x + '"' + (x === f.kind ? ' selected' : '') + '>' + KINDS[x][0] + '</option>'; }).join('') + '</select>', 'esu-kind') +
         '<p class="esu-muted" style="font-size:13px;margin-top:4px">' + esc(k[1]) + '</p>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('Date', '<input id="esu-day" type="date" data-in="day" value="' + esc(f.day) + '" max="' + esc(localToday()) + '" style="' + FIELD + '">', 'esu-day') + '</div><div>' +
         field('Hours', '<input id="esu-hrs" type="number" inputmode="decimal" step="0.25" min="0.25" max="12" data-in="hours" value="' + esc(f.hours) + '" style="' + FIELD + '">', 'esu-hrs') + '</div></div>' +
         field(esc(k[2]), '<input id="esu-detail" type="text" maxlength="200" data-in="detail" value="' + esc(f.detail) + '" style="' + FIELD + '">', 'esu-detail') +
+        (f.kind === 'observation' || f.kind === 'practice-teaching' ? '<div class="esu-eye" style="color:#5A5346;margin:14px 0 6px">Which competencies did you see?' + (f.kind === 'observation' ? ' <span style="text-transform:none;letter-spacing:0">(choose at least one)</span>' : '') + '</div><div class="esu-ccs" role="group" aria-label="Competencies">' + COMPS.map(function (c) { var on = (f.competencies || []).indexOf(c[0]) >= 0; return '<button type="button" class="esu-cc' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="toggle-comp" data-c="' + c[0] + '">' + esc(c[1]) + '</button>'; }).join('') + '</div>' : '') +
+        (f.kind === 'practice-teaching' ? field('Who watched?', '<select id="esu-watch" data-in="watcher" style="' + FIELD + '"><option value="">Choose…</option>' + ((w.home.partner && w.home.partner.partners) || []).map(function (q) { return '<option value="' + esc(q.email) + '"' + (f.watcher === q.email ? ' selected' : '') + '>' + esc(String(q.name).split(' ')[0]) + ' (your partner)</option>'; }).join('') + '<option value="nobody"' + (f.watcher === 'nobody' ? ' selected' : '') + '>Nobody</option></select><p class="esu-muted" style="font-size:13px;margin-top:4px">A partner who watched is asked to confirm it before it goes to Jacob.</p>', 'esu-watch') : '') +
         field('Notes (optional)', '<textarea id="esu-notes" rows="3" maxlength="200" data-in="notes" style="' + FIELD + '">' + esc(f.notes) + '</textarea>', 'esu-notes') +
         '<p class="esu-muted" style="font-size:13px;margin:10px 0 14px">Jacob confirms each entry. It shows as pending until he does, then counts toward your 100 hours.</p>' +
-        '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-hours"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log these hours') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
+        '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-hours"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : m.resend ? 'Send again' : 'Log these hours') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else if (m.type === 'articulation') {
       var p = w.home.partner, partners = (p && p.partners) || [], cohort = w.home.cohort || [], art = w.home.articulation, who = f.with || {};
       var nameOf = function (e) { var x = partners.concat(cohort).filter(function (q) { return q.email === e; })[0]; return x ? String(x.name).split(' ')[0] : 'your partner'; };
@@ -449,7 +478,7 @@
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
-      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
+      evergreen(w) + '<div class="esu-cols"><div class="esu-c1">' + immersionCard(w) + integrateCard(w) + cosignCard(w) + roomCard(w) + hoursCard(w) + feedbackCard(w) + '</div><div class="esu-c2">' + assignCard(w) + oneCard(w) + bookCard(w) + partnerCard(w) + '</div></div>' + modal(w) + booksModal(w);
   }
 
   var root = null;
@@ -493,7 +522,7 @@
     if (!t || !root.contains(t)) return;
     var a = t.dataset.act;
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
-    if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
+    if (a === 'open-hours') { state.modal = { type: 'hours' }; state.msg = ''; state.form = { kind: 'observation', day: localToday(), hours: '', detail: '', notes: '', competencies: [], watcher: '' }; render(); var k = root.querySelector('#esu-kind'); if (k) k.focus(); return; }
     if (a === 'open-handin') { var it = state.data.due.items.filter(function (x) { return x.id === t.dataset.id; })[0]; var sb = it && it.submission; state.modal = { type: 'handin', id: t.dataset.id }; state.msg = ''; state.form = { text: sb ? sb.text : '', logHours: !!(it && it.hoursComponent), existingName: sb && sb.hasFile ? sb.fileName : '', fileName: sb && sb.hasFile ? sb.fileName : '', existingPath: '' }; render(); return; }
     if (a === 'send-chat') {
       var txt = state.say;
@@ -529,10 +558,16 @@
       act('poll', function () { return call('/api/member/this-week/poll', { poll: pid, slots: picked, today: localToday(), tz: myZone() }).then(function (d) { delete state.picks[pid]; return d; }); });
       return;
     }
+    if (a === 'toggle-comp') { var cs = state.form.competencies || [], ci = cs.indexOf(t.dataset.c); if (ci >= 0) cs.splice(ci, 1); else cs.push(t.dataset.c); state.form.competencies = cs; render(); return; }
+    if (a === 'cosign') { var cid = t.dataset.id, cok = t.dataset.ok === '1'; act('hours', function () { return call('/api/member/this-week/hours', { cosign: cid, ok: cok, today: localToday(), tz: myZone() }); }); return; }
+    if (a === 'resend-hours') { var re = (state.data.home.recent || []).filter(function (x) { return x.id === t.dataset.id; })[0]; if (!re) return; state.modal = { type: 'hours', resend: re.id }; state.msg = ''; state.form = { kind: re.component, day: re.day, hours: String(re.hours), detail: re.detail || '', notes: re.note && !re.detail ? re.note : '', competencies: (re.competencies || []).slice(), watcher: '', returnNote: re.returnNote || '' }; render(); return; }
     if (a === 'remove-hours') { var rid = t.dataset.id; act('hours', function () { return call('/api/member/this-week/hours', { remove: rid, today: localToday(), tz: myZone() }); }); return; }
     if (a === 'save-hours') {
       var f = state.form;
-      act('modal', function () { return call('/api/member/this-week/hours', { component: f.kind, hours: f.hours, day: f.day, detail: f.detail, note: f.notes, today: localToday(), tz: myZone() }).then(function (d) { state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });
+      var body = { component: f.kind, hours: f.hours, day: f.day, detail: f.detail, note: f.notes, competencies: f.competencies || [], today: localToday(), tz: myZone() };
+      if (f.kind === 'practice-teaching') body.watcher = f.watcher || '';
+      if (state.modal && state.modal.resend) body.resend = state.modal.resend;
+      act('modal', function () { return call('/api/member/this-week/hours', body).then(function (d) { state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });
       return;
     }
     if (a === 'submit-handin') { sendHandIn('submitted'); return; }

@@ -153,3 +153,17 @@ assert.equal(C.partnerFor(rrows, 'maya@x.com', 'fall-2026', '2026-12-03', { rota
 assert.equal(C.partnerFor([{ ...rrows[0], chat_url: 'http://insecure' }], 'maya@x.com', 'fall-2026', '2026-11-03', { rotation: 1 }).chatUrl, '', 'only https chat links');
 assert.deepEqual(C.cohortFrom(rrows, 'fall-2026', 'maya@x.com', ['sam@x.com']).map(c => c.email), ['cy@x.com', 'di@x.com', 'lee@x.com'], 'the cohort without me or my partner; hidden rows left out')
 console.log('rotations: ok');
+
+// Round 2 · hours: pending includes entries waiting for a co-sign; recent entries carry their state; the reflection month circles
+const hf = { total: 1, target: 100, components: [{ id: 'observation', target: 10, credited: 1, pending: 1.5 }], entries: [
+  { id: '1', component: 'observation', hours: 1.5, day: '2026-10-28', status: 'pending', competencies: ['attunement'] },
+  { id: '2', component: 'practice-teaching', hours: 2, day: '2026-10-29', status: 'awaiting_cosign', cosigner: 'bo@x.com' },
+  { id: '3', component: 'observation', hours: 1, day: '2026-10-20', status: 'returned', returnNote: 'Which session?' },
+  { id: '4', component: 'observation', hours: 1, day: '2026-10-10', status: 'credited' }] };
+assert.deepEqual(H.hoursSplit(hf), { confirmed: 1, pending: 3.5, target: 100 }, 'pending = waiting for Jacob + waiting for the partner; returned entries are neither');
+const hr = H.buildHome({ formation: hf, due: { items: [] }, sessions: [], oneToOne: null }, { config, today: '2026-11-03', tz: 'UTC', partner: null }).home.recent;
+assert.deepEqual(hr.map(r => r.state), ['pending', 'awaiting', 'returned', 'credited']); assert.equal(hr[2].returnNote, 'Which session?'); assert.deepEqual(hr[0].competencies, ['attunement']);
+const rmo = H.reflectionMonths({ all: [{ starts: '2026-10-21' }, { starts: '2026-11-01' }, { starts: '2026-12-01' }] }, [{ day: '2026-10-30' }], '2026-11-03');
+assert.deepEqual(rmo.months.map(m => [m.label, m.filled, m.now]), [['O', true, false], ['N', false, true], ['D', false, false]]); assert.equal(rmo.counted, 1); assert.equal(rmo.target, 9);
+assert.deepEqual(H.reflectionMonths(null, null, '2026-11-03'), { counted: 0, target: 9, months: [] });
+console.log('hours card data: ok');

@@ -19,6 +19,8 @@ import TaskList from './TaskList';
 import Note from './Note';
 import Meetings from './Meetings';
 import { flagOf } from './SocialGrid';
+import menteeYear from '@/data/mentee-year.json';
+import { nextSteps, currentMonth, daysUntil, PROJECTS } from '@/lib/ops/menteeyear';
 
 const dayLong = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).replace(',', '');
 const shortDate = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -163,6 +165,17 @@ export default async function Home({ searchParams }) {
           <p className="ops-more"><a href="/ops/hours">All hours →</a></p>
         </section></div>)}
         <Meetings programming={programming} team={meetings} director={user.director} stacked />
+        {isStaff(user) && viewing === user && (() => {
+          const steps = nextSteps(menteeYear.steps, todayET(), 3), mo = currentMonth(menteeYear.months, todayET());
+          return (<div className="ops-week stacked" style={{ marginTop: 28 }}><section>
+            <h2>Mentee year</h2>
+            {mo && <p className="ops-empty">{mo.title.split(' ')[0]}: {mo.theme}</p>}
+            {steps.length > 0 && <ul className="ops-my-steps compact">{steps.map((st, i) => (
+              <li key={i} className="ops-my-step"><span className="when"><b>{new Date(`${st.date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(',', '')}</b><small>in {daysUntil(st.date, todayET())} days</small></span><span className="what"><span className={`ops-my-proj ${st.project}`}><i />{PROJECTS[st.project]}</span>{st.title}</span></li>
+            ))}</ul>}
+            <p className="ops-more"><a href="/ops/mentee-year">The mentee year →</a></p>
+          </section></div>);
+        })()}
         {isTeacher(user) && <p className="ops-more"><a href="/ops/team">Contacts and your teacher guide →</a></p>}
       </aside>
       </div>

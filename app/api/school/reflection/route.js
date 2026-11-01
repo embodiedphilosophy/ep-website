@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { currentMember, sameOrigin } from '@/lib/school/session';
 import { memberSpaceIds, createPost } from '@/lib/school/circle';
 import { findSeason, isWired } from '@/lib/school/config';
+import { reflectionFor, threadFor } from '@/lib/school/reflectionthread';
 
 // A reflection posted from the Reflections tab: a post in the season's post space with the Reflections topic.
 export async function POST(req) {
@@ -18,4 +19,16 @@ export async function POST(req) {
     await createPost(me.email, season.hub_space_id, { title: String(title || '').trim().slice(0, 120) || 'Reflection', body: text, topicId: season.topic_ids.reflections });
     return NextResponse.json({ ok: true });
   } catch (e) { return NextResponse.json({ error: e.status === 429 ? 'Circle is busy. Try again in a minute.' : 'We could not post your reflection. Please try again.' }, { status: 502 }); }
+}
+
+// The replies under one reflection: GET ?programme=&season=&post=
+export async function GET(req) {
+  const me = await currentMember();
+  if (!me) return NextResponse.json({ error: 'Please sign in again from Circle.' }, { status: 401 });
+  const q = new URL(req.url).searchParams;
+  try {
+    const r = await reflectionFor(me.email, q.get('programme'), q.get('season'), q.get('post'));
+    if (r.error) return NextResponse.json({ error: r.error }, { status: r.status });
+    return NextResponse.json(await threadFor(me.email, r.post));
+  } catch (e) { return NextResponse.json({ error: e.status === 429 ? 'Circle is busy. Try again in a minute.' : 'We could not load the replies. Please try again.' }, { status: 502 }); }
 }

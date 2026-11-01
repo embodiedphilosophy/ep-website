@@ -75,9 +75,11 @@ assert.equal(t.reflections.count, 1, 'one reflection in the last 14 days, none s
 assert.equal(page(['102', String(fall.hub_space_id)]).reflections.list.length, 0, 'not in the Reflections space: none'); assert.equal(page(['102', String(fall.hub_space_id)]).reflections.canPost, false);
 assert.equal(t.reflections.latest[0].replies, 3);
 assert.equal(t.fullYear.label, 'See the full year'); assert.equal(t.fullYear.url, cfg.settings.upgrade_url); assert.ok(!/Saturday/.test(t.fullYear.text), 'the weekends are not a full-year extra');
-assert.deepEqual(t.resources.map(r => r.key).sort(), ['practice-portfolio', 'practice-resources', 'welcome-orientation'], 'PDF cards need a file: none yet, so Sourcebook and Song are not drawn');
+assert.deepEqual(t.resources.map(r => r.key).sort(), ['inner-travelogue', 'practice-portfolio', 'song-of-sadhana', 'welcome-orientation'], 'PDF cards need a file: Song and the Inner Travelogue have theirs; the Sourcebook waits for the reading plan');
 const withFiles = page(termMember, { items: items.map(i => (i.key === 'song-of-sadhana' ? { ...i, url: 'https://files.test/song.pdf' } : i)), readings: readingPlan([R('', 'need', 'The Sādhaka\'s Sourcebook', { file_url: 'https://files.test/sourcebook.pdf' })], 'fall-2026', {}) });
-assert.deepEqual(withFiles.resources.filter(r => r.file).map(r => [r.key, r.href]), [['sourcebook', 'https://files.test/sourcebook.pdf'], ['song-of-sadhana', 'https://files.test/song.pdf']], 'the Sourcebook file comes from the reading plan, Song from its own url; both open the PDF');
+assert.deepEqual(withFiles.resources.filter(r => r.file).map(r => [r.key, r.href]), [['sourcebook', 'https://files.test/sourcebook.pdf'], ['song-of-sadhana', 'https://files.test/song.pdf'], ['inner-travelogue', 'https://assets-v2.circle.so/z7l40hi72md237ij98abbg4qvt6b']], 'the Sourcebook file comes from the reading plan, Song and the Inner Travelogue from their own url; all open the PDF');
+assert.equal(t.resources.find(r => r.key === 'practice-portfolio').pdf, 'https://assets-v2.circle.so/1n7219z1xh2mfal1a5n1nyxuxioh', 'the Practice Portfolio card also offers its printable PDF');
+assert.ok(!t.resources.some(r => r.key === 'practice-resources'), 'no Practice Resources card: its PDFs are on the tab itself');
 assert.deepEqual(t.kula.cards.map(c => c.key), ['kula-chat'], 'Kula Commentary became the Reflections space, so Kula is the chat');
 
 // counts only with the last-visit store; a visit to the tab clears them
@@ -95,7 +97,7 @@ const empty = buildSeasonPage({ season: winter, seasons, items, settings: cfg.se
 assert.equal(empty.header.started, false); assert.equal(empty.week.next, null); assert.deepEqual(empty.rows, []);
 
 // post spaces to read: only those the member can open, each once
-assert.deepEqual(wantedSpaces(items, seasons, new Set(termMember), today).sort(), ['102', '103', '105', '106', '107'], 'announcements, Kula chat, Resources (the Reflections list is read in full by the page)');
+assert.deepEqual(wantedSpaces(items, seasons, new Set(termMember), today).sort(), ['102', '103', '105', '107'], 'announcements, Kula chat, Resources (the Reflections list is read in full by the page)');
 assert.deepEqual(wantedSpaces(items, seasons, new Set([String(fall.hub_space_id)]), today), [], 'a member of no resource spaces reads none');
 assert.equal(calendarUrl({ at: '', title: 'x' }), '');
 console.log('school season: ok');

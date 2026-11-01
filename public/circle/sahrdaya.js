@@ -641,7 +641,8 @@
     var g = w.greeting, im = w.home.immersion, f = w.formation;
     var sub = esc(dayFmt(w.today, { weekday: 'long', day: 'numeric', month: 'long' })) + (im ? ' · ' + (im.happening ? 'Immersion ' + im.n + ' is this weekend' : im.daysTo + ' days to Immersion ' + im.n) : '') + ' · week ' + g.week + ' of ' + esc(g.seasonTitle);
     var hs = w.home.hours, tot = f ? '<div class="esu-tot"><b>' + hs.confirmed + '</b> <span>confirmed · ' + hs.pending + ' pending · of ' + f.target + ' hrs</span><div class="esu-bar"><i style="width:' + Math.min(100, Math.round(f.total / f.target * 100)) + '%"></i></div></div>' : '';
-    return head(sub, tot) +
+    var manual = '<a class="esu-btn out" href="' + MANUAL + '" target="_blank" rel="noopener">Open the Manual</a>';
+    return head(sub, '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">' + manual + tot + '</div>') +
       (w.unavailable.length ? '<p class="esu-note" role="status">Some things couldn’t be loaded just now (' + esc(w.unavailable.join(', ')) + '). The rest is up to date.</p>' : '') +
       (state.msg && !state.modal ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
       '<div class="esu-tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (state.tab === 'formation') + '" data-act="tab" data-tab="formation">Formation</button><button type="button" role="tab" aria-selected="' + (state.tab === 'room') + '" data-act="tab" data-tab="room">Room</button></div>' +
@@ -932,6 +933,8 @@
     return null;
   }
   var HOST = '[data-testid="circle-ai-shell-workspace-body"]';
+  // The Sahṛdaya Upāya Manual (Google Doc), linked at the top of the mentee page
+  var MANUAL = 'https://docs.google.com/document/d/1u9O7F59dnj0I6mo0u0wIZ_SVjfbIMRZpcIsVzpnYuOw/edit?usp=sharing';
   function mount() {
     if (!PAGE.test(location.pathname) || state.ok !== true) return;
     if (root && document.body.contains(root)) return;

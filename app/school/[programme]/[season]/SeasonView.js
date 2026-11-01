@@ -212,7 +212,7 @@ function SessionsTab({ page, tz, now }) {
               <li key={`${r.kind}${r.id}`} className={r.state === 'next' ? 'next' : ''}>
                 <div className="ss-when"><b>{r.tbd ? dayShort(r.at, 'UTC') : dayShort(r.at, tz)}</b><span>{r.tbd ? 'Weekend' : [clock(r.at, tz), hrs(r.minutes)].filter(Boolean).join(' · ')}</span></div>
                 <div className="ss-what">
-                  <b>{r.kind === 'weekend' ? r.title : `Session ${r.n || ''}`.trim()}{r.focus ? ` · ${r.focus}` : ''}</b>
+                  <b>{r.kind === 'weekend' ? r.title : r.n ? `Session ${r.n}` : /orientation/i.test(r.raw || '') ? 'Orientation' : 'Session'}{r.focus ? ` · ${r.focus}` : ''}</b>
                                   <span>{r.kind === 'weekend' ? 'Immersion weekend' : r.teacher ? `With ${r.teacher}` : ''}</span>
                 </div>
                 <div className="ss-act">{act}</div>

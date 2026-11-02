@@ -152,7 +152,9 @@ function Month({ ctx, fresh }) {
             {m.lecture?.summary && <p className="wsh-q">{m.lecture.summary}</p>}
             {m.question && <p className="wsh-q">{m.question}</p>}
             {!open ? <Unlock ctx={ctx} label="Join to watch" />
-              : m.lessonUrl ? <a className="sch-btn" href={m.lessonUrl} target="_top" onClick={() => ctx.seen(m.sectionId)}>Watch the lecture</a>
+              // Before and during the live lecture: its Circle event (Wisdom School · Live), where the Zoom link is. Afterwards: the recording
+              : m.lecture?.url && Date.now() < Date.parse(m.lecture.endsAt || m.lecture.startsAt) + 30 * 60 * 1000 ? <a className="sch-btn" href={m.lecture.url} target="_top">Join the live lecture</a>
+              : m.lessonUrl ? <a className="sch-btn" href={m.lessonUrl} target="_top" onClick={() => ctx.seen(m.sectionId)}>Watch the recording</a>
               : <p className="wsh-soon">Recording coming after the lecture</p>}
           </section>
         )}

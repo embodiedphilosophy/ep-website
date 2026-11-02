@@ -65,6 +65,16 @@ assert.equal(other.mine, false); assert.equal(other.chatUrl, '', 'the chat link 
 assert.equal(L.podsFor(pods, membersBy, lead).find(x => x.id === id).isLeader, true);
 assert.equal(L.podView({ id: 1, status: 'active', chat_url: '', leader_uid: 'u1' }, [{ uid: 'u3', name: 'x' }], user(3)).chatPending, true, 'started but no chat link yet');
 
+// A note to the leader on joining: saved with the membership, shown only to the leader
+{ const pid = await S.createPod(user(9, { uid: 'u9' }), { topic: 'Note pod', description: 'A pod to test notes for the leader.' }).catch(async () => { await S.decideLeader('u9', true, 'Jacob'); return S.createPod(user(9), { topic: 'Note pod', description: 'A pod to test notes for the leader.' }); });
+  assert.equal(L.cleanJoinNote({ message: '  Hello  there\n\n\n\nfriend ' }), 'Hello there\n\nfriend'); assert.equal(L.cleanJoinNote({}), '');
+  const j = await S.join(user(30), pid, 'Hello! I would love to join.'); assert.equal(j.leaderEmail, 's9@x.com'); assert.equal(j.topic, 'Note pod'); assert.equal(j.leaderUid, 'u9');
+  await S.join(user(31), pid, '');
+  const t = await S.listPods(); const lv = L.podsFor(t.pods, t.membersBy, user(9)).find(x => x.id === pid), mv = L.podsFor(t.pods, t.membersBy, user(31)).find(x => x.id === pid);
+  assert.deepEqual(lv.notes, [{ name: 'Student30', note: 'Hello! I would love to join.' }], 'the leader sees the note'); assert.deepEqual(mv.notes, [], 'other members do not');
+  assert.match(L.joinMessage('Student30', 'Note pod', 'Hello!'), /joined your study pod “Note pod”[\s\S]*Hello![\s\S]*Student30/);
+  await S.cancelPod(null, pid, { staff: true }); }
+
 // Leaving, cancelling
 await S.leave(user(10), id); ({ membersBy } = await S.listPods()); assert.equal(membersBy[id].length, 9);
 await assert.rejects(() => S.leave(lead, id), /cancel the pod instead/);

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { sameOrigin } from '@/lib/school/session';
 import { podMember } from '@/lib/pods/auth';
-import { podsFor, cleanPod, cleanNote, podsEnabled, MIN, MAX, LIVE_ROOMS_URL } from '@/lib/pods/logic';
+import { podsFor, cleanPod, cleanNote, cleanJoinNote, joinMessage, podsEnabled, MIN, MAX, LIVE_ROOMS_URL } from '@/lib/pods/logic';
+import { findMember } from '@/lib/circle';
+import { startDirectChat, sendChatMessage } from '@/lib/school/circle';
 import { podsAvailable, leaderOf, listPods, apply, createPod, join, leave, cancelPod, setRoomUrl } from '@/lib/pods/store';
 
 export const dynamic = 'force-dynamic';
@@ -11,6 +13,19 @@ async function payload(me, extra = {}) {
   const { pods, membersBy } = await listPods();
   const l = await leaderOf(me.uid);
   return { pods: podsFor(pods, membersBy, me), leader: { status: l?.status || '' }, min: MIN, max: MAX, liveRoomsUrl: LIVE_ROOMS_URL, ...extra };
+}
+// The student's note goes to the leader as a Circle direct message, sent as the student (students may message each other).
+// The note is also saved with the membership, so the leader sees it on their pod even if Circle refuses the message. → true when sent.
+async function messageLeader(me, j, note) {
+  if (!note || !j.leaderEmail || j.leaderUid === me.uid) return false;
+  try {
+    const leader = await findMember(j.leaderEmail);
+    if (!leader?.id) throw new Error('no Circle member for the leader');
+    const room = await startDirectChat(me.email, leader.id);
+    if (!room) throw new Error('Circle did not return a chat room');
+    await sendChatMessage(me.email, room, joinMessage(me.name, j.topic, note));
+    return true;
+  } catch (e) { console.error('pods join message', e.message); return false; }
 }
 const gate = async () => {
   if (!podsEnabled()) return { res: NextResponse.json({ error: 'Study pods are opening soon.' }, { status: 404, headers: NO_STORE }) };
@@ -28,7 +43,7 @@ export async function GET() {
   catch (e) { console.error('pods GET', e.message); return NextResponse.json({ error: 'We couldn’t load the pods just now. Please try again.' }, { status: 502, headers: NO_STORE }); }
 }
 
-// POST { action: 'apply', note } | { action: 'create', topic, description, schedule } | { action: 'join' | 'leave' | 'cancel', id } | { action: 'room', id, url }
+// POST { action: 'apply', note } | { action: 'create', topic, description, schedule } | { action: 'join', id, message? } | { action: 'leave' | 'cancel', id } | { action: 'room', id, url }
 export async function POST(req) {
   if (!sameOrigin(req)) return NextResponse.json({ error: 'Not allowed' }, { status: 403 });
   const { me, res } = await gate();
@@ -39,7 +54,7 @@ export async function POST(req) {
     let extra = {};
     if (b.action === 'apply') await apply(me, cleanNote(b));
     else if (b.action === 'create') extra = { created: await createPod(me, cleanPod(b)) };
-    else if (b.action === 'join') extra = { started: (await join(me, b.id)).started };
+    else if (b.action === 'join') { const note = cleanJoinNote(b); const j = await join(me, b.id, note); extra = { started: j.started, leader: j.leaderName || '', noted: !!note, messaged: await messageLeader(me, j, note) }; }
     else if (b.action === 'leave') await leave(me, b.id);
     else if (b.action === 'cancel') await cancelPod(me, b.id);
     else if (b.action === 'room') await setRoomUrl(me, b.id, b.url);

@@ -107,7 +107,17 @@ function RoomLink({ p, data, act, busy }) {
   );
 }
 
+// Joining opens a small box to write to the leader (optional). The note goes to the leader as a Circle message and shows on their pod.
+function joinedText(r, leader) {
+  const begun = r.started ? ' The pod has begun, and its group chat is on the way.' : '';
+  if (!r.noted) return `You are in this pod.${begun}`;
+  return (r.messaged ? `You are in, and your message has gone to ${leader} in your Circle messages.` : `You are in. ${leader} will see your note on the pod.`) + begun;
+}
+
 function PodCard({ p, data, busy, act }) {
+  const [joining, setJoining] = useState(false);
+  const [note, setNote] = useState('');
+  const first = String(p.leader || '').split(' ')[0] || 'the leader';
   const progress = p.started ? `${p.count} of ${data.max} places taken · this pod has begun` : `${p.count} of ${data.min} to begin · ${p.needs} more needed`;
   return (
     <li className="sch-card hub sch-pod">
@@ -123,9 +133,23 @@ function PodCard({ p, data, busy, act }) {
         {p.mine && (p.roomUrl || data.liveRoomsUrl) && <p style={{ margin: '10px 0 0' }}><a className="sch-btn ghost" href={p.roomUrl || data.liveRoomsUrl} target="_top">{p.roomUrl ? 'Join the pod’s live room' : 'Circle live rooms'}</a></p>}
         {p.canSetRoom && <RoomLink p={p} data={data} act={act} busy={busy} />}
         {p.mine && !p.started && <p className="sch-meta" style={{ marginTop: 8 }}>You are in. The group chat opens as soon as {p.needs} more {p.needs === 1 ? 'person joins' : 'people join'}.</p>}
+        {p.isLeader && p.notes?.length > 0 && (<>
+          <p className="sch-meta" style={{ margin: '12px 0 0' }}><strong>Notes from people who joined</strong></p>
+          <ul className="sch-pod-notes">{p.notes.map((n, i) => <li key={i}><b>{n.name}</b>{n.note}</li>)}</ul>
+        </>)}
+        {joining && (
+          <div className="sch-pod-join">
+            <label htmlFor={`join-${p.id}`}>Send {first} a message (optional)</label>
+            <textarea id={`join-${p.id}`} rows={3} maxLength={600} value={note} onChange={e => setNote(e.target.value)} placeholder={`Say hello, and a word about what draws you to this pod. ${first} gets it in Circle messages.`} />
+            <div className="sch-composer-row">
+              <button type="button" className="sch-btn" disabled={!!busy} onClick={async () => { if (await act('join' + p.id, { action: 'join', id: p.id, message: note }, r => joinedText(r, first))) { setJoining(false); setNote(''); } }}>{busy === 'join' + p.id ? 'Joining…' : note.trim() ? 'Join and send' : 'Join the pod'}</button>
+              <button type="button" className="sch-btn ghost" onClick={() => { setJoining(false); setNote(''); }}>Cancel</button>
+            </div>
+          </div>
+        )}
       </div>
       <div>
-        {p.canJoin && <button type="button" className="sch-btn" disabled={!!busy} onClick={() => act('join' + p.id, { action: 'join', id: p.id }, r => r.started ? 'You are in, and the pod has begun. Its group chat is on the way.' : 'You are in this pod.')}>{busy === 'join' + p.id ? 'Joining…' : 'Join this pod'}</button>}
+        {p.canJoin && !joining && <button type="button" className="sch-btn" disabled={!!busy} onClick={() => setJoining(true)}>Join this pod</button>}
         {!p.mine && !p.canJoin && <span className="sch-meta">Full</span>}
         {p.canLeave && <button type="button" className="sch-btn ghost" disabled={!!busy} onClick={() => confirm('Leave this pod?') && act('leave' + p.id, { action: 'leave', id: p.id }, 'You have left the pod.')}>Leave</button>}
         {p.canCancel && <button type="button" className="sch-btn ghost" disabled={!!busy} onClick={() => confirm('Cancel this pod? Everyone who joined will no longer see it.') && act('cancel' + p.id, { action: 'cancel', id: p.id }, 'The pod has been cancelled.')}>Cancel the pod</button>}

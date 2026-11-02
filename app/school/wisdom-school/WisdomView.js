@@ -21,6 +21,18 @@ function addToCalendar(e) {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 
+// A session's action: the button goes to its Circle event page (where the Zoom link is),
+// with a small "Add to calendar" text link underneath. No event page yet → the calendar button as before.
+function JoinOrCalendar({ ev, label = 'Join the session', calLabel = 'Add to calendar', ghost }) {
+  if (!ev.url) return <button type="button" className={`sch-btn${ghost ? ' ghost' : ''}`} onClick={() => addToCalendar(ev)}>{calLabel}</button>;
+  return (
+    <div className="wsh-join">
+      <a className={`sch-btn${ghost ? ' ghost' : ''}`} href={ev.url} target="_top">{label}</a>
+      <button type="button" className="wsh-cal" onClick={() => addToCalendar(ev)}>{calLabel}</button>
+    </div>
+  );
+}
+
 export default function WisdomView({ hub, initialTab }) {
   const [tab, setTab] = useState(initialTab);
   const [tz, setTz] = useState('America/New_York');
@@ -212,7 +224,7 @@ function Month({ ctx, fresh }) {
                 <span className="wsh-evd">{dateOf(e.startsAt, tz)}</span><span className="wsh-evt">{timeOf(e.startsAt, tz)}</span>
                 <h3>{e.url ? <a href={e.url} target="_top">{e.title}</a> : e.title}</h3>
                 {e.teacher && <p className="sch-meta">{e.teacher}</p>}
-                <button type="button" className="sch-btn ghost" onClick={() => addToCalendar(e)}>Add to calendar</button>
+                <JoinOrCalendar ev={e} ghost />
               </li>
             )) : <li className="wsh-none">The next sessions will appear here once they are scheduled.</li>)
               : hub.live.slice(0, 3).map(r => (
@@ -289,7 +301,7 @@ function Live({ ctx }) {
             {r.streams && <ul className="wsh-streams">{r.streams.map(s => <li key={s.name}><b>{s.name}</b> {s.teacher}</li>)}</ul>}
             {r.next && <p className="sch-meta wsh-nextt">{r.next.title}{r.next.teacher ? ` · ${r.next.teacher}` : ''}</p>}
           </>}
-          action={r.locked ? <Unlock ctx={ctx} /> : r.next ? <button type="button" className="sch-btn" onClick={() => addToCalendar(r.next)}>Add to calendar</button> : null} />
+          action={r.locked ? <Unlock ctx={ctx} /> : r.next ? <JoinOrCalendar ev={r.next} /> : null} />
       ))}
     </ul>
   );
@@ -331,7 +343,7 @@ function Book({ ctx }) {
       <ul className="sch-list">
         <Row chip={b.quarter} title={b.current.title} locked={b.locked} badge={b.badge} live={!b.locked}
           line={b.next ? `Meet-up: ${whenOf(b.next.startsAt, tz)}` : 'This quarter’s book'}
-          action={b.locked ? <Unlock ctx={ctx} /> : b.next ? <button type="button" className="sch-btn" onClick={() => addToCalendar(b.next)}>Add meet-up to calendar</button> : b.current.url ? <a className="sch-btn" href={b.current.url} target="_top">Open</a> : null} />
+          action={b.locked ? <Unlock ctx={ctx} /> : b.next ? <JoinOrCalendar ev={b.next} label="Join the meet-up" calLabel="Add meet-up to calendar" /> : b.current.url ? <a className="sch-btn" href={b.current.url} target="_top">Open</a> : null} />
       </ul>
       {b.past.length > 0 && (
         <>

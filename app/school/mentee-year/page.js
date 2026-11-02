@@ -12,6 +12,7 @@ import Manual from './Manual';
 import { Shelf, Text } from './Texts';
 import { textParam } from '@/lib/school/texts';
 import { APPENDICES } from '@/lib/school/manual';
+import { loadManual, MANUAL_PDF_URL } from '@/lib/school/manualsource';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -32,7 +33,7 @@ const Back = () => <a className="sch-btn ghost" href={CIRCLE} target="_top">← 
 
 // The mentee year as a plain page (not drawn inside Circle): the rhythm, a typical month, month by month, the dated steps, one-to-ones.
 // Anyone with the link can read it: it holds no personal data (your partners and your ticks are on your page in Circle).
-const PDF = '/school/sahrdaya-upaya-formation-manual.pdf';
+const PDF = MANUAL_PDF_URL; // made from the Google Doc as it is now, so the download always matches the page
 const upd = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 const Download = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 8 }}><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16" /></svg>;
 const TAB_LIST = [['manual', 'Teacher Formation Manual'], ['year', 'Your Year of Mentorship'], ['texts', 'Seminal Texts']];
@@ -42,6 +43,8 @@ export default async function MenteeYearPage({ searchParams }) {
   const sp = await searchParams, tab = ['manual', 'texts'].includes(sp?.tab) ? sp.tab : 'year';
   // The appendices moved from the manual to the Texts tab: old links still land on the right text
   if (tab === 'manual' && APPENDICES.includes(sp?.part)) redirect(`/school/mentee-year?tab=texts&text=${sp.part}`);
+  // The manual and the texts are read from the Google Doc (lib/school/manualsource.js)
+  if (tab === 'texts' || tab === 'manual') await loadManual();
   if (tab === 'texts') {
     const text = textParam(sp?.text);
     return (
@@ -64,8 +67,8 @@ export default async function MenteeYearPage({ searchParams }) {
           <p className="sch-eyebrow">Sahṛdaya Upāya · 2026–27 cohort</p>
           <h1>The Teacher Formation Manual</h1>
           <p className="sch-my-lede">The working handbook for apprentices and mentors: the program, the year, the ajapā-haṃsa practice, the three-session process and certification, with the Sanskrit sources on haṃsa in full.</p>
-          <p className="mn-meta">{manualFront.edition.replace('First Edition', 'First edition')} · a first draft{manualUpdated ? ` · Updated ${upd(manualUpdated)}` : ''}</p>
-          <div className="mn-acts" id="pdf"><Back /><a className="sch-btn" href={PDF} download><Download />Download the PDF</a><span className="mn-pdfnote">PDF · first edition, Nov 2026</span></div>
+          <p className="mn-meta">{String(manualFront.edition || '').replace('First Edition', 'First edition')}{manualFront.edition ? ' · ' : ''}a first draft{manualUpdated ? ` · Updated ${upd(manualUpdated)}` : ''}</p>
+          <div className="mn-acts" id="pdf"><Back /><a className="sch-btn" href={PDF}><Download />Download the PDF</a><span className="mn-pdfnote">PDF · always the latest version</span></div>
           <Tabs tab={tab} />
           <Manual part={partParam(sp?.part)} />
         </div>

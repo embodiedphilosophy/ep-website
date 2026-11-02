@@ -815,17 +815,6 @@
       '<aside class="etd-rail"><div class="etd-sk etd-sk-b" style="height:220px"></div></aside></div>';
   }
 
-  // A one-line notice at the top of Today for one group of members, hidden for good once they close it.
-  // To retire it, set NOTICE = null; for a new one, give it a new id so everyone sees it again.
-  var NOTICE = { id: 'su-dm-2026-11', tiers: ['mentee'], text: 'Sahṛdaya Upāya: please check that direct messaging is turned on so your articulation buddy chat can reach you.', href: '/c/mentorship-circle/quick-check-can-you-receive-messages', label: 'Read more →' };
-  function noticeHtml() {
-    var n = NOTICE;
-    if (!n || n.tiers.indexOf(tierName()) < 0 || local('ep_notice_' + n.id) === 'hidden') return '';
-    return '<div class="ept-nudge etd-notice" role="note" aria-label="Notice" style="margin:0 0 18px;border-color:#A5432A"><div class="ept-nt"><span class="ept-l ept-red">Notice</span>' +
-      '<button type="button" class="ept-x" data-act="notice-x" aria-label="Hide this notice">×</button></div>' +
-      '<span>' + esc(n.text) + ' <a href="' + esc(n.href) + '" style="color:#A5432A;font-weight:600">' + esc(n.label) + '</a></span></div>';
-  }
-
   function pageHtml() {
     var d = state.data, first = state.first || (d && d.firstName) || 'friend';
     var tithi = state.pn && window.EPPanchanga ? window.EPPanchanga.sublineOf(state.pn.day) : '';
@@ -833,7 +822,6 @@
     var out = '<header class="etd-top"><span class="ept-l ept-red">' + esc(eyebrow()) + '</span><h1 class="etd-h1">Good ' + greet() + ', <em>' + esc(first) + '</em>.</h1>' +
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
     if (!d) return state.failed ? out + '<p class="ept-err" role="status">We couldn’t load Today just now. Please refresh the page.</p>' : skeletonHtml();
-    out = noticeHtml() + out;
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
       heroHtml() + weekHtml() + podsHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
@@ -966,7 +954,6 @@
     if (a === 'line-open') { state.lineOpen = true; state.lineErr = ''; render(); var ta = pageRoot.querySelector('#etd-line'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center' }); }
       if (!state.lines) api('/api/member/travelogue').then(function (r) { state.lines = r.travelogue || []; render(); }).catch(function () { state.lines = []; }); }
     if (a === 'line-close') { state.lineOpen = false; render(); }
-    if (a === 'notice-x') { if (NOTICE) local('ep_notice_' + NOTICE.id, 'hidden'); render(); return; }
     if (a === 'dismiss') { local(nudgeKey(), 'hidden'); state.hidNudge = true; render(); }
     if (a === 'offer-hide') { local('ep_offer_' + t.dataset.key, 'hidden'); state.hidNudge = true; render(); }
     if (a === 'why') { state.why = !state.why; render(); }

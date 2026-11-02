@@ -16,6 +16,7 @@
   "circle": {
     "hub_space_id": 2913549,
     "live_space_id": 2897428,
+    "pathway_space_ids": [2930039],
     "meditation_space_id": 2897425,
     "year_course_id": 2897436,
     "announcements_space_id": 2897427,
@@ -66,7 +67,7 @@
       "cadence": "2.5 hours, once a quarter",
       "description": "A longer, hands-on session on the quarter’s theme.",
       "source": "live",
-      "match": "workshop"
+      "match": "workshop", "pathways": true
     },
     {
       "key": "book-club",

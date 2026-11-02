@@ -312,6 +312,8 @@
   }
 
   // ---- the rows ----
+  // A row's words as changed in Ops → Mentee year (home.monthRows: { key: { title, line, hide } }); blank means as written here
+  function ov(w, key) { var m = (w.home && w.home.monthRows) || {}; return m[key] || {}; }
   // This month's book. When next month's book starts partway through this month (Mentee Books `starts`, e.g. after an immersion
   // weekend), both show: this one "Now", the next "From <date>". A book's `note` (Mentee Books) is shown under it.
   function readRow(w) {
@@ -327,22 +329,24 @@
   }
   function buddyRow(w) {
     var h = w.home, p = h.partner, a = h.articulation, mo = (a && a.month) || { sessions: 0, last: '' };
-    if (!p) return { k: '0-b', w1: 'Any time', tx: rwText('Your buddy is on the way', 'Jacob pairs everyone at the start of each rotation.') };
+    var o = ov(w, 'buddy'); if (o.hide) return null;
+    if (!p) return { k: '0-b', w1: 'Any time', tx: rwText(esc(o.title) || 'Your buddy is on the way', esc(o.line) || 'Jacob pairs everyone at the start of each rotation.') };
     var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email }], many = list.length > 1, nm = esc(nameList(list));
     if (mo.sessions > 0) return { k: '1-' + (mo.last || w.today), done: true, w1: 'Done', w2: mo.last ? dm(mo.last) : '', tx: rwText('Buddy session with ' + nm, 'Logged for ' + (many ? 'all of you' : 'both of you') + '.'), bt: btnA('open-articulation', 'Log another') };
     var win = p.window && p.window.spans && p.window.spans[0] ? '<br>A time that suits ' + (many ? 'all of you' : 'you both') + ': ' + esc(p.window.days) + ', ' + esc(p.window.spans[0].text) + ' ' + esc(p.window.spans[0].label) + '.' : '';
     var url = p.chatUrl || 'mailto:' + list.map(function (x) { return x.email; }).filter(Boolean).join(',');
-    return { k: '0-b', w1: 'Any time', tx: rwText('Meet your ' + (many ? 'buddies' : 'buddy') + ', ' + nm, 'An hour together: each of you explains one idea until the other could explain it too.' + win), bt: ext(url, 'Say hello', 'esu-btn out sm') };
+    return { k: '0-b', w1: 'Any time', tx: rwText((o.title ? esc(o.title) + ': ' : 'Meet your ' + (many ? 'buddies' : 'buddy') + ', ') + nm, (esc(o.line) || 'An hour together: each of you explains one idea until the other could explain it too.') + win), bt: ext(url, 'Say hello', 'esu-btn out sm') };
   }
   function heroRow(o) {
     return '<li class="esu-mrow hero"><span class="esu-ring" aria-hidden="true"></span><span class="esu-when"><b>' + esc(o.w1) + '</b>' + esc(o.w2 || '') + '</span><div class="tx"><div class="ey">' + esc(o.ey) + '</div><p class="esu-hero-t">' + esc(o.title) + '</p><p class="esu-hero-d">' + o.line + '</p></div><div class="bt">' + (o.bt || '') + '</div></li>';
   }
   function immersionRows(w) {
     var h = w.home, im = h.immersion, ym = w.today.slice(0, 7), out = [];
-    if (im && (im.sat.slice(0, 7) === ym || im.happening)) {
+    var io = im ? ov(w, 'immersion-' + im.n) : {};
+    if (im && !io.hide && (im.sat.slice(0, 7) === ym || im.happening)) {
       var p = im.prepare, pr = im.practicum, prepOpen = p.open && safeUrl(p.url);
       var when = im.happening ? 'this weekend' : im.daysTo === 1 ? 'tomorrow' : 'in ' + im.daysTo + ' days';
-      var line = (im.n === 1 ? 'Your first weekend together: the Open Session' : 'The Open Session') + ' with the whole school on Saturday, and the Practicum on Sunday. Before then, one short Prepare lesson.' + (p.open ? '' : ' The Prepare lesson opens ' + esc(dml(p.opens)) + '.');
+      var line = (io.line ? esc(io.line) : (im.n === 1 ? 'Your first weekend together: the Open Session' : 'The Open Session') + ' with the whole school on Saturday, and the Practicum on Sunday. Before then, one short Prepare lesson.') + (p.open ? '' : ' The Prepare lesson opens ' + esc(dml(p.opens)) + '.');
       var rsvp = pr ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn lite sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP for Sunday’s Practicum</button>') : '';
       var bt = (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn out' : 'esu-btn gold') : '') + rsvp + '<a class="esu-tlink on-dark" href="' + MP + '?view=schedule" data-act="view" data-view="schedule">Full schedule</a>';
       out.push({ k: '1-' + im.sat, hero: true, html: heroRow({ w1: span(im.sat, im.sun), w2: 'Sat & Sun', ey: 'Next immersion · ' + im.n + ' of ' + im.of + ' · ' + when, title: im.title, line: line, bt: bt }) });
@@ -354,7 +358,8 @@
     return out;
   }
   function oneRow(w) {
-    var h = w.home, o = h.oneToOne, y = YR(w) || { oneToOne: {} }, yo = y.oneToOne || {}, bk = o.booked, win = o.window, sum = yo.summary, title = 'One-to-one with Jacob';
+    var h = w.home, o = h.oneToOne, y = YR(w) || { oneToOne: {} }, yo = y.oneToOne || {}, bk = o.booked, win = o.window, sum = yo.summary, oo = ov(w, 'one-to-one'), title = esc(oo.title) || 'One-to-one with Jacob';
+    if (oo.hide) return null;
     var np = w.today.slice(0, 7).split('-').map(Number), nxt = np[1] === 12 ? (np[0] + 1) + '-01' : np[0] + '-' + String(np[1] + 1).padStart(2, '0'), nextName = dayFmt(nxt + '-15', { month: 'long' });
     if (bk && Date.parse(bk.start) + 36e5 < Date.now()) return { k: '1-' + localDay(bk.start), done: true, w1: 'Done', w2: dm(localDay(bk.start)), tx: rwText(title, 'Thank you. Your next one is in ' + esc(nextName) + '.') };
     if (!bk && o.held) return { k: '1-' + o.held, done: true, w1: 'Done', w2: dm(o.held), tx: rwText(title, 'Thank you. Your next one is in ' + esc(nextName) + '.') };
@@ -372,16 +377,17 @@
     }
     if (!win) return { k: '1-' + w.today.slice(0, 7) + '-99', w1: w1, tx: rwText(title, 'The next window will be announced here.') };
     var chips = o.slots && o.slots.length ? '<div class="esu-slots" style="margin:10px 0 0">' + o.slots.slice(0, 3).map(function (sl) { return ext(sl.url, esc(dmyT(sl.start)) + ' · ' + esc(hmT(sl.start)), 'esu-slot'); }).join('') + '</div>' : '';
-    return { k: '1-' + win.from, w1: w1, w2: 'Booking open', tx: rwText(title, '45 minutes. When you book, add a few lines on what you’d like to talk about.', bringBox(y) + chips), bt: ext(o.bookingUrl, 'See times', 'esu-btn out sm') };
+    return { k: '1-' + win.from, w1: w1, w2: 'Booking open', tx: rwText(title, esc(oo.line) || '45 minutes. When you book, add a few lines on what you’d like to talk about.', bringBox(y) + chips), bt: ext(o.bookingUrl, 'See times', 'esu-btn out sm') };
   }
   function reflectionRow(w) {
     var h = w.home, r = h.reflection, y = YR(w), m = y && y.month, ym = w.today.slice(0, 7), mine = r.mine;
     var due = (m && m.reflectionDue) || lastMonday(ym), fm = h.formation || { n: 0 };
-    var title = fm.n === 1 ? 'Write your first reflection' : 'Write your ' + dayFmt(ym + '-01', { month: 'long' }) + ' reflection';
+    var ro = ov(w, 'reflection'); if (ro.hide) return null;
+    var title = ro.title ? esc(ro.title) : fm.n === 1 ? 'Write your first reflection' : 'Write your ' + dayFmt(ym + '-01', { month: 'long' }) + ' reflection';
     var fresh = r.unread ? '<p class="esu-rw-d">New in the cohort: ' + r.unread + (r.unread === 1 ? ' reflection' : ' reflections') + ' you haven’t read.</p>' : '';
     var open = function (label, cls) { return link(r.url, label, cls || 'esu-btn out sm'); };
     if (mine && mine.status === 'posted') return { k: '1-' + due, done: true, w1: 'Done', w2: mine.postedDay ? dm(mine.postedDay) : '', tx: rwText(title, 'Posted to Sādhana School.', fresh) };
-    var line = !mine ? 'Choose one or a few things from the assigned books that shifted your understanding, and deepen that shift with your reflection. Share it with the cohort when you’re ready.' : mine.status === 'shared' ? 'Shared with the cohort. Post it to Sādhana School when you’re ready.' : 'A draft is saved.';
+    var line = !mine ? (esc(ro.line) || 'Choose one or a few things from the assigned books that shifted your understanding, and deepen that shift with your reflection. Share it with the cohort when you’re ready.') : mine.status === 'shared' ? 'Shared with the cohort. Post it to Sādhana School when you’re ready.' : 'A draft is saved.';
     var bt = !safeUrl(r.url) ? '' : !mine ? open('Start writing') : mine.status === 'shared' ? link(r.url + (r.url.indexOf('?') < 0 ? '?' : '&') + 'post=' + encodeURIComponent(mine.id), 'Post to SS', 'esu-btn out sm') : open('Keep writing');
     return { k: '1-' + due, w1: 'By ' + dm(due), w2: dayFmt(due, { weekday: 'short' }), tx: rwText(title, line, fresh), bt: bt };
   }

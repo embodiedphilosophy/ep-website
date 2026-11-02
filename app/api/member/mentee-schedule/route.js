@@ -1,5 +1,7 @@
 import { menteeFromBearer, reply, preflight } from '@/lib/mentee/bearer';
-import config from '@/data/mentee.json';
+import baseConfig from '@/data/mentee.json';
+import { readTab } from '@/lib/mentee/content';
+import { ROWS_TAB, withOverrides } from '@/lib/mentee/monthlist';
 import { cleanToday } from '@/lib/member/practice';
 import { todayET, getEvents } from '@/lib/events';
 import { headlessConfigured, weekEvents, courseSections } from '@/lib/school/circle';
@@ -14,6 +16,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(req) {
   const { me, res } = menteeFromBearer(req);
   if (!me) return res;
+  const config = withOverrides(baseConfig, await readTab(ROWS_TAB).catch(() => [])); // immersion dates and names as changed in Ops → Mentee year
   const today = cleanToday(new URL(req.url).searchParams.get('today') || todayET()), unavailable = [];
   const ok = async (name, p, d) => { try { return await p; } catch (e) { console.error('mentee schedule', name, e.message); unavailable.push(name); return d; } };
   const [events, sheet, sections] = await Promise.all([

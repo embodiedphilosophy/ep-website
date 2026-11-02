@@ -348,7 +348,8 @@
       var when = im.happening ? 'this weekend' : im.daysTo === 1 ? 'tomorrow' : 'in ' + im.daysTo + ' days';
       var line = (io.line ? esc(io.line) : (im.n === 1 ? 'Your first weekend together: the Open Session' : 'The Open Session') + ' with the whole school on Saturday, and the Practicum on Sunday. Before then, one short Prepare lesson.') + (p.open ? '' : ' The Prepare lesson opens ' + esc(dml(p.opens)) + '.');
       var rsvp = pr ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn lite sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP for Sunday’s Practicum</button>') : '';
-      var bt = (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn out' : 'esu-btn gold') : '') + rsvp + '<a class="esu-tlink on-dark" href="' + MP + '?view=schedule" data-act="view" data-view="schedule">Full schedule</a>';
+      var live = (im.satLink ? ext(im.satLink, 'Join Saturday’s Open Session', 'esu-btn lite') : '') + (im.sunLink ? ext(im.sunLink, 'Join Sunday’s Practicum', 'esu-btn lite') : '');
+      var bt = (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn out' : 'esu-btn gold') : '') + live + rsvp + '<a class="esu-tlink on-dark" href="' + MP + '?view=schedule" data-act="view" data-view="schedule">Full schedule</a>';
       out.push({ k: '1-' + im.sat, hero: true, html: heroRow({ w1: span(im.sat, im.sun), w2: 'Sat & Sun', ey: 'Next immersion · ' + im.n + ' of ' + im.of + ' · ' + when, title: im.title, line: line, bt: bt }) });
     }
     var g = h.integrate;
@@ -396,7 +397,7 @@
     var ym = w.today.slice(0, 7);
     return (w.due.items || []).filter(function (it) { return it.type === 'handin' && /^\d{4}-\d\d-\d\d$/.test(it.due || '') && it.due.slice(0, 7) === ym; }).map(function (it) {
       var sub = it.submission, inn = sub && sub.status === 'submitted';
-      return { k: '1-' + it.due, done: !!inn, w1: inn ? 'Done' : 'By ' + dm(it.due), w2: inn ? '' : dayFmt(it.due, { weekday: 'short' }), tx: rwText('Hand in: ' + esc(it.title), inn ? 'Handed in' : sub && sub.status === 'returned' ? 'Jacob returned it' + (sub.note ? ': ' + esc(sub.note) : '.') : sub && sub.status === 'draft' ? 'A draft is saved.' : esc(it.where || '')),
+      return { id: 'handin-' + slugK(it.title), k: '1-' + it.due, done: !!inn, w1: inn ? 'Done' : 'By ' + dm(it.due), w2: inn ? '' : dayFmt(it.due, { weekday: 'short' }), tx: rwText('Hand in: ' + esc(it.title), inn ? 'Handed in' : sub && sub.status === 'returned' ? 'Jacob returned it' + (sub.note ? ': ' + esc(sub.note) : '.') : sub && sub.status === 'draft' ? 'A draft is saved.' : esc(it.where || '')),
         bt: '<button type="button" class="esu-btn out sm" data-act="open-handin" data-id="' + esc(it.id) + '">' + (!sub ? 'Hand in' : sub.status === 'draft' ? 'Continue' : sub.status === 'returned' ? 'Edit and resend' : 'View') + '</button>' };
     });
   }
@@ -407,17 +408,27 @@
     return (y && y.tasks || []).map(function (t) {
       var d = t.status === 'done', go = safeUrl(t.link) ? ext(t.link, 'Open', 'esu-btn out sm') : '';
       var tick = '<button type="button" class="esu-btn out sm" data-act="yr-tick" data-id="' + esc(t.id) + '" aria-pressed="' + (d ? 'true' : 'false') + '">' + (d ? 'Done ✓' : 'Mark done') + '</button>';
-      return { k: '1-' + t.date, done: d, w1: d ? 'Done' : 'By ' + dm(t.date), w2: d ? '' : dayFmt(t.date, { weekday: 'short' }), tx: rwText(esc(t.title), t.detail ? esc(t.detail) : ''), bt: '<span style="display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end">' + go + tick + '</span>' };
+      return { id: t.id, k: '1-' + t.date, done: d, w1: d ? 'Done' : 'By ' + dm(t.date), w2: d ? '' : dayFmt(t.date, { weekday: 'short' }), tx: rwText(esc(t.title), t.detail ? esc(t.detail) : ''), bt: '<span style="display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end">' + go + tick + '</span>' };
     });
   }
 
+  // The same row keys as lib/mentee/monthlist.js (slug)
+  function slugK(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40); }
   function monthSection(w) {
     var h = w.home, y = YR(w), fm = h.formation || { n: 0 }, ym = w.today.slice(0, 7);
     if (y && !y.started && w.today < y.startsOn) return '<section class="esu-card esu-month"><h2 class="esu-h2">This month</h2><p class="esu-muted" style="margin-top:6px">Your first month starts on ' + esc(dml(y.startsOn)) + '.</p></section>';
     if (y && !y.started) return '<section class="esu-card esu-month"><h2 class="esu-h2">This month</h2><p class="esu-muted" style="margin-top:6px">The year is complete. Thank you for your presence.</p></section>';
     var rows = [], add = function (r) { if (r) rows.push(r); };
-    readRow(w).forEach(add); add(buddyRow(w)); immersionRows(w).forEach(add); add(oneRow(w)); add(reflectionRow(w)); handinRows(w).forEach(add); taskRows(w).forEach(add);
+    // Each row carries the key Ops uses for it (lib/mentee/monthlist.js), so the order set in Ops → Mentee year applies here
+    var tag = function (r, id) { if (r) r.id = id; return r; }, B = h.books || {}, im = h.immersion;
+    readRow(w).forEach(function (r, i) { var b = i === 0 && B.current && B.current.required.length && r.k === '0-a' ? B.current.required[0] : B.next && B.next.required[0]; add(tag(r, b ? 'book-' + slugK(b.title) : '')); });
+    add(tag(buddyRow(w), 'buddy')); immersionRows(w).forEach(function (r) { add(tag(r, r.hero && im && r.k === '1-' + im.sat ? 'immersion-' + im.n : '')); });
+    add(tag(oneRow(w), 'one-to-one')); add(tag(reflectionRow(w), 'reflection'));
+    handinRows(w).forEach(function (r) { add(tag(r, r.id || '')); }); taskRows(w).forEach(add);
+    var ord = h.monthOrder || [], at = {}; ord.forEach(function (k, i) { at[k] = i; });
+    rows.forEach(function (r, i) { r.i = i; });
     rows.sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
+    if (ord.length) { rows.forEach(function (r, i) { r.i = i; }); rows.sort(function (a, b) { var x = a.id in at ? at[a.id] : 1e6 + a.i, y = b.id in at ? at[b.id] : 1e6 + b.i; return x - y; }); }
     var done = rows.filter(function (r) { return r.done; }).length, n = rows.length, th = y && y.month && y.month.theme;
     var eye = dayFmt(ym + '-01', { month: 'long' }) + (fm.n >= 1 ? ' · month ' + fm.n + ' of your formation' : '');
     return '<section class="esu-card esu-month" aria-labelledby="esu-m-h"><div class="esu-hd" style="margin-bottom:2px"><div><p class="esu-eye">' + esc(eye) + '</p><h2 class="esu-h2" id="esu-m-h" style="margin-top:4px;font-size:27px">' + (done ? 'This month' : 'This month, ' + (NUM[n] || n) + (n === 1 ? ' thing' : ' things')) + '</h2></div>' + (done ? '<span class="esu-mono">' + done + ' of ' + n + ' done</span>' : '') + '</div>' +

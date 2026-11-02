@@ -22,6 +22,8 @@ year.ticksOk = true;
 const data = buildHome(week, { config, today: TODAY, tz: 'Europe/London', partner: null, year, slots: [], booked: null, chat: [], questions: [], reflections: { mine: null, unread: 0, posted: [] }, polls: [], books: { current: null, next: null }, workbook: null, uid: 'u1', filesOn: false, cosign: [], cohort: [], cues: [], circlePosts: [] });
 assert.equal(data.home.year.tasks.length, 1);
 // Rows changed in Ops → Mentee year (home.monthRows, from the Mentee Month Rows tab)
+data.home.immersion.satLink = 'https://zoom.us/j/111'; data.home.immersion.sunLink = 'https://zoom.us/j/222';
+data.home.monthOrder = ['t-2026-11-watch', 'reflection'];
 data.home.monthRows = { buddy: { title: '', line: '', hide: true }, reflection: { title: 'Your first reflection, gently', line: 'One page is plenty.', hide: false } };
 
 const script = fs.readFileSync(new URL('../../public/circle/sahrdaya.js', import.meta.url), 'utf8');
@@ -50,6 +52,12 @@ assert.deepEqual([ticked.id, ticked.done], ['t-2026-11-watch', true]);
 assert.ok(await p.locator('.esu-month').getByText(/of \d+ done/).count(), 'the month counts it');
 assert.equal(await p.locator('.esu-month').getByText('Your buddy is on the way').count(), 0, 'a hidden row is gone');
 assert.ok(await p.locator('.esu-month').getByText('Your first reflection, gently').count() && await p.locator('.esu-month').getByText('One page is plenty.').count(), 'reworded row');
+const firsts = await p.locator('.esu-month .esu-mrow .esu-rw-t').allInnerTexts();
+assert.deepEqual(firsts.slice(0, 2), ['Watch the orientation recording', 'Your first reflection, gently'], 'the order set in Ops');
+const hero = p.locator('.esu-mrow.hero').first();
+assert.equal(await hero.getByRole('link', { name: 'Join Saturday’s Open Session' }).getAttribute('href'), 'https://zoom.us/j/111');
+assert.equal(await hero.getByRole('link', { name: 'Join Sunday’s Practicum' }).getAttribute('href'), 'https://zoom.us/j/222');
+await hero.screenshot({ path: OUT + 'immersion-hero.png' });
 assert.deepEqual(errs, []);
 await b.close();
 console.log('mentee tasks ui: ok');

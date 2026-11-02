@@ -146,12 +146,22 @@ function Month({ ctx, fresh }) {
         {m.name && (
           <section className="wsh-hero" aria-label="This month">
             <p className="wsh-kick">This month · {m.name} · {m.index} of {m.of}</p>
+            {m.lecture?.note && <p className="wsh-kick" style={{ marginTop: 4 }}>{m.lecture.note}</p>}
             <h2>{m.theme || m.name}</h2>
+            {m.lecture && (m.lecture.startsAt || m.lecture.teacher) && <p className="wsh-q" style={{ fontWeight: 600 }}>{[m.lecture.startsAt ? whenOf(m.lecture.startsAt, tz) : '', m.lecture.teacher ? `with ${m.lecture.teacher}` : ''].filter(Boolean).join(' · ')}</p>}
+            {m.lecture?.summary && <p className="wsh-q">{m.lecture.summary}</p>}
             {m.question && <p className="wsh-q">{m.question}</p>}
             {!open ? <Unlock ctx={ctx} label="Join to watch" />
               : m.lessonUrl ? <a className="sch-btn" href={m.lessonUrl} target="_top" onClick={() => ctx.seen(m.sectionId)}>Watch the lecture</a>
               : <p className="wsh-soon">Recording coming after the lecture</p>}
           </section>
+        )}
+
+        {m.quote && (
+          <figure className="wsh-quote" style={{ margin: '0 0 28px', padding: '32px 36px', background: '#343E2B', color: '#F6F1E7', borderRadius: 4 }}>
+            <blockquote style={{ margin: 0, whiteSpace: 'pre-line', fontSize: 19, lineHeight: 1.6 }}>{m.quote.text}</blockquote>
+            {m.quote.by && <figcaption style={{ marginTop: 18, fontSize: 13, letterSpacing: '.04em', opacity: .85 }}>{m.quote.by}</figcaption>}
+          </figure>
         )}
 
         <section aria-labelledby="ws-upnext">

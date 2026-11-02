@@ -115,16 +115,16 @@ function Banner({ ctx }) {
   return null;
 }
 
-// The Join live / Add to calendar / upgrade buttons for one session, by plan
+// The Join the meditation / Add to calendar / upgrade buttons for one session, by plan
 function SessionActions({ ctx, s, hero }) {
   const { plan, now, hub } = ctx;
   const joinable = s.open && s.url && joinOpen(s, now, hub.joinBeforeMinutes);
   return (
     <>
-      {joinable && <a className="sch-btn" href={s.url} target="_top">Join live</a>}
+      {joinable && <a className="sch-btn" href={s.url} target="_top">Join the meditation</a>}
       {plan === 'none' && <Unlock ctx={ctx} label="Start your free week" ghost={!hero} />}
       {plan === 'dropin' && !s.open && <><span className="mmh-only">Pass only</span><Unlock ctx={ctx} label={`Upgrade · ${hub.links.pass_monthly}`} /></>}
-      {s.open && <button type="button" className="sch-btn ghost" onClick={() => addToCalendar(s)}>Add to calendar</button>}
+      {s.open && !joinable && <button type="button" className="sch-btn ghost" onClick={() => addToCalendar(s)}>Add to calendar</button>}
     </>
   );
 }
@@ -146,7 +146,7 @@ function Hero({ ctx }) {
       <h2>{next.title}</h2>
       <p className="mmh-when">{whenOf(next.startsAt, tz)}</p>
       <div className="mmh-btns"><SessionActions ctx={ctx} s={next} hero /></div>
-      {ctx.plan === 'pass' && !joinOpen(next, now, hub.joinBeforeMinutes) && next.url && <p className="mmh-hint">Join live opens 15 minutes before the start.</p>}
+      {ctx.plan === 'pass' && !joinOpen(next, now, hub.joinBeforeMinutes) && next.url && <p className="mmh-hint">Join the meditation opens {hub.joinBeforeMinutes} minutes before the start.</p>}
     </section>
   );
 }

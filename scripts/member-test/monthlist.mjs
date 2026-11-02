@@ -51,3 +51,15 @@ assert.deepEqual(ordered.slice(0, 3), ['t-2026-11-x', 'reflection', 'book-educat
 assert.deepEqual(M.monthOrder([{ month: '2026-11', row: '_order', line: 'a, b' }], '2026-11'), ['a', 'b']);
 assert.equal(M.overridesFrom([{ month: '2026-11', row: '_order', line: 'a' }])['2026-11|_order'], undefined);
 console.log('monthlist: ok');
+// Your Year wording (lib/mentee/yearcontent.js): change, take out and add lines
+{
+  const Y = await import('../../lib/mentee/yearcontent.js');
+  const data = { lede: 'L', rhythm: [{ level: 'Daily', items: ['a', 'b', 'c'] }] };
+  const rows = [{ path: 'rhythm.0.items.1', value: '[remove]' }, { path: 'rhythm.0.items.0', value: 'A' }, { path: 'rhythm.0.items.4', value: 'e' }, { path: 'rhythm.0.items.3', value: 'd' }, { path: 'lede', value: 'New lede' }];
+  const o = Y.applyOverrides(data, rows);
+  assert.deepEqual(o.rhythm[0].items, ['A', 'c', 'd', 'e']); assert.equal(o.lede, 'New lede'); assert.deepEqual(data.rhythm[0].items, ['a', 'b', 'c']);
+  const v = Y.listView(data, rows, 'rhythm.0.items');
+  assert.deepEqual(v.lines.map(l => [l.path, l.text, l.removed]), [['rhythm.0.items.0', 'A', false], ['rhythm.0.items.1', 'b', true], ['rhythm.0.items.2', 'c', false], ['rhythm.0.items.3', 'd', false], ['rhythm.0.items.4', 'e', false]]);
+  assert.equal(v.next, 'rhythm.0.items.5');
+  console.log('year wording: ok');
+}

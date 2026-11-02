@@ -22,7 +22,10 @@
     // replays play in Circle's player with its completion tracking. "stream" passes through so Replays can open filtered.
     'meditation-pass': { path: '/school/meditation-pass', title: 'Meditation Mondays', def: 'week', home: 'week', tabs: { week: 1, replays: 1, upcoming: 1, teachers: 1 }, keep: ['stream'], landingOnly: true }
   };
-  function hubKey(s) { for (var k in HUBS) if (s === k || s.indexOf(k + '-') === 0) return k; return null; }
+  // Real spaces whose slug starts with a hub's name but are not the hub (the prefix match below would otherwise draw the hub over them,
+  // e.g. the lecture events in Wisdom School · Live)
+  var NOT_HUBS = ['wisdom-school-live'];
+  function hubKey(s) { if (NOT_HUBS.indexOf(s) >= 0) return null; for (var k in HUBS) if (s === k || s.indexOf(k + '-') === 0) return k; return null; }
   function hubPath(k) {
     var h = HUBS[k], m = location.search.match(/[?&]tab=([a-z]+)/), t = m && h.tabs[m[1]] ? m[1] : h.def;
     var q = t === h.home ? '' : '?tab=' + t;

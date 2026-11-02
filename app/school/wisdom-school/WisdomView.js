@@ -136,6 +136,42 @@ function Row({ chip, title, line, extra, locked, badge, action, live, children }
   );
 }
 
+// The learning pathway running now: its sessions, the next one's link, and the way into the pathway
+function PathwayCard({ ctx, p }) {
+  const { tz } = ctx;
+  const next = p.sessions.find(s => s.state === 'next') || null;
+  const liveNow = next && Date.now() >= Date.parse(next.startsAt) - 15 * 60 * 1000;
+  return (
+    <section className={`wsh-path${p.locked ? ' locked' : ''}`} aria-labelledby="ws-path">
+      <p className="wsh-kick">Learning pathway · {p.plan === 'plus' ? 'Wisdom School Plus' : 'Included with Wisdom School'}</p>
+      <h2 id="ws-path">{p.name}{p.locked && p.badge && <span className="sch-badge lock">{p.badge}</span>}</h2>
+      {(p.teacher || p.note) && <p className="sch-meta">{[p.teacher, p.note].filter(Boolean).join(' · ')}</p>}
+      {p.sessions.length > 0 && (
+        <ol className="wsh-path-s" aria-label="Sessions">
+          {p.sessions.map(s => (
+            <li key={s.id} className={s.state}>
+              <b>Session {s.n}</b>
+              <span>{dateOf(s.startsAt, tz)}</span>
+              <span>{timeOf(s.startsAt, tz)}</span>
+              {s.state === 'next' && <em>Next</em>}{s.state === 'past' && <em>Done</em>}
+            </li>
+          ))}
+        </ol>
+      )}
+      {p.progress && <p className="sch-meta">{p.progress.label}</p>}
+      <div className="wsh-actions">
+        {p.locked ? <Unlock ctx={ctx} label={p.plan === 'plus' ? 'Upgrade to Plus' : 'Join to take part'} /> : (
+          <>
+            {next?.url && <a className="sch-btn" href={next.url} target="_top">{liveNow ? 'Join the live session' : `Session ${next.n} details`}</a>}
+            {next && <button type="button" className="sch-btn ghost" onClick={() => addToCalendar({ ...next, title: `${p.name} · Session ${next.n}` })}>Add to calendar</button>}
+            {p.url && <a className={`sch-btn${next?.url ? ' ghost' : ''}`} href={p.url} target="_top">Open the pathway</a>}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // ---------- This month ----------
 function Month({ ctx, fresh }) {
   const { hub, plan, tz } = ctx;
@@ -165,6 +201,8 @@ function Month({ ctx, fresh }) {
             {m.quote.by && <figcaption style={{ marginTop: 18, fontSize: 13, letterSpacing: '.04em', opacity: .85 }}>{m.quote.by}</figcaption>}
           </figure>
         )}
+
+        {hub.pathway && <PathwayCard ctx={ctx} p={hub.pathway} />}
 
         <section aria-labelledby="ws-upnext">
           <h2 id="ws-upnext" className="sch-sub">Up next</h2>

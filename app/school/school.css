@@ -55,6 +55,8 @@ body:has(.sch-root) > :not(main){display:none !important}
 .sch-card h2 .sch-badge{margin-left:10px;vertical-align:middle;height:22px}
 .sch-tag{margin-left:10px;font:600 12px var(--font-sans),sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#83341F;vertical-align:middle}
 .sch-card.hub{grid-template-columns:128px minmax(0,1fr) auto}
+/* A pod card has no picture: just the text and its buttons (overrides the hub's 128px picture column) */
+.sch-card.hub.sch-pod{grid-template-columns:minmax(0,1fr) auto;align-items:start}
 .sch-card.locked{border:1px dashed #A5432A;background:transparent}
 .sch-card.locked .sch-chip,.sch-card.locked h2{opacity:.55}
 .sch-card.locked .sch-btn{opacity:1}
@@ -76,7 +78,7 @@ body:has(.sch-root) > :not(main){display:none !important}
 .sch-newlist li{font-size:15px;color:var(--ink5);min-height:28px}
 .sch-newlist a{font-weight:600;color:var(--pine);text-decoration:underline}
 @media (max-width:700px){
-  .sch-card.hub{grid-template-columns:minmax(0,1fr)}
+  .sch-card.hub,.sch-card.hub.sch-pod{grid-template-columns:minmax(0,1fr)}
   .sch-banner,.sch-upgrade{flex-direction:column;align-items:stretch;padding:18px}
   .sch-banner .sch-btn,.sch-upgrade .sch-btn{width:100%}
 }

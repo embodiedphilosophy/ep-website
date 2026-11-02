@@ -21,6 +21,8 @@ const year = buildYear({ scheduleRows: [task], monthRows: [], statusRows: [], em
 year.ticksOk = true;
 const data = buildHome(week, { config, today: TODAY, tz: 'Europe/London', partner: null, year, slots: [], booked: null, chat: [], questions: [], reflections: { mine: null, unread: 0, posted: [] }, polls: [], books: { current: null, next: null }, workbook: null, uid: 'u1', filesOn: false, cosign: [], cohort: [], cues: [], circlePosts: [] });
 assert.equal(data.home.year.tasks.length, 1);
+// Rows changed in Ops → Mentee year (home.monthRows, from the Mentee Month Rows tab)
+data.home.monthRows = { buddy: { title: '', line: '', hide: true }, reflection: { title: 'Your first reflection, gently', line: 'One page is plenty.', hide: false } };
 
 const script = fs.readFileSync(new URL('../../public/circle/sahrdaya.js', import.meta.url), 'utf8');
 const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1100, height: 1400 } });
@@ -46,6 +48,8 @@ await p.locator('.esu-month').screenshot({ path: OUT + 'mentee-task-after.png' }
 await row.getByRole('button', { name: 'Done ✓' }).waitFor({ timeout: 5000 });
 assert.deepEqual([ticked.id, ticked.done], ['t-2026-11-watch', true]);
 assert.ok(await p.locator('.esu-month').getByText(/of \d+ done/).count(), 'the month counts it');
+assert.equal(await p.locator('.esu-month').getByText('Your buddy is on the way').count(), 0, 'a hidden row is gone');
+assert.ok(await p.locator('.esu-month').getByText('Your first reflection, gently').count() && await p.locator('.esu-month').getByText('One page is plenty.').count(), 'reworded row');
 assert.deepEqual(errs, []);
 await b.close();
 console.log('mentee tasks ui: ok');

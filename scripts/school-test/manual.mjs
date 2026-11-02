@@ -31,10 +31,10 @@ assert.equal(M.plainOf('a \\* b'), 'a * b', 'an escaped asterisk is kept');
 assert.equal(M.segs('**Bold**')[0].style.fontWeight, 600);
 
 // the views
-assert.deepEqual(M.prevNext('front'), { prev: null, next: M.prevNext('front').next }); assert.equal(M.prevNext('front').next.id, 'part-i'); assert.equal(M.prevNext('appendix-c').next, null); assert.equal(M.prevNext('part-i').prev.id, 'front');
+assert.deepEqual(M.prevNext('front'), { prev: null, next: M.prevNext('front').next }); assert.equal(M.prevNext('front').next.id, 'part-i'); assert.equal(M.prevNext('part-v').next.href, '?tab=texts', 'after Part V comes the Texts tab'); assert.equal(M.partParam('appendix-a'), 'front', 'the appendices are not manual parts any more'); for (const id of M.APPENDICES) assert.ok(M.chapterOf(id)); assert.equal(M.hrefOf('appendix-b'), '?tab=texts&text=appendix-b'); assert.equal(M.prevNext('part-i').prev.id, 'front');
 assert.equal(M.hrefOf('front'), '?tab=manual'); assert.equal(M.hrefOf('part-iii'), '?tab=manual&part=part-iii');
 assert.ok(!M.chapterBlocks('front').some(b => b.t === 'p' && /^\*\*Reading the labels/.test(b.s)), 'the label key is drawn as a strip, not twice');
 assert.ok(M.chapterBlocks('part-v').some(b => b.id === 'sources'), 'Part V ends with Appendices and sources');
-const toc = M.tocFor('part-iii'); assert.equal(toc.length, 9); assert.equal(toc.filter(c => c.cur).length, 1); assert.ok(toc.find(c => c.id === 'part-iii').subs.length > 0); assert.equal(toc.find(c => c.id === 'appendix-a').grp, 'The translations');
+const toc = M.tocFor('part-iii'); assert.equal(toc.length, 6); assert.equal(toc.filter(c => c.cur).length, 1); assert.ok(toc.find(c => c.id === 'part-iii').subs.length > 0);
 assert.equal(M.titleOf('appendix-a').includes('Uddyota'), false, 'the long title is shortened in lists');
 console.log('manual: ok');

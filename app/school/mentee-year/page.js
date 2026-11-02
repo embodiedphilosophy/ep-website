@@ -7,11 +7,15 @@ import { todayET } from '@/lib/events';
 import { front as manualFront, partParam, updated as manualUpdated } from '@/lib/school/manual';
 import Shell from '../Shell';
 import Manual from './Manual';
+import { Shelf, Text } from './Texts';
+import { textParam } from '@/lib/school/texts';
+import { APPENDICES } from '@/lib/school/manual';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata({ searchParams }) {
   const sp = await searchParams;
-  return { title: sp?.tab === 'manual' ? 'The formation manual · Sahṛdaya Upāya' : 'The mentee year · Sahṛdaya Upāya', robots: { index: false, follow: false } };
+  return { title: `${{ manual: 'The formation manual', texts: 'The texts' }[sp?.tab] || 'Your Year of Mentorship'} · Sahṛdaya Upāya`, robots: { index: false, follow: false } };
 }
 
 const CIRCLE = 'https://ss.embodiedphilosophy.com/c/mentorship';
@@ -25,10 +29,28 @@ const Back = () => <a className="sch-btn ghost" href={CIRCLE} target="_top">← 
 const PDF = '/school/sahrdaya-upaya-formation-manual.pdf';
 const upd = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 const Download = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 8 }}><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16" /></svg>;
-const Tabs = ({ tab }) => <nav className="my-tabs" aria-label="Page sections"><a href="?tab=manual" aria-current={tab === 'manual' ? 'page' : undefined}>The formation manual</a><a href="?tab=year" aria-current={tab === 'year' ? 'page' : undefined}>The mentee year</a></nav>;
+const TAB_LIST = [['manual', 'Formation manual'], ['year', 'Your Year of Mentorship'], ['texts', 'Texts']];
+const Tabs = ({ tab }) => <nav className="my-tabs" aria-label="Page sections">{TAB_LIST.map(([k, l]) => <a key={k} href={`?tab=${k}`} aria-current={tab === k ? 'page' : undefined}>{l}</a>)}</nav>;
 
 export default async function MenteeYearPage({ searchParams }) {
-  const sp = await searchParams, tab = sp?.tab === 'manual' ? 'manual' : 'year';
+  const sp = await searchParams, tab = ['manual', 'texts'].includes(sp?.tab) ? sp.tab : 'year';
+  // The appendices moved from the manual to the Texts tab: old links still land on the right text
+  if (tab === 'manual' && APPENDICES.includes(sp?.part)) redirect(`/school/mentee-year?tab=texts&text=${sp.part}`);
+  if (tab === 'texts') {
+    const text = textParam(sp?.text);
+    return (
+      <Shell>
+        <div className="sch-my" id="top">
+          <p className="sch-eyebrow">Sahṛdaya Upāya · 2026–27 cohort</p>
+          <h1>The texts</h1>
+          <p className="sch-my-lede">The Sanskrit sources behind the manual, in full translation: the haṃsa passages of the Svacchandatantra, the whole Haṃsasāra, and the supporting passages. Come to them a passage at a time, as the practice raises questions.</p>
+          <p><Back /></p>
+          <Tabs tab={tab} />
+          {text ? <Text id={text} /> : <Shelf />}
+        </div>
+      </Shell>
+    );
+  }
   if (tab === 'manual') {
     return (
       <Shell>
@@ -53,7 +75,7 @@ export default async function MenteeYearPage({ searchParams }) {
     <Shell>
       <div className="sch-my" id="top">
         <p className="sch-eyebrow">Sahṛdaya Upāya · 2026–27 cohort</p>
-        <h1>The mentee year</h1>
+        <h1>Your Year of Mentorship</h1>
         <p className="sch-my-lede">{data.lede}</p>
         <p><Back /></p>
         <Tabs tab={tab} />

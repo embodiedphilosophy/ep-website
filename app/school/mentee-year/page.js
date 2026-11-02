@@ -2,6 +2,8 @@ import raw from '@/data/mentee-year.json';
 import { applyOverrides, CONTENT_TAB } from '@/lib/mentee/yearcontent';
 import { readTab, TABS } from '@/lib/mentee/content';
 import { scheduleFrom, monthFrom } from '@/lib/mentee/year';
+import { monthList, ROWS_TAB } from '@/lib/mentee/monthlist';
+import menteeConfig from '@/data/mentee.json';
 import { segments, nextSteps, currentMonth, daysUntil, PROJECTS } from '@/lib/ops/menteeyear';
 import { todayET } from '@/lib/events';
 import { front as manualFront, partParam, updated as manualUpdated } from '@/lib/school/manual';
@@ -22,6 +24,10 @@ const CIRCLE = 'https://ss.embodiedphilosophy.com/c/mentorship';
 const dayFmt = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(',', '');
 const Rich = ({ text }) => segments(text).map((x, i) => x.t === 'b' ? <b key={i}>{x.s}</b> : x.t === 'i' ? <i key={i}>{x.s}</i> : x.t === 'q' ? <span key={i} className="my-q"><Rich text={x.s} /></span> : x.t === 'd' ? <span key={i} className="my-d">{x.s}</span> : x.s);
 const Proj = ({ p }) => <span className={`sch-my-proj ${p}`}><i />{PROJECTS[p]}</span>;
+const span = (a, b) => (b && b !== a ? `${dayFmt(a)} – ${dayFmt(b)}` : dayFmt(a));
+// One month's list: the same rows mentees see under "This month" on their page in Circle, edited in Ops → Mentee year
+const MonthRows = ({ rows }) => <ul className="sch-my-mrows">{rows.filter(r => !r.hidden).map(r => (
+  <li key={r.key}><span className="d">{r.date ? span(r.date, r.end) : ''}</span><span><b><Rich text={r.title} /></b>{r.line && <> <Rich text={r.line} /></>}</span></li>))}</ul>;
 const Back = () => <a className="sch-btn ghost" href={CIRCLE} target="_top">← Back to your page in Circle</a>;
 
 // The mentee year as a plain page (not drawn inside Circle): the rhythm, a typical month, month by month, the dated steps, one-to-ones.
@@ -67,8 +73,9 @@ export default async function MenteeYearPage({ searchParams }) {
     );
   }
   // Staff edit the steps, each month's theme and focus, and the wording in Ops → Mentee year; those edits live in sheet tabs and are laid over data/mentee-year.json
-  const [textRows, schedRows, monthRows] = await Promise.all([readTab(CONTENT_TAB).catch(() => []), readTab(TABS.schedule).catch(() => []), readTab(TABS.months).catch(() => [])]);
-  const data = applyOverrides(raw, textRows), steps = scheduleFrom(schedRows).steps;
+  const [textRows, schedRows, monthRows, bookRows, rowRows, assignmentRows] = await Promise.all([CONTENT_TAB, TABS.schedule, TABS.months, TABS.books, ROWS_TAB, TABS.assignments].map(t => readTab(t).catch(() => [])));
+  const data = applyOverrides(raw, textRows), sch = scheduleFrom(schedRows), steps = sch.steps;
+  const listOf = ym => monthList({ ym, config: menteeConfig, bookRows, monthRows, rowRows, assignmentRows, tasks: sch.tasks });
   data.months = data.months.map(m => { const f = monthFrom(monthRows, m.id); return f ? { ...m, theme: f.theme, focus: f.focus } : m; });
   const today = todayET(), month = currentMonth(data.months, today), next = nextSteps(steps, today, 3);
   return (
@@ -93,7 +100,7 @@ export default async function MenteeYearPage({ searchParams }) {
             <article key={m.id} id={`m-${m.id}`} className={`sch-my-card${month && m.id === month.id ? ' current' : ''}`}>
               <header><div><h3>{m.title}</h3><p className="theme">{m.theme}</p></div>{m.tag && <span className="tag">{m.tag}</span>}</header>
               <p className="focus">{m.focus}</p>
-              <ul>{m.items.map((t, i) => <li key={i}><Rich text={t} /></li>)}</ul>
+              <MonthRows rows={listOf(m.id)} />
               {steps.some(s => s.date.slice(0, 7) === m.id) && <><h4>Project steps due this month</h4><ul className="steps">{steps.filter(s => s.date.slice(0, 7) === m.id).map(s => <li key={s.id}><span className="d">{dayFmt(s.date)}</span> <Proj p={s.project} /> {s.title}</li>)}</ul></>}
             </article>))}</div></section>
 

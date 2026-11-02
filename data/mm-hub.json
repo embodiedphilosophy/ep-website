@@ -5,7 +5,7 @@
     "start_section_id": 1212933,
     "slug": "meditation-pass"
   },
-  "session": { "minutes": 60, "join_before_minutes": 15, "series": "meditation-mondays", "kicker": "Meditation Pass · Every Monday, 12pm ET" },
+  "session": { "minutes": 60, "join_before_minutes": 60, "series": "meditation-mondays", "kicker": "Meditation Pass · Every Monday, 12pm ET" },
   "links": {
     "pass_checkout": "https://ss.embodiedphilosophy.com/checkout/meditation-pass",
     "pass_yearly": "$99 a year",

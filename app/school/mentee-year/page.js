@@ -27,7 +27,7 @@ const Proj = ({ p }) => <span className={`sch-my-proj ${p}`}><i />{PROJECTS[p]}<
 const span = (a, b) => (b && b !== a ? `${dayFmt(a)} – ${dayFmt(b)}` : dayFmt(a));
 // One month's list: the same rows mentees see under "This month" on their page in Circle, edited in Ops → Mentee year
 const MonthRows = ({ rows }) => <ul className="sch-my-mrows">{rows.filter(r => !r.hidden).map(r => (
-  <li key={r.key}><span className="d">{r.date ? span(r.date, r.end) : ''}</span><span><b><Rich text={r.title} /></b>{r.line && <> <Rich text={r.line} /></>}</span></li>))}</ul>;
+  <li key={r.key}><span className="d">{r.date ? span(r.date, r.end) : r.when || ''}</span><span><b><Rich text={r.title} /></b>{r.line && <> <Rich text={r.line} /></>}</span></li>))}</ul>;
 const Back = () => <a className="sch-btn ghost" href={CIRCLE} target="_top">← Back to your page in Circle</a>;
 
 // The mentee year as a plain page (not drawn inside Circle): the rhythm, a typical month, month by month, the dated steps, one-to-ones.

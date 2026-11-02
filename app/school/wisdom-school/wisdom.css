@@ -114,3 +114,10 @@ a.wsh-tile.past:hover,a.wsh-tile.current:hover{box-shadow:0 0 0 2px #20302A inse
 .wsh-path.locked{border-style:dashed;border-color:#A5432A;background:transparent}
 @media (max-width:900px){.wsh-path-s{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:700px){.wsh-path{padding:20px}.wsh-path h2{font-size:26px}.wsh-path .wsh-actions .sch-btn{width:100%}}
+/* Session actions: join button (to the Circle event page with the Zoom link), small red calendar link beneath */
+.wsh-join{display:flex;flex-direction:column;align-items:center;gap:6px}
+.wsh-ev .wsh-join{margin-top:auto;align-self:flex-start;align-items:flex-start}
+.wsh-ev .wsh-join .sch-btn{margin-top:0}
+.wsh-cal{background:none;border:0;padding:2px 0;font:500 12px var(--font-sans),sans-serif;color:#A5432A;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.wsh-cal:hover{color:#7E2F1C}
+@media (max-width:700px){.wsh-join{align-self:stretch}.wsh-join .sch-btn{width:100%}}

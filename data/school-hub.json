@@ -138,6 +138,19 @@
       "order": 40
     },
     {
+      "key": "heart-of-recognition",
+      "tabs": [
+        "resources"
+      ],
+      "kind": "file",
+      "title": "The Heart of Recognition",
+      "audience_note": "Sādhana School",
+      "description": "Our study edition of Kṣemarāja's Pratyabhijñāhṛdaya (Fall 2026).",
+      "order": 53,
+      "source_title": "The Heart of Recognition",
+      "url": ""
+    },
+    {
       "key": "sourcebook",
       "tabs": [
         "resources"

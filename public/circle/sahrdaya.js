@@ -120,8 +120,8 @@
       '.esu-lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:#5A5346;margin:0 0 12px}.esu-lg span{display:inline-flex;gap:6px;align-items:center}.esu-ldot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none;box-sizing:border-box}',
       '.esu-ln{display:grid;border-top:1px solid #E3D8C6}.esu-lh{text-align:center;padding:8px 0 6px;font:500 11px "IBM Plex Mono",monospace;letter-spacing:.08em;color:#5A5346;border-radius:6px 6px 0 0}.esu-lh.cur{color:#A5432A;background:#F6EEDA}.esu-lr{padding:10px 8px 10px 0;border-top:1px solid #E3D8C6;display:flex;flex-direction:column;gap:2px;align-items:flex-start}.esu-lc{padding:4px 2px 10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-content:flex-start;min-height:30px}.esu-lc.cur{background:#F6EEDA}.esu-lpb{border-top:1px solid #E3D8C6;padding:8px 4px 4px;font-size:10.5px;color:#5A5346;text-align:center;line-height:1.25;display:flex;align-items:flex-end;justify-content:center}',
       '.esu-gt{display:grid;gap:0;border-top:1px solid #E3D8C6}.esu-gt-r{display:grid;grid-template-columns:118px minmax(0,1fr);align-items:stretch;border-bottom:1px solid #E3D8C6}.esu-gt-r.hd{border-bottom:0}.esu-gt-l{padding:14px 8px 0 0;display:flex;align-items:flex-start}',
-      '.esu-gt-t{position:relative;display:block;min-height:98px}.esu-gt-t.hd{min-height:0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));text-align:center}.esu-gt-t.hd b{font:500 11px \"IBM Plex Mono\",monospace;letter-spacing:.08em;color:#5A5346;padding:8px 0 6px;border-radius:6px 6px 0 0}.esu-gt-t.hd b.cur{color:#A5432A;background:#F6EEDA}.esu-gt-tag{position:absolute;top:-1px;transform:translateX(-50%);font:600 9.5px \"IBM Plex Sans\",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:#A5432A;border-radius:99px;padding:1px 6px;font-style:normal;display:none}',
-      '.esu-gt-s{position:absolute;inset:0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));pointer-events:none}.esu-gt-s i{border-left:1px solid #EDE3D3}.esu-gt-s i.cur{background:#F6EEDA}.esu-gt-bars{position:absolute;left:0;right:0;top:10px;height:40px}.esu-gt-b{position:absolute;top:0;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:2px 4px;font:600 11px/1.15 \"IBM Plex Sans\",sans-serif;text-align:center;white-space:normal;overflow:hidden;box-sizing:border-box}',
+      '.esu-gt-t{position:relative;display:block;min-height:64px}.esu-gt-t.hd{min-height:0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));text-align:center}.esu-gt-t.hd b{font:500 11px \"IBM Plex Mono\",monospace;letter-spacing:.08em;color:#5A5346;padding:8px 0 6px;border-radius:6px 6px 0 0}.esu-gt-t.hd b.cur{color:#A5432A;background:#F6EEDA}.esu-gt-tag{position:absolute;top:-1px;transform:translateX(-50%);font:600 9.5px \"IBM Plex Sans\",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:#A5432A;border-radius:99px;padding:1px 6px;font-style:normal;display:none}',
+      '.esu-gt-s{position:absolute;inset:0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));pointer-events:none}.esu-gt-s i{border-left:1px solid #EDE3D3}.esu-gt-s i.cur{background:#F6EEDA}.esu-gt-bars{position:absolute;left:0;right:0;top:12px;height:40px}.esu-gt-b{position:absolute;top:0;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:2px 4px;font:600 11px/1.15 \"IBM Plex Sans\",sans-serif;text-align:center;white-space:normal;overflow:hidden;box-sizing:border-box;background:var(--bg);color:var(--fg)}.esu-gt-b.ahead{opacity:.72}.esu-gt-b.now{box-shadow:inset 0 0 0 1.5px var(--fg);font-weight:700}.esu-gt-b.done{opacity:.5}.esu-gt-b.late{box-shadow:inset 0 0 0 1.5px #A5432A;color:#A5432A}',
       '.esu-gt-dots{position:absolute;left:0;right:0;top:58px;height:40px}.esu-gt-d1{position:absolute;display:inline-flex;width:12px;height:12px}.esu-gt-now{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#A5432A;opacity:.55;pointer-events:none}',
       '.esu-ln-p{display:none}.esu-lp3{display:grid;grid-template-columns:46px minmax(0,1fr) minmax(0,1fr);border-top:1px solid #E3D8C6}.esu-lpm{padding:10px 0;font-size:11px;letter-spacing:.06em;color:#5A5346}.esu-lpm.cur{color:#A5432A}.esu-lpc{padding:8px 6px;display:flex;flex-direction:column;gap:4px}.esu-lpc.cur{background:#F6EEDA}.esu-lpl{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;line-height:1.3}.esu-lpl .esu-ldot{margin-top:2px}.esu-lp3>.esu-proj{padding:8px 6px}',
       '.esu-clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}',
@@ -223,7 +223,7 @@
       '@media (max-width:760px){',
       '.esu-st{grid-template-columns:minmax(0,1fr) auto}.esu-sw{grid-column:1/-1;flex-direction:row;gap:8px;align-items:baseline}.esu-cue{grid-template-columns:minmax(0,1fr)}.esu-steps4{grid-template-columns:repeat(2,minmax(0,1fr))}.esu-rcols,.esu-ed2{grid-template-columns:minmax(0,1fr)}.esu-rpane{padding:16px}.esu-rt1{font-size:28px}',
       '.esu{padding:24px 16px 56px}.esu-h1{font-size:36px}',
-      '.esu-ln-d{display:none}.esu-ln-p{display:block}',
+      '.esu-ln-d{display:none}.esu-ln-p{display:block}.esu-lg.esu-ln-p{display:flex}',
       '.esu-grid2,.esu-six{grid-template-columns:minmax(0,1fr)}.esu-hero-t{font-size:24px}.esu-mrow.hero .bt{width:100%}',
       '.esu-wi{grid-template-columns:44px minmax(0,1fr)}.esu-wi .pl{grid-column:1 / -1}.esu-strip{padding:10px 16px}.esu-strip .cr{display:none}.esu-strip .esu-seg{width:100%;max-width:100%}',
       '.esu-srow,.esu-sess{grid-template-columns:56px minmax(0,1fr)}.esu-srow > .bt,.esu-sess > .bt{grid-column:2}',
@@ -610,7 +610,7 @@
     var L = y.lanes, st = function (id) { var m = y.allSteps.filter(function (s) { return s.id === id; })[0]; return m ? (m.status === 'done' ? 'done' : m.overdue ? 'overdue' : m.month === w.today.slice(0, 7) ? 'due' : 'coming') : 'coming'; };
     // The legend names only the states that are on the timeline right now (no "Overdue" unless a step is, no "Done" until one is)
     var seen = {}; [L.talk, L.offering].forEach(function (ln) { ln.steps.forEach(function (s) { seen[st(s.id)] = true; }); });
-    var legend = '<div class="esu-lg">' + ['done', 'due', 'overdue', 'coming'].filter(function (k) { return seen[k]; }).map(function (k) { return '<span>' + ld(k) + LL[k] + '</span>'; }).join('') + '</div>';
+    var legend = '<div class="esu-lg esu-ln-p">' + ['done', 'due', 'overdue', 'coming'].filter(function (k) { return seen[k]; }).map(function (k) { return '<span>' + ld(k) + LL[k] + '</span>'; }).join('') + '</div>';
     // A timeline: each project is a row of phase bars across the months, with its steps as dots at their real dates and a line for today
     var cols = L.months.length, TONE = { talk: ['#F6EBD8', '#8A5A12'], offering: ['#E1F0E7', '#2F6B4F'] };
     var at = function (date) { var i = -1; L.months.forEach(function (m, k) { if (m.ym === date.slice(0, 7)) i = k; }); if (i < 0) return null; var y = +date.slice(0, 4), mo = +date.slice(5, 7), dim = new Date(Date.UTC(y, mo, 0)).getUTCDate(); return (i + (+date.slice(8) - 0.5) / dim) / cols * 100; };
@@ -620,15 +620,16 @@
     var grid = '<div class="esu-gt esu-ln-d" role="table" aria-label="Final projects by month"><div class="esu-gt-r hd"><span class="esu-gt-l"></span><span class="esu-gt-t hd">' +
       L.months.map(function (m) { return '<b class="' + (m.current ? 'cur' : '') + '">' + esc(m.label.toUpperCase()) + '</b>'; }).join('') + (todayAt === null ? '' : '<em class="esu-gt-tag" style="left:' + todayAt + '%">today</em>') + '</span></div>';
     [L.talk, L.offering].forEach(function (ln) {
-      var tone = TONE[ln.key], dots = ln.steps.slice().sort(function (x, y) { return x.date < y.date ? -1 : 1; }), prev = -9, lvl = 0;
-      var bars = ln.phases.map(function (p) { return '<span class="esu-gt-b" style="left:calc(' + (p.from / cols * 100) + '% + 1px);width:calc(' + ((p.to - p.from) / cols * 100) + '% - 2px);background:' + tone[0] + ';color:' + tone[1] + '" title="' + esc(p.label) + '">' + esc(p.label) + '</span>'; }).join('');
-      var dd = dots.map(function (s) {
-        var x = at(s.date); if (x === null) return '';
-        lvl = x - prev < 2.4 ? (lvl + 1) % 3 : 0; prev = x;
-        var k = st(s.id);
-        return '<span class="esu-gt-d1" style="left:calc(' + x + '% - 6px);top:' + (4 + lvl * 15) + 'px" title="' + esc(s.title + ' · ' + dmy(s.date) + ' · ' + LL[k]) + '" role="img" aria-label="' + esc(s.title + ', ' + dmy(s.date) + ', ' + LL[k]) + '">' + ld(k) + '</span>';
+      // Each phase bar carries its own state (done, now, overdue, ahead); the steps themselves live in "All the steps"
+      var tone = TONE[ln.key], cur = -1; L.months.forEach(function (m, k) { if (m.current) cur = k; });
+      var bars = ln.phases.map(function (p) {
+        var ss = ln.steps.filter(function (x) { return x.col >= p.from && x.col < p.to; }), ks = ss.map(function (x) { return st(x.id); });
+        var done = ss.length && ks.every(function (k) { return k === 'done'; }), late = ks.indexOf('overdue') >= 0, now = cur >= p.from && cur < p.to;
+        var cls = 'esu-gt-b' + (done ? ' done' : late ? ' late' : now ? ' now' : cur >= p.to ? '' : ' ahead');
+        var tip = p.label + (ss.length ? ' · ' + ss.map(function (x) { return x.title; }).join(' · ') : '');
+        return '<span class="' + cls + '" style="left:calc(' + (p.from / cols * 100) + '% + 1px);width:calc(' + ((p.to - p.from) / cols * 100) + '% - 2px);--bg:' + tone[0] + ';--fg:' + tone[1] + '" title="' + esc(tip) + '">' + (done ? '✓ ' : '') + esc(p.label) + '</span>';
       }).join('');
-      grid += '<div class="esu-gt-r"><span class="esu-gt-l">' + projChip(ln.key) + '</span><span class="esu-gt-t">' + stripes + '<span class="esu-gt-bars">' + bars + '</span><span class="esu-gt-dots">' + dd + '</span>' + todayLine + '</span></div>';
+      grid += '<div class="esu-gt-r"><span class="esu-gt-l">' + projChip(ln.key) + '</span><span class="esu-gt-t">' + stripes + '<span class="esu-gt-bars">' + bars + '</span>' + todayLine + '</span></div>';
     });
     grid += '</div>';
     var phone = '<div class="esu-ln-p"><div class="esu-lp3"><span></span>' + projChip('talk').replace('60-minute talk', 'Talk') + projChip('offering').replace('Three-session offering', 'Offering') + '</div>' + L.months.map(function (m, c) {

@@ -12,6 +12,7 @@ export async function POST(req) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   revalidateTag(SHEET_TAG, { expire: 0 });
+  revalidateTag('manual', { expire: 0 }); // the Teacher Formation Manual, read from its Google Doc
   revalidatePath('/', 'layout');
   return NextResponse.json({ ok: true });
 }

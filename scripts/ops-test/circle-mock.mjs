@@ -49,9 +49,11 @@ const wsEvents = [
   { id: 803, name: 'Meditation Monday: Metta', space_id: 2897425, starts_at: new Date(+monday() + 7 * 86400e3).toISOString(), ends_at: new Date(+monday() + 7 * 86400e3 + 2700e3).toISOString(), host: { name: 'Oneika Mays' } },
   { id: 804, name: 'Autumn workshop', space_id: 2897428, starts_at: tue(25).toISOString(), ends_at: new Date(+tue(25) + 9000e3).toISOString(), host: { name: 'Jacob Kyle' } },
   { id: 805, name: 'Book club meet-up', space_id: 2897428, starts_at: tue(40).toISOString(), ends_at: new Date(+tue(40) + 3600e3).toISOString(), host: { name: 'Jacob Kyle' } },
+  // The Christian Mysticism learning pathway (circle.pathway_space_ids): one session done, three to come
+  ...[-6, 1, 8, 22].map((n, k) => ({ id: 860 + k, name: 'WS Quarterly Learning Pathway: Christian Mysticism', space_id: 2929518, starts_at: new Date(Date.now() + n * 86400e3).toISOString(), ends_at: new Date(Date.now() + n * 86400e3 + 7200e3).toISOString(), url: `https://ss.example.test/c/christian-mysticism/s${k}`, host: { name: 'Floss Harry' } })),
 ];
 const wsPosts = [{ id: 31, name: 'The Circle Reopens: details', created_at: day(-1) }, { id: 32, name: 'Welcome to October', created_at: day(-30) }];
-const wsSpaces = [2913549, 2897428, 2897425, 2897427, 2897436, 2897437];
+const wsSpaces = [2913549, 2897428, 2897425, 2897427, 2897436, 2897437, 2929518];
 const wsPlus = [...wsSpaces, 2897811, 2897812, 2897813, 2897814, 2897815, 2900101, 2900102, 2900103, 2900104, 2910160, 2912717];
 Object.assign(spacesFor, { 'wsmember@test': wsSpaces, 'wsplus@test': wsPlus, 'wsnone@test': [] });
 

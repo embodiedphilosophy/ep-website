@@ -395,12 +395,22 @@
     });
   }
 
+  // Tasks staff add in Ops → Mentee year (Mentee Schedule, kind task), due this month: a tick button, and "Open" when the task has a link
+  function taskRows(w) {
+    var y = YR(w);
+    return (y && y.tasks || []).map(function (t) {
+      var d = t.status === 'done', go = safeUrl(t.link) ? ext(t.link, 'Open', 'esu-btn out sm') : '';
+      var tick = '<button type="button" class="esu-btn out sm" data-act="yr-tick" data-id="' + esc(t.id) + '" aria-pressed="' + (d ? 'true' : 'false') + '">' + (d ? 'Done ✓' : 'Mark done') + '</button>';
+      return { k: '1-' + t.date, done: d, w1: d ? 'Done' : 'By ' + dm(t.date), w2: d ? '' : dayFmt(t.date, { weekday: 'short' }), tx: rwText(esc(t.title), t.detail ? esc(t.detail) : ''), bt: '<span style="display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end">' + go + tick + '</span>' };
+    });
+  }
+
   function monthSection(w) {
     var h = w.home, y = YR(w), fm = h.formation || { n: 0 }, ym = w.today.slice(0, 7);
     if (y && !y.started && w.today < y.startsOn) return '<section class="esu-card esu-month"><h2 class="esu-h2">This month</h2><p class="esu-muted" style="margin-top:6px">Your first month starts on ' + esc(dml(y.startsOn)) + '.</p></section>';
     if (y && !y.started) return '<section class="esu-card esu-month"><h2 class="esu-h2">This month</h2><p class="esu-muted" style="margin-top:6px">The year is complete. Thank you for your presence.</p></section>';
     var rows = [], add = function (r) { if (r) rows.push(r); };
-    readRow(w).forEach(add); add(buddyRow(w)); immersionRows(w).forEach(add); add(oneRow(w)); add(reflectionRow(w)); handinRows(w).forEach(add);
+    readRow(w).forEach(add); add(buddyRow(w)); immersionRows(w).forEach(add); add(oneRow(w)); add(reflectionRow(w)); handinRows(w).forEach(add); taskRows(w).forEach(add);
     rows.sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
     var done = rows.filter(function (r) { return r.done; }).length, n = rows.length, th = y && y.month && y.month.theme;
     var eye = dayFmt(ym + '-01', { month: 'long' }) + (fm.n >= 1 ? ' · month ' + fm.n + ' of your formation' : '');
@@ -605,9 +615,10 @@
   // Ticks save at once on the page and are rolled back with a message if the save fails
   function yrTick(id) {
     var y = YR(state.data); if (!y) return;
-    var s = y.allSteps.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+    var s = y.allSteps.filter(function (x) { return x.id === id; })[0] || (y.tasks || []).filter(function (x) { return x.id === id; })[0]; if (!s) return;
+    var isTask = (y.tasks || []).indexOf(s) >= 0;
     var was = s.status === 'done', now = !was;
-    var set = function (v) { s.status = v ? 'done' : 'open'; var n = y.steps.filter(function (x) { return x.id === id; })[0]; if (n) n.status = s.status; if (v) yrState.keep[id] = true; else delete yrState.keep[id]; y.doneCount += v ? 1 : -1; if (y.lanes) y.lanes.doneCount += v ? 1 : -1; };
+    var set = function (v) { s.status = v ? 'done' : 'open'; if (isTask) return; var n = y.steps.filter(function (x) { return x.id === id; })[0]; if (n) n.status = s.status; if (v) yrState.keep[id] = true; else delete yrState.keep[id]; y.doneCount += v ? 1 : -1; if (y.lanes) y.lanes.doneCount += v ? 1 : -1; };
     set(now); yrState.msg = ''; yrState.busy = ''; render();
     call('/api/member/year/tick', { id: id, done: now, today: localToday() }).catch(function (e) { set(was); yrState.msg = e.message || 'That didn’t save. Please try again.'; yrState.msgFor = 'tick'; render(); });
   }

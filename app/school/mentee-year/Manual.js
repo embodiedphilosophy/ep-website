@@ -41,13 +41,13 @@ export default function Manual({ part }) {
         <article className="mn-read">
           <header><p className="lbl">{front ? 'Start here' : labelOf(part).toUpperCase()}</p><h2>{front ? 'How to use this manual' : titleOf(part)}</h2></header>
           {part === 'part-ii' && <div className="mn-x"><span>This part is the year in brief. Month-by-month detail, with this month highlighted, is on its own tab.</span><a href="?tab=year#months">Your Year of Mentorship →</a></div>}
-          {part === 'part-v' && <div className="mn-x"><span>The translations (Appendices A to C) now have their own tab, laid out passage by passage.</span><a href="?tab=texts">The texts →</a></div>}
+          {part === 'part-v' && <div className="mn-x"><span>The translations (Appendices A to C) now have their own tab, Seminal Texts, laid out passage by passage.</span><a href="?tab=texts">Seminal Texts →</a></div>}
           {MENTORS_NOTE[part] && <p className="mn-mentors"><b>For mentors’ study.</b> {MENTORS_NOTE[part]}</p>}
           {blocks.map((b, i) => <Block key={i} b={b} />)}
           {front && (<>
             <div className="mn-key"><b>Reading the labels</b><Key /></div>
             <section style={{ marginTop: 36 }}><h3 style={{ fontSize: 25, margin: '0 0 12px' }}>The five parts</h3><div className="mn-cards">{['part-i', 'part-ii', 'part-iii', 'part-iv', 'part-v'].map(id => <Card key={id} c={cardOf(id)} />)}</div></section>
-            <section style={{ marginTop: 32 }}><h3 style={{ fontSize: 25, margin: '0 0 4px' }}>The translations</h3><p className="sch-my-sub" style={{ fontSize: 14.5 }}>Given in full, so every verse a mentor quotes can be checked against its source. They live on the Texts tab.</p><div className="mn-cards">{['appendix-a', 'appendix-b', 'appendix-c'].map(id => <Card key={id} c={cardOf(id)} />)}</div></section>
+            <section style={{ marginTop: 32 }}><h3 style={{ fontSize: 25, margin: '0 0 4px' }}>The translations</h3><p className="sch-my-sub" style={{ fontSize: 14.5 }}>Given in full, so every verse a mentor quotes can be checked against its source. They live on the Seminal Texts tab.</p><div className="mn-cards">{['appendix-a', 'appendix-b', 'appendix-c'].map(id => <Card key={id} c={cardOf(id)} />)}</div></section>
           </>)}
           <nav className="mn-pn" aria-label="Previous and next">
             {prev ? <a href={prev.href}><span className="l">← {prev.label}</span><span className="t">{prev.title}</span></a> : <span />}

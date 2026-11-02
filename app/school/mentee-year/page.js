@@ -15,7 +15,7 @@ import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 export async function generateMetadata({ searchParams }) {
   const sp = await searchParams;
-  return { title: `${{ manual: 'The formation manual', texts: 'The texts' }[sp?.tab] || 'Your Year of Mentorship'} · Sahṛdaya Upāya`, robots: { index: false, follow: false } };
+  return { title: `${{ manual: 'The Teacher Formation Manual', texts: 'Seminal Texts' }[sp?.tab] || 'Your Year of Mentorship'} · Sahṛdaya Upāya`, robots: { index: false, follow: false } };
 }
 
 const CIRCLE = 'https://ss.embodiedphilosophy.com/c/mentorship';
@@ -29,7 +29,7 @@ const Back = () => <a className="sch-btn ghost" href={CIRCLE} target="_top">← 
 const PDF = '/school/sahrdaya-upaya-formation-manual.pdf';
 const upd = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 const Download = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: 8 }}><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16" /></svg>;
-const TAB_LIST = [['manual', 'Formation manual'], ['year', 'Your Year of Mentorship'], ['texts', 'Texts']];
+const TAB_LIST = [['manual', 'Teacher Formation Manual'], ['year', 'Your Year of Mentorship'], ['texts', 'Seminal Texts']];
 const Tabs = ({ tab }) => <nav className="my-tabs" aria-label="Page sections">{TAB_LIST.map(([k, l]) => <a key={k} href={`?tab=${k}`} aria-current={tab === k ? 'page' : undefined}>{l}</a>)}</nav>;
 
 export default async function MenteeYearPage({ searchParams }) {
@@ -42,7 +42,7 @@ export default async function MenteeYearPage({ searchParams }) {
       <Shell>
         <div className="sch-my" id="top">
           <p className="sch-eyebrow">Sahṛdaya Upāya · 2026–27 cohort</p>
-          <h1>The texts</h1>
+          <h1>Seminal Texts</h1>
           <p className="sch-my-lede">The Sanskrit sources behind the manual, in full translation: the haṃsa passages of the Svacchandatantra, the whole Haṃsasāra, and the supporting passages. Come to them a passage at a time, as the practice raises questions.</p>
           <p><Back /></p>
           <Tabs tab={tab} />
@@ -56,7 +56,7 @@ export default async function MenteeYearPage({ searchParams }) {
       <Shell>
         <div className="sch-my" id="top">
           <p className="sch-eyebrow">Sahṛdaya Upāya · 2026–27 cohort</p>
-          <h1>The formation manual</h1>
+          <h1>The Teacher Formation Manual</h1>
           <p className="sch-my-lede">The working handbook for apprentices and mentors: the program, the year, the ajapā-haṃsa practice, the three-session process and certification, with the Sanskrit sources on haṃsa in full.</p>
           <p className="mn-meta">{manualFront.edition.replace('First Edition', 'First edition')} · a first draft{manualUpdated ? ` · Updated ${upd(manualUpdated)}` : ''}</p>
           <div className="mn-acts" id="pdf"><Back /><a className="sch-btn" href={PDF} download><Download />Download the PDF</a><span className="mn-pdfnote">PDF · first edition, Nov 2026</span></div>

@@ -273,7 +273,7 @@ body:has(.sch-root) > :not(main){display:none !important}
 @media (max-width:760px){.mn-wrap{grid-template-columns:minmax(0,1fr)}.mn-desk{display:none}.mn-phone-toc{display:block}.mn-cards,.mn-pn{grid-template-columns:minmax(0,1fr)}.mn-verse.hasn{grid-template-columns:30px minmax(0,1fr)}.mn-read>header h2{font-size:30px}.mn-table.wide table{min-width:calc(var(--cols) * 150px)}.mn-acts .sch-btn{width:100%}.mn-tabs-note{display:none}}
 
 /* The Texts tab (/school/mentee-year?tab=texts): the translations as a small library — a shelf, then one text as passage cards */
-.my-tabs{max-width:600px}
+.my-tabs{max-width:680px}
 .tx-how{list-style:none;counter-reset:how;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .tx-how li{counter-increment:how;position:relative;background:#FBF6EE;border:1px solid #E3D8C6;border-radius:10px;padding:14px 16px 14px 52px;font-size:14px;line-height:1.5;color:#5A5346}
 .tx-how li::before{content:counter(how);position:absolute;left:14px;top:13px;width:26px;height:26px;border-radius:50%;background:#20302A;color:#FAF5EB;font:600 13px Inter,sans-serif;display:flex;align-items:center;justify-content:center}

@@ -534,7 +534,8 @@
       if (x.mine) act += '<button type="button" class="esu-lnk" data-act="pp-hours">Log practice-teaching hours</button> ';
       if (x.canLeave) act += '<button type="button" class="esu-lnk" data-act="pp-leave" data-id="' + esc(x.id) + '">Leave</button> ';
       if (x.canCancel) act += '<button type="button" class="esu-lnk" data-act="pp-cancel" data-id="' + esc(x.id) + '">Cancel this pod</button>';
-      var room = x.canSetRoom ? '<details style="margin-top:8px"' + (x.roomUrl ? '' : ' open') + '><summary class="esu-muted" style="font-size:13px;cursor:pointer">' + (x.roomUrl ? 'Change the live room link' : 'Make a live room for your pod') + '</summary>' + ppRoomHelp() +
+      var auto = d.autoRooms && x.canSetRoom && !x.roomUrl ? '<div style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="pp-autoroom" data-id="' + esc(x.id) + '"' + (state.busy === 'pp' ? ' disabled' : '') + '>Make our meeting room</button></div>' : '';
+      var room = x.canSetRoom ? auto + '<details style="margin-top:8px"' + (x.roomUrl || d.autoRooms ? '' : ' open') + '><summary class="esu-muted" style="font-size:13px;cursor:pointer">' + (x.roomUrl ? 'Change the live room link' : d.autoRooms ? 'Or use a link of your own' : 'Make a live room for your pod') + '</summary>' + ppRoomHelp() +
         '<div class="esu-say" style="margin-top:6px"><input id="esu-pp-room-' + esc(x.id) + '" type="text" data-in="pp-room:' + esc(x.id) + '" placeholder="Paste the live room link (https://…)" value="' + esc((state.ppRoom && state.ppRoom[x.id] != null) ? state.ppRoom[x.id] : x.roomUrl) + '" style="' + FIELD + '"><button type="button" class="esu-btn out" data-act="pp-room" data-id="' + esc(x.id) + '">Save</button></div></details>' : '';
       return '<li style="padding:12px 0;border-top:1px solid #E3D8C6"><div style="font-weight:600">' + esc(x.topic) + (x.mine ? ' <span class="esu-muted" style="font-weight:400">· you’re in</span>' : '') + '</div>' +
         '<div class="esu-muted" style="font-size:13px"><b style="color:#1E1A14">' + esc(ppWhen(x.startsAt)) + '</b> · organized by ' + esc(x.organiser) + '</div><div class="esu-muted" style="font-size:13px">' + esc(st) + '</div>' +
@@ -1062,6 +1063,11 @@
       if (a === 'pp-leave' && !window.confirm('Leave this pod?')) return;
       state.busy = 'pp'; state.msg = ''; state.msgFor = 'pp'; render();
       call('/api/member/practicum', { action: a.slice(3), id: t.dataset.id }).then(function (d) { state.pp = d; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
+      return;
+    }
+    if (a === 'pp-autoroom') {
+      state.busy = 'pp'; state.msg = ''; state.msgFor = 'pp'; render();
+      call('/api/member/practicum', { action: 'autoroom', id: t.dataset.id }).then(function (d) { state.pp = d; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
       return;
     }
     if (a === 'pp-room') {

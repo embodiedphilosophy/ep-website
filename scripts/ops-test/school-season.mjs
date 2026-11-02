@@ -79,6 +79,8 @@ assert.deepEqual(t.resources.map(r => r.key).sort(), ['inner-travelogue', 'pract
 const withFiles = page(termMember, { items: items.map(i => (i.key === 'song-of-sadhana' ? { ...i, url: 'https://files.test/song.pdf' } : i)), readings: readingPlan([R('', 'need', 'The Sādhaka\'s Sourcebook', { file_url: 'https://files.test/sourcebook.pdf' })], 'fall-2026', {}) });
 assert.deepEqual(withFiles.resources.filter(r => r.file).map(r => [r.key, r.href]), [['sourcebook', 'https://files.test/sourcebook.pdf'], ['song-of-sadhana', 'https://files.test/song.pdf'], ['inner-travelogue', 'https://assets-v2.circle.so/z7l40hi72md237ij98abbg4qvt6b']], 'the Sourcebook file comes from the reading plan, Song and the Inner Travelogue from their own url; all open the PDF');
 assert.equal(t.resources.find(r => r.key === 'practice-portfolio').pdf, 'https://assets-v2.circle.so/1n7219z1xh2mfal1a5n1nyxuxioh', 'the Practice Portfolio card also offers its printable PDF');
+const heart = page(termMember, { readings: readingPlan([R('', 'need', 'The Heart of Recognition', {}), R('1', 'core', 'The Heart of Recognition', { file_url: 'https://files.test/heart.pdf' })], 'fall-2026', {}) });
+assert.equal(heart.resources.find(r => r.key === 'heart-of-recognition')?.href, 'https://files.test/heart.pdf', 'the Heart of Recognition card opens the study edition, from a weekly reading when the need row has no file');
 assert.ok(!t.resources.some(r => r.key === 'practice-resources'), 'no Practice Resources card: its PDFs are on the tab itself');
 assert.deepEqual(t.kula.cards.map(c => c.key), ['kula-chat'], 'Kula Commentary became the Reflections space, so Kula is the chat');
 

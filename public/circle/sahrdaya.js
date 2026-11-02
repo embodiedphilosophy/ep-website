@@ -172,7 +172,7 @@
       '.esu-smon{font:600 21px "Cormorant Garamond",Georgia,serif;margin:22px 0 6px}.esu-smon .none{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#5A5346;margin-left:6px}.esu-slist{list-style:none;margin:0;padding:0;border-top:1px solid #E3D8C6}',
       '.esu-srow{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:14px 0;border-bottom:1px solid #E3D8C6}.esu-db{width:56px;height:56px;border-radius:8px;background:#F1E9DC;display:flex;flex-direction:column;align-items:center;justify-content:center;font:500 10px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#5A5346}.esu-db b{font:600 24px/1 "Cormorant Garamond",Georgia,serif;color:#1E1A14;letter-spacing:0}',
       '.esu-stag{font:500 10px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:2px 8px;margin-right:6px;display:inline-block}.esu-stag.pod{background:#E4EEE8;color:#2E5A4B}.esu-stag.pod.mine{background:#2E5A4B;color:#fff}.esu-stag.one{background:#F6EBD8;color:#7A5A2E}.esu-in-ok{font:500 12px "IBM Plex Mono",monospace;color:#2E5A4B}',
-      '.esu-sblock{list-style:none;background:#22352D;color:#F4EDE1;border-radius:10px;padding:16px 18px;margin:12px 0;border-bottom:0}.esu-sbh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}.esu-sbh .ey{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#D9B36A}.esu-sess{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 0;border-top:1px solid rgba(244,237,225,.18)}.esu-sess .esu-db{background:rgba(244,237,225,.1);color:#C9D1CB}.esu-sess .esu-db b{color:#FBF6EE}',
+      '.esu-sblock{list-style:none;background:#22352D;color:#F4EDE1;border-radius:10px;padding:16px 18px;margin:12px 0;border-bottom:0}.esu-sbh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}.esu-sbh .ey{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#D9B36A}.esu-sess{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 0;border-top:1px solid rgba(244,237,225,.18)}.esu-sess .esu-db{background:rgba(244,237,225,.1);color:#C9D1CB}.esu-sess .esu-db b{color:#FBF6EE}.esu-sess > .bt{display:flex;flex-direction:column;align-items:flex-end;gap:4px}',
       '.esu-sfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid #E3D8C6}',
       '.esu-wg{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#5A5346;margin:20px 0 4px}.esu-wlist{list-style:none;margin:0;padding:0}',
       '.esu-wl{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:14px 0;border-bottom:1px solid #E3D8C6}.esu-wl .esu-rw-d{margin:0}',
@@ -226,7 +226,7 @@
       '.esu-ln-d{display:none}.esu-ln-p{display:block}.esu-lg.esu-ln-p{display:flex}',
       '.esu-grid2,.esu-six{grid-template-columns:minmax(0,1fr)}.esu-hero-t{font-size:24px}.esu-mrow.hero .bt{width:100%}',
       '.esu-wi{grid-template-columns:44px minmax(0,1fr)}.esu-wi .pl{grid-column:1 / -1}.esu-strip{padding:10px 16px}.esu-strip .cr{display:none}.esu-strip .esu-seg{width:100%;max-width:100%}',
-      '.esu-srow,.esu-sess{grid-template-columns:56px minmax(0,1fr)}.esu-srow > .bt,.esu-sess > .bt{grid-column:2}',
+      '.esu-srow,.esu-sess{grid-template-columns:56px minmax(0,1fr)}.esu-srow > .bt,.esu-sess > .bt{grid-column:2}.esu-sess > .bt{align-items:flex-start}',
       '.esu-tiles3{grid-template-columns:minmax(0,1fr)}.esu-tiles3 .esu-rec,.esu-reclist .esu-rec{flex-direction:row}.esu-rec .th{height:auto;min-height:92px;width:112px;flex:none}',
       '.esu-month .esu-mrow{grid-template-columns:22px minmax(0,1fr)}.esu-month .esu-mrow > .tx,.esu-month .esu-mrow > .bt{grid-column:1 / -1}',
       '}',
@@ -828,8 +828,11 @@
     var sess = function (day, name, who, s, actHtml) {
       return '<div class="esu-sess">' + dateBlock(day) + '<div><span class="esu-rw-t" style="color:#FBF6EE">' + name + '</span><p class="esu-rw-d" style="color:#C9D1CB">' + (s && s.start ? esc(rangeT(s.start, s.end)) + ' · ' : '') + who + '</p></div><div class="bt">' + (actHtml || '') + '</div></div>';
     };
-    var satAct = os && os.today && os.url ? ext(os.url, 'Join', 'esu-btn gold sm') : '<span class="esu-onlist">Join link here on the day</span>';
-    var sunAct = pr && pr.id ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn gold sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP</button>') : '';
+    // Each weekend's Zoom links (Ops → Mentee year) are always on the page: a quiet link ahead of time, the gold Join button on the day
+    var today = localDay(new Date().toISOString()), zoom = function (u, day) { return u ? ext(u, day === today ? 'Join on Zoom' : 'Zoom link', day === today ? 'esu-btn gold sm' : 'esu-tlink on-dark') : ''; };
+    var satAct = i.satZoom ? zoom(i.satZoom, i.sat) : os && os.today && os.url ? ext(os.url, 'Join', 'esu-btn gold sm') : '<span class="esu-onlist">Join link here on the day</span>';
+    var rsvp = pr && pr.id ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn gold sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP</button>') : '';
+    var sunAct = rsvp + zoom(i.sunZoom, i.sun);
     return '<li class="esu-sblock"><div class="esu-sbh"><span class="ey">' + esc(eye) + '</span>' + prep + '</div><p class="esu-hero-t" style="margin:2px 0 8px">' + esc(i.title) + '</p>' +
       sess(i.sat, 'Open Session', 'with the whole school', os, satAct) + sess(i.sun, 'Practicum', 'mentees only, teaching under supervision', pr, sunAct) + '</li>';
   }

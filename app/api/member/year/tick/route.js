@@ -8,7 +8,7 @@ import { myMemberId } from '@/lib/school/circle';
 
 export const dynamic = 'force-dynamic';
 
-// A mentee ticks (or un-ticks) one of their own project steps or review checks: { id, done, today }. Only their own row (from the signed-in session).
+// A mentee ticks (or un-ticks) one of their own project steps, review checks or tasks (added in Ops → Mentee year): { id, done, today }. Only their own row (from the signed-in session).
 // A review check can only be ticked once its review is open. Saved to the Mentee Step Status tab through lib/ops/store.js.
 export async function POST(req) {
   const { me, res } = menteeFromBearer(req);
@@ -18,7 +18,7 @@ export async function POST(req) {
     const sch = scheduleFrom(await readTab(TABS.schedule));
     const id = String(b.id || '');
     const review = sch.reviews.find(r => r.checks.some(c => c.id === id));
-    if (!review && !sch.steps.some(s => s.id === id)) return reply(req, { error: 'We couldn’t find that step.' }, 400);
+    if (!review && !sch.steps.some(s => s.id === id) && !sch.tasks.some(t => t.id === id)) return reply(req, { error: 'We couldn’t find that step.' }, 400);
     if (review && !reviewOpen(review, cleanToday(b.today || todayET()))) return reply(req, { error: `The ${review.name} review opens on the 1st of its month.` }, 400);
     const memberId = await myMemberId(me.email).catch(() => '');
     await setStatus({ email: me.email, memberId, stepId: id, status: b.done ? 'done' : 'undone', by: 'mentee' });

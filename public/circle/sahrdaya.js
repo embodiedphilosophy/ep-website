@@ -541,7 +541,8 @@
       if (x.mine) act += '<button type="button" class="esu-lnk" data-act="pp-hours">Log practice-teaching hours</button> ';
       if (x.canLeave) act += '<button type="button" class="esu-lnk" data-act="pp-leave" data-id="' + esc(x.id) + '">Leave</button> ';
       if (x.canCancel) act += '<button type="button" class="esu-lnk" data-act="pp-cancel" data-id="' + esc(x.id) + '">Cancel this pod</button>';
-      var room = x.canSetRoom ? '<details style="margin-top:8px"' + (x.roomUrl ? '' : ' open') + '><summary class="esu-muted" style="font-size:13px;cursor:pointer">' + (x.roomUrl ? 'Change the live room link' : 'Make a live room for your pod') + '</summary>' + ppRoomHelp() +
+      var auto = d.autoRooms && x.canSetRoom && !x.roomUrl ? '<div style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="pp-autoroom" data-id="' + esc(x.id) + '"' + (state.busy === 'pp' ? ' disabled' : '') + '>Make our meeting room</button></div>' : '';
+      var room = x.canSetRoom ? auto + '<details style="margin-top:8px"' + (x.roomUrl || d.autoRooms ? '' : ' open') + '><summary class="esu-muted" style="font-size:13px;cursor:pointer">' + (x.roomUrl ? 'Change the live room link' : d.autoRooms ? 'Or use a link of your own' : 'Make a live room for your pod') + '</summary>' + ppRoomHelp() +
         '<div class="esu-say" style="margin-top:6px"><input id="esu-pp-room-' + esc(x.id) + '" type="text" data-in="pp-room:' + esc(x.id) + '" placeholder="Paste the live room link (https://…)" value="' + esc((state.ppRoom && state.ppRoom[x.id] != null) ? state.ppRoom[x.id] : x.roomUrl) + '" style="' + FIELD + '"><button type="button" class="esu-btn out" data-act="pp-room" data-id="' + esc(x.id) + '">Save</button></div></details>' : '';
       return '<li style="padding:12px 0;border-top:1px solid #E3D8C6"><div style="font-weight:600">' + esc(x.topic) + (x.mine ? ' <span class="esu-muted" style="font-weight:400">· you’re in</span>' : '') + '</div>' +
         '<div class="esu-muted" style="font-size:13px"><b style="color:#1E1A14">' + esc(ppWhen(x.startsAt)) + '</b> · organized by ' + esc(x.organiser) + '</div><div class="esu-muted" style="font-size:13px">' + esc(st) + '</div>' +
@@ -596,7 +597,7 @@
   // Practicum pods: mentees organize a time to practice teaching each other (no approval); others join. Different from articulation buddies (the pair or trio for the rotation).
   function ppWhen(iso) { return dmyT(iso) + ', ' + hmT(iso); }
   function ppRoomHelp() {
-    return '<ol class="esu-muted" style="font-size:13px;margin:6px 0 0;padding-left:20px;display:grid;gap:3px"><li>In Circle, open the live rooms (look for “Live” or “Live rooms” in the sidebar, or the + button).</li><li>Start a new live room and name it after your pod.</li><li>Open the room’s share options and copy its link.</li><li>Paste the link below and press Save. Everyone in your pod then sees a “Join the live room” button.</li></ol>';
+    return '<ol class="esu-muted" style="font-size:13px;margin:6px 0 0;padding-left:20px;display:grid;gap:3px"><li>Make a video meeting link you can use every week. The easiest way: go to <a href="https://meet.google.com" target="_blank" rel="noopener">meet.google.com</a>, choose “New meeting”, then “Create a meeting for later”, and copy the link. A Zoom link works too.</li><li>Paste the link below and press Save. Everyone in your pod then sees a “Join the live room” button.</li><li>Tell your pod the day and time, and use the same link each week.</li></ol><p class="esu-muted" style="font-size:13px;margin:6px 0 0">Would you rather meet in a Circle live room? Only staff can open those, so message Floss in Circle and she will set one up and add its link here.</p>';
   }
   function loadPp() { return call('/api/member/practicum').then(function (d) { state.pp = d; render(); }).catch(function () { state.pp = null; }); }
   var LS = { done: 'background:#2E5A4B;border:2px solid #2E5A4B', due: 'background:#fff;border:2px solid #D2A65A', overdue: 'background:#A5432A;border:2px solid #A5432A', coming: 'background:#fff;border:1.5px solid #B5A88F' };
@@ -1069,6 +1070,11 @@
       if (a === 'pp-leave' && !window.confirm('Leave this pod?')) return;
       state.busy = 'pp'; state.msg = ''; state.msgFor = 'pp'; render();
       call('/api/member/practicum', { action: a.slice(3), id: t.dataset.id }).then(function (d) { state.pp = d; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
+      return;
+    }
+    if (a === 'pp-autoroom') {
+      state.busy = 'pp'; state.msg = ''; state.msgFor = 'pp'; render();
+      call('/api/member/practicum', { action: 'autoroom', id: t.dataset.id }).then(function (d) { state.pp = d; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
       return;
     }
     if (a === 'pp-room') {

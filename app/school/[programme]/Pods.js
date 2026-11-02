@@ -53,7 +53,7 @@ export default function Pods() {
             <label htmlFor="pod-sched">Rough schedule (optional)</label>
             <input id="pod-sched" value={f.schedule} maxLength={200} onChange={set('schedule')} placeholder="e.g. Thursdays, 7pm UK, every week" />
             <div className="sch-composer-row">
-              <button type="button" className="sch-btn" disabled={busy === 'create'} onClick={async () => { if (await act('create', { action: 'create', topic: f.topic, description: f.description, schedule: f.schedule }, 'Your pod is open. Next, make its live room (the steps are on your pod). Students can join it now.')) { setForm(null); setF({ note: '', topic: '', description: '', schedule: '' }); } }}>{busy === 'create' ? 'Opening…' : 'Open the pod'}</button>
+              <button type="button" className="sch-btn" disabled={busy === 'create'} onClick={async () => { if (await act('create', { action: 'create', topic: f.topic, description: f.description, schedule: f.schedule }, data.autoRooms ? 'Your pod is open, with its own meeting room. Students can join it now.' : 'Your pod is open. Next, make its live room (the steps are on your pod). Students can join it now.')) { setForm(null); setF({ note: '', topic: '', description: '', schedule: '' }); } }}>{busy === 'create' ? 'Opening…' : 'Open the pod'}</button>
               <button type="button" className="sch-btn ghost" onClick={() => setForm(null)}>Cancel</button>
             </div>
           </>) : <div><button type="button" className="sch-btn" onClick={() => { setForm('create'); setMsg(null); }}>Start a study pod</button></div>}
@@ -85,23 +85,26 @@ export default function Pods() {
   );
 }
 
-// The leader makes a room for the pod in Circle's live rooms and pastes its link here, so members can join the calls from their pod
+// The leader pastes the pod's meeting link here (a Google Meet or Zoom link; Circle live rooms can only be opened by staff), so members can join the calls from their pod
 function RoomLink({ p, data, act, busy }) {
   const [v, setV] = useState(p.roomUrl || '');
   return (
     <div style={{ marginTop: 14 }}>
       <label className="sch-meta" htmlFor={`room-${p.id}`}><strong>{p.roomUrl ? 'Your pod’s live room' : 'Where will your pod meet?'}</strong></label>
-      <details open={!p.roomUrl} style={{ margin: '6px 0 8px' }}>
-        <summary className="sch-meta" style={{ cursor: 'pointer' }}>How to make your pod’s room in Circle</summary>
+      {p.roomUrl && data.autoRooms && <p className="sch-meta" style={{ margin: '4px 0 0', maxWidth: '62ch' }}>Your pod has its own Google Meet room. Anyone in the pod can open it any time, every week, from the “Join the pod’s live room” button.</p>}
+      {!p.roomUrl && data.autoRooms && (
+        <p style={{ margin: '6px 0 0' }}><button type="button" className="sch-btn" disabled={!!busy} onClick={() => act('autoroom' + p.id, { action: 'autoroom', id: p.id }, 'Your pod’s meeting room is ready. Your members now see a “Join the pod’s live room” button.')}>{busy === 'autoroom' + p.id ? 'Making it…' : 'Make our meeting room'}</button></p>
+      )}
+      <details open={!p.roomUrl && !data.autoRooms} style={{ margin: '6px 0 8px' }}>
+        <summary className="sch-meta" style={{ cursor: 'pointer' }}>{data.autoRooms ? 'Or use a link of your own' : 'How to set up your pod’s meeting room'}</summary>
         <ol className="sch-meta" style={{ margin: '6px 0 0', paddingLeft: 20, display: 'grid', gap: 4, maxWidth: '62ch' }}>
-          <li>{data.liveRoomsUrl ? <>Open <a href={data.liveRoomsUrl} target="_top">Circle’s live rooms</a>.</> : 'In Circle, open the live rooms (look for “Live” or “Live rooms” in the sidebar, or the + button).'}</li>
-          <li>Start a new live room and name it after your pod, for example “{p.topic}”.</li>
-          <li>Open the room’s share options and copy its link. Make sure the members of your pod can open it.</li>
-          <li>Paste that link in the box below and press Save. Your members then see a “Join the pod’s live room” button on their pod.</li>
-          <li>Tell your members the day and time in the pod chat. Anyone can use the same room each week.</li>
+          <li>Make a video meeting link you can use every week. The easiest way: go to <a href="https://meet.google.com" target="_blank" rel="noopener">meet.google.com</a>, choose “New meeting”, then “Create a meeting for later”, and copy the link. A Zoom link works too.</li>
+          <li>Paste the link in the box below and press Save. Your members then see a “Join the pod’s live room” button on their pod.</li>
+          <li>Tell your members the day and time in the pod chat, and use the same link each week.</li>
         </ol>
+        <p className="sch-meta" style={{ margin: '6px 0 0', maxWidth: '62ch' }}>Would you rather meet in a Circle live room? Only staff can open those, so message Floss in Circle and she will set one up for your pod and add its link here.</p>
       </details>
-      <div className="sch-composer-row"><input id={`room-${p.id}`} value={v} onChange={e => setV(e.target.value)} placeholder="Paste the live room link here (https://…)" />
+      <div className="sch-composer-row"><input id={`room-${p.id}`} value={v} onChange={e => setV(e.target.value)} placeholder="Paste the meeting link here (https://…)" />
         <button type="button" className="sch-btn ghost" disabled={!!busy} onClick={() => act('room' + p.id, { action: 'room', id: p.id, url: v }, v ? 'Saved. Your members can now join the live room.' : 'The live room link was removed.')}>Save</button></div>
     </div>
   );

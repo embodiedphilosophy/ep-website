@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { sessionFrom, cors } from '@/lib/member/session';
 import { eligible, podsFor, MAX, MINUTES } from '@/lib/pods/practicum';
-import { practicumAvailable, listPods, createPod, join, leave, cancelPod, setLinks } from '@/lib/pods/practicum';
+import { practicumAvailable, listPods, createPod, join, leave, cancelPod, setLinks, autoRoom } from '@/lib/pods/practicum';
+import { meetConfigured } from '@/lib/meet';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ const fail = (h, msg, status) => NextResponse.json({ error: msg }, { status, hea
 const meOf = s => ({ uid: s.uid, email: s.email, name: s.firstName || String(s.email || '').split('@')[0] });
 async function payload(me, h, extra = {}) {
   const { pods, membersBy } = await listPods();
-  return NextResponse.json({ pods: podsFor(pods, membersBy, me), max: MAX, minutes: MINUTES, ...extra }, { headers: h });
+  return NextResponse.json({ pods: podsFor(pods, membersBy, me), max: MAX, minutes: MINUTES, autoRooms: meetConfigured(), ...extra }, { headers: h });
 }
 function gate(req) {
   const h = cors(req, methods), s = sessionFrom(req);
@@ -37,10 +38,11 @@ export async function POST(req) {
     else if (b.action === 'leave') await leave(me, b.id);
     else if (b.action === 'cancel') await cancelPod(me, b.id);
     else if (b.action === 'links') await setLinks(me, b.id, b);
+    else if (b.action === 'autoroom') await autoRoom(me, b.id);
     else return fail(h, 'Unknown action', 400);
     return await payload(me, h, extra);
   } catch (e) {
-    const known = /^(Give your|Choose|You can organise|You are|This pod|Only the organiser|As the organiser|A full link|That pod)/.test(e.message);
+    const known = /^(Give your|Choose|You can organise|You are|This pod|Only the organiser|As the organiser|A full link|That pod|We couldn’t make)/.test(e.message);
     if (!known) console.error('practicum POST', b.action, e.message);
     return fail(h, known ? e.message : 'We couldn’t save that just now. Please try again.', known ? 400 : 502);
   }

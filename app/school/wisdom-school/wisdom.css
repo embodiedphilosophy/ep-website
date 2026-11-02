@@ -98,3 +98,19 @@ a.wsh-tile.past:hover,a.wsh-tile.current:hover{box-shadow:0 0 0 2px #20302A inse
   .wsh-modal-c{padding:22px 20px}
   .wsh-go{align-self:stretch}
 }
+/* The learning pathway card on This month */
+.wsh-path{margin:0 0 28px;padding:26px 30px;border:1px solid #D8C9AE;border-radius:10px;background:#FAF5EB}
+.wsh-path .wsh-kick{color:#83341F}
+.wsh-path h2{font-family:var(--font-serif),serif;font-weight:600;font-size:32px;line-height:1.1;margin:0 0 6px;color:#1E1A14}
+.wsh-path h2 .sch-badge{margin-left:10px;vertical-align:middle}
+.wsh-path-s{list-style:none;margin:18px 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.wsh-path-s li{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:1px solid #D8C9AE;border-radius:8px;background:#F6EFE2;font-size:14px;color:#5A5346}
+.wsh-path-s b{font-family:var(--font-serif),serif;font-size:18px;color:#1E1A14}
+.wsh-path-s em{font-style:normal;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.wsh-path-s li.next{border-color:#20302A;background:#20302A;color:#EADDC6}
+.wsh-path-s li.next b{color:#FAF5EB}
+.wsh-path-s li.past{opacity:.6}
+.wsh-path .wsh-actions{margin-top:4px}
+.wsh-path.locked{border-style:dashed;border-color:#A5432A;background:transparent}
+@media (max-width:900px){.wsh-path-s{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.wsh-path{padding:20px}.wsh-path h2{font-size:26px}.wsh-path .wsh-actions .sch-btn{width:100%}}

@@ -43,4 +43,7 @@ assert.deepEqual([r2.items.length, r2.missing.map(m => m.title)], [0, ['Orientat
 // once the Make scenario posts the recording (slug recording-2026-11-01-143023), the orientation is found with no address filled in
 r2 = R.recordingsFrom({ events: [], posts: [post(20, 'recording-2026-11-01-143023', 'Sah\u1e5bdaya Up\u0101ya: Mentorship Orientation', { duration: 7100 })], config: cfg2, now: Date.parse('2026-11-02T10:00:00Z') });
 assert.deepEqual(r2.items.map(i => [i.state, i.url, i.duration]), [['ready', 'https://ss/recording-2026-11-01-143023', 7100]]); assert.deepEqual(r2.missing, []);
+// the post's Vimeo link becomes the player address, so the card can play it in a pop-up on the page
+r2 = R.recordingsFrom({ events: [], posts: [post(21, 'recording-2026-11-01-143023', 'Mentorship Orientation', { body: 'https://vimeo.com/1242130073/abc1234def' })], config: cfg2, now: Date.parse('2026-11-02T10:00:00Z') });
+assert.equal(r2.items[0].video, 'https://player.vimeo.com/video/1242130073?h=abc1234def&dnt=1');
 console.log('recordings (orientation): ok');

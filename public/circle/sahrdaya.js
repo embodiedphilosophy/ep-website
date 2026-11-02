@@ -158,6 +158,8 @@
       '.esu-rw-t{display:block;margin:0;font-weight:600;font-size:15.5px}.esu-rw-d{margin:2px 0 0;color:#5A5346;font-size:14px}',
       '.esu-tiles3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.esu-reclist{display:grid;gap:12px;margin-top:10px}.esu-rec{border:1px solid #E3D8C6;border-radius:8px;background:#fff;overflow:hidden;display:flex;flex-direction:column;min-width:0}',
       '.esu-rec .th{position:relative;height:92px;background:#2B4238;display:flex;align-items:center;justify-content:center}.esu-rec .th.wait{background:#EADDC6}.esu-rec .th .du{position:absolute;right:8px;bottom:6px;font:500 11px "IBM Plex Mono",monospace;color:#F4EDE1}.esu-rec .th .oi{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#5A5346}',
+      '.esu-th-btn{border:0;padding:0;margin:0;width:100%;cursor:pointer;font:inherit;text-decoration:none;transition:background .15s}.esu-th-btn:hover{background:#355045}.esu-th-btn:hover svg{transform:scale(1.08)}.esu-th-btn svg{transition:transform .15s}.esu-th-btn:focus-visible{outline:2px solid #D9B36A;outline-offset:-4px}',
+      '.esu-vov{align-items:center}.esu-vdlg{background:#1E1A14;border-radius:8px;width:100%;max-width:960px;margin:auto;overflow:hidden}.esu-vhd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 16px;color:#F4EDE1;font:500 15px "IBM Plex Sans",system-ui,sans-serif}.esu-vfr{position:relative;padding-top:56.25%;background:#000}.esu-vfr iframe{position:absolute;inset:0;width:100%;height:100%;border:0}',
       '.esu-rec .bd{padding:12px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}.esu-tlink.on-dark{color:#D9B36A;font-size:inherit;display:inline;font-weight:500}',
       '.esu-seg{display:flex;gap:4px;background:#E3D8C6;border-radius:99px;padding:4px;margin:0 0 18px;max-width:560px;overflow-x:auto}.esu-seg a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:99px;font:600 14px "IBM Plex Sans",system-ui,sans-serif;color:#5A5346;text-decoration:none;white-space:nowrap}.esu-seg a[aria-current=page]{background:#20302A;color:#fff}.esu-badge{background:#A5432A;color:#fff;border-radius:99px;padding:0 7px;font:500 11px/18px "IBM Plex Mono",monospace}',
       '.esu-smon{font:600 21px "Cormorant Garamond",Georgia,serif;margin:22px 0 6px}.esu-smon .none{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#5A5346;margin-left:6px}.esu-slist{list-style:none;margin:0;padding:0;border-top:1px solid #E3D8C6}',
@@ -410,11 +412,35 @@
   // ---- Recordings: the newest three, filled in automatically after every weekend (lib/mentee/recordings.js) ----
   var PLAY = '<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="17" fill="#F4EDE1"/><path d="M14 10.5l9.5 6.5-9.5 6.5z" fill="#2B4238"/></svg>';
   var dur = function (sec) { if (!sec) return ''; var m = Math.round(sec / 60), h = Math.floor(m / 60); return h ? h + ':' + String(m % 60).padStart(2, '0') + ' h' : m + ' min'; };
+  // A ready recording plays in a pop-up on this page (the Vimeo player); the thumbnail and "Watch Now" both start it.
+  // Without a Vimeo address the two fall back to a link to the recording post.
   function recTile(x) {
-    var ready = x.state === 'ready';
-    var th = '<div class="th' + (ready ? '' : ' wait') + '">' + (ready ? PLAY + (x.duration ? '<span class="du">' + esc(dur(x.duration)) + '</span>' : '') : '<span class="oi">On its way</span>') + '</div>';
+    var ready = x.state === 'ready', v = ready ? safeUrl(x.video) : '', u = ready ? safeUrl(x.url) : '';
+    var thIn = ready ? PLAY + (x.duration ? '<span class="du">' + esc(dur(x.duration)) + '</span>' : '') : '<span class="oi">On its way</span>';
+    var lbl = esc('Play ' + x.title);
+    var th = v ? '<button type="button" class="th esu-th-btn" data-act="play" data-v="' + esc(v) + '" data-t="' + esc(x.title) + '" aria-label="' + lbl + '">' + thIn + '</button>'
+      : u ? '<a class="th esu-th-btn" href="' + esc(u) + '" target="_top" aria-label="' + lbl + '">' + thIn + '</a>'
+      : '<div class="th' + (ready ? '' : ' wait') + '">' + thIn + '</div>';
+    var cta = v ? '<button type="button" class="esu-tlink" data-act="play" data-v="' + esc(v) + '" data-t="' + esc(x.title) + '" style="align-self:flex-start">Watch Now</button>' : u ? link(u, 'Watch Now', 'esu-tlink') : '';
     return '<div class="esu-rec">' + th + '<div class="bd"><span class="esu-mono" style="text-transform:uppercase;letter-spacing:.06em">' + esc(dmy(x.day)) + '</span><span class="esu-rw-t">' + esc(x.title) + '</span>' + (x.sub ? '<span class="esu-rw-d" style="margin:0">' + esc(x.sub) + '</span>' : '') +
-      (ready ? (x.url ? link(x.url, 'Watch', 'esu-tlink') : '') : '<span class="esu-rw-d" style="margin:0">Usually here within a day.</span>') + '</div></div>';
+      (ready ? cta : '<span class="esu-rw-d" style="margin:0">Usually here within a day.</span>') + '</div></div>';
+  }
+  // The player pop-up lives outside the page's own markup, so the page re-drawing (the chat refreshing) never restarts the video.
+  var player = null;
+  function closePlayer() { if (!player) return; var back = player.back; player.el.remove(); document.removeEventListener('keydown', player.key, true); player = null; if (back && document.body.contains(back)) back.focus(); }
+  function openPlayer(src, title, back) {
+    closePlayer();
+    var u = src + (src.indexOf('?') < 0 ? '?' : '&') + 'autoplay=1';
+    var el = document.createElement('div');
+    el.className = 'esu-ov esu-vov';
+    el.innerHTML = '<div class="esu-vdlg" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="esu-vhd"><span>' + esc(title) + '</span><button type="button" class="esu-btn lite" data-close="1">Close</button></div>' +
+      '<div class="esu-vfr"><iframe src="' + esc(u) + '" title="' + esc(title) + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></div>';
+    el.addEventListener('click', function (e) { if (e.target === el || e.target.closest('[data-close]')) closePlayer(); });
+    var key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); closePlayer(); } };
+    document.addEventListener('keydown', key, true);
+    document.body.appendChild(el);
+    player = { el: el, key: key, back: back };
+    el.querySelector('[data-close]').focus();
   }
   function recordingsCard(w) {
     var r = w.home.recordings;
@@ -1078,6 +1104,7 @@
     else if (a === 'room') { state.room = t.dataset.tab; render(); }
     else if (a === 'rec-add' || a === 'rec-full') { var kk = a === 'rec-add' ? 'add' : 'full'; state.rec[kk] = !state.rec[kk]; render(); }
     else if (a === 'rec-all') { state.modal = { type: 'rec-all' }; state.msg = ''; render(); }
+    else if (a === 'play') { var vs = t.dataset.v, vt = t.dataset.t || 'Recording'; if (state.modal && state.modal.type === 'rec-all') { state.modal = null; render(); } openPlayer(vs, vt, root.querySelector('#recordings [data-act="play"]')); }
     else if (a === 'goto-rec') { var rc = root.querySelector('#recordings'); if (rc && rc.scrollIntoView) rc.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     else if (a === 'fb-open') { state.modal = { type: 'feedback' }; state.msg = ''; render(); }
     else if (a === 'pp-list' || a === 'pp-about') { state.modal = { type: a }; state.msg = ''; render(); }

@@ -58,10 +58,34 @@
     return new Promise(function (res) { setTimeout(res, 400); }).then(function () { return waitForUser(tries - 1); });
   }
   // The saved session belongs to one Circle member: when the signed-in member changes (e.g. an admin using Circle's "View as"), sign in again
+  // Sign-in hiccups (Circle still loading the member, or the website slow to answer) used to make the page give up and show
+  // Circle's own empty feed. Now: try twice more, then reload the page once, then say so on the page. Never the empty feed.
+  function retrySignIn(n) {
+    store(SKEY, null);
+    return new Promise(function (res) { setTimeout(res, 1500 * (n + 1)); }).then(signIn).catch(function (e) {
+      if (n < 1) return retrySignIn(n + 1);
+      throw e;
+    });
+  }
+  function failSoft() {
+    if (!PAGE.test(location.pathname)) return;
+    var k = 'ep_su_reloaded', last = 0;
+    try { last = +sessionStorage.getItem(k) || 0; } catch (e) {}
+    if (Date.now() - last > 10 * 60 * 1000) { try { sessionStorage.setItem(k, String(Date.now())); } catch (e) {} location.reload(); return; }
+    var box = document.querySelector(HOST) || pageContainer(); if (!box) return;
+    if (!document.getElementById('esu-fail-css')) { var cs = document.createElement('style'); cs.id = 'esu-fail-css'; cs.textContent = '.esu-failhide > :not(#esu-fail){display:none !important}'; document.head.appendChild(cs); }
+    var old = document.getElementById('esu-fail'); if (old) old.remove();
+    var d = document.createElement('div'); d.id = 'esu-fail';
+    d.setAttribute('style', 'max-width:560px;margin:48px auto;padding:28px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fbf8f2;font:15px/1.5 Inter,system-ui,sans-serif;color:#2a2a2a;text-align:center');
+    d.innerHTML = '<p style="margin:0 0 6px;font:500 22px/1.3 Cormorant Garamond,Georgia,serif">Your Sahṛdaya Upāya page didn\u2019t load</p><p style="margin:0 0 16px">This is usually a brief connection hiccup.</p><button type="button" style="padding:9px 18px;border-radius:999px;border:0;background:#8a3324;color:#fff;font:inherit;cursor:pointer">Try again</button><p style="margin:14px 0 0;font-size:13px;opacity:.7">If it keeps happening, message us from the Help Hub.</p>';
+    d.querySelector('button').addEventListener('click', function () { try { sessionStorage.removeItem(k); } catch (e) {} store(SKEY, null); location.reload(); });
+    box.insertBefore(d, box.firstChild); box.classList.add('esu-failhide');
+    uncloak();
+  }
   function signIn() {
     return waitForUser(25).then(function (u) {
       var who = String(u.email || '').toLowerCase(), saved = store(SKEY);
-      if (saved) { try { var s = JSON.parse(saved); if (s.until > Date.now() && s.who === who) { state.session = s.session; state.first = s.first || ''; state.ok = !!s.ok; state.admin = !!s.admin; return; } } catch (e) {} }
+      if (saved) { try { var s = JSON.parse(saved); if (s.ok && s.until > Date.now() && s.who === who) { state.session = s.session; state.first = s.first || ''; state.ok = !!s.ok; state.admin = !!s.admin; return; } } catch (e) {} }
       return fetch(API + '/api/member/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ identityToken: u.identityToken }) }).then(function (r) { return r.json(); }).then(function (r) {
         if (!r.session) throw new Error('not signed in');
         state.session = r.session; state.first = r.firstName || ''; state.ok = !!(r.admin || (r.tier && r.tier.tier === 'mentee')); state.admin = !!r.admin;
@@ -1332,6 +1356,7 @@
     for (var i = 0; i < box.children.length; i++) if (box.children[i] !== root) box.children[i].style.display = 'none';
   }
   function unmount() {
+    var ef = document.getElementById('esu-fail'); if (ef) { if (ef.parentNode) ef.parentNode.classList.remove('esu-failhide'); ef.remove(); }
     var sp = document.getElementById('esu-strip'); if (sp && !isLesson()) sp.remove();
     uncloak();
     if (!root) return;
@@ -1348,13 +1373,13 @@
     started = true; css();
     state.data = cached();
     // A mentee seen before this session: take the space at once so the hub doesn't flash up first
-    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now() && s.who === String((window.circleUser && window.circleUser.email) || '').toLowerCase()) { state.admin = !!s.admin; setMentee(s.ok ? 'yes' : 'no'); } } catch (e) {} }
-    signIn().then(function () {
+    if (store(SKEY)) { try { var s = JSON.parse(store(SKEY)); if (s.until > Date.now() && s.who === String((window.circleUser && window.circleUser.email) || '').toLowerCase()) { if (s.ok) { state.admin = !!s.admin; setMentee('yes'); } } } catch (e) {} }
+    signIn().catch(function () { return retrySignIn(0); }).then(function () {
       setMentee(state.ok ? 'yes' : 'no');
       if (!state.ok) { unmount(); return; }
       if (isLesson()) { mount(); return loadWb(); }
       mount(); render(); if (isWorkbook()) { if (state.ok) loadWb(); return load(); } loadPods(); loadPp(); if (currentView() === 'schedule') loadSched(); return isRefl() ? startRefl() : isMentor() ? loadMentor() : load();
-    }).catch(function () { setMentee('no'); state.error = 'Please sign in to Circle to see your page.'; })
+    }).catch(function () { if (state.ok === true) { state.error = state.error || 'Something went wrong loading your page. Please refresh.'; return; } failSoft(); })
       .then(function () { mount(); render(); });
   }
   function startRefl() { var m = /[?&]post=(\d+)/.exec(location.search); return loadRefl(m ? m[1] : '').then(function () { if (m && state.rf.detail && state.rf.detail.mine && state.rf.detail.status === 'shared') { state.rf.post = true; render(); } }); }

@@ -104,6 +104,7 @@
     if (!document.querySelector('link[href*="Cormorant+Garamond"]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap'; document.head.appendChild(l); }
     var s = document.createElement('style'); s.id = 'esu-css';
     s.textContent = [
+      '.esu-host>:not(.esu){display:none!important}',
       '.esu{font-family:"IBM Plex Sans",system-ui,sans-serif;color:#1E1A14;max-width:1120px;margin:0 auto;padding:28px 24px 64px;line-height:1.5;font-size:15px;background:#F1E9DC;color-scheme:light}',
       '.esu *{box-sizing:border-box}.esu a{color:#A5432A}.esu a.esu-btn{color:inherit}.esu :focus-visible{outline:2px solid #A5432A;outline-offset:2px}',
       '.esu-eye{font:500 11px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:#A5432A}',
@@ -1304,23 +1305,38 @@
     if (/[?&]native=1/.test(location.search)) { unmount(); drawStrip(); return; }
     // A lesson page stays Circle's own; it only gets the strip at the top
     if (isLesson()) { if (root) unmount(); drawStrip(); return; }
+    // Already drawn: Circle sometimes re-draws its own page into the area after ours is in (a slow load, or clicking the
+    // space again), so its fresh copy showed through under or over ours. Keep ours first and keep everything else hidden;
+    // if Circle has swapped in a new page area altogether, start again there.
+    if (root && document.body.contains(root)) {
+      var cur = document.querySelector(HOST) || pageContainer();
+      if (!cur || root.parentNode === cur) { hideRest(root.parentNode); drawStrip(); return; }
+      unmount();
+    }
     drawStrip();
-    if (root && document.body.contains(root)) return;
     var box = document.querySelector(HOST) || pageContainer();
     if (!box) return;
-    for (var i = 0; i < box.children.length; i++) box.children[i].style.display = 'none';
     root = document.createElement('div'); root.__box = box;
     root.className = 'esu'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'Sahṛdaya Upāya');
     root.addEventListener('click', onClick); root.addEventListener('input', onInput); root.addEventListener('change', onInput);
     box.insertBefore(root, box.firstChild);
+    hideRest(box);
     render(); uncloak();
+  }
+  // Hide Circle's own page in the area while ours is up: a class on the area (with a stylesheet rule) catches anything Circle
+  // adds later at once, and the inline style is kept as a second guard. Ours always sits first.
+  function hideRest(box) {
+    if (!box || !root) return;
+    box.classList.add('esu-host');
+    if (box.firstChild !== root) box.insertBefore(root, box.firstChild);
+    for (var i = 0; i < box.children.length; i++) if (box.children[i] !== root) box.children[i].style.display = 'none';
   }
   function unmount() {
     var sp = document.getElementById('esu-strip'); if (sp && !isLesson()) sp.remove();
     uncloak();
     if (!root) return;
     var box = root.__box; root.remove(); root = null;
-    if (box) for (var i = 0; i < box.children.length; i++) box.children[i].style.display = '';
+    if (box) { box.classList.remove('esu-host'); for (var i = 0; i < box.children.length; i++) box.children[i].style.display = ''; }
   }
 
   // Escape closes a popup (the key listener is on the document: the page re-draws itself, so focus can sit outside it)

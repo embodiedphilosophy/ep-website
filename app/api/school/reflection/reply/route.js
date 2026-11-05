@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { currentMember, sameOrigin } from '@/lib/school/session';
 import { createComment, postComments } from '@/lib/school/circle';
 import { reflectionFor, threadFor } from '@/lib/school/reflectionthread';
+import { cleanFiles } from '@/lib/school/attachments';
 
 // A reply to a reflection (or to one of its comments), written to Circle as the signed-in member: { post, parent?, text }.
 // Returns the refreshed replies. Like the cohort chat send, the first real reply after a deploy is the test of Circle's request shape.
@@ -11,8 +12,8 @@ export async function POST(req) {
   const me = await currentMember();
   if (!me) return NextResponse.json({ error: 'Please sign in again from Circle.' }, { status: 401 });
   const b = await req.json().catch(() => ({}));
-  const text = String(b.text ?? '').replace(/\r/g, '').trim();
-  if (!text) return NextResponse.json({ error: 'Write your reply first.' }, { status: 400 });
+  const text = String(b.text ?? '').replace(/\r/g, '').trim(), files = cleanFiles(b.files);
+  if (!text && !files.length) return NextResponse.json({ error: 'Write your reply or attach a file first.' }, { status: 400 });
   if (text.length > 4000) return NextResponse.json({ error: 'Keep the reply under 4,000 characters.' }, { status: 400 });
   if (Date.now() - (last.get(me.email) || 0) < 3000) return NextResponse.json({ error: 'One moment, then try again.' }, { status: 429 });
   try {
@@ -21,7 +22,7 @@ export async function POST(req) {
     const parent = b.parent ? String(b.parent) : '';
     if (parent && !(await postComments(me.email, r.post.id)).some(c => String(c.id) === parent)) return NextResponse.json({ error: 'That comment is no longer there.' }, { status: 404 });
     last.set(me.email, Date.now());
-    await createComment(me.email, r.post.id, { text, parentId: parent || null });
+    await createComment(me.email, r.post.id, { text, parentId: parent || null, files });
     return NextResponse.json(await threadFor(me.email, r.post));
   } catch (e) {
     console.error('reflection reply', e.message);

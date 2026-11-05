@@ -1,5 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { upload } from '@vercel/blob/client';
+import { ATTACH_ACCEPT, ATTACH_MAX_BYTES, ATTACH_MAX_FILES } from '@/lib/school/attachments';
 import { joinOpen } from '@/lib/school/tabs';
 import Pods from '../Pods';
 
@@ -268,7 +270,7 @@ const FILTERS = [['all', 'All'], ['mentees', 'From the mentees'], ['mine', 'Mine
 const Role = ({ role, small }) => (role === 'teacher' ? <span className={`ss-mchip teacher${small ? ' small' : ''}`}>Teacher</span> : role === 'mentee' ? <span className={`ss-mchip${small ? ' small' : ''}`}>Mentee</span> : null);
 function ReflectionsTab({ page, tz, programme, slug, composer, setComposer, mine, setMine }) {
   const [filter, setFilter] = useState('all');
-  const fresh = mine.map(m => ({ id: m.id, title: m.title, who: 'You', authorId: page.reflections.memberId, at: new Date(m.at).toISOString(), week: 0, replies: 0, url: '', excerpt: m.body || '', role: '', fromCohort: false, mine: true, justPosted: true }));
+  const fresh = mine.map(m => ({ id: m.id, title: m.title, who: 'You', authorId: page.reflections.memberId, at: new Date(m.at).toISOString(), week: 0, replies: 0, url: '', excerpt: m.body || '', files: m.files || [], role: '', fromCohort: false, mine: true, justPosted: true }));
   const all = [...fresh, ...page.reflections.list];
   const list = filter === 'mentees' ? all.filter(p => p.role === 'mentee') : filter === 'mine' ? all.filter(p => p.mine) : all;
   return (
@@ -306,6 +308,8 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
   const [err, setErr] = useState('');
   const [to, setTo] = useState(null); // the comment being answered, or null for the post
   const [text, setText] = useState('');
+  const [files, setFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState('');
   const base = `post=${encodeURIComponent(p.id)}`;
 
@@ -320,10 +324,10 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
   async function send(e) {
     e.preventDefault();
     setBusy('send'); setErr('');
-    const r = await fetch('/api/school/reflection/reply', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ post: p.id, parent: to?.id || '', text }) }).catch(() => null);
+    const r = await fetch('/api/school/reflection/reply', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ post: p.id, parent: to?.id || '', text, files }) }).catch(() => null);
     const j = await r?.json().catch(() => ({}));
     setBusy('');
-    if (r?.ok) { setTh(j); setText(''); setTo(null); } else setErr(j?.error || 'We could not post your reply. Please try again.');
+    if (r?.ok) { setTh(j); setText(''); setFiles([]); setTo(null); } else setErr(j?.error || 'We could not post your reply. Please try again.');
   }
   const n = th ? th.count : p.replies;
   const label = open ? 'Hide replies' : n ? `${n} ${n === 1 ? 'reply' : 'replies'} · show` : 'Reply';
@@ -332,7 +336,8 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
       <Avatar name={c.who} k={c.authorId || c.who} />
       <div>
         <p className="ss-cmh"><b>{c.who}</b><Role role={c.role} small /><span>{dayShort(c.at, tz)}</span></p>
-        <p className="ss-cmb">{c.to && <span className="ss-to">@{c.to} </span>}{c.text}</p>
+        {(c.text || c.to) && <p className="ss-cmb">{c.to && <span className="ss-to">@{c.to} </span>}{c.text}</p>}
+        <Files files={c.files} />
         <button type="button" className="ss-link plain" onClick={() => { setTo(c); document.getElementById(`ss-r-${p.id}`)?.focus(); }}>Reply</button>
       </div>
     </div>
@@ -350,6 +355,7 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
       {whole && p.full
         ? <div className="ss-ex whole">{p.full.split(/\n{2,}/).map((t, i) => <p key={i}>{t}</p>)}<button type="button" className="ss-link plain" onClick={() => setWhole(false)}>Show less</button></div>
         : p.excerpt && <p className="ss-ex"><button type="button" className="ss-exb" onClick={() => setWhole(true)} aria-expanded={false}>{p.excerpt}</button>{(p.full || '').length > p.excerpt.length && <> <button type="button" className="ss-link plain" onClick={() => setWhole(true)}>Read the whole reflection</button></>}</p>}
+      <Files files={p.files} />
       {p.fromCohort && <p className="ss-shaped">Shaped with feedback from the Sahṛdaya Upāya cohort before it was posted here</p>}
       {!p.justPosted && <p className="ss-tg"><button type="button" className="ss-link plain" onClick={toggle} aria-expanded={open}>{label}</button>{p.url && <> · <a className="ss-quiet" href={p.url} target="_top">Open in Circle</a></>}</p>}
       {p.justPosted && <p className="sch-meta">Posted just now. It is in Circle too.</p>}
@@ -367,8 +373,9 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
             {to && <p className="sch-meta">Replying to {to.who} · <button type="button" className="ss-link plain" onClick={() => setTo(null)}>reply to the post instead</button></p>}
             <div>
               <input id={`ss-r-${p.id}`} value={text} onChange={e => setText(e.target.value)} placeholder={`Respond to ${to ? to.who : p.who}…`} maxLength={4000} aria-label={`Your reply to ${to ? to.who : p.who}`} />
-              <button className="sch-btn" disabled={busy === 'send' || !text.trim()}>{busy === 'send' ? 'Sending…' : 'Reply'}</button>
+              <button className="sch-btn" disabled={busy === 'send' || uploading || (!text.trim() && !files.length)}>{busy === 'send' ? 'Sending…' : uploading ? 'Uploading…' : 'Reply'}</button>
             </div>
+            <Attach id={`ss-rf-${p.id}`} files={files} setFiles={setFiles} setUploading={setUploading} compact />
           </form>
           {err && <p className="sch-err" role="alert">{err}</p>}
         </div>
@@ -380,12 +387,14 @@ function Reflection({ p, tz, programme, slug, openFirst }) {
 function Composer({ programme, slug, onPosted }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [files, setFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const [state, setState] = useState({ busy: false, msg: '', ok: false });
   async function post(e) {
     e.preventDefault();
     setState({ busy: true, msg: '', ok: false });
-    const r = await fetch('/api/school/reflection', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ programme, season: slug, title, body }) }).catch(() => null);
-    if (r?.ok) { onPosted({ title: title.trim() || 'Reflection', body: body.trim().slice(0, 300) }); setTitle(''); setBody(''); setState({ busy: false, ok: true, msg: 'Posted. It is now in Circle too.' }); }
+    const r = await fetch('/api/school/reflection', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ programme, season: slug, title, body, files }) }).catch(() => null);
+    if (r?.ok) { onPosted({ title: title.trim() || 'Reflection', body: body.trim().slice(0, 300), files }); setTitle(''); setBody(''); setFiles([]); setState({ busy: false, ok: true, msg: 'Posted. It is now in Circle too.' }); }
     else setState({ busy: false, ok: false, msg: (await r?.json().catch(() => ({})))?.error || 'We could not post your reflection. Please try again.' });
   }
   return (
@@ -393,12 +402,70 @@ function Composer({ programme, slug, onPosted }) {
       <label htmlFor="sch-t">Share a reflection</label>
       <input id="sch-t" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title (optional)" maxLength={120} />
       <textarea aria-label="Your reflection" value={body} onChange={e => setBody(e.target.value)} placeholder="What has been alive for you this week?" rows={4} />
+      <Attach id="sch-f" files={files} setFiles={setFiles} setUploading={setUploading} />
       <div className="sch-composer-row">
-        <button className="sch-btn" disabled={state.busy || !body.trim()}>{state.busy ? 'Posting…' : 'Post reflection'}</button>
+        <button className="sch-btn" disabled={state.busy || uploading || (!body.trim() && !files.length)}>{state.busy ? 'Posting…' : uploading ? 'Uploading…' : 'Post reflection'}</button>
         {state.msg && <span className={state.ok ? 'sch-ok' : 'sch-err'} role="status">{state.msg}</span>}
       </div>
     </form>
   );
+}
+
+// Attach files to a reflection or reply. Each file goes straight from the browser to the ep-media Blob store (/api/school/upload
+// signs the upload); the post then carries a link to it, in Circle and here.
+const size = n => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(n > 10 * 1024 * 1024 ? 0 : 1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+function Attach({ id, files, setFiles, setUploading, compact }) {
+  const input = useRef(null);
+  const [busy, setBusy] = useState(null); // { name, pct } while a file uploads
+  const [err, setErr] = useState('');
+  async function choose(list) {
+    setErr('');
+    const picked = Array.from(list || []);
+    if (!picked.length) return;
+    if (files.length + picked.length > ATTACH_MAX_FILES) { setErr(`You can attach up to ${ATTACH_MAX_FILES} files.`); return; }
+    const big = picked.find(f => f.size > ATTACH_MAX_BYTES);
+    if (big) { setErr(`${big.name} is ${size(big.size)}. Files can be up to ${size(ATTACH_MAX_BYTES)}.`); return; }
+    setUploading(true);
+    const done = [];
+    try {
+      for (const f of picked) {
+        setBusy({ name: f.name, pct: 0 });
+        const safe = f.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w.\-]+/g, '-').replace(/-+/g, '-').slice(-100) || 'file';
+        const blob = await upload(`school/reflections/${safe}`, f, { access: 'public', handleUploadUrl: '/api/school/upload', onUploadProgress: p => setBusy({ name: f.name, pct: Math.round(p.percentage) }) });
+        done.push({ name: f.name, url: blob.url, size: f.size });
+      }
+    } catch (e) {
+      setErr(/content type|not allowed/i.test(e.message) ? 'That kind of file can’t be attached. Try a PDF, Word document, image, audio or video file.' : /sign in/i.test(e.message) ? 'Please sign in again from Circle.' : 'That upload didn’t work. Please try again.');
+    }
+    setFiles(x => [...x, ...done]);
+    setBusy(null); setUploading(false);
+  }
+  return (
+    <div className={`sch-attach${compact ? ' compact' : ''}`}>
+      {files.length > 0 && (
+        <ul className="sch-files">
+          {files.map(f => (
+            <li key={f.url}><span className="sch-fname">{f.name}</span>{f.size ? <span className="sch-fsize">{size(f.size)}</span> : null}
+              <button type="button" className="ss-link plain" aria-label={`Remove ${f.name}`} onClick={() => setFiles(x => x.filter(y => y.url !== f.url))}>Remove</button></li>
+          ))}
+        </ul>
+      )}
+      {busy && <p className="sch-meta" role="status">Uploading {busy.name}… {busy.pct}%</p>}
+      {!busy && files.length < ATTACH_MAX_FILES && (
+        <label htmlFor={id} className="sch-attach-btn">
+          <span aria-hidden="true">＋</span> {files.length ? 'Attach another file' : 'Attach a file'}
+          <input ref={input} id={id} type="file" multiple accept={ATTACH_ACCEPT} onChange={e => { choose(e.target.files); e.target.value = ''; }} />
+        </label>
+      )}
+      {err && <p className="sch-err" role="alert">{err}</p>}
+    </div>
+  );
+}
+
+// The files on a reflection or reply, as download links
+function Files({ files }) {
+  if (!files?.length) return null;
+  return <ul className="ss-files">{files.map(f => <li key={f.url}><a href={f.url} target="_blank" rel="noopener noreferrer">↓ {f.name}</a></li>)}</ul>;
 }
 
 // The season's reading assignments (lib/school/readings.js)

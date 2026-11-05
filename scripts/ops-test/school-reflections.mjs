@@ -76,3 +76,19 @@ assert.equal(buildSeasonPage({ ...base, member: fullMem }).reflections.list.leng
 assert.equal(buildSeasonPage({ ...base, member: new Set([String(fall.hub_space_id)]) }).reflections.list.length, 0, 'not in the Reflections space: none');
 assert.equal(buildSeasonPage({ ...base, member: mem, menteePosts: new Set(), ids: {}, memberId: null }).reflections.list.some(p => p.role === 'mentee' || p.mine), false, 'no roster, no member id: nobody marked');
 console.log('school reflections: ok');
+
+// Attached files: kept out of the text, read back as links (linked, written out, or attached in Circle itself)
+{
+  const { filesOf, cleanFiles, attachNodes } = await import('../../lib/school/attachments.js');
+  const url = 'https://abc123.public.blob.vercel-storage.com/school/reflections/notes-Xy12.pdf';
+  assert.deepEqual(cleanFiles([{ name: 'notes.pdf', url }, { name: 'bad', url: 'https://evil.example/x.pdf' }, { name: 'x', url: 'https://abc.public.blob.vercel-storage.com/teachers/a.png' }]), [{ name: 'notes.pdf', url }], 'only our school uploads');
+  const doc = { tiptap_body: { body: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'My thoughts' }] }, ...attachNodes([{ name: 'notes.pdf', url }])] } } };
+  assert.deepEqual(filesOf(doc), [{ name: 'notes.pdf', url }]);
+  assert.equal(opening(doc), 'My thoughts', 'the attachment line is not part of the text');
+  const plain = { tiptap_body: { body: { type: 'doc', content: attachNodes([{ name: 'audio.m4a', url }], { plain: true }) } } };
+  assert.deepEqual(filesOf(plain), [{ name: 'audio.m4a', url }]);
+  assert.deepEqual(filesOf({ tiptap_body: { attachments: [{ filename: 'scan.jpg', url: 'https://app.circle.so/x/scan.jpg' }] } }), [{ name: 'scan.jpg', url: 'https://app.circle.so/x/scan.jpg' }]);
+  const onlyFile = commentLines([{ id: 7, tiptap_body: plain.tiptap_body, author: { name: 'F' }, created_at: '2026-11-02T00:00:00Z' }]);
+  assert.equal(onlyFile.length, 1, 'a reply that is only a file is kept'); assert.equal(onlyFile[0].text, ''); assert.equal(onlyFile[0].files.length, 1);
+}
+console.log('attachments ok');

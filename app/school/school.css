@@ -342,3 +342,14 @@ body:has(.sch-root) > :not(main){display:none !important}
 .tx-cm{margin-bottom:10px !important}
 .sch-my-card ul.sch-my-mrows{list-style:none;padding:0;gap:8px}.sch-my-mrows li{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px}.sch-my-mrows .d{font-size:12.5px;color:#5A5346;font-variant-numeric:tabular-nums;padding-top:2px}
 @media (max-width:760px){.sch-my-mrows li{grid-template-columns:minmax(0,1fr);gap:2px}}
+/* Attached files on reflections and replies */
+.sch-attach{display:grid;gap:6px}.sch-attach.compact{margin-top:8px}
+.sch-attach-btn{display:inline-flex;align-items:center;gap:6px;width:max-content;min-height:44px;padding:0 14px;border:1px dashed var(--line);border-radius:6px;background:#fff;color:var(--pine);font-weight:600;font-size:15px;cursor:pointer}
+.sch-attach-btn:hover{border-color:var(--pine)}.sch-attach-btn:focus-within{outline:3px solid var(--terra);outline-offset:2px}
+.sch-attach-btn input[type=file],.sch-composer .sch-attach-btn input[type=file]{position:absolute;width:1px;height:1px;min-height:0;padding:0;border:0;opacity:0;overflow:hidden;clip:rect(0 0 0 0)}
+.sch-files{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sch-files li{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:15px}
+.sch-fname{font-weight:600;word-break:break-word}.sch-fsize{color:var(--ink5);font-size:13px}.sch-files .ss-link{margin-left:auto}
+.ss-files{list-style:none;margin:6px 0;padding:0;display:flex;gap:8px;flex-wrap:wrap}
+.ss-files a{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--pine);font-size:14px;text-decoration:none;word-break:break-word}
+.ss-files a:hover{border-color:var(--pine)}

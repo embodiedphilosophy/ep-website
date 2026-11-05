@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { TABS, joinOpen } from '../../../lib/hub/meditation';
+import { TABS } from '../../../lib/hub/meditation';
 
 // Times show twice: Eastern time, which the session is set in, and the member's own zone once the browser is up (ET until then)
 const ET = 'America/New_York';
@@ -115,22 +115,27 @@ function Banner({ ctx }) {
   return null;
 }
 
-// The Join the meditation / Add to calendar / upgrade buttons for one session, by plan
+// One session's buttons, by plan. Open sessions: "Join the session" goes to the session's event post in Circle (where the
+// Zoom link sits), with a small "Add to calendar" link underneath. Before Circle has the post, it goes to the live sessions space.
 function SessionActions({ ctx, s, hero }) {
-  const { plan, now, hub } = ctx;
-  const joinable = s.open && s.url && joinOpen(s, now, hub.joinBeforeMinutes);
+  const { plan, hub } = ctx;
+  const post = s.url || hub.links.live_space;
   return (
     <>
-      {joinable && <a className="sch-btn" href={s.url} target="_top">Join the meditation</a>}
+      {s.open && (
+        <span className="mmh-join">
+          <a className="sch-btn" href={post} target="_top">Join the session</a>
+          <button type="button" className="mmh-cal" onClick={() => addToCalendar(s)}>Add to calendar</button>
+        </span>
+      )}
       {plan === 'none' && <Unlock ctx={ctx} label="Start your free week" ghost={!hero} />}
       {plan === 'dropin' && !s.open && <><span className="mmh-only">Pass only</span><Unlock ctx={ctx} label={`Upgrade · ${hub.links.pass_monthly}`} /></>}
-      {s.open && !joinable && <button type="button" className="sch-btn ghost" onClick={() => addToCalendar(s)}>Add to calendar</button>}
     </>
   );
 }
 
 function Hero({ ctx }) {
-  const { next, tz, now, hub } = ctx;
+  const { next, tz, now } = ctx;
   if (!next) {
     return (
       <section className="wsh-hero" aria-label="This Monday">
@@ -146,7 +151,6 @@ function Hero({ ctx }) {
       <h2>{next.title}</h2>
       <p className="mmh-when">{whenOf(next.startsAt, tz)}</p>
       <div className="mmh-btns"><SessionActions ctx={ctx} s={next} hero /></div>
-      {ctx.plan === 'pass' && !joinOpen(next, now, hub.joinBeforeMinutes) && next.url && <p className="mmh-hint">Join the meditation opens {hub.joinBeforeMinutes} minutes before the start.</p>}
     </section>
   );
 }

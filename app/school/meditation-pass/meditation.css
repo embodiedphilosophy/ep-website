@@ -5,6 +5,10 @@
 .mmh-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .mmh-btns .sch-btn{min-height:44px}
 .mmh-only{font:600 13px var(--font-sans),sans-serif;color:#EADDC6;border:1px dashed rgba(234,221,198,.55);border-radius:99px;padding:9px 14px}
+.mmh-join{display:inline-flex;flex-direction:column;align-items:center;gap:6px}
+.mmh-cal{background:none;border:0;padding:2px 4px;font:600 12px var(--font-sans),sans-serif;color:#A5432A;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.mmh-cal:hover{color:#83341F}
+.wsh-hero .mmh-cal{color:#E8806A}
 .mmh-hint{margin:12px 0 0;font-size:14px;color:#EADDC6}
 .mmh-note{margin:0 0 14px;padding:10px 14px;border:1px dashed #A5432A;border-radius:8px;font-size:14px;color:#83341F;background:#FAF5EB}
 .mmh .wsh-hero h2{font-size:38px}
@@ -66,5 +70,7 @@
   .mmh-one .mmh-card.big .mmh-thumb{width:100%}
   .mmh-act{justify-content:stretch}
   .mmh-act .sch-btn{width:100%}
+  .mmh-join{display:flex;width:100%}
+  .mmh-btns .mmh-join .sch-btn{width:100%}
   .mmh-card.locked .sch-btn{width:calc(100% - 28px)}
 }

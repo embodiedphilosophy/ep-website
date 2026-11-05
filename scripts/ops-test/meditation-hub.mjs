@@ -2,7 +2,7 @@
 // No network.   node scripts/ops-test/meditation-hub.mjs
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildMeditationHub, planOf, normStreams, streamIn, opsDays, sessionsFrom, joinOpen, nextOf, nextFourOf, parseReplayTitle, orderSections, archiveStamp, tabKey, TABS, etDay, replayTitle } from '../../lib/hub/meditation.js';
+import { buildMeditationHub, planOf, normStreams, streamIn, opsDays, sessionsFrom, joinOpen, nextOf, nextFourOf, parseReplayTitle, orderSections, archiveStamp, tabKey, TABS, etDay, replayTitle, replayOf } from '../../lib/hub/meditation.js';
 
 const read = f => JSON.parse(readFileSync(new URL(`../../data/${f}`, import.meta.url)));
 const cfg = read('mm-hub.json'), streams = normStreams(read('mm-streams.json'));
@@ -63,13 +63,17 @@ const fallback = sessionsFrom({ rawEvents: [], opsRows: [{ ...ops[0], time: '12p
 ok(fallback.length === 1 && fallback[0].startsAt === '2026-10-26T16:00:00.000Z' && fallback[0].url === '', 'no Circle events: the site’s schedule at 12pm ET, no link');
 
 // ---- replay titles ----
-assert.deepEqual(parseReplayTitle('Mon 26 Oct · Neuroscience & Yoga with Dr. Abha Rajbhandari', '2026-10-27T10:00:00Z'), { date: '2026-10-26', stream: 'Neuroscience & Yoga', teacher: 'Dr. Abha Rajbhandari' });
+assert.deepEqual(parseReplayTitle('Mon 26 Oct · Neuroscience & Yoga with Dr. Abha Rajbhandari', '2026-10-27T10:00:00Z'), { date: '2026-10-26', stream: 'Neuroscience & Yoga', teacher: 'Dr. Abha Rajbhandari', words: 'Neuroscience & Yoga with Dr. Abha Rajbhandari' });
 assert.equal(parseReplayTitle('Mon 28 Dec · Metta with Oneika Mays', '2027-01-04T10:00:00Z').date, '2026-12-28', 'a December session published in January is last year’s');
 assert.equal(parseReplayTitle('Mon 9 Nov', '2026-11-10T10:00:00Z').date, '2026-11-09');
-assert.deepEqual(parseReplayTitle('Welcome: how to use the library', '2026-10-01T00:00:00Z'), { date: null, stream: '', teacher: '' });
+assert.deepEqual(parseReplayTitle('Welcome: how to use the library', '2026-10-01T00:00:00Z'), { date: null, stream: '', teacher: '', words: 'Welcome: how to use the library' });
 assert.equal(replayTitle({ date: '2026-10-26', teachers: 'Dr. Abha Rajbhandari', title: 'Meditation Mondays' }, streams), 'Mon 26 Oct · Neuroscience & Yoga with Dr. Abha Rajbhandari');
 assert.equal(replayTitle({ date: '2026-11-30', teachers: '', title: 'Meditation Mondays' }, streams), 'Mon 30 Nov');
 ok(true, 'Ops names new replay lessons “Mon 26 Oct · {Stream} with {Teacher}” and the hub reads that title back');
+ok(replayOf({ id: 'x', name: 'Mon 14 Sep · Somatic Meditation with Floss Harry', at: '2026-09-15T10:00:00Z' }, { days: {}, streams, locked: false }).title === 'Somatic Meditation with Floss Harry'
+  && replayOf({ id: 'y', name: 'Somatic Meditation with Floss Harry · 14 Sep', at: '2026-09-15T10:00:00Z' }, { days: {}, streams, locked: false }).title === 'Somatic Meditation with Floss Harry'
+  && replayOf({ id: 'z', name: 'Mon 30 Nov', at: '2026-12-01T10:00:00Z' }, { days: { '2026-11-30': { stream: 'Metta', teacher: 'Oneika Mays' } }, streams, locked: false }).title === 'Metta with Oneika Mays',
+  'a replay keeps its Circle lesson title; only a bare date is filled in from the schedule');
 
 // ---- the course ----
 const les = (id, name, at, extra = {}) => ({ id, name, url: `https://ss.example/c/meditation-pass/sections/1/lessons/${id}`, created_at: at, status: 'incomplete', ...extra });

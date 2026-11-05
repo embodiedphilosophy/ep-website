@@ -74,6 +74,10 @@ ok(replayOf({ id: 'x', name: 'Mon 14 Sep · Somatic Meditation with Floss Harry'
   && replayOf({ id: 'y', name: 'Somatic Meditation with Floss Harry · 14 Sep', at: '2026-09-15T10:00:00Z' }, { days: {}, streams, locked: false }).title === 'Somatic Meditation with Floss Harry'
   && replayOf({ id: 'z', name: 'Mon 30 Nov', at: '2026-12-01T10:00:00Z' }, { days: { '2026-11-30': { stream: 'Metta', teacher: 'Oneika Mays' } }, streams, locked: false }).title === 'Metta with Oneika Mays',
   'a replay keeps its Circle lesson title; only a bare date is filled in from the schedule');
+{
+  const swapped = replayOf({ id: 's', name: 'Mon 2 Nov · Somatic Meditation with Floss Harry', at: '2026-11-03T10:00:00Z', thumb: '' }, { days: { '2026-11-02': { stream: 'Tantrik', teacher: 'Nataraj Chaitanya' } }, streams, locked: false });
+  ok(swapped.stream === 'Somatic' && swapped.teacher === 'Floss Harry' && /stream=Somatic&teacher=Floss\+Harry/.test(swapped.thumb), 'when the schedule and the lesson disagree, the lesson’s stream and teacher win (and the thumbnail follows)');
+}
 
 // ---- the course ----
 const les = (id, name, at, extra = {}) => ({ id, name, url: `https://ss.example/c/meditation-pass/sections/1/lessons/${id}`, created_at: at, status: 'incomplete', ...extra });

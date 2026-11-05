@@ -91,7 +91,8 @@ export default async function ChristianMysticism() {
           <div>
             <span className="eyebrow">Live online · 4 Thursdays from November 12</span>
             <h1>The Contemplative Heart</h1>
-            <p className="sub">A Learning Pathway on Christian Mysticism</p>
+            <p className="cm-subtitle" style={{ fontFamily: 'var(--font-serif), serif', fontStyle: 'italic', fontSize: 'clamp(22px, 2.6vw, 30px)', lineHeight: 1.25, color: 'var(--terra)', marginTop: 10 }}>A Learning Pathway on Christian Mysticism</p>
+            <p className="sub">A four-session course with Mary Reilly Nichols and Floss Harry on the contemplative heart of Christianity, and its deep resonance with the philosophy and practice of yoga and tantra.</p>
             <p className="upnext" style={{ marginTop: 18 }}><b>4 live sessions · 2 hours each · recordings included · {PRICE} or {PLAN.down} down</b></p>
             <div className="btns" style={{ marginTop: 22 }}>
               <a className="btn btn-primary" href={checkout}>Enroll — {PRICE}</a>

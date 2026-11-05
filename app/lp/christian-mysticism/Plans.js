@@ -6,7 +6,7 @@ import { useState } from 'react';
 const num = p => Number(String(p || '').replace(/[^0-9.]/g, '')) || 0;
 
 export default function Plans({ full, plan, wisdom }) {
-  const [period, setPeriod] = useState('annual');
+  const [period, setPeriod] = useState('monthly');
   const monthly = period === 'monthly';
   const m = num(wisdom.monthlyPrice), a = num(wisdom.yearPrice);
   const save = m && a && a < m * 12 ? m * 12 - a : 0;

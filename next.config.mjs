@@ -12,7 +12,7 @@ const OPS = process.env.OPS_ORIGIN?.replace(/\/$/, '');
 
 const nextConfig = {
   // The certificate PDF reads its fonts from disk (lib/ce/pdf.js)
-  outputFileTracingIncludes: { '/api/ce/certificate/[id]': ['./lib/ce/fonts/**'] },
+  outputFileTracingIncludes: { '/api/ce/certificate/[id]': ['./lib/ce/fonts/**'], '/api/thumb/meditation': ['./lib/ce/fonts/**', './lib/hub/thumb-art/**'] },
   async rewrites() {
     return {
       beforeFiles: [],

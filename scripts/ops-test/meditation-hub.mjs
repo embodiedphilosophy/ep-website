@@ -94,6 +94,7 @@ ok(pass.next.url === 'https://ss.example/events/1000' && pass.upcoming.every(s =
 ok(pass.sections.map(s => s.name).join('|') === 'Start here|October 2026|Archive · September 2026|Archive · August 2026|Archive · January 2026', 'empty months are left out');
 ok(pass.latestReplay.id === '11' && pass.latestReplay.title === 'Tantrik with Nataraj Chaitanya' && pass.latestReplay.minutes === 45 && pass.latestReplay.url, 'latest replay: the newest published lesson, Start here excluded');
 ok(pass.sections[1].lessons[0].id === '11' && pass.sections[1].lessons[1].thumb === 'https://img/10.jpg' && pass.sections[1].lessons[1].done, 'newest first within a month; thumbnail and progress kept');
+ok(/\/api\/thumb\/meditation\?stream=Tantrik&teacher=Nataraj\+Chaitanya&date=2026-10-19&v=\d+$/.test(pass.sections[1].lessons[0].thumb), 'a replay with no Circle thumbnail gets the branded one for its stream, teacher and date');
 ok(pass.streams.find(s => s.key === 'metta').replays === 2 && pass.streams.find(s => s.key === 'tantrik').replays === 1 && pass.streams.every(s => 'replays' in s), 'replay counts per stream');
 ok(pass.sections.flatMap(s => s.lessons).every(l => !l.locked && l.url), 'Pass members can play every replay');
 // a lesson published after the first read shows as the latest on the next read

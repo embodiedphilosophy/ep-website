@@ -565,6 +565,7 @@
       if (x.canJoin) act += '<button type="button" class="esu-btn out" data-act="pp-join" data-id="' + esc(x.id) + '"' + (state.busy === 'pp' ? ' disabled' : '') + '>Join</button> ';
       if (x.mine) act += '<button type="button" class="esu-lnk" data-act="pp-hours">Log practice-teaching hours</button> ';
       if (x.canLeave) act += '<button type="button" class="esu-lnk" data-act="pp-leave" data-id="' + esc(x.id) + '">Leave</button> ';
+      if (x.canEdit) act += '<button type="button" class="esu-btn out" data-act="pp-edit" data-id="' + esc(x.id) + '">Edit pod</button> ';
       if (x.canCancel) act += '<button type="button" class="esu-lnk" data-act="pp-cancel" data-id="' + esc(x.id) + '">Cancel this pod</button>';
       var auto = d.autoRooms && x.canSetRoom && !x.roomUrl ? '<div style="margin-top:8px"><button type="button" class="esu-btn pri" data-act="pp-autoroom" data-id="' + esc(x.id) + '"' + (state.busy === 'pp' ? ' disabled' : '') + '>Make our meeting room</button></div>' : '';
       var room = x.canSetRoom ? auto + '<details style="margin-top:8px"' + (x.roomUrl || d.autoRooms ? '' : ' open') + '><summary class="esu-muted" style="font-size:13px;cursor:pointer">' + (x.roomUrl ? 'Change the live room link' : d.autoRooms ? 'Or use a link of your own' : 'Make a live room for your pod') + '</summary>' + ppRoomHelp() +
@@ -726,15 +727,18 @@
         '<p class="esu-muted" style="font-size:13px;margin:12px 0 14px">Logs the hours for everyone named, so your partner doesn’t log it again. Your before-and-after line goes into the cohort’s cue bank.</p>' +
         '<div class="esu-acts"><button type="button" class="esu-btn pri" data-act="save-articulation"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Log this session') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else if (m.type === 'pp') {
-      body = '<h2 class="esu-h2">Organize a practicum pod</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">Choose a time to practice teaching with other mentees. Anyone in the cohort can join; there is room for ' + (state.pp ? state.pp.max : 6) + ' including you.</p>' +
+      var ed = m.editId ? ((state.pp && state.pp.pods) || []).filter(function (x) { return x.id === m.editId; })[0] : null, others = ed ? Math.max(0, ed.count - 1) : 0;
+      body = (ed ? '<h2 class="esu-h2">Edit your practicum pod</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">Change the focus, the day and time, or how long it runs. Everyone in the pod sees the new time on their dashboard, in their own time zone.</p>'
+        : '<h2 class="esu-h2">Organize a practicum pod</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">Choose a time to practice teaching with other mentees. Anyone in the cohort can join; there is room for ' + (state.pp ? state.pp.max : 6) + ' including you.</p>') +
         field('What will you practice?', '<input id="esu-pp-topic" type="text" maxlength="80" data-in="ppTopic" value="' + esc(f.ppTopic) + '" placeholder="e.g. Teaching the five-minute practice" style="' + FIELD + '">', 'esu-pp-topic') +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div>' + field('When (your time)', '<input id="esu-pp-when" type="datetime-local" data-in="ppWhen" value="' + esc(f.ppWhen) + '" style="' + FIELD + '">', 'esu-pp-when') + '</div><div>' +
         field('How long', '<select id="esu-pp-min" data-in="ppMin" style="' + FIELD + '">' + ((state.pp && state.pp.minutes) || [30, 45, 60, 90, 120]).map(function (n) { return '<option value="' + n + '"' + (String(f.ppMin) === String(n) ? ' selected' : '') + '>' + n + ' minutes</option>'; }).join('') + '</select>', 'esu-pp-min') + '</div></div>' +
         field('Anything to know? <span style="font-weight:400;color:#5A5346">(optional)</span>', '<textarea id="esu-pp-desc" rows="3" maxlength="600" data-in="ppDesc" placeholder="e.g. Bring a five-minute teaching you want feedback on." style="' + FIELD + '">' + esc(f.ppDesc) + '</textarea>', 'esu-pp-desc') +
-        '<details style="margin-top:12px"><summary class="esu-muted" style="font-size:13.5px;cursor:pointer">Make a live room now <span style="font-weight:400">(optional, you can do it later)</span></summary>' + ppRoomHelp() +
-        '<input id="esu-pp-roomnew" type="text" data-in="ppRoom" value="' + esc(f.ppRoom) + '" placeholder="Paste the live room link (https://…)" style="' + FIELD + ';margin-top:6px"></details>' +
+        (ed ? (others ? '<label style="display:flex;gap:8px;align-items:center;margin:12px 0 0;font-size:14px"><input type="checkbox" data-in="ppNotify"' + (f.ppNotify !== false ? ' checked' : '') + ' style="width:20px;height:20px"> Let my pod know in Circle messages if the focus or time changes (' + others + (others === 1 ? ' person' : ' people') + ')</label>' : '')
+        : '<details style="margin-top:12px"><summary class="esu-muted" style="font-size:13.5px;cursor:pointer">Make a live room now <span style="font-weight:400">(optional, you can do it later)</span></summary>' + ppRoomHelp() +
+        '<input id="esu-pp-roomnew" type="text" data-in="ppRoom" value="' + esc(f.ppRoom) + '" placeholder="Paste the live room link (https://…)" style="' + FIELD + ';margin-top:6px"></details>') +
         (state.msg ? '<p class="esu-err" role="alert" style="margin-top:10px">' + esc(state.msg) + '</p>' : '') +
-        '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="save-pp"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : 'Organize this pod') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
+        '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn pri" data-act="save-pp"' + (b ? ' disabled' : '') + '>' + (b ? 'Saving…' : ed ? 'Save changes' : 'Organize this pod') + '</button><button type="button" class="esu-btn out" data-act="close-modal">Cancel</button></div>';
     } else if (m.type === 'pp-list') {
       var pl = state.pp || { pods: [] };
       body = '<h2 class="esu-h2">Practicum pods</h2><p class="esu-muted" style="font-size:13.5px;margin:6px 0 0">One person teaches, the others give feedback. Anyone in the cohort can organize one; no approval is needed.</p>' +
@@ -1088,10 +1092,19 @@
     if (a.indexOf('rf-') === 0) { if (a === 'rf-post-close' && t.dataset.bg && e.target !== t) return; rfClick(a, t); return; }
     if (a === 'close-modal') { if (t.dataset.bg && e.target !== t) return; state.modal = null; state.msg = ''; render(); return; }
     if (a === 'open-pp') { var dflt = new Date(Date.now() + 2 * 864e5); dflt.setHours(18, 0, 0, 0); var pad = function (n) { return String(n).padStart(2, '0'); }; state.modal = { type: 'pp' }; state.msg = ''; state.form = { ppTopic: '', ppDesc: '', ppRoom: '', ppMin: '60', ppWhen: dflt.getFullYear() + '-' + pad(dflt.getMonth() + 1) + '-' + pad(dflt.getDate()) + 'T18:00' }; render(); var tt = root.querySelector('#esu-pp-topic'); if (tt) tt.focus(); return; }
+    if (a === 'pp-edit') {
+      var px = ((state.pp && state.pp.pods) || []).filter(function (x) { return x.id === t.dataset.id; })[0]; if (!px) return;
+      var sd = new Date(px.startsAt), p2 = function (n) { return String(n).padStart(2, '0'); };
+      state.modal = { type: 'pp', editId: px.id }; state.msg = '';
+      state.form = { ppTopic: px.topic, ppDesc: px.description || '', ppRoom: '', ppMin: String(px.minutes), ppNotify: true, ppWhen: sd.getFullYear() + '-' + p2(sd.getMonth() + 1) + '-' + p2(sd.getDate()) + 'T' + p2(sd.getHours()) + ':' + p2(sd.getMinutes()) };
+      render(); var te = root.querySelector('#esu-pp-topic'); if (te) te.focus(); return;
+    }
     if (a === 'save-pp') {
-      var g2 = state.form, when = g2.ppWhen ? new Date(g2.ppWhen) : null;
+      var g2 = state.form, when = g2.ppWhen ? new Date(g2.ppWhen) : null, editId = state.modal && state.modal.editId, tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (x) {}
+      var body2 = { action: editId ? 'edit' : 'create', id: editId || undefined, topic: g2.ppTopic, description: g2.ppDesc, startsAt: when && !isNaN(when) ? when.toISOString() : '', minutes: g2.ppMin, tz: tz };
+      if (editId) body2.notify = g2.ppNotify !== false; else body2.roomUrl = g2.ppRoom;
       state.busy = 'modal'; state.msg = ''; render();
-      call('/api/member/practicum', { action: 'create', topic: g2.ppTopic, description: g2.ppDesc, startsAt: when && !isNaN(when) ? when.toISOString() : '', minutes: g2.ppMin, roomUrl: g2.ppRoom }).then(function (d) { state.pp = d; state.modal = null; state.form = {}; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
+      call('/api/member/practicum', body2).then(function (d) { state.pp = d; state.modal = editId ? { type: 'pp-list' } : null; state.form = {}; }).catch(function (e) { state.msg = e.message; }).then(function () { state.busy = ''; render(); });
       return;
     }
     if (a === 'pp-join' || a === 'pp-leave' || a === 'pp-cancel') {

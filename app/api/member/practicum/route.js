@@ -1,20 +1,29 @@
 import { NextResponse } from 'next/server';
 import { sessionFrom, cors } from '@/lib/member/session';
 import { eligible, podsFor, MAX, MINUTES } from '@/lib/pods/practicum';
-import { practicumAvailable, listPods, createPod, join, leave, cancelPod, setLinks, autoRoom } from '@/lib/pods/practicum';
+import { practicumAvailable, listPods, createPod, join, leave, cancelPod, setLinks, autoRoom, updatePod } from '@/lib/pods/practicum';
+import { changeMessage, validTz } from '@/lib/pods/meetup';
+import { tellMembers } from '@/lib/pods/notify';
 import { meetConfigured } from '@/lib/meet';
 
 export const dynamic = 'force-dynamic';
 
 // Practicum pods for Sahṛdaya Upāya mentees (and Circle admins), drawn on the mentee page by public/circle/sahrdaya.js. Anyone can organise one, no approval.
 //   GET                                            → { pods, max, minutes }
-//   POST { action: 'create', topic, description, startsAt, minutes, roomUrl }  | { action: 'join' | 'leave' | 'cancel', id } | { action: 'links', id, roomUrl, chatUrl }
+//   POST { action: 'create', topic, description, startsAt, minutes, roomUrl } | { action: 'edit', id, topic, description, startsAt, minutes, tz, notify }  | { action: 'join' | 'leave' | 'cancel', id } | { action: 'links', id, roomUrl, chatUrl }
 const methods = 'GET, POST, OPTIONS';
 const fail = (h, msg, status) => NextResponse.json({ error: msg }, { status, headers: h });
 const meOf = s => ({ uid: s.uid, email: s.email, name: s.firstName || String(s.email || '').split('@')[0] });
 async function payload(me, h, extra = {}) {
   const { pods, membersBy } = await listPods();
   return NextResponse.json({ pods: podsFor(pods, membersBy, me), max: MAX, minutes: MINUTES, autoRooms: meetConfigured(), ...extra }, { headers: h });
+}
+// After an edit: message the members (as the organiser) when the focus, time or length changed and "Let my pod know" was left ticked
+async function announce(me, { before, after, members }, b) {
+  const changed = before.topic !== after.topic || +new Date(before.starts_at) !== +new Date(after.starts_at) || Number(before.minutes) !== Number(after.minutes);
+  if (b.notify === false || !changed) return { told: 0, changed };
+  const text = changeMessage({ kind: 'practicum pod', oldTopic: before.topic, topic: after.topic, meetAt: new Date(after.starts_at).toISOString(), repeat: 'once', minutes: after.minutes, tz: validTz(b.tz) || 'UTC', from: me.name });
+  return { told: await tellMembers(me.email, members, text, { skipUid: me.uid }), changed };
 }
 function gate(req) {
   const h = cors(req, methods), s = sessionFrom(req);
@@ -34,6 +43,7 @@ export async function POST(req) {
   try {
     let extra = {};
     if (b.action === 'create') extra = { created: await createPod(me, b) };
+    else if (b.action === 'edit') extra = await announce(me, await updatePod(me, b.id, b), b);
     else if (b.action === 'join') await join(me, b.id);
     else if (b.action === 'leave') await leave(me, b.id);
     else if (b.action === 'cancel') await cancelPod(me, b.id);

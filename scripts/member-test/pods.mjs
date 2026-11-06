@@ -82,4 +82,41 @@ const open2 = (await S.listPods()).pods.find(x => x.topic === 'Second pod');
 await assert.rejects(() => S.cancelPod(user(3), open2.id), /Only the leader/); await S.cancelPod(lead, open2.id);
 assert.equal((await S.listPods()).pods.some(x => x.topic === 'Second pod'), false, 'a cancelled pod disappears'); assert.equal((await S.listPods({ all: true })).pods.some(x => x.topic === 'Second pod'), true, 'staff still see it');
 await assert.rejects(() => S.cancelPod(lead, id), /Only the leader/, 'a running pod can only be cancelled by staff'); await S.cancelPod(null, id, { staff: true });
+// The leader changes the pod: title, description, meetup (date, how often, length, time zone)
+{ const M = await import('../../lib/pods/meetup.js');
+  const now = Date.parse('2026-11-05T12:00:00Z');
+  // A weekly 7pm London meetup stays 7pm after the clocks go back (18:00Z in BST, 19:00Z in GMT)
+  assert.equal(M.nextMeetup({ meet_at: '2026-10-22T18:00:00Z', meet_repeat: 'weekly', meet_minutes: 60, meet_tz: 'Europe/London' }, now), '2026-11-05T19:00:00.000Z');
+  assert.equal(M.nextMeetup({ meet_at: '2026-10-22T18:00:00Z', meet_repeat: 'fortnightly', meet_minutes: 60, meet_tz: 'Europe/London' }, now), '2026-11-05T19:00:00.000Z');
+  assert.equal(M.nextMeetup({ meet_at: '2026-10-22T18:00:00Z', meet_repeat: 'monthly', meet_minutes: 60, meet_tz: 'Europe/London' }, now), '2026-11-26T19:00:00.000Z', 'the 4th Thursday');
+  assert.equal(M.nextMeetup({ meet_at: '2026-11-05T11:30:00Z', meet_repeat: 'weekly', meet_minutes: 60, meet_tz: 'UTC' }, now), '2026-11-05T11:30:00.000Z', 'a meetup under way is still the next one');
+  assert.equal(M.nextMeetup({ meet_at: '2026-10-22T18:00:00Z', meet_repeat: 'once', meet_minutes: 60 }, now), '', 'a one-off that is over');
+  assert.equal(M.nextMeetup({}, now), '');
+  assert.throws(() => M.cleanMeetup({ meetAt: '2026-11-01T10:00:00Z' }, now), /future/); assert.throws(() => M.cleanMeetup({ meetAt: 'soon' }, now), /day and time/);
+  assert.deepEqual(M.cleanMeetup({ meetAt: '', meetRepeat: 'monthly' }, now).meetAt, null, 'an empty date means not set yet');
+  assert.deepEqual(M.cleanMeetup({ meetAt: '2026-11-12T19:00:00Z', meetRepeat: 'yearly', meetMinutes: 7, meetTz: 'Not/AZone' }, now), { meetAt: '2026-11-12T19:00:00.000Z', meetRepeat: 'weekly', meetMinutes: 60, meetTz: 'UTC' });
+  assert.match(M.calendarUrl({ title: 'Pod', startIso: '2026-11-12T19:00:00Z', minutes: 60, repeat: 'fortnightly', tz: 'Europe/London' }), /recur=RRULE%3AFREQ%3DWEEKLY%3BINTERVAL%3D2/);
+  assert.match(M.changeMessage({ oldTopic: 'A', topic: 'B', meetAt: '2026-11-12T19:00:00Z', repeat: 'weekly', minutes: 90, tz: 'Europe/London', from: 'Asha' }), /now called “B”[\s\S]*Thu 12 Nov, 7:00 PM GMT \(every week\), 90 minutes[\s\S]*Asha/);
+
+  const ld = user(40); await S.apply(ld, 'I would like to lead a reading group.'); await S.decideLeader('u40', true, 'Jacob');
+  const mins = ms => new Date(Math.round(ms / 60000) * 60000).toISOString(), future = mins(Date.now() + 3 * 864e5);
+  const pid = await S.createPod(ld, L.cleanEdit({ topic: 'Spanda Kārikās', description: 'We read a kārikā a week and talk it through.', meetAt: future, meetRepeat: 'weekly', meetMinutes: 90, meetTz: 'Europe/London' }));
+  await S.join(user(41), pid);
+  let t = await S.listPods(), v = L.podsFor(t.pods, t.membersBy, ld).find(x => x.id === pid);
+  assert.equal(v.meetAt, future); assert.equal(v.meetRepeatLabel, 'Every week'); assert.equal(v.meetMinutes, 90); assert.equal(v.canEdit, true);
+  const mv = L.podsFor(t.pods, t.membersBy, user(41)).find(x => x.id === pid), ov = L.podsFor(t.pods, t.membersBy, user(60)).find(x => x.id === pid);
+  assert.equal(mv.canEdit, false, 'members cannot edit'); assert.match(mv.calendarUrl, /calendar\.google\.com/); assert.equal(ov.calendarUrl, '', 'only members get the calendar link');
+  assert.equal(L.podsFor(t.pods, t.membersBy, user(61, { admin: true })).find(x => x.id === pid).canEdit, true, 'admins can edit');
+
+  const later = mins(Date.now() + 10 * 864e5);
+  await assert.rejects(() => S.updatePod(user(41), pid, L.cleanEdit({ topic: 'Hijack', description: 'Not the leader trying to change it.' })), /Only the pod’s leader/);
+  const r = await S.updatePod(ld, pid, L.cleanEdit({ topic: 'Spanda Kārikās, slowly', description: 'Half a kārikā a week, with a long sit first.', schedule: 'Break over the holidays', meetAt: later, meetRepeat: 'monthly', meetMinutes: 60, meetTz: 'America/New_York' }));
+  assert.equal(r.before.topic, 'Spanda Kārikās'); assert.equal(r.after.topic, 'Spanda Kārikās, slowly'); assert.deepEqual(r.members.map(m => m.uid), ['u40', 'u41']);
+  t = await S.listPods(); v = L.podsFor(t.pods, t.membersBy, ld).find(x => x.id === pid);
+  assert.equal(v.topic, 'Spanda Kārikās, slowly'); assert.equal(v.schedule, 'Break over the holidays'); assert.equal(v.meetAt, later); assert.equal(v.meetRepeat, 'monthly'); assert.equal(v.meetTz, 'America/New_York');
+  await S.updatePod(ld, pid, L.cleanEdit({ topic: 'Spanda Kārikās, slowly', description: 'Half a kārikā a week, with a long sit first.', meetAt: '' }));
+  t = await S.listPods(); v = L.podsFor(t.pods, t.membersBy, ld).find(x => x.id === pid); assert.equal(v.meetAt, '', 'the date can be cleared'); assert.equal(v.meetRepeat, '');
+  await S.updatePod(null, pid, L.cleanEdit({ topic: 'Staff fixed the title', description: 'Half a kārikā a week, with a long sit first.' }), { staff: true });
+  await S.cancelPod(null, pid, { staff: true });
+  await assert.rejects(() => S.updatePod(ld, pid, L.cleanEdit({ topic: 'Too late now', description: 'This pod has been cancelled already.' })), /isn’t running/); }
 console.log('pods: ok');

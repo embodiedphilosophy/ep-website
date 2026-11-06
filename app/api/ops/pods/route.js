@@ -3,6 +3,7 @@ import { currentUser } from '@/lib/ops/auth';
 import { canEditSite } from '@/lib/ops/nav';
 import { podsAvailable, leaders, listPods, decideLeader, cancelPod, setChatUrl } from '@/lib/pods/store';
 import { MIN, MAX, podsEnabled } from '@/lib/pods/logic';
+import { nextMeetup, repeatLabel } from '@/lib/pods/meetup';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ async function state() {
   return {
     min: MIN, max: MAX, enabled: on,
     leaders: ls.map(l => ({ uid: l.uid, name: l.name, email: l.email, note: l.note, status: l.status, at: l.applied_at })),
-    pods: pods.map(p => { const ms = membersBy[String(p.id)] || []; return { id: String(p.id), topic: p.topic, leader: p.leader_name, leaderEmail: p.leader_email, status: p.status, count: ms.length, chatUrl: p.chat_url, needsChat: p.status === 'active' && !p.chat_url, members: ms.map(m => m.name), created: p.created_at }; }),
+    pods: pods.map(p => { const ms = membersBy[String(p.id)] || []; return { id: String(p.id), topic: p.topic, leader: p.leader_name, leaderEmail: p.leader_email, status: p.status, count: ms.length, chatUrl: p.chat_url, needsChat: p.status === 'active' && !p.chat_url, members: ms.map(m => m.name), created: p.created_at, meetAt: nextMeetup(p), meetRepeat: p.meet_at ? repeatLabel(p.meet_repeat || 'once') : '' }; }),
   };
 }
 

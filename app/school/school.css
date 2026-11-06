@@ -30,6 +30,17 @@ body:has(.sch-root) > :not(main){display:none !important}
 .sch-composer label{font-weight:600;color:var(--pine)}
 .sch-composer input,.sch-composer textarea{width:100%;font:16px var(--font-sans),sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;min-height:44px}
 .sch-composer-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.sch-composer select{width:100%;font:16px var(--font-sans),sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;min-height:44px}
+.sch-pod-when{display:grid;gap:10px;margin:4px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:8px;background:#fff8}
+.sch-pod-when legend{font-weight:600;color:var(--pine);padding:0 6px}
+.sch-pod-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:12px}
+.sch-pod-grid>div{display:grid;gap:6px}
+.sch-check{display:flex;gap:10px;align-items:flex-start;font-weight:400!important;color:inherit!important}
+.sch-check input{width:auto!important;min-height:0!important;margin-top:4px}
+.sch-linkbtn{background:none;border:0;padding:0;font:inherit;color:var(--pine);text-decoration:underline;cursor:pointer}
+.sch-pod-next{margin:6px 0 0}
+.sch-cal{font-size:13px;color:#B23A2E;text-decoration:underline}
+@media (max-width:640px){.sch-pod-grid{grid-template-columns:minmax(0,1fr)}}
 .sch-pod,.sch-card.hub.sch-pod{grid-template-columns:minmax(0,1fr) auto}
 .sch-empty-page,.sch-center{max-width:560px}
 .sch-empty-page p,.sch-center p{font-size:17px;color:var(--ink5)}

@@ -35,4 +35,14 @@ assert.equal(m.roomUrl, 'https://ss.embodiedphilosophy.com/c/live-rooms/p1'); as
 // finished pods drop out; a cancelled pod is gone
 assert.equal((await P.listPods(now + 5 * 864e5)).pods.length, 0, 'five days on, every pod is over');
 await P.cancelPod(org, id); assert.equal((await P.listPods(now)).pods.some(p => String(p.id) === id), false); await assert.rejects(() => P.cancelPod(user(2), id), /Only the organiser/);
+// the organiser can change the focus, time and length (still within the window); nobody else can
+{ const pid = await P.createPod(org, { topic: 'Edit me pod', startsAt: at(24 * 20), minutes: 45 }, now); await P.join(user(2), pid, now);
+  await assert.rejects(() => P.updatePod(user(2), pid, { topic: 'Mine now', startsAt: at(50) }, now), /Only the organiser/);
+  await assert.rejects(() => P.updatePod(org, pid, { topic: 'Edit me pod', startsAt: at(-1) }, now), /future/);
+  const r = await P.updatePod(org, pid, { topic: 'Teaching the breath count', description: 'Bring five minutes.', startsAt: at(30), minutes: 90 }, now);
+  assert.equal(r.before.topic, 'Edit me pod'); assert.equal(r.members.length, 2);
+  const v = P.podsFor((await P.listPods(now)).pods, (await P.listPods(now)).membersBy, org, now).find(x => x.id === pid);
+  assert.equal(v.topic, 'Teaching the breath count'); assert.equal(v.startsAt, at(30)); assert.equal(v.minutes, 90); assert.equal(v.canEdit, true);
+  assert.equal(P.podsFor((await P.listPods(now)).pods, (await P.listPods(now)).membersBy, user(2), now).find(x => x.id === pid).canEdit, false);
+  await P.cancelPod(org, pid); await assert.rejects(() => P.updatePod(org, pid, { topic: 'Teaching again', startsAt: at(30) }, now), /isn’t open/); }
 console.log('practicum: ok');

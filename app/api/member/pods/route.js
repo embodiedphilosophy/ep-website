@@ -21,7 +21,7 @@ export async function GET(req) {
     const me = { uid: s.uid, email: s.email, name: s.firstName || '', admin: !!s.admin };
     const [{ pods, membersBy }, l] = await Promise.all([listPods(), leaderOf(me.uid)]);
     const list = podsFor(pods, membersBy, me).sort((a, b) => Number(b.mine) - Number(a.mine) || a.needs - b.needs)
-      .map(p => ({ id: p.id, topic: p.topic, leader: p.leader, schedule: p.schedule, count: p.count, needs: p.needs, spots: p.spots, started: p.started, mine: p.mine, isLeader: p.isLeader, canJoin: p.canJoin, chatUrl: p.chatUrl, roomUrl: p.roomUrl, chatPending: p.chatPending }));
+      .map(p => ({ id: p.id, topic: p.topic, leader: p.leader, schedule: p.schedule, count: p.count, needs: p.needs, spots: p.spots, started: p.started, mine: p.mine, isLeader: p.isLeader, canJoin: p.canJoin, chatUrl: p.chatUrl, roomUrl: p.roomUrl, chatPending: p.chatPending, meetAt: p.meetAt, meetRepeatLabel: p.meetRepeatLabel, meetMinutes: p.meetMinutes, calendarUrl: p.calendarUrl }));
     return NextResponse.json({ on: true, pods: list.slice(0, 6), total: list.length, leader: l?.status || '', min: MIN, max: MAX, url: TAB }, { headers: h });
   } catch (e) { console.error('member pods', e.message); return NextResponse.json({ error: 'Couldn’t load the pods just now' }, { status: 502, headers: h }); }
 }

@@ -74,6 +74,7 @@ export default function PodsAdmin() {
           <li key={p.id} style={{ padding: '10px 0' }}>
             <strong>{p.topic}</strong> <span className="ops-empty">led by {p.leader} · {p.status === 'open' ? `${p.count} of ${data.min} to begin` : `${p.count} of ${data.max}`}</span>
             {p.chatUrl && <> · <a href={p.chatUrl} target="_blank" rel="noopener">chat ↗</a></>}
+            <div className="ops-empty">{p.meetAt ? `Next meetup ${new Date(p.meetAt).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })} (your time) · ${p.meetRepeat}` : 'No meetup set yet'}</div>
             <div className="ops-empty">{p.members.join(', ')}</div>
             <button className="chip" disabled={!!busy} onClick={() => confirm(`Cancel “${p.topic}”? It disappears for everyone.`) && act('x' + p.id, { action: 'cancel', id: p.id }, 'The pod was cancelled.')}>Cancel this pod</button>
           </li>

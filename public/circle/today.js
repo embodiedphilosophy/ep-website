@@ -263,6 +263,7 @@
     var d = state.pods; if (!d || !d.on) return '';
     var rows = d.pods.slice(0, 3).map(function (x) {
       var st = x.started ? x.count + ' in' + (x.spots > 0 ? ' · ' + x.spots + ' places left' : ' · full') : x.count + ' of ' + d.min + ' to begin';
+      if (x.mine && x.meetAt) { try { st = 'Next: ' + new Date(x.meetAt).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + ' · ' + st; } catch (e) {} }
       return '<div class="ept-fr"><span><span class="ept-t">' + esc(x.topic) + (x.mine ? ' · yours' : '') + '</span><span class="ept-s">Led by ' + esc(x.leader) + ' · ' + esc(st) + '</span></span>' + (x.mine && x.roomUrl ? '<a class="ept-btn" href="' + esc(x.roomUrl) + '" target="_top">Join the live room</a>' : x.canJoin ? '<a class="ept-q" href="' + esc(d.url) + '" target="_top">Join</a>' : '') + '</div>';
     }).join('');
     var lead = d.leader === 'approved' ? 'You can lead a pod. <a href="' + esc(d.url) + '" target="_top">Start one</a>' : d.leader === 'applied' ? 'Your request to lead a pod is with the team.' : 'Would you like to host one? <a href="' + esc(d.url) + '" target="_top">Ask to lead a pod</a>';

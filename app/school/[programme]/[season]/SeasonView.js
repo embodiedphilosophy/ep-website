@@ -205,6 +205,7 @@ function SessionsTab({ page, tz, now }) {
             const replay = r.replayUrl || r.pageUrl;
             let act;
             if (r.locked) act = upgrade ? <a className="sch-btn ghost quiet" href={upgrade} target="_top">Full year only</a> : <span className="sch-meta">Full year only</span>;
+            else if (r.postponed) act = <span className="sch-meta">Postponed · new date to be announced</span>;
             else if (r.tbd) act = <span className="sch-meta">Time to be announced</span>;
             else if (r.ended) act = r.replayUrl ? <a className="sch-btn" href={r.replayUrl} target="_top">Watch the recording</a>
               : now - Date.parse(r.end || r.at) < 2 * 3600 * 1000 + 30 * 60 * 1000 ? <span className="sch-meta">Replay is being prepared</span> : r.pageUrl ? <a className="sch-btn ghost" href={replay} target="_top">Open the session page</a> : null;

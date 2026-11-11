@@ -164,7 +164,7 @@ function WeekTab({ page, tz, now, pick, markSeen, cleared }) {
                   <span className="ss-mono">W{k.n}</span>
                   <span>{k.at ? dayShort(k.at, tz) : ''}</span>
                   <span><b>{k.focus}</b>{k.teacher ? ` · ${k.teacher}` : ''}</span>
-                  <span className={k.recording ? 'ss-ok' : k.next ? 'ss-next' : ''}>{k.recording ? 'Recording ✓' : k.next ? `Next · ${fmt(k.at, tz, { weekday: 'short' })}` : ''}</span>
+                  <span className={k.recording ? 'ss-ok' : k.next ? 'ss-next' : ''}>{k.recording ? 'Recording ✓' : k.postponed ? 'Postponed' : k.next ? `Next · ${fmt(k.at, tz, { weekday: 'short' })}` : ''}</span>
                 </li>
               ))}
             </ul>

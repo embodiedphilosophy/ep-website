@@ -1,6 +1,7 @@
 import { redirect, notFound } from 'next/navigation';
 import { currentMember, missingReason } from '@/lib/school/session';
-import { headlessConfigured, joinedSpaces, eventList, spacePosts, latestPosts, myMemberId } from '@/lib/school/circle';
+import { headlessConfigured, joinedSpaces, memberSpaces, eventList, spacePosts, latestPosts, myMemberId } from '@/lib/school/circle';
+import { confirmSpaces } from '@/lib/school/access';
 import { menteePostIds } from '@/lib/school/menteeposts';
 import { peopleIds } from '@/lib/school/people';
 import { PROGRAMMES, findSeason, isWired, nyDay } from '@/lib/school/config';
@@ -39,7 +40,9 @@ export default async function Page({ params, searchParams }) {
     const recs = await joinedSpaces(me.email);
     member = new Set(recs.map(s => String(s.id)));
     spaceUrls = Object.fromEntries(recs.filter(s => s.url).map(s => [String(s.id), s.url]));
-    if (member.has(String(season.hub_space_id))) [events, posts] = await Promise.all([eventList(me.email), spacePosts(me.email, season.hub_space_id)]);
+    // The headless list can leave out a season the member is in (12 Nov 2026): ask the Admin API before showing the gate
+    if (!member.has(String(season.hub_space_id))) await confirmSpaces(me.email, member, [season.hub_space_id, season.event_space_id], await memberSpaces(me.email).catch(() => []));
+    if (member.has(String(season.hub_space_id))) [events, posts] = await Promise.all([eventList(me.email), spacePosts(me.email, season.hub_space_id).catch(e => { if (e.status === 429) throw e; console.error('Season posts', e.message); return []; })]);
   } catch (e) {
     return notice(season.title, e.status === 429 ? 'Circle is busy right now. Please try again in a minute.' : 'We could not reach Circle just now. Please try again in a moment.');
   }

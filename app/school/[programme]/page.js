@@ -1,6 +1,7 @@
 import { redirect, notFound } from 'next/navigation';
 import { currentMember, missingReason } from '@/lib/school/session';
-import { headlessConfigured, joinedSpaces } from '@/lib/school/circle';
+import { headlessConfigured, joinedSpaces, memberSpaces } from '@/lib/school/circle';
+import { confirmSpaces } from '@/lib/school/access';
 import { PROGRAMMES, defaultSeason, nyDay } from '@/lib/school/config';
 import { hubSeasons } from '@/lib/school/hubconfig';
 import { landingSeason, seasonTabKey } from '@/lib/school/season';
@@ -24,6 +25,8 @@ export default async function Page({ params, searchParams }) {
   if (headlessConfigured()) {
     try {
       const member = new Set((await joinedSpaces(me.email)).map(s => String(s.id)));
+      // Same second opinion as the season page, so the sidebar row opens the season the member is really in
+      if (!seasons.some(s => s.hub_space_id && member.has(String(s.hub_space_id)))) await confirmSpaces(me.email, member, seasons.map(s => s.hub_space_id), await memberSpaces(me.email).catch(() => []));
       target = landingSeason(seasons, member, today) || target;
     } catch (e) {
       if (e.status === 429) return <Shell><div className="sch-empty-page"><h1>{PROGRAMMES[programme].title}</h1><p>Circle is busy right now. Please try again in a minute.</p></div></Shell>;

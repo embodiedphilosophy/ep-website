@@ -65,7 +65,7 @@ export default async function BeneathThePose() {
   return (
     <>
       <style>{CSS}</style>
-      <PageHero eyebrow="Open Session · Saturday, November 14" title="Beneath the Pose" img="shyamakanta-tiger" ground="vermilion" ring="#EBA329"
+      <PageHero eyebrow="Open Session · Saturday, November 14" title="Beneath the Pose" img="yogi-padmasana" ground="vermilion" ring="#EBA329"
         lede="Guiding movement practitioners into the subtle. A live workshop on how to meet āsana- and fitness-trained students where they stand, and lead them from gross sensation into breath, prāṇa and subtle perception, without bypassing where they are.">
         <p className="upnext" style={{ marginTop: 18 }}><b>One live session · Sat Nov 14 · 10am–12:30pm ET</b></p>
         <p className="bp-note">Live on Zoom with Jacob Kyle. Recording sent to everyone who registers.</p>

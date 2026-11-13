@@ -8,7 +8,7 @@ const lp = {
   startsAt: '2026-11-14',
   endsAt: '2026-11-14',
   checkoutKey: 'beneathThePoseCheckout',
-  checkout: '', // set beneath_the_pose_checkout in Links & prices (Kit product or Circle paywall)
-  price: '$45',
+  checkout: 'https://ss.embodiedphilosophy.com/checkout/beneath-the-pose', // Circle paywall ($79); the sheet key beneath_the_pose_checkout overrides it
+  price: '$79',
 };
 export default lp;

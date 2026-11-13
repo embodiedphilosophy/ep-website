@@ -8,16 +8,22 @@ export const metadata = {
   description: 'A live 2.5-hour Open Session with Jacob Kyle, Saturday November 14, 10am ET. How to lead āsana- and fitness-trained practitioners from gross sensation into breath, prāṇa and subtle perception, without bypassing where they are.',
 };
 
-// Teacher photo is served from the enroll page's image CDN for now (same as the Navarātri page).
-const JACOB = 'https://cdn.lugc.link/cd2aae5b-8c39-45af-85b0-74d4950498da/-/crop/479x479/0,35/-/preview/320x320/-/format/auto/';
+// Teacher photo lives in the ep-media Blob store.
+const JACOB = 'https://nustrh8agxtgmkrb.public.blob.vercel-storage.com/teachers/jacob-kyle.jpg';
 
 const CSS = `
 .bp-note{font-size:14.5px;color:var(--ink-soft);margin-top:-14px}
 .bp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 24px}
 .bp-src{display:block;margin-top:8px;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--terra)}
-.bp-teacher{display:flex;flex-direction:column;gap:18px;min-width:0}
-.bp-teacher img{width:132px;height:132px;object-fit:cover;border-radius:50%;border:3px solid var(--ivory);box-shadow:0 0 0 1px var(--line)}
-.bp-role{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft);margin-top:2px}
+.bp-about{align-items:start}
+.bp-about .eyebrow{display:block;margin-bottom:12px}
+.bp-about h3{font-size:34px;line-height:1.1;margin:0}
+.bp-teacher-head{display:flex;align-items:center;gap:28px;margin-bottom:26px}
+.bp-teacher-head img{flex:none;width:200px;height:200px;object-fit:cover;object-position:50% 30%;border-radius:50%;border:4px solid var(--ivory);box-shadow:0 0 0 1px var(--line)}
+.bp-about .bp-role{font-size:12.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--terra);margin:10px 0 0}
+.bp-formation{background:var(--ivory);border:1px solid var(--line);border-top:3px solid var(--terra);padding:34px 34px 20px}
+.bp-formation h3{font-size:30px;margin-bottom:16px}
+@media(max-width:720px){.bp-teacher-head{flex-direction:column;align-items:flex-start;gap:20px}.bp-teacher-head img{width:168px;height:168px}.bp-about h3{font-size:30px}.bp-formation{padding:26px 22px 12px}}
 .bp-ticket{max-width:440px;margin:0 auto}
 .bp-ticket ul{margin:6px 0 0;padding-left:18px;font-size:15px;color:var(--ink-soft)}
 .bp-ticket li{margin:4px 0}
@@ -97,18 +103,20 @@ export default async function BeneathThePose() {
         <blockquote className="hs-verse"><span className="skt">madhyavikāsāc cidānandalābhaḥ</span>From the expansion of the centre comes the attainment of the bliss of consciousness.<cite>Kṣemarāja, Pratyabhijñāhṛdaya</cite></blockquote>
       </div></section>
 
-      <section className="sec"><div className="wrap hs-two">
-        <div className="bp-teacher">
-          <img src={JACOB} alt="Jacob Kyle" />
-          <div className="prose">
-            <span className="eyebrow">Your teacher</span>
-            <h3>Jacob Kyle</h3>
-            <p className="bp-role">Founding Director, Embodied Philosophy</p>
-            <p>Meditation teacher, writer, philosophy educator and publisher. His work turns on the conviction that the modern divorce between scholarship and spirituality has impoverished both, and that healing it is among the more urgent tasks of our time.</p>
-            <p>Jacob is a doctoral student at the University of Oxford, researching Pratyabhijñā philosophy with Diwakar Acharya and Monima Chadha. He holds an MPhil in Classical Indian Religions from Oxford, an MA in Philosophy from the New School for Social Research, and an MSc in Political Theory from the London School of Economics.</p>
-          </div>
-        </div>
+      <section className="sec"><div className="wrap hs-two bp-about">
         <div className="prose">
+          <div className="bp-teacher-head">
+            <img src={JACOB} alt="Jacob Kyle" />
+            <div>
+              <span className="eyebrow">Your teacher</span>
+              <h3>Jacob Kyle</h3>
+              <p className="bp-role">Founding Director, Embodied Philosophy</p>
+            </div>
+          </div>
+          <p>Meditation teacher, writer, philosophy educator and publisher. His work turns on the conviction that the modern divorce between scholarship and spirituality has impoverished both, and that healing it is among the more urgent tasks of our time.</p>
+          <p>Jacob is a doctoral student at the University of Oxford, researching Pratyabhijñā philosophy with Diwakar Acharya and Monima Chadha. He holds an MPhil in Classical Indian Religions from Oxford, an MA in Philosophy from the New School for Social Research, and an MSc in Political Theory from the London School of Economics.</p>
+        </div>
+        <div className="prose bp-formation">
           <span className="eyebrow">Part of a year of formation</span>
           <h3>The first of eight Open Sessions</h3>
           <p>Beneath the Pose opens this year’s Sādhana School weekend immersions. Each one is a complete workshop on a single theme in teaching the subtle, from ethical speech in secular rooms to rasa theory as a contemplative method.</p>
@@ -125,7 +133,7 @@ export default async function BeneathThePose() {
           <ul>
             <li>2.5 hours live with Jacob Kyle on Zoom</li>
             <li>Teaching, guided breath practice and Q&amp;A</li>
-            <li>The full recording, sent after the session</li>
+            <li>The full recording, posted on the session page in Circle</li>
             <li>The reading list from the Sādhana School workbook</li>
           </ul>
           <Cta>Save your seat</Cta>

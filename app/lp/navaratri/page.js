@@ -12,8 +12,8 @@ export const metadata = {
 // To move them onto ep-media (Vercel Blob), replace these three URLs.
 const IMG = {
   durga: 'https://cdn.lugc.link/91338456-b648-4744-9510-67bf2e454fdb/-/preview/1000x1000/-/format/auto/',
-  jacob: 'https://cdn.lugc.link/cd2aae5b-8c39-45af-85b0-74d4950498da/-/crop/479x479/0,35/-/preview/320x320/-/format/auto/',
-  tova: 'https://cdn.lugc.link/a04c6dbe-e38a-4a2b-8e45-d528f131bdae/-/preview/320x320/-/format/auto/',
+  jacob: 'https://nustrh8agxtgmkrb.public.blob.vercel-storage.com/teachers/jacob-kyle.jpg',
+  tova: 'https://cdn.lugc.link/cd2aae5b-8c39-45af-85b0-74d4950498da/-/crop/479x479/0,35/-/preview/320x320/-/format/auto/',
 };
 
 // Page styles (build on the shared hs-* course-page styles in globals.css).

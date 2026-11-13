@@ -2,7 +2,7 @@ import './course-lp.css';
 
 // One on-demand, pay-what-you-can course landing page (used by the folders in app/lp/).
 // Each page passes a `c` object with its copy; sections without data are left out.
-export const JACOB_PHOTO = 'https://cdn.lugc.link/cd2aae5b-8c39-45af-85b0-74d4950498da/-/crop/479x479/0,35/-/preview/320x320/-/format/auto/';
+export const JACOB_PHOTO = 'https://nustrh8agxtgmkrb.public.blob.vercel-storage.com/teachers/jacob-kyle.jpg';
 export const JACOB_BIO = [
   'Meditation teacher, writer, philosophy educator, and Founding Director of Embodied Philosophy. His guiding mission is to re-imagine the modern role of the yoga teacher in alignment with the teachings, texts and traditions of yoga’s profound history.',
   'Jacob is a doctoral candidate at the University of Oxford, researching Pratyabhijñā philosophy with Diwakar Acharya and Monima Chadha. He holds an MPhil in Classical Indian Religions from Oxford, an MA in Philosophy from the New School for Social Research, and an MSc in Political Theory from the London School of Economics. He received dīkṣā into a Tantric form of meditation in 2015, studies with Kashmir Śaivism scholar-practitioner Paul Muller-Ortega, and is a devoted practitioner of the Śaiva-Śākta darśana.',

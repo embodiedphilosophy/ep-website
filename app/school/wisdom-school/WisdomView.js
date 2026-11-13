@@ -161,11 +161,23 @@ function PathwayCard({ ctx, p }) {
       {p.sessions.length > 0 && (
         <ol className="wsh-path-s" aria-label="Sessions">
           {p.sessions.map(s => (
-            <li key={s.id} className={s.state}>
-              <b>Session {s.n}</b>
-              <span>{dateOf(s.startsAt, tz)}</span>
-              <span>{timeOf(s.startsAt, tz)}</span>
-              {s.state === 'next' && <em>Next</em>}{s.state === 'past' && <em>Done</em>}
+            <li key={s.id} className={`${s.state}${s.recording ? ' rec' : ''}`}>
+              {s.recording ? (
+                // A finished session opens its recording
+                <a href={s.recording} target="_top" aria-label={`Watch the Session ${s.n} recording`}>
+                  <b>Session {s.n}</b>
+                  <span>{dateOf(s.startsAt, tz)}</span>
+                  <span>{timeOf(s.startsAt, tz)}</span>
+                  <em>▶ Watch</em>
+                </a>
+              ) : (
+                <>
+                  <b>Session {s.n}</b>
+                  <span>{dateOf(s.startsAt, tz)}</span>
+                  <span>{timeOf(s.startsAt, tz)}</span>
+                  {s.state === 'next' && <em>Next</em>}{s.state === 'past' && <em>Done</em>}
+                </>
+              )}
             </li>
           ))}
         </ol>

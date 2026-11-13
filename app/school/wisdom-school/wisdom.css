@@ -110,6 +110,10 @@ a.wsh-tile.past:hover,a.wsh-tile.current:hover{box-shadow:0 0 0 2px #20302A inse
 .wsh-path-s li.next{border-color:#20302A;background:#20302A;color:#EADDC6}
 .wsh-path-s li.next b{color:#FAF5EB}
 .wsh-path-s li.past{opacity:.6}
+.wsh-path-s li.rec{opacity:1;padding:0;border-color:#A5432A;background:#FAF5EB}
+.wsh-path-s li.rec a{display:flex;flex-direction:column;gap:2px;padding:12px 14px;color:inherit;text-decoration:none;border-radius:8px;height:100%}
+.wsh-path-s li.rec a:hover,.wsh-path-s li.rec a:focus-visible{background:#F3E6D3}
+.wsh-path-s li.rec em{color:#A5432A}
 .wsh-path .wsh-actions{margin-top:4px}
 .wsh-path.locked{border-style:dashed;border-color:#A5432A;background:transparent}
 @media (max-width:900px){.wsh-path-s{grid-template-columns:repeat(2,minmax(0,1fr))}}

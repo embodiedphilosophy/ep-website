@@ -161,3 +161,18 @@ assert.equal(seed.length, 7); assert.equal(Math.round(seed.reduce((a, r) => a + 
 assert.deepEqual(seed.map(r => r.space_id), ['2897437', '2897436', '2897811', '2897812', '2897814', '2897815', '2897813']);
 assert.deepEqual(cfg.circle.month_sections, [1212912, 1212914, 1212915, 1212916, 1212917, 1212918, 1212919, 1212920, 1212921, 1212922, 1212923, 1212924], 'Feb is 1212914 and there is no 1212913');
 console.log('wisdom hub: all checks passed');
+
+// ---- learning pathway card: a finished session opens its recording ----
+{
+  const { buildPathwayCard } = await import('../../lib/hub/wisdom.js');
+  const sp = (cfg.circle.pathway_space_ids || [])[0];
+  const ev = (id, start, title) => ({ id, name: `Christian Mysticism · Live Session ${id}`, space_id: sp, starts_at: start, ends_at: new Date(Date.parse(start) + 7200e3).toISOString(), post_url: `https://ss/cm/${id}`, _sheet: { title } });
+  const raw = [ev(1, '2026-11-12T14:00:00Z', 'Christian Mysticism: A Learning Pathway — Knowing Through Love'), ev(2, '2026-11-19T14:00:00Z', 'Christian Mysticism: A Learning Pathway — The Word Became Flesh'), ev(3, '2026-12-03T14:00:00Z', 'Session three')];
+  const yearSections = [{ id: '1212923', lessons: [{ id: 'L1', name: 'Christian Mysticism: A Learning Pathway —  Knowing Through Love', url: 'https://ss/pp/lessons/L1' }] }];
+  const pathways = [{ name: 'Christian Mysticism', spaceId: sp }];
+  const card = buildPathwayCard({ cfg, pathways, rawEvents: raw, open: true, now: Date.parse('2026-11-25T12:00:00Z'), yearSections });
+  assert.deepEqual(card.sessions.map(s => [s.state, s.recording]), [['past', 'https://ss/pp/lessons/L1'], ['past', 'https://ss/cm/2'], ['next', '']]);
+  const visitor = buildPathwayCard({ cfg, pathways, rawEvents: raw, open: false, now: Date.parse('2026-11-25T12:00:00Z'), yearSections });
+  assert.ok(visitor.sessions.every(s => !s.recording), 'a visitor gets no recording links');
+  console.log('ok   pathway card: a finished session links to its replay lesson (else its session page); upcoming and visitors get none');
+}

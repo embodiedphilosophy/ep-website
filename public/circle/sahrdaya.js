@@ -380,7 +380,11 @@
       var when = im.happening ? 'this weekend' : im.daysTo === 1 ? 'tomorrow' : 'in ' + im.daysTo + ' days';
       var line = (io.line ? esc(io.line) : (im.n === 1 ? 'Your first weekend together: the Open Session' : 'The Open Session') + ' with the whole school on Saturday, and the Practicum on Sunday. Before then, one short Prepare lesson.') + (p.open ? '' : ' The Prepare lesson opens ' + esc(dml(p.opens)) + '.');
       var rsvp = pr ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn lite sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP for Sunday’s Practicum</button>') : '';
-      var live = (im.satLink ? ext(im.satLink, 'Join Saturday’s Open Session', 'esu-btn lite') : '') + (im.sunLink ? ext(im.sunLink, 'Join Sunday’s Practicum', 'esu-btn lite') : '');
+      // Once Saturday's recording is posted (lib/mentee/recordings.js), it takes the place of the Open Session's join link
+      var satRec = ((h.recordings && h.recordings.items) || []).filter(function (x) { return x.kind === 'open' && x.day === im.sat && x.state === 'ready'; })[0];
+      var satV = satRec ? safeUrl(satRec.video) : '', satU = satRec ? safeUrl(satRec.url) : '';
+      var satBtn = satV ? '<button type="button" class="esu-btn lite" data-act="play" data-v="' + esc(satV) + '" data-t="' + esc(satRec.title) + '">Watch Saturday’s recording</button>' : satU ? ext(satU, 'Watch Saturday’s recording', 'esu-btn lite') : im.satLink ? ext(im.satLink, 'Join Saturday’s Open Session', 'esu-btn lite') : '';
+      var live = satBtn + (im.sunLink ? ext(im.sunLink, 'Join Sunday’s Practicum', 'esu-btn lite') : '');
       var bt = (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn out' : 'esu-btn gold') : '') + live + rsvp + '<a class="esu-tlink on-dark" href="' + MP + '?view=schedule" data-act="view" data-view="schedule">Full schedule</a>';
       out.push({ k: '1-' + im.sat, hero: true, html: heroRow({ w1: span(im.sat, im.sun), w2: 'Sat & Sun', ey: 'Next immersion · ' + im.n + ' of ' + im.of + ' · ' + when, title: im.title, line: line, bt: bt }) });
     }

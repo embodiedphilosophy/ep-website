@@ -860,6 +860,10 @@
     // Each weekend's Zoom links (Ops → Mentee year) are always on the page: a quiet link ahead of time, the gold Join button on the day
     var today = localDay(new Date().toISOString()), zoom = function (u, day) { return u ? ext(u, day === today ? 'Join on Zoom' : 'Zoom link', day === today ? 'esu-btn gold sm' : 'esu-tlink on-dark') : ''; };
     var satAct = i.satZoom ? zoom(i.satZoom, i.sat) : os && os.today && os.url ? ext(os.url, 'Join', 'esu-btn gold sm') : '<span class="esu-onlist">Join link here on the day</span>';
+    // Once the Open Session's recording is posted (lib/mentee/recordings.js), it replaces the Zoom link; after the day, a note until it arrives
+    var satRec = ((w && w.home.recordings && w.home.recordings.items) || []).filter(function (x) { return x.kind === 'open' && x.day === i.sat && x.state === 'ready'; })[0];
+    if (satRec) { var sv = safeUrl(satRec.video), su = safeUrl(satRec.url); satAct = sv ? '<button type="button" class="esu-btn gold sm" data-act="play" data-v="' + esc(sv) + '" data-t="' + esc(satRec.title) + '">Watch the recording</button>' : su ? ext(su, 'Watch the recording', 'esu-btn gold sm') : satAct; }
+    else if (i.sat < today) satAct = '<span class="esu-onlist">Recording on its way</span>';
     var rsvp = pr && pr.id ? (pr.rsvped || state.going[pr.id] ? '<span class="esu-onlist">You’re on the list ✓</span>' : '<button type="button" class="esu-btn gold sm" data-act="rsvp" data-id="' + esc(pr.id) + '"' + (state.busy === 'rsvp' ? ' disabled' : '') + '>RSVP</button>') : '';
     var sunAct = rsvp + zoom(i.sunZoom, i.sun);
     return '<li class="esu-sblock"><div class="esu-sbh"><span class="ey">' + esc(eye) + '</span>' + prep + '</div><p class="esu-hero-t" style="margin:2px 0 8px">' + esc(i.title) + '</p>' +

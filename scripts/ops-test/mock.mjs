@@ -126,7 +126,15 @@ const stepStatus = [['email', 'circle_member_id', 'step_id', 'status', 'done_at'
   ...['maya', 'sam', 'lee'].map(n => [n + '@mentee.test', '', 's-2026-11-start-your-project-notebook', 'done', '2026-11-27T19:00:00Z', '', 'mentee', '2026-11-27T19:00:00Z']),
   ['priya@mentee.test', '', 'r-q1-1', 'done', '2026-11-20T10:00:00Z', '', 'mentee', '2026-11-20T10:00:00Z'],
   ['maya@mentee.test', '', '1to1-2026-11', 'summary', '', 'I want to work on how I open a class.', 'mentee', '2026-11-21T10:00:00Z']];
-const tabs = { ...siteTabs, 'Mentee Step Status': stepStatus, 'Ops Note': undefined, 'Team': team, 'Track Defaults': defaults, 'Master Schedule': schedule, 'Task Templates': templates, 'Weekly Plan': weekly, 'Image Library': imgLib,
+// Synthetic ledger (EP Revenue & Metrics, Transactions tab): Circle charges for the Kit purchase-tag job
+const d0 = new Date().toISOString().slice(0, 10), dOld = new Date(Date.now() - 20 * 864e5).toISOString().slice(0, 10);
+const ledger = [['Transactions — one row per charge (the ledger)'],
+  [d0, '', 'Stripe', '$79.00', '', '0', '', 'Other', 'Circle', 'cus_1', 'Beneath the Pose · Open Session (Sat Nov 14)', '', 'ch_1', '', 'buyer.one@mock.test'],
+  [d0, '', 'Stripe', '$97.00', '', '0', '', 'Other', 'Circle', 'cus_2', 'A Brand New Workshop (Sat Dec 5)', '', 'ch_2', '', 'Buyer.Two@Mock.test'],
+  [d0, '', 'Stripe', '$27.00', '', '0', '', 'Wisdom School', 'Circle', 'cus_3', 'Wisdom School', '', 'ch_3', '', 'member@mock.test'],
+  [d0, '', 'PayPal', '$79.00', '', '0', '', 'SLO', 'SamCart', 'samcart:1', 'Inner Saboteur', '', 'x', '', 'samcart@mock.test'],
+  [dOld, '', 'Stripe', '$79.00', '', '0', '', 'Other', 'Circle', 'cus_4', 'Old Workshop', '', 'ch_4', '', 'old@mock.test']];
+const tabs = { ...siteTabs, 'Transactions': ledger, 'Mentee Step Status': stepStatus, 'Ops Note': undefined, 'Team': team, 'Track Defaults': defaults, 'Master Schedule': schedule, 'Task Templates': templates, 'Weekly Plan': weekly, 'Image Library': imgLib,
   'Post History': [['ig_media_id', 'posted_at', 'media_type', 'caption', 'permalink', 'like_count', 'comments_count', 'archived_image_id', 'pillar', 'notes'], ...Array.from({ length: 70 }, (_, i) => [`M${i}`, day(-i * 3) + 'T15:00:00Z', 'IMAGE', `Post number ${i}: a verse and a painting.`, 'https://instagram.com/p/x' + i, String(200 - i), String(i % 9), '', 'Content', ''])],
   'Quote Library': [['quote_id', 'quote', 'author', 'work', 'publication', 'location', 'source_link', 'themes', 'pillar_fit', 'verified', 'added_by', 'times_used', 'last_used'], ['Q1', 'The Self is the light by which all is seen.', 'Kṣemarāja', 'Pratyabhijñāhṛdayam', '', '', '', 'recognition', 'Content', 'TRUE', 'Jacob', '3', '2026-09-01'], ['Q2', 'Consciousness is the world.', 'Abhinavagupta', 'Tantrāloka', '', '', '', 'nondual', 'Practice', 'FALSE', 'Jacob', '0', '']],
   'Caption Bank': [['snippet_id', 'type', 'program', 'text', 'source', 'approved', 'notes'], ['C1', 'cta', 'sadhana', 'Join us live this week.', '', 'TRUE', '']],
@@ -230,8 +238,10 @@ http.createServer(async (req, res) => {
       return send(res, 200, 'Accepted');
     }
     if (p.startsWith('/kit/')) {
+      if (req.method !== 'GET' && /^\/kit\/v4\/(tags(\/\d+\/subscribers(\/\d+)?)?|subscribers)$/.test(p)) { const b = await body(req).catch(() => ({})); log('WROTE kit', req.method, p, JSON.stringify(b)); return send(res, 200, p.endsWith('/tags') ? { tag: { id: 99, name: b.name } } : { subscriber: { id: 1 } }); }
       if (req.method !== 'GET') { log('BLOCKED kit', req.method, p); return send(res, 403, { error: 'writes blocked' }); }
-      if (p.endsWith('/tags')) return send(res, 200, { tags: [{ id: 1, name: 'Navaratri 2026' }], pagination: {} });
+      if (p.endsWith('/tags')) return send(res, 200, { tags: [{ id: 1, name: 'Navaratri 2026' }, { id: 2, name: 'Purchased: Open Session · Beneath the Pose' }, { id: 3, name: 'Role: Yoga practitioner' }], pagination: {} });
+      if (/\/subscribers\/\d+$/.test(p)) return send(res, 200, { subscriber: { id: Number(p.split('/').pop()), email_address: 'reader@mock.test' } });
       if (/\/tags\/\d+\/subscribers/.test(p)) return send(res, 200, { subscribers: ['Maya', 'Sam', 'Lee', 'Priya', 'Noor', 'Tomas', 'Wen'].map((n, i) => ({ id: 100 + i, first_name: n, email_address: n.toLowerCase() + '@mentee.test' })), pagination: { has_next_page: false } });
       if (p.endsWith('/broadcasts')) return send(res, 200, { broadcasts: [
         { id: 11, subject: '[E002] Promo #1: the Goddess', send_at: new Date(Date.now() + 2 * 864e5).toISOString() },

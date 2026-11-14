@@ -2,6 +2,7 @@ import './globals.css';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Tracking from '@/components/Tracking';
+import RoleTag from '@/components/RoleTag';
 import Script from 'next/script';
 
 export const metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
         <main>{children}</main>
         <Footer />
         <Tracking />
+        <RoleTag />
         {/* Ether, the EP support chat (separate Vercel project: ep-support-agent) */}
         <Script src="https://ep-support-agent.vercel.app/widget.js" strategy="lazyOnload" />
       </body>

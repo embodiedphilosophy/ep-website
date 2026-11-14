@@ -94,6 +94,19 @@ assert.equal(f.plan.label, 'Full year'); assert.equal(f.fullYear, null);
 const wk = f.rows.filter(r => r.kind === 'weekend'); assert.deepEqual(wk.map(r => [r.title, r.tbd]), [['Open Session · Beneath the Pose', false], ['Open Session · Tasting the Real', true]], 'a visible event is used for its Saturday; the other weekend is a dated row');
 assert.deepEqual(f.seasonsMenu.map(s => s.note), ['', 'opens January', 'opens April', 'opens July']);
 
+// after the weekend: the Open Session's recording post (in the season's own space, slug recording-<day>-<zoom id>) gives its row a Watch button
+// and makes it the latest recording, both for the event row and for a dated row (a term student whose feed has no weekend event)
+const recPost = { id: 990, slug: 'recording-2026-11-14-572996', name: 'Open Session 1 · Beneath the Pose', url: 'https://ss.example/c/fall/recording-2026-11-14-572996', body: 'https://vimeo.com/1246911256/2eaa681014' };
+const after = { today: '2026-11-14', now: Date.parse('2026-11-14T23:30:00Z'), posts: [...hubPosts, recPost] };
+for (const [who, m] of [['full year', fullMember], ['term', termMember]]) {
+  const a = page(m, after), sat = a.rows.find(r => r.kind === 'weekend' && /Beneath/.test(r.title));
+  assert.equal(sat.ended, true, `${who}: the Saturday is over`);
+  assert.match(sat.replayUrl, /recording-2026-11-14-572996\?native=1$/, `${who}: the weekend row links to its recording`);
+  assert.equal(sat.tbd, false, `${who}: a weekend with its recording is not "time to be announced"`);
+}
+assert.match(page(fullMember, after).week.recording.url, /recording-2026-11-14-572996/, 'the Open Session is the latest recording');
+assert.equal(page(fullMember).rows.find(r => r.kind === 'weekend').replayUrl, '', 'no recording post, no link');
+
 // a season not started yet, no events: the page still builds
 const empty = buildSeasonPage({ season: winter, seasons, items, settings: cfg.settings, member: new Set(fullMember), spaceUrls: urls, events: [], posts: [], today, now });
 assert.equal(empty.header.started, false); assert.equal(empty.week.next, null); assert.deepEqual(empty.rows, []);

@@ -136,6 +136,11 @@ details[open]>summary .cm-plus{transform:rotate(45deg)}
 .cm-rows a b{font-weight:600;display:block}
 .cm-rows a small{font-size:13px;color:var(--ink-soft)}
 .cm-rows a i{font-style:normal;color:var(--terra);font-weight:600;font-size:13px;white-space:nowrap}
+.cm-rowbtn{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border:0;border-bottom:1px solid var(--cm-rule);background:transparent;color:var(--ink);min-height:44px;width:100%;text-align:left;font:inherit;cursor:pointer}
+.cm-rowbtn b{font-weight:600;display:block}
+.cm-rowbtn small{font-size:13px;color:var(--ink-soft)}
+.cm-rowbtn i{font-style:normal;color:var(--terra);font-weight:600;font-size:13px;white-space:nowrap}
+.cm-rowbtn:hover b,.cm-rowbtn:focus-visible b{text-decoration:underline}
 .cm-foot-row{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:center;justify-content:space-between}
 .cm-guar{display:flex;gap:16px;align-items:center;font-size:15px;color:#3E382E}
 .cm-guar svg{flex:0 0 auto;color:var(--terra)}
@@ -262,6 +267,16 @@ details[open]>summary .cm-plus{transform:rotate(45deg)}
 .cm-modal-head>div{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
 .cm-modal-head h2{font-size:28px;line-height:1.05}
 .cm-modal-head .cm-eyebrow{font-size:11px;letter-spacing:.26em}
+.cm-modal-who{font-size:13px;color:var(--ink-soft);margin-top:4px}
+.cm-modal-desc{font-size:15px;line-height:1.6;color:var(--ink)}
+.cm-modal-incl{margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--ink-soft)}
+.cm-modal-incl li::marker{color:var(--terra)}
+@media (max-width:520px){
+  .cm-modal-head{padding:18px 16px 18px 20px;align-items:flex-start;gap:8px}
+  .cm-modal-head img,.cm-modal-head .cm-modal-thumb{display:none}
+  .cm-modal-head h2{font-size:22px;line-height:1.15;overflow-wrap:anywhere}
+  .cm-modal-body{padding:22px 20px}
+}
 .cm-x{width:44px;height:44px;border:0;background:transparent;cursor:pointer;color:var(--ink-soft);flex:0 0 auto}
 .cm-modal-body{padding:28px 24px;display:flex;flex-direction:column;gap:18px}
 .cm-modal-body .cm-row strong{font-size:16px}

@@ -138,7 +138,8 @@ details[open]>summary .cm-plus{transform:rotate(45deg)}
 .cm-rows a i{font-style:normal;color:var(--terra);font-weight:600;font-size:13px;white-space:nowrap}
 .cm-rowbtn{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border:0;border-bottom:1px solid var(--cm-rule);background:transparent;color:var(--ink);min-height:44px;width:100%;text-align:left;font:inherit;cursor:pointer}
 .cm-rowbtn b{font-weight:600;display:block}
-.cm-rowbtn small{font-size:13px;color:var(--ink-soft)}
+.cm-rowbtn small{font-size:13px;color:var(--ink-soft);display:block}
+.cm-rowbtn .cm-rowline{display:block;font-style:normal;font-size:15px;line-height:1.45;color:#3E382E;margin:4px 0 6px;max-width:62ch}
 .cm-rowbtn i{font-style:normal;color:var(--terra);font-weight:600;font-size:13px;white-space:nowrap}
 .cm-rowbtn:hover b,.cm-rowbtn:focus-visible b{text-decoration:underline}
 .cm-foot-row{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:center;justify-content:space-between}

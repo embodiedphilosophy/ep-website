@@ -46,7 +46,7 @@ const modalDesc = o => { const [a = '', b = ''] = plainParas(o?.description); re
 const modalCourse = (o, extra = {}) => ({
   id: o.id, title: o.title, topic: o.topics[0] || o.kind, checkout: o.checkout || '', thumb: o.cover || '',
   who: [o.teachers.map(t => t.name).join(', '), o.length].filter(Boolean).join(' · '),
-  desc: modalDesc(o), includes: o.included.slice(0, 5), ...extra,
+  desc: modalDesc(o), includes: o.included.slice(0, 5), line: o.promise || firstSentence(o.description), ...extra,
 });
 const firstSentence = s => { const t = (String(s || '').match(/^.*?[.!?](\s|$)/) || [String(s || '')])[0].trim(); return t.length > 150 ? t.slice(0, 147).replace(/\s+\S*$/, '') + '…' : t; };
 

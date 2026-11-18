@@ -53,7 +53,7 @@ export default function PwycModal({ course, pwyc, regular, state, variant }) {
     <>
       {variant === 'row' ? (
         <button ref={trigger} type="button" className="cm-rowbtn" onClick={() => setOpen(true)} aria-haspopup="dialog">
-          <span><b>{course.title}</b><small>{course.topic}</small></span>
+          <span><b>{course.title}</b>{course.line && <em className="cm-rowline">{course.line}</em>}<small>{[course.topic, course.who].filter(Boolean).join(' · ')}</small></span>
           <i>PWYC →</i>
         </button>
       ) : (

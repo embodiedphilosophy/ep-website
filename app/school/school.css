@@ -24,6 +24,7 @@ body:has(.sch-root) > :not(main){display:none !important}
 .sch-btn.ghost{background:transparent;color:var(--pine)}
 .sch-btn:disabled{opacity:.5;cursor:default}
 .sch-going{font-size:14px;font-weight:600;color:var(--pine);white-space:nowrap}
+a.sch-going{text-decoration:none}a.sch-going:hover{text-decoration:underline}
 .sch-empty{padding:28px 4px;color:var(--ink5);font-size:16px}
 .sch-err{color:#9b2c16;font-size:14px;margin:6px 0 0}.sch-ok{color:var(--pine);font-size:14px}
 .sch-composer{display:grid;gap:10px;margin-bottom:18px;padding:18px 22px;border:1px solid var(--line);border-radius:10px;background:#FAF5EB}

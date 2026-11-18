@@ -43,8 +43,16 @@ function findOffering(catalog, f) {
 const plainParas = s => String(s || '').split(/\n\s*\n/).map(p => p.split('\n').filter(l => !/^\s*(#|-\s)/.test(l)).join(' ').replace(/\*\*|__/g, '').replace(/\s+/g, ' ').trim()).filter(Boolean);
 const cap = (t, n) => { if (t.length <= n) return t; const cut = t.slice(0, n); const end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! ')); return end > n * 0.5 ? cut.slice(0, end + 1) : cut.replace(/\s+\S*$/, '') + '…'; };
 const modalDesc = o => { const [a = '', b = ''] = plainParas(o?.description); return cap(a.length < 260 && b ? `${a} ${b}` : a, 560); };
+// A square version of the cover for the dialog thumbnail. Most covers are image-CDN links already cropped to 3:2 or 3:4;
+// asking the CDN for a square crop of the original image keeps the picture whole instead of trimming the edges again.
+const squareThumb = url => {
+  const u = String(url || '');
+  if (/cdn\.lugc\.link/.test(u)) return u.replace(/\/-\/(scale_crop|preview)\/\d+x\d+(\/smart)?\//, '/-/scale_crop/320x320/smart/');
+  if (/wsrv\.nl/.test(u)) return u.replace(/([?&])w=\d+/, '$1w=320').replace(/([?&])h=\d+/, '$1h=320');
+  return u;
+};
 const modalCourse = (o, extra = {}) => ({
-  id: o.id, title: o.title, topic: o.topics[0] || o.kind, checkout: o.checkout || '', thumb: o.cover || '',
+  id: o.id, title: o.title, topic: o.topics[0] || o.kind, checkout: o.checkout || '', thumb: squareThumb(o.cover),
   who: [o.teachers.map(t => t.name).join(', '), o.length].filter(Boolean).join(' · '),
   desc: modalDesc(o), includes: o.included.slice(0, 5), line: o.promise || firstSentence(o.description), ...extra,
 });

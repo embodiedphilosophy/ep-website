@@ -63,7 +63,7 @@ export default function PwycModal({ course, pwyc, regular, state, variant }) {
         <div className="cm-scrim" onMouseDown={e => { if (e.target === e.currentTarget) close(); }}>
           <div className="cm-modal" role="dialog" aria-modal="true" aria-labelledby={`pwyc-${course.id}`} ref={dialog}>
             <div className="cm-modal-head">
-              {course.thumb ? <img src={course.thumb} alt="" width="112" height="72" /> : <div className="cm-modal-thumb" aria-hidden="true" />}
+              {course.thumb ? <img src={course.thumb} alt="" width="96" height="96" /> : <div className="cm-modal-thumb" aria-hidden="true" />}
               <div>
                 <span className="cm-eyebrow">{course.topic}</span>
                 <h2 id={`pwyc-${course.id}`}>{course.title}</h2>

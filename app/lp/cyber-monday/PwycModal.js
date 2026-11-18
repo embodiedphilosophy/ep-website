@@ -3,10 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 import CtaLink, { isUrl } from './CtaLink';
 import { kitAmountParam } from './cyber-2026';
 
-// "Pay what you can" button + the dialog that opens before checkout.
+// "Pay what you can" button + the dialog that opens before checkout. The dialog describes the course (who teaches it,
+// a fuller description, what's included), then sends people to the course's Kit pay-what-you-can page, which carries
+// the full course description and the checkout ("Learn more or checkout").
 // Suggested amounts come from cyber-2026.js (pwyc). Until they are set, the dialog just says the amount is chosen at
 // checkout. If Kit takes a pre-filled amount (kitAmountParam), the chosen amount is passed through.
-export default function PwycModal({ course, pwyc, regular, state }) {
+// `variant="row"` renders the trigger as a row in the "See every course" list instead of a button.
+export default function PwycModal({ course, pwyc, regular, state, variant }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);
   const dialog = useRef(null);
@@ -48,18 +51,35 @@ export default function PwycModal({ course, pwyc, regular, state }) {
 
   return (
     <>
-      <button ref={trigger} type="button" className="cm-btn cm-btn-sm" onClick={() => setOpen(true)} aria-haspopup="dialog">Pay what you can</button>
+      {variant === 'row' ? (
+        <button ref={trigger} type="button" className="cm-rowbtn" onClick={() => setOpen(true)} aria-haspopup="dialog">
+          <span><b>{course.title}</b><small>{course.topic}</small></span>
+          <i>PWYC →</i>
+        </button>
+      ) : (
+        <button ref={trigger} type="button" className="cm-btn cm-btn-sm" onClick={() => setOpen(true)} aria-haspopup="dialog">Pay what you can</button>
+      )}
       {open && (
         <div className="cm-scrim" onMouseDown={e => { if (e.target === e.currentTarget) close(); }}>
           <div className="cm-modal" role="dialog" aria-modal="true" aria-labelledby={`pwyc-${course.id}`} ref={dialog}>
             <div className="cm-modal-head">
               {course.thumb ? <img src={course.thumb} alt="" width="112" height="72" /> : <div className="cm-modal-thumb" aria-hidden="true" />}
-              <div><span className="cm-eyebrow">{course.topic}</span><h2 id={`pwyc-${course.id}`}>{course.title}</h2></div>
+              <div>
+                <span className="cm-eyebrow">{course.topic}</span>
+                <h2 id={`pwyc-${course.id}`}>{course.title}</h2>
+                {course.who && <p className="cm-modal-who">{course.who}</p>}
+              </div>
               <button type="button" className="cm-x" aria-label="Close" onClick={close}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
             </div>
             <div className="cm-modal-body">
+              {course.desc && <p className="cm-modal-desc">{course.desc}</p>}
+              {course.includes?.length > 0 && (
+                <ul className="cm-modal-incl" aria-label="What's included">
+                  {course.includes.map((x, i) => <li key={i}>{x}</li>)}
+                </ul>
+              )}
               <div className="cm-row"><strong>{amounts ? 'Choose what you can give' : 'You choose the amount'}</strong><span>Regular <s>${regular}</s></span></div>
               {amounts ? (
                 <>
@@ -76,10 +96,10 @@ export default function PwycModal({ course, pwyc, regular, state }) {
                   </label>
                 </>
               ) : (
-                <p className="cm-note">At checkout you enter what is right for you. Same course, whatever you choose.</p>
+                <p className="cm-note">On the next page you'll find the full course description, and you enter what is right for you at checkout. Same course, whatever you choose.</p>
               )}
               <CtaLink href={href} className="cm-btn" tier="open-library" item={course.id} state={state} soon="Checkout opening soon">
-                Continue to checkout{withAmount ? ` · $${amount}` : ''}
+                Learn more or checkout{withAmount ? ` · $${amount}` : ''}
               </CtaLink>
               <p className="cm-fine">Secure checkout · 30-day refund guarantee</p>
             </div>

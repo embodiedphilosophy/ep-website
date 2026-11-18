@@ -38,6 +38,16 @@ function findOffering(catalog, f) {
   const t = norm(f.title);
   return catalog.find(o => o.id === id) || catalog.find(o => o.id === bare) || catalog.find(o => norm(o.title) === t) || catalog.find(o => norm(o.title).includes(t) || t.includes(norm(o.title)));
 }
+// A fuller description for the pay-what-you-can dialog: the course description as plain text (no markdown, headings
+// or bullet lines), its opening paragraph, plus the next one when the first is short, kept under ~560 characters.
+const plainParas = s => String(s || '').split(/\n\s*\n/).map(p => p.split('\n').filter(l => !/^\s*(#|-\s)/.test(l)).join(' ').replace(/\*\*|__/g, '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+const cap = (t, n) => { if (t.length <= n) return t; const cut = t.slice(0, n); const end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! ')); return end > n * 0.5 ? cut.slice(0, end + 1) : cut.replace(/\s+\S*$/, '') + '…'; };
+const modalDesc = o => { const [a = '', b = ''] = plainParas(o?.description); return cap(a.length < 260 && b ? `${a} ${b}` : a, 560); };
+const modalCourse = (o, extra = {}) => ({
+  id: o.id, title: o.title, topic: o.topics[0] || o.kind, checkout: o.checkout || '', thumb: o.cover || '',
+  who: [o.teachers.map(t => t.name).join(', '), o.length].filter(Boolean).join(' · '),
+  desc: modalDesc(o), includes: o.included.slice(0, 5), ...extra,
+});
 const firstSentence = s => { const t = (String(s || '').match(/^.*?[.!?](\s|$)/) || [String(s || '')])[0].trim(); return t.length > 150 ? t.slice(0, 147).replace(/\s+\S*$/, '') + '…' : t; };
 
 const Tick = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>;
@@ -185,7 +195,7 @@ export default async function CyberMonday({ searchParams }) {
 
               <div className="cm-grid3">
                 {featured.map(({ f, o }) => {
-                  const course = { id: f.courseId, title: o?.title || f.title, topic: f.topic, checkout: o?.checkout || '', thumb: o?.cover || '' };
+                  const course = o ? modalCourse(o, { id: f.courseId, topic: f.topic }) : { id: f.courseId, title: f.title, topic: f.topic, checkout: '', thumb: '' };
                   const who = o ? [o.teachers.map(t => t.name).join(', '), o.length].filter(Boolean).join(' · ') : '';
                   return (
                     <article className="cm-card" key={f.courseId}>
@@ -213,10 +223,7 @@ export default async function CyberMonday({ searchParams }) {
                   </summary>
                   <div className="cm-rows">
                     {rest.map(o => (
-                      <CtaLink key={o.id} href={o.checkout} className="" tier="open-library" item={o.id} state={state} soon="Opening soon">
-                        <span><b>{o.title}</b><small>{o.topics[0] || o.kind}</small></span>
-                        <i>PWYC →</i>
-                      </CtaLink>
+                      <PwycModal key={o.id} variant="row" course={modalCourse(o)} pwyc={pwyc} regular={campaign.regularCoursePrice} state={state} />
                     ))}
                   </div>
                 </details>

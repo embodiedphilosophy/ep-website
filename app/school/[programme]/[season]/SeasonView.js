@@ -101,11 +101,22 @@ export default function SeasonView({ programme, slug, page, readings, initialTab
   );
 }
 
-// One RSVP button (existing /api/school/rsvp)
+// One RSVP button. When the session has a Circle event post (which holds the Zoom link), RSVP and "Going ✓" open
+// that post in the same window; the RSVP is still recorded in the background (/api/school/rsvp, keepalive so it
+// survives the page change). Without a post, it falls back to saving the RSVP in place.
 function Rsvp({ row, dark }) {
   const [going, setGoing] = useState(row.rsvped);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  if (row.pageUrl) {
+    const record = () => {
+      if (going) return;
+      fetch('/api/school/rsvp', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventId: row.id }) }).catch(() => null);
+    };
+    return going
+      ? <a className={`sch-going${dark ? ' ss-goingd' : ''}`} href={row.pageUrl} target="_top" title="Open the session page (Zoom link inside)">Going ✓</a>
+      : <a className={dark ? 'sch-btn ss-gold' : 'sch-btn ghost'} href={row.pageUrl} target="_top" onClick={record}>RSVP</a>;
+  }
   async function go() {
     setBusy(true); setErr('');
     const r = await fetch('/api/school/rsvp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventId: row.id }) }).catch(() => null);

@@ -73,6 +73,14 @@
   })();
   try { if (/[?&]epdebug=1/.test(location.search) || sessionStorage.getItem('ep_probe') === '1') addScript('probe'); } catch (e) {} // the helper at once when asked for
 
+  document.addEventListener('click', function (e) {
+    var img = e.target.closest && e.target.closest('img[alt="Embodied Philosophy logo"]');
+    if (!img || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault(); e.stopPropagation();
+    var a = document.querySelector('a[href="/c/today"]');
+    if (a) a.click(); else location.href = '/c/today';
+  }, true);
+
   var API = 'https://www.embodiedphilosophy.com';
   var SITE = 'https://www.embodiedphilosophy.com';
   var TIERS = ['none', 'meditation', 'wisdom', 'wisdom_plus', 'ss_season', 'ss_year', 'mentee'];
@@ -270,19 +278,20 @@
     return '<section class="ept-card ept-wide" aria-labelledby="ept-pods"><div class="ept-ch"><h2 id="ept-pods" class="ept-h2">Study pods</h2><a class="ept-l" href="' + esc(d.url) + '" target="_top">See all →</a></div>' +
       (rows || '<span class="ept-s">No pods are open yet.</span>') + '<span class="ept-s" style="display:block;margin-top:8px">' + lead + '</span></section>';
   }
-  function loadData() {
+  var todayP = null; // the Today call, which signs in on a first visit; every other call waits for it
+function loadData() {
     return Promise.all([
-      api('/api/member/today?today=' + localToday() + asParam(), { identity: true }).then(function (d) {
+      (todayP = api('/api/member/today?today=' + localToday() + asParam(), { identity: true })).then(function (d) {
         if (d.signin) applySignin(d.signin);
         if (d.tier) state.tier = d.tier === 'course' ? 'none' : d.tier; // the tier the server worked the page out for (an admin's ?as= preview included)
         state.data = d; state.practice = d.practice; if (!d.practice) state.error = 'Your practice log isn’t connected yet';
         loadWisdomHub(d);
         loadMeditationHub(d);
       }).catch(function (e) { state.error = e.message; state.failed = true; if (e.status === 401) store('ep_today_session', ''); }),
-      api('/api/member/pods').then(function (r) { state.pods = r; }).catch(function () { state.pods = null; }),
-      mentorView() ? api('/api/member/cohort?today=' + localToday()).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
-      mentorView() ? api('/api/member/submissions').then(function (r) { state.wait = r; }).catch(function (e) { state.waitErr = e.message; }) : null,
-      mentorView() ? api('/api/member/portfolio?shared=1&today=' + localToday()).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
+      todayP.then(function () { return api('/api/member/pods'); }).then(function (r) { state.pods = r; }).catch(function () { state.pods = null; }),
+      mentorView() ? todayP.then(function () { return api('/api/member/cohort?today=' + localToday()); }).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
+      mentorView() ? todayP.then(function () { return api('/api/member/submissions'); }).then(function (r) { state.wait = r; }).catch(function (e) { state.waitErr = e.message; }) : null,
+      mentorView() ? todayP.then(function () { return api('/api/member/portfolio?shared=1&today=' + localToday()); }).then(function (r) { state.shared = r.pages || []; }).catch(function () { state.shared = []; }) : null
     ]);
   }
   // Mentor view: Circle admins on /c/today, unless previewing a member's view with ?as=
@@ -426,7 +435,7 @@
       '.ept-err{font-size:12px;color:#83341F}',
       '.ept :focus-visible,.ept-page :focus-visible{outline:2px solid #A5432A;outline-offset:2px}',
       '.ept-link{color:#A5432A;font-size:13px;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}',
-      '.ept-page{max-width:1040px;margin:0 auto;padding:24px 20px 48px;color:#1E1A14}',
+      '.ept-page{max-width:1040px;margin:0;padding:24px 20px 48px;color:#1E1A14}',
       '.ept-page *{box-sizing:border-box}',
       '.ept-h1{font-size:36px}',
       '.ept-pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:16px;align-items:start}',
@@ -538,6 +547,11 @@
       '.etd-lab{display:flex;flex-direction:column;gap:6px;color:#C8BEAC}.etd-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}',
       '.etd-chip{background:transparent;border:1px solid #5B6E64;color:#F4EDE0;border-radius:999px;min-height:40px;padding:0 12px;cursor:pointer}.etd-chip[aria-pressed="true"]{background:#F4EDE0;color:#16140F}',
       '.etd-err{color:#F0B7A5}',
+    'body,.etd,.eps,.epq,.ept-page,.etd-timer,.etd-about{font-feature-settings:"lnum" 1}',
+    '.etd-lenc{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 4px 0 12px;border-radius:999px;border:1px solid #5B6E64;color:#C8BEAC}.etd-lenc.on{border-color:#F4EDE0;color:#F4EDE0}',
+    '.etd-lenc input{width:58px;min-height:32px;border:0;border-radius:999px;background:#2C3F37;color:#F4EDE0;font:13px "IBM Plex Mono",ui-monospace,monospace;text-align:center}',
+    '.etd-tx{width:100%;margin-top:4px}',
+    '.etd-gl{min-height:0;font-size:inherit;padding:0}',
       '.etd-sk{display:block;background:#EADDC6;border-radius:6px}.etd-sk-b{border-radius:8px;background:#EFE4D0}',
       '.etd-pnb{margin-top:18px;padding:0;overflow:hidden;gap:0}.etd-pnb.etd-pn-phone{display:none}',
       '.etd-pnb-head{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid #E3D8C6}',
@@ -569,17 +583,22 @@
     document.head.appendChild(s);
   }
 
-  var MS_TEXT = { 7: 'Seven days in a row.', 21: 'Twenty-one days unbroken.', 40: 'Forty days unbroken.', 108: 'One hundred and eight days of sādhana.' };
+  var PRESETS = [10, 20, 30, 45]; // timer lengths with their own button; any other length (1 to 180) goes in "Custom"
+var MS_TEXT = { 7: 'Seven days in a row.', 21: 'Twenty-one days unbroken.', 40: 'Forty days unbroken.', 108: 'One hundred and eight days of sādhana.' };
   var LOCK = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
 
-  function formHtml(p) {
+  // The listed practices, then any of the member's own already chosen for this day
+function extrasList(p, chosen) { var l = (p.extras || []).slice(); (chosen || []).forEach(function (x) { if (l.indexOf(x) < 0) l.push(x); }); return l; }
+function splitX(s) { return String(s || '').split(',').map(function (x) { return x.trim().slice(0, 40); }).filter(Boolean); }
+function formHtml(p) {
     var today = localToday(), day = state.logDay || today, back = p.backfillDays || 30;
     return '<form class="ept-form" data-form="log"><span class="ept-l">' + (day === today ? 'Today’s practice' : 'Practice on ' + esc(niceDate(day))) + '</span>' +
         '<label class="ept-s">Day <input class="ept-in ept-date" name="day" type="date" min="' + addDays(today, -back) + '" max="' + today + '" value="' + esc(day) + '"></label>' +
         '<label class="ept-s">Minutes <input class="ept-in" name="minutes" type="number" min="0" max="600" inputmode="numeric" value="' + esc(state.minutes || '') + '"></label>' +
         '<span class="ept-s">Quality of practice</span><div class="ept-chips" role="group" aria-label="Quality of practice">' + p.qualities.map(function (q) { return '<button type="button" class="ept-chip" data-q="' + esc(q) + '" aria-pressed="' + (state.quality === q) + '">' + esc(q) + '</button>'; }).join('') + '</div>' +
-        '<span class="ept-s">Greater body of sādhana</span><div class="ept-chips" role="group" aria-label="Other practices">' + (p.extras || []).map(function (x) { return '<button type="button" class="ept-chip" data-x="' + esc(x) + '" aria-pressed="' + ((state.extras || []).indexOf(x) >= 0) + '">' + esc(x) + '</button>'; }).join('') + '</div>' +
-        '<div style="display:flex;gap:8px"><button class="ept-btn" type="submit"' + (state.saving ? ' disabled' : '') + '>' + (state.saving ? 'Saving…' : 'Save') + '</button><button class="ept-q" type="button" data-act="close">Cancel</button></div>' +
+        '<span class="ept-s">Greater body of sādhana</span><div class="ept-chips" role="group" aria-label="Other practices">' + extrasList(p, state.extras).map(function (x) { return '<button type="button" class="ept-chip" data-x="' + esc(x) + '" aria-pressed="' + ((state.extras || []).indexOf(x) >= 0) + '">' + esc(x) + '</button>'; }).join('') + '</div>' +
+        '<label class="ept-s">Add your own (commas between) <input class="ept-in ept-note" name="xnew" maxlength="80" placeholder="e.g. Japa, a walk" value="' + esc(state.xNew || '') + '"></label>' +
+    '<div style="display:flex;gap:8px"><button class="ept-btn" type="submit"' + (state.saving ? ' disabled' : '') + '>' + (state.saving ? 'Saving…' : 'Save') + '</button><button class="ept-q" type="button" data-act="close">Cancel</button></div>' +
         (state.error ? '<span class="ept-err">' + esc(state.error) + '</span>' : '') + '</form>';
   }
 
@@ -598,7 +617,11 @@
   }
   function dayLong(iso) { try { return new Date(iso).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return ''; } }
   function clock(iso) { try { return new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }); } catch (e) { return ''; } }
-  function away(n) { return n === 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }
+  function away(n) {
+    if (n === 0) return 'today'; if (n === 1) return 'tomorrow'; if (n < 14) return 'in ' + n + ' days';
+    if (n < 60) return 'in ' + Math.round(n / 7) + ' weeks';
+    var mo = Math.round(n / 30.44); return mo < 12 ? 'in ' + mo + ' month' + (mo === 1 ? '' : 's') : 'in about a year';
+  }
 
   // ---- the free half ----
   function heroHtml() {
@@ -606,7 +629,7 @@
       '<div class="etd-col"><span class="etd-mono etd-gold">Today’s sit</span><h2 id="etd-sit" class="etd-h2l">Haṃsa <em>· Sahṛdaya Meditation</em></h2>' +
       '<span class="etd-mut">Rest with the breath’s own mantra: <em>ham</em> on the in-breath, <em>sa</em> on the out-breath.</span></div>' +
       '<div class="etd-col"><span class="etd-mono etd-mut">Timer</span><div class="etd-lens" role="group" aria-label="Length">' + [10, 20, 30, 45].map(function (n) {
-        return '<button type="button" class="etd-len" data-act="len" data-len="' + n + '" aria-pressed="' + (state.len === n) + '">' + n + 'm</button>'; }).join('') + '</div></div>' +
+        return '<button type="button" class="etd-len" data-act="len" data-len="' + n + '" aria-pressed="' + (state.len === n) + '">' + n + 'm</button>'; }).join('') + '<label class="etd-lenc' + (PRESETS.indexOf(state.len) < 0 ? ' on' : '') + '"><span class="etd-mono">Custom</span><input type="number" name="lenc" min="1" max="180" inputmode="numeric" placeholder="min" aria-label="Custom length in minutes" value="' + (PRESETS.indexOf(state.len) < 0 ? state.len : '') + '"></label></div></div>' +
       '<div class="etd-go"><button type="button" class="etd-begin" data-act="begin"><span class="etd-play" aria-hidden="true"><svg width="12" height="14" viewBox="0 0 12 14"><path d="M1 1l10 6-10 6z" fill="#D2A65A"/></svg></span>Begin · ' + state.len + ' min</button>' +
       (p ? '<button type="button" class="etd-link" data-act="form" aria-expanded="' + !!state.form + '">' + (p.loggedToday ? 'Logged today · edit' : 'Already sat today? Log it') + '</button><button type="button" class="etd-link" data-act="logday" data-day="' + addDays(localToday(), -1) + '">Log an earlier day</button>' : '') + '</div>' +
       (state.logNote && !state.form ? '<p class="etd-mut etd-lognote" role="status">' + esc(state.logNote) + '</p>' : '');
@@ -652,7 +675,7 @@
         else if (e.date <= day.key && (e.end_date || e.date) >= day.key) day.items.push(e);
       });
     });
-    var out = '<section class="ept-card etd-card etd-wk" aria-labelledby="etd-wkt"><div class="etd-wkh"><h2 id="etd-wkt" class="ept-h2">The week ahead</h2><span class="ept-l">In your time zone</span></div><div class="etd-wkg">';
+    var out = '<section class="ept-card etd-card etd-wk" aria-labelledby="etd-wkt"><div class="etd-wkh"><h2 id="etd-wkt" class="ept-h2">The week ahead</h2><span class="ept-l">In your time zone · <a class="ept-pf" href="/c/schedule">Full calendar →</a></span></div><div class="etd-wkg">';
     out += days.map(function (day, i) {
       var name = day.d.toLocaleDateString(undefined, { weekday: 'short' });
       var ev = day.items.map(function (e) {
@@ -695,7 +718,7 @@
     var sa = sacredList(); if (!sa.length) return '';
     return '<section class="ept-card etd-card etd-rail-sacred" aria-labelledby="etd-sac"><h2 id="etd-sac" class="ept-h2 etd-h20">Sacred days ahead</h2>' + sa.map(function (x) {
       return '<div class="etd-sdr"><span class="etd-sdl"><span class="ept-mono">' + esc(sacredWhen(x.date)) + '</span><b>' + esc(x.name) + '</b><span class="ept-s">' + esc(x.note) + '</span></span><span class="etd-away">' + away(x.inDays) + '</span></div>'; }).join('') +
-      '<span class="ept-s">Dates as reckoned for the US; some fall a day differently where you are.</span></section>';
+      '<span class="ept-s">Festival dates are reckoned for the US. Where you are, one may fall a day earlier or later; the pañcāṅga on this page is worked out for your own city.</span></section>';
   }
   // The five limbs across the bottom of the page (down the page on a phone, where the sacred days sit inside it)
   function pnBand(cls) {
@@ -752,7 +775,28 @@
     o.querySelector('.etd-about-c').focus();
   }
 
-  // ---- your enrolment ----
+  // "What the words mean": a short glossary for newcomers, in the same pop-up as "How to read this"
+var GLOSS = [
+  ['Sādhana', 'Spiritual practice: the daily discipline of meditation, study and devotion. Sādhana School is EP’s school of practice, season by season.'],
+  ['Sahṛdaya', 'Literally “with heart”: one whose heart is attuned and can be moved by beauty and truth. Sahṛdaya Meditation is the daily sit taught here; Sahṛdaya Upāya is the mentorship for those who teach.'],
+  ['Haṃsa', 'The breath’s own mantra: ham on the in-breath, sa on the out-breath.'],
+  ['Pañcāṅga', 'The traditional Indian almanac: the “five limbs” of each day (lunar day, weekday, lunar mansion, yoga and karaṇa), worked out for where you are.'],
+  ['Programmes', 'What you join: Meditation Pass, Wisdom School and Sādhana School. Each opens its live sessions, spaces and recordings.'],
+  ['Learning Pathways', 'Self-paced series on one theme, with recorded lessons. Wisdom School Plus opens every pathway.'],
+  ['Practice', 'Your own record: the sitting timer, your log and streak, and in Sādhana School the week’s readings and your private diary.']
+];
+function openGloss(from) {
+  if (aboutEl) return;
+  aboutFrom = from || null;
+  var o = document.createElement('div'); o.className = 'etd-about'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-labelledby', 'etd-gl-t');
+  o.innerHTML = '<div class="etd-about-c" tabindex="-1"><h2 id="etd-gl-t">What the words mean</h2><dl>' + GLOSS.map(function (g) { return '<dt>' + esc(g[0]) + '</dt><dd>' + esc(g[1]) + '</dd>'; }).join('') + '</dl><button type="button" class="etd-about-x">Close</button></div>';
+  o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('.etd-about-x')) closeAbout(); });
+  document.addEventListener('keydown', aboutKey);
+  document.body.appendChild(o); aboutEl = o;
+  o.querySelector('.etd-about-c').focus();
+}
+
+// ---- your enrolment ----
   function nextText(c) {
     var n = c.next;
     if (n && n.start) return dayLong(n.start) + ' · ' + clock(n.start);
@@ -766,7 +810,7 @@
     if (c.primary.live && n && n.start) { var now = Date.now(), st = new Date(n.start).getTime(), en = n.end ? new Date(n.end).getTime() : st + 3600000; live = now >= st - 600000 && now <= en; }
     var ext = c.primary.external ? ' target="_blank" rel="noopener"' : '';
     return '<section class="ept-card etd-card" aria-label="' + esc(c.title) + '"><div class="ept-ch"><h2 class="ept-h2">' + esc(c.title) + '</h2><span class="ept-l">' + esc(c.tag || '') + '</span></div>' +
-      '<strong class="etd-next">' + (live ? 'Live now · ' : '') + esc(nextText(c)) + '</strong>' + (c.sub ? '<span class="etd-subl">' + esc(c.sub) + '</span>' : '') +
+      (n ? '<span class="ept-l">' + (live ? 'Happening now' : 'Next session') + '</span>' : '') + '<strong class="etd-next">' + (live ? 'Live now · ' : '') + esc(nextText(c)) + '</strong>' + (c.sub ? '<span class="etd-subl">' + esc(c.sub) + '</span>' : '') +
       (c.upNext && c.upNext.length ? '<ul class="etd-ws3" aria-label="Up next">' + c.upNext.map(function (e) { return '<li><b>' + esc(dayLong(e.startsAt)) + ' · ' + esc(clock(e.startsAt)) + '</b> ' + esc(e.title) + '</li>'; }).join('') + '</ul>' : '') +
       '<div class="etd-links"><a class="ept-btn etd-b" href="' + esc(c.primary.href) + '"' + ext + '>' + esc(live && c.primary.liveLabel ? c.primary.liveLabel : c.primary.label) + '</a>' +
       (c.links || []).map(function (l) { return '<a class="ept-q etd-b" href="' + esc(l.href) + '">' + esc(l.label) + '</a>'; }).join('') + '</div></section>';
@@ -799,7 +843,7 @@
     if (!cu.length) out += '<span class="ept-s">Nothing scheduled just yet.</span>';
     out += cu.map(function (e) {
       var when = e.start ? dayShort(e.start) : e.end_date ? (e.date.slice(8).replace(/^0/, '') + '–' + e.end_date.slice(8).replace(/^0/, '')) : dayShort(e.date + 'T12:00:00');
-      var sub = e.open ? '<span class="etd-green">Open to everyone</span>' : e.book ? '<a class="etd-red" href="' + esc(e.book) + '" target="_blank" rel="noopener">Book a time</a>' : '<span class="ept-s">' + (e.start ? esc(clock(e.start)) + ' · yours' : '') + '</span>';
+      var sub = e.open ? '<span class="etd-green">Free · open to everyone</span>' : e.book ? '<a class="etd-red" href="' + esc(e.book) + '" target="_blank" rel="noopener">Book a time</a>' : '<span class="ept-s">' + (e.start ? esc(clock(e.start)) + ' · you’re enrolled' : 'You’re enrolled') + '</span>';
       return '<div class="etd-ev"><span class="ept-mono">' + esc(when) + '</span><span class="etd-evt"><b>' + esc(e.title) + '</b>' + sub + '</span></div>'; }).join('');
     out += '<a class="ept-pf" href="' + (cards.length ? '/c/schedule' : SITE + '/events') + '">' + (cards.length ? 'Your full schedule' : 'All events') + '</a></section>';
     out += sacredCard();
@@ -811,7 +855,7 @@
   function skeletonHtml() {
     var bar = function (w, h) { return '<span class="etd-sk" style="width:' + w + ';height:' + h + 'px"></span>'; };
     return '<div class="etd-top" role="status" aria-label="Loading Today">' + bar('160px', 12) + bar('min(420px,80%)', 44) + bar('min(300px,60%)', 16) + '</div>' +
-      '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
+      '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Your daily practice</span><span class="etd-rule"></span></div>' +
       '<div class="etd-sk etd-sk-b" style="height:300px"></div><div class="etd-sk etd-sk-b" style="height:210px"></div><div class="etd-sk etd-sk-b" style="height:260px"></div></div>' +
       '<aside class="etd-rail"><div class="etd-sk etd-sk-b" style="height:220px"></div></aside></div>';
   }
@@ -821,21 +865,28 @@
     var tithi = state.pn && window.EPPanchanga ? window.EPPanchanga.sublineOf(state.pn.day) : '';
     var date = enDate(Date.now() - new Date().getTimezoneOffset() * 60000, { weekday: 'long', day: 'numeric', month: 'long' }); // the member's own calendar day
     var out = '<header class="etd-top"><span class="ept-l ept-red">' + esc(eyebrow()) + '</span><h1 class="etd-h1">Good ' + greet() + ', <em>' + esc(first) + '</em>.</h1>' +
-      '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + '</span></header>';
+      '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + ' · <button type="button" class="etd-pnb-guide etd-gl" data-act="gloss">New here? What the words mean</button></span></header>';
     if (!d) return state.failed ? out + '<p class="ept-err" role="status">We couldn’t load Today just now. Please refresh the page.</p>' : skeletonHtml();
-    out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Free for everyone · the same as in the app</span><span class="etd-rule"></span></div>' +
+    out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Your daily practice</span><span class="etd-rule"></span></div>' +
       heroHtml() + weekHtml() + podsHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it
     if (mentorView()) out += '<div class="etd-div etd-mentor"><span class="ept-l">Mentor view · only Circle admins see this</span><span class="etd-rule"></span></div><div class="ept-pg">' + waitingHtml() + cohortHtml() + '</div>';
     return out;
   }
 
-  var root = null, pageRoot = null;
+  // The element that scrolls the page (Circle scrolls an inner column, not the window)
+function scroller(el) {
+  for (var n = el && el.parentElement; n && n !== document.body; n = n.parentElement) { var o = getComputedStyle(n).overflowY; if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight) return n; }
+  return document.scrollingElement;
+}
+var root = null, pageRoot = null;
   function render() {
     if (pageRoot && document.body.contains(pageRoot)) {
       var f = document.activeElement, keep = f && f.id === 'etd-line' ? f.selectionStart : null;
-      pageRoot.innerHTML = pageHtml();
-      if (keep !== null) { var t = pageRoot.querySelector('#etd-line'); if (t) { t.focus(); t.setSelectionRange(keep, keep); } }
+      var sc = scroller(pageRoot), top = sc ? sc.scrollTop : 0;
+    pageRoot.innerHTML = pageHtml();
+    if (sc && sc.scrollTop !== top) sc.scrollTop = top; // a redraw never moves the page
+      if (keep !== null) { var t = pageRoot.querySelector('#etd-line'); if (t) { t.focus({ preventScroll: true }); t.setSelectionRange(keep, keep); } }
     }
   }
 
@@ -860,7 +911,7 @@
   function startTimer() {
     if (tm) return;
     local('ep_timer_len', String(state.len));
-    tm = { mins: state.len, endsAt: Date.now() + state.len * 60000, pausedLeft: null, phase: 'run', min: state.len, quality: '', saving: false, err: '' };
+    tm = { mins: state.len, endsAt: Date.now() + state.len * 60000, pausedLeft: null, phase: 'run', min: state.len, quality: '', extras: [], xNew: '', saving: false, err: '' };
     bell(); wake(true); paintTimer();
     tmInt = setInterval(function () { if (tm && tm.phase === 'run' && leftMs() <= 0) finishTimer(true); else paintTimer(); }, 500);
   }
@@ -877,7 +928,7 @@
     var o = document.getElementById('etd-timer');
     if (!o) {
       o = document.createElement('div'); o.id = 'etd-timer'; o.className = 'etd-timer'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', 'Sitting timer');
-      o.addEventListener('click', timerClick); o.addEventListener('input', function (e) { if (tm && e.target.name === 'tmin') tm.min = e.target.value; });
+      o.addEventListener('click', timerClick); o.addEventListener('input', function (e) { if (tm && e.target.name === 'tmin') tm.min = e.target.value; if (tm && e.target.name === 'tx') tm.xNew = e.target.value; });
       document.body.appendChild(o);
     }
     var inner;
@@ -892,7 +943,9 @@
       var p = state.practice || { qualities: [] };
       inner = '<div class="etd-tin"><span class="etd-mono etd-gold">' + (tm.phase === 'done' ? 'Sit complete' : 'You sat for ' + tm.min + ' min') + '</span><div class="etd-done">' + (tm.phase === 'done' ? 'Thank you for sitting.' : 'Log what you sat?') + '</div>' +
         '<label class="etd-lab">Minutes <input class="ept-in" name="tmin" type="number" min="1" max="600" inputmode="numeric" value="' + esc(tm.min) + '"></label>' +
-        '<div class="etd-chips" role="group" aria-label="Quality of practice">' + (p.qualities || []).map(function (q) { return '<button type="button" class="etd-chip" data-t="q" data-q="' + esc(q) + '" aria-pressed="' + (tm.quality === q) + '">' + esc(q) + '</button>'; }).join('') + '</div>' +
+        '<span class="etd-mono etd-mut">Quality of practice</span><div class="etd-chips" role="group" aria-label="Quality of practice">' + (p.qualities || []).map(function (q) { return '<button type="button" class="etd-chip" data-t="q" data-q="' + esc(q) + '" aria-pressed="' + (tm.quality === q) + '">' + esc(q) + '</button>'; }).join('') + '</div>' +
+      '<span class="etd-mono etd-mut">Greater body of sādhana · choose any</span><div class="etd-chips" role="group" aria-label="Other practices">' + extrasList(p, tm.extras).map(function (x) { return '<button type="button" class="etd-chip" data-t="x" data-x="' + esc(x) + '" aria-pressed="' + (tm.extras.indexOf(x) >= 0) + '">' + esc(x) + '</button>'; }).join('') + '</div>' +
+      '<label class="etd-lab">Add your own (commas between) <input class="ept-in etd-tx" name="tx" maxlength="80" placeholder="e.g. Japa, a walk" value="' + esc(tm.xNew) + '"></label>' +
         (tm.err ? '<span class="etd-err">' + esc(tm.err) + '</span>' : '') +
         '<div class="etd-tb"><button type="button" class="etd-tbtn" data-t="log"' + (tm.saving ? ' disabled' : '') + '>' + (tm.saving ? 'Saving…' : 'Log ' + (parseInt(tm.min, 10) || 0) + ' minutes') + '</button><button type="button" class="etd-tbtn q" data-t="skip">' + (tm.phase === 'done' ? 'Not now' : 'Don’t log') + '</button></div></div>';
       o.dataset.phase = tm.phase;
@@ -907,10 +960,11 @@
     else if (k === 'end') finishTimer(false);
     else if (k === 'skip') closeTimer();
     else if (k === 'q') { tm.quality = tm.quality === t.dataset.q ? '' : t.dataset.q; paintTimer(); }
+    else if (k === 'x') { var xi = tm.extras.indexOf(t.dataset.x); if (xi >= 0) tm.extras.splice(xi, 1); else tm.extras.push(t.dataset.x); paintTimer(); }
     else if (k === 'log') {
       var mins = parseInt(tm.min, 10); if (!(mins >= 1)) { tm.err = 'Add the minutes you sat.'; paintTimer(); return; }
       tm.saving = true; tm.err = ''; paintTimer();
-      api('/api/member/practice', { method: 'POST', body: { today: localToday(), minutes: mins, quality: tm.quality || '', extras: [], add: true } })
+      api('/api/member/practice', { method: 'POST', body: { today: localToday(), minutes: mins, quality: tm.quality || '', extras: tm.extras.concat(splitX(tm.xNew)), add: true } })
         .then(function (p) { state.practice = p; closeTimer(); render(); })
         .catch(function (er) { if (tm) { tm.saving = false; tm.err = er.status === 401 ? 'Please refresh the page and try again.' : er.message; if (er.status === 401) store('ep_today_session', ''); paintTimer(); } });
     }
@@ -947,6 +1001,7 @@
     if (t.dataset.q) { state.quality = state.quality === t.dataset.q ? '' : t.dataset.q; render(); return; }
     var a = t.dataset.act;
     if (a === 'pn-about') { openAbout(t); return; }
+    if (a === 'gloss') { openGloss(t); return; }
     if (a === 'len') { state.len = parseInt(t.dataset.len, 10) || 20; local('ep_timer_len', String(state.len)); render(); }
     if (a === 'begin') startTimer();
     if (a === 'logday') { openLog(t.dataset.day); return; }
@@ -963,7 +1018,7 @@
   function openLog(day) {
     var today = localToday();
     state.form = true; state.error = ''; state.logNote = ''; state.logDay = day && day <= today ? day : today;
-    state.minutes = ''; state.quality = ''; state.extras = [];
+    state.minutes = ''; state.quality = ''; state.extras = []; state.xNew = '';
     render(); focusMinutes();
     var asked = state.logDay;
     api('/api/member/practice?today=' + today + '&day=' + asked).then(function (r) {
@@ -972,10 +1027,12 @@
       if (en) { state.minutes = String(en.minutes || ''); state.quality = en.quality || ''; state.extras = en.extras || []; render(); focusMinutes(); }
     }).catch(function () {});
   }
-  function focusMinutes() { var i = pageRoot && pageRoot.querySelector('input[name=minutes]'); if (i) i.focus(); }
+  function focusMinutes() { var i = pageRoot && pageRoot.querySelector('input[name=minutes]'); if (i) i.focus({ preventScroll: true }); }
   function onInput(e) {
     if (e.target.name === 'minutes') state.minutes = e.target.value;
     if (e.target.name === 'text') state.line = e.target.value;
+    if (e.target.name === 'xnew') state.xNew = e.target.value;
+    if (e.target.name === 'lenc') { var lv = parseInt(e.target.value, 10); if (lv >= 1 && lv <= 180) { state.len = lv; local('ep_timer_len', String(lv)); var bg = pageRoot && pageRoot.querySelector('[data-act=begin]'); if (bg && bg.lastChild) bg.lastChild.textContent = 'Begin · ' + lv + ' min'; pageRoot.querySelectorAll('.etd-len').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); }); e.target.parentNode.classList.add('on'); } }
   }
   function onSubmit(e) {
     if (e.target.matches('[data-form=credit]')) {
@@ -999,8 +1056,8 @@
     e.preventDefault();
     var logDay = state.logDay || localToday();
     state.minutes = e.target.minutes.value; state.saving = true; state.error = ''; render();
-    api('/api/member/practice', { method: 'POST', body: { today: localToday(), day: logDay, minutes: state.minutes, quality: state.quality || '', extras: state.extras || [] } })
-      .then(function (p) { state.practice = p; state.form = false; state.logNote = (p.day || logDay) !== localToday() ? 'Logged for ' + niceDate(p.day || logDay) + '.' : ''; state.logDay = ''; })
+    api('/api/member/practice', { method: 'POST', body: { today: localToday(), day: logDay, minutes: state.minutes, quality: state.quality || '', extras: (state.extras || []).concat(splitX(state.xNew)) } })
+      .then(function (p) { state.practice = p; state.form = false; state.xNew = ''; state.logNote = (p.day || logDay) !== localToday() ? 'Logged for ' + niceDate(p.day || logDay) + '.' : ''; state.logDay = ''; })
       .catch(function (err) { state.error = err.status === 401 ? 'Please refresh the page and try again.' : err.message; if (err.status === 401) store('ep_today_session', ''); })
       .then(function () { state.saving = false; render(); });
   }
@@ -1138,7 +1195,7 @@
     loadFor(p); suCloak(p);
     if (onToday()) whenUser(function () { if (onToday()) { earlyStyle(true); mountPage(); begin(); } }); else { abandon(); restoreBanners(); } // leaving Today: Circle's own content and banner come back
   }
-  var savedLen = parseInt(local('ep_timer_len'), 10); if ([10, 20, 30, 45].indexOf(savedLen) >= 0) state.len = savedLen;
+  var savedLen = parseInt(local('ep_timer_len'), 10); if (savedLen >= 1 && savedLen <= 180) state.len = savedLen; // a preset or the member's own length
   css();
   syncPath();
   // Circle is a single-page app: react to the address changing straight away, tidy up a moment later

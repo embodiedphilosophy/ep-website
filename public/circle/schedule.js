@@ -64,7 +64,7 @@
       'html.' + ON + ' ' + HOST + ' > :not(.eps){display:none!important}',
       '.eps-sk{height:92px;border-radius:12px;background:linear-gradient(90deg,#EADDC6 25%,#F3EADA 50%,#EADDC6 75%);background-size:200% 100%;animation:epssh 1.4s ease-in-out infinite}',
       '@keyframes epssh{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.eps-sk{animation:none}}',
-      '.eps{font-family:inherit;color:#1E1A14;max-width:1120px;margin:0 auto;padding:28px 20px 64px;display:flex;flex-direction:column;gap:20px;line-height:1.5}',
+      '.eps{font-family:inherit;color:#1E1A14;max-width:1120px;margin:0;padding:28px 20px 64px;display:flex;flex-direction:column;gap:20px;line-height:1.5}',
       '.eps *{box-sizing:border-box}',
       '.eps a{color:#A5432A;text-underline-offset:3px}',
       '.eps :focus-visible{outline:2px solid #A5432A;outline-offset:2px}',
@@ -94,6 +94,7 @@
       '@media (prefers-reduced-motion:reduce){.eps-dot{animation:none}}',
       '.eps-title{font-weight:600;font-size:15px}',
       '.eps-prog{color:#1E1A14;border-color:#BFAE8E}',
+    '.eps-sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px}',
       '.eps-lock{border-style:dashed;border-color:#A5432A;color:#A5432A}',
       '.eps-lk .eps-title,.eps-lk .eps-when{opacity:.7}',
       '.eps-sub{font-size:13px;color:#5A5346}',
@@ -115,6 +116,7 @@
   }
 
   // Every programme's sessions show for everyone; ones the member's membership doesn't open are locked (no Join link)
+  var COLOR = { ss: '#20302A', mondays: '#B98A3E', wisdom: '#5B6343', mentor: '#8F7843', open: '#2E5A4B', other: '#A5432A' };
   var GROUPS = [['all', 'All'], ['mine', 'Mine'], ['ss', 'Sādhana School'], ['wisdom', 'Wisdom School'], ['mondays', 'Meditation Mondays'], ['mentor', 'Sahṛdaya Upāya'], ['other', 'Other events']];
   function groupOf(it) { var k = it.key || ''; return (k === 'ss' || k === 'wisdom' || k === 'mondays' || k === 'mentor') ? k : 'other'; }
   function inGroup(it, g) { return g === 'all' || (g === 'mine' ? !it.locked : groupOf(it) === g); }
@@ -133,14 +135,14 @@
     }
     var live = liveNow(it, now);
     var act = '';
-    if (it.locked) act = '<a class="eps-ghost" href="' + esc(it.url || '/c/schedule') + '"' + (/^https?:/.test(it.url || '') ? ' target="_blank" rel="noopener"' : '') + '>Sign up to access</a>';
+    if (it.locked) act = '<a class="eps-ghost" href="' + esc(it.url || '/c/schedule') + '"' + (/^https?:/.test(it.url || '') ? ' target="_blank" rel="noopener"' : '') + '>Enrol to join</a>';
     else if (live && it.live) act = '<a class="eps-btn" href="' + esc(it.live) + '">Join</a>';
     else if (it.book) act = '<a class="eps-ghost" href="' + esc(it.book) + '" target="_blank" rel="noopener">Choose a slot</a>';
     else if (it.url && /^https?:/.test(it.url)) act = '<a class="eps-ghost" href="' + esc(it.url) + '" target="_blank" rel="noopener">Details</a>';
     return '<div class="eps-row' + (it.locked ? ' eps-lk' : '') + '"><div class="eps-when">' + when + '</div><div class="eps-what"><div class="eps-tags">' +
       (live && !it.locked ? '<span class="eps-live"><span class="eps-dot" aria-hidden="true"></span>Live now</span>' : '') +
-      (it.programme ? '<span class="eps-tag eps-prog">' + esc(it.programme) + '</span>' : '') +
-      (it.kind === 'meditation' && it.programme ? '' : '<span class="eps-tag">' + esc(it.label) + '</span>') + (it.locked ? '<span class="eps-tag eps-lock">Locked</span>' : '') + '</div><span class="eps-title">' + esc(it.title) + '</span>' + (it.sub ? '<span class="eps-sub">' + esc(it.sub) + '</span>' : '') +
+      (it.programme ? '<span class="eps-tag eps-prog" style="border-left:4px solid ' + (COLOR[it.key] || COLOR.other) + '">' + esc(it.programme) + '</span>' : '') +
+      (it.kind === 'meditation' && it.programme ? '' : '<span class="eps-tag">' + esc(it.label) + '</span>') + (it.locked ? '<span class="eps-tag eps-lock">Not in your plan</span>' : '') + '</div><span class="eps-title">' + esc(it.title) + '</span>' + (it.sub ? '<span class="eps-sub">' + esc(it.sub) + '</span>' : '') +
       '</div><div>' + act + '</div></div>';
   }
 
@@ -182,7 +184,7 @@
         '<a class="eps-ghost" href="' + esc(webcal) + '">Apple or Outlook</a></div></div>';
     }
     if (tabs.length) out += '<div class="eps-tabs" role="group" aria-label="Show">' + tabs.map(function (g) {
-      return '<button type="button" class="eps-tab" data-tab="' + g[0] + '" aria-pressed="' + (state.tab === g[0]) + '">' + g[1] + '<small>' + gcount[g[0]] + '</small></button>';
+      return '<button type="button" class="eps-tab" data-tab="' + g[0] + '" aria-pressed="' + (state.tab === g[0]) + '">' + (COLOR[g[0]] ? '<i class="eps-sw" style="background:' + COLOR[g[0]] + '" aria-hidden="true"></i>' : '') + g[1] + '<small>' + gcount[g[0]] + '</small></button>';
     }).join('') + '</div>';
     out += '<div class="eps-cols"><div class="eps-main">';
     if (!shown.length) out += '<div class="eps-empty">Nothing scheduled yet. New sessions appear here as soon as they’re on the calendar.</div>';
@@ -199,7 +201,7 @@
     var note = clockNote(items, zone);
     out += '<div class="eps-card"><span class="eps-l">Your time zone</span><span class="eps-city">' + esc(city) + '</span><p class="eps-note">Times are set in New York time and shown in yours.' + (note ? ' ' + esc(note) : '') + '</p></div>';
     var r = d.tier === 'mentee' ? RHYTHM.mentee : /^ss_/.test(d.tier) ? RHYTHM.ss : /^wisdom/.test(d.tier) ? RHYTHM.wisdom : d.tier === 'meditation' ? RHYTHM.meditation : '';
-    if (r) out += '<div class="eps-card"><span class="eps-l">The rhythm</span><p class="eps-note">' + esc(r) + '</p></div>';
+    if (r) out += '<div class="eps-card"><span class="eps-l">Your programme’s rhythm · ' + esc(d.tier === 'mentee' ? 'Sahṛdaya Upāya' : /^ss_/.test(d.tier) ? 'Sādhana School' : /^wisdom/.test(d.tier) ? 'Wisdom School' : 'Meditation Pass') + '</span><p class="eps-note">' + esc(r) + '</p></div>';
     return out + '</aside></div>';
   }
 

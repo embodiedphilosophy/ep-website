@@ -2,7 +2,7 @@ import PageHero from '@/components/PageHero';
 import Events from '@/components/Events';
 import ReplayPlayer from '@/components/ReplayPlayer';
 import PricingCards from '@/components/PricingCards';
-import { getEvents, getPastEvents } from '@/lib/events';
+import { getEvents, getPastEvents, withSessionTitles } from '@/lib/events';
 import { getSite } from '@/lib/content';
 import { longDate } from '@/lib/dates';
 
@@ -26,7 +26,7 @@ const withLine = t => { const n = names(t); return n.length ? 'With ' + (n.lengt
 
 export default async function MeditationPass() {
   const site = await getSite();
-  const upcoming = (await getEvents()).filter(e => e.series === 'meditation-mondays');
+  const upcoming = await withSessionTitles((await getEvents()).filter(e => e.series === 'meditation-mondays'));
   const replays = (await getPastEvents()).filter(e => e.series === 'meditation-mondays' && e.video_id).slice(0, 3);
   const offer = {
     href: site.links.meditationMonthly,

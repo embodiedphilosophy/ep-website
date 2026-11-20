@@ -1,11 +1,11 @@
 import Events from '@/components/Events';
 import { getSite } from '@/lib/content';
-import { getEvents } from '@/lib/events';
+import { getEvents, withSessionTitles } from '@/lib/events';
 export const revalidate = 300;
 export const metadata = { title: 'Upcoming events — Embodied Philosophy' };
 export default async function EventsPage() {
   const site = await getSite();
-  const events = await getEvents();
+  const events = await withSessionTitles(await getEvents());
   return (
     <>
       <section className="page-head"><div className="wrap">
@@ -13,7 +13,7 @@ export default async function EventsPage() {
         <p>Free lectures, seasonal immersions, and live sessions inside Wisdom School and Sādhana School.</p>
       </div></section>
       <section className="sec" style={{ paddingTop: 56 }}><div className="wrap">
-        <Events events={events} limit={100} links={site.links} photos={site.photos} layout="list" />
+        <Events events={events} limit={500} expandSeries={['meditation-mondays']} links={site.links} photos={site.photos} layout="list" />
       </div></section>
     </>
   );

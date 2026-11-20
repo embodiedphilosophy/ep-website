@@ -125,12 +125,13 @@ function Action({ e, links }) {
   return <a className="reg" href="/#join">Get updates →</a>;
 }
 
-export default function Events({ events, limit = 6, hideFilters = false, links = site.links, allSessions = false, photos = {}, layout = 'grid' }) {
+export default function Events({ events, limit = 6, hideFilters = false, links = site.links, allSessions = false, expandSeries = [], photos = {}, layout = 'grid' }) {
   const [filter, setFilter] = useState('all');
   const seen = new Set();
   const list = events
     .filter(e => filter === 'all' ? true : filter === 'free' ? isFree(e) : e.program === filter)
-    .filter(e => allSessions || !e.series || (!seen.has(e.series) && seen.add(e.series)))
+    // A course's sessions show once (its next date); series in expandSeries (weekly drop-ins) show every date
+    .filter(e => allSessions || !e.series || expandSeries.includes(e.series) || (!seen.has(e.series) && seen.add(e.series)))
     .slice(0, limit);
   return (
     <>

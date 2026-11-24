@@ -288,6 +288,7 @@ function loadData() {
         loadWisdomHub(d);
         loadMeditationHub(d);
       }).catch(function (e) { state.error = e.message; state.failed = true; if (e.status === 401) store('ep_today_session', ''); }),
+      todayP.then(function () { return api('/api/member/courses'); }).then(function (r) { state.courses = r; render(); }).catch(function () { state.courses = null; }),
       todayP.then(function () { return api('/api/member/pods'); }).then(function (r) { state.pods = r; }).catch(function () { state.pods = null; }),
       mentorView() ? todayP.then(function () { return api('/api/member/cohort?today=' + localToday()); }).then(function (c) { state.cohort = c; }).catch(function (e) { state.cohortErr = e.message; }) : null,
       mentorView() ? todayP.then(function () { return api('/api/member/submissions'); }).then(function (r) { state.wait = r; }).catch(function (e) { state.waitErr = e.message; }) : null,
@@ -577,7 +578,14 @@ function loadData() {
       '.etd .ept-x{width:44px;height:44px}.etd .ept-q{min-height:44px}.etd .ept-why,.etd-rail>.etd-card>a,.etd-wp,.etd-ev a{min-height:44px;display:inline-flex;align-items:center}.etd-ev a{min-height:44px;margin:-8px 0}',
       '.etd :focus-visible,.etd-timer :focus-visible{outline:2px solid #D2A65A;outline-offset:2px}',
       '@container etd (max-width:760px){.etd-cols{grid-template-columns:minmax(0,1fr)}.etd-pn-desk,.etd-rail-sacred{display:none}.etd-pnb.etd-pn-phone{display:block;margin-top:0}.etd-pnb-grid{grid-template-columns:minmax(0,1fr)}.etd-pnb-cell{flex-direction:row;gap:14px;border-left:0;border-top:1px solid #E3D8C6}.etd-pnb-cell:first-child{border-top:0}.etd-pnb-sac{display:flex}.etd-pnb-head{padding:16px}.etd-pnb-t h2{font-size:22px}}',
-      '@container etd (max-width:520px){.etd-cards{grid-template-columns:minmax(0,1fr)}}',
+      '.etd-yc{margin:0 0 22px}.etd-yc .etd-div{margin-bottom:12px}.etd-yc-h{margin:0;font-size:10.5px}.etd-yc-all{color:#A5432A;text-decoration:none;white-space:nowrap}',
+      '.etd-yc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}',
+      '.etd-yc-card{display:flex;flex-direction:column;gap:6px;background:#FBF6EE;border:1px solid #E3D8C6;border-radius:6px;overflow:hidden;text-decoration:none;color:#1E1A14;padding-bottom:12px;min-height:44px}',
+      '.etd-yc-card:hover{border-color:#A5432A}',
+      '.etd-yc-img{display:block;aspect-ratio:16/9;background:#E8D9C2 center/cover no-repeat}',
+      '.etd-yc-plain{display:flex;align-items:center;justify-content:center;background:#2B1E2A;color:#F0C987;font:600 34px/1 "Cormorant Garamond",Georgia,serif}',
+      '.etd-yc-t{padding:0 12px;font-weight:600;line-height:1.3;font-size:14px}.etd-yc-go{padding:0 12px;color:#A5432A;font-size:12.5px}',
+      '@container etd (max-width:520px){.etd-cards{grid-template-columns:minmax(0,1fr)}.etd-yc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}',
       '@media (max-width:640px){.etd{padding:20px 16px 24px}.etd-h1{font-size:34px}.etd-sit,.etd-rec{padding:22px 20px}.etd-clock{font-size:56px}}'
     ].join('\n');
     document.head.appendChild(s);
@@ -826,6 +834,19 @@ function openGloss(from) {
       (state.why ? '<span class="ept-s ept-whyt">' + esc(n.why || ('You’ve logged ' + n.at + ' days of practice.')) + ' You can hide it with ×, and we won’t show it again this season.</span>' : '') + '</div>';
     return state.hidNudge ? '<p class="ept-s ept-hid" role="status">Suggestion hidden. We won’t show it again this season.</p>' : '';
   }
+  // "Your courses": every course this member has been given in Circle, newest first, so a course bought while already
+  // being a member is right here on sign-in (Circle sends them no email, and courses stay out of the sidebar). Four at most (one row); the rest are in the Library.
+  var YC_MAX = 4;
+  function coursesHtml() {
+    var r = state.courses, list = (r && r.courses) || [];
+    if (!list.length) return '';
+    var more = list.length > YC_MAX ? '<a class="ept-l etd-yc-all" href="/c/library" target="_top">See all ' + list.length + ' in your Library →</a>' : '<a class="ept-l etd-yc-all" href="/c/library" target="_top">Your Library →</a>';
+    return '<section class="etd-yc" aria-labelledby="etd-yc-h"><div class="etd-div"><h2 id="etd-yc-h" class="ept-l etd-yc-h">Your courses</h2><span class="etd-rule"></span>' + more + '</div>' +
+      '<div class="etd-yc-grid">' + list.slice(0, YC_MAX).map(function (c) {
+        var pic = c.image ? '<span class="etd-yc-img" style="background-image:url(&quot;' + esc(c.image) + '&quot;)" aria-hidden="true"></span>' : '<span class="etd-yc-img etd-yc-plain" aria-hidden="true">' + esc(c.title.charAt(0)) + '</span>';
+        return '<a class="etd-yc-card" href="' + esc(c.url) + '" target="_top">' + pic + '<span class="etd-yc-t">' + esc(c.title) + '</span><span class="etd-yc-go">Open course →</span></a>';
+      }).join('') + '</div></section>';
+  }
   function enrolHtml() {
     var d = state.data || {}, cards = d.cards || [], locked = d.locked || [];
     var out = '<div class="etd-div"><span class="ept-l">' + (cards.length ? 'Your enrolment' : 'When you’re ready') + '</span><span class="etd-rule"></span></div>';
@@ -867,6 +888,7 @@ function openGloss(from) {
     var out = '<header class="etd-top"><span class="ept-l ept-red">' + esc(eyebrow()) + '</span><h1 class="etd-h1">Good ' + greet() + ', <em>' + esc(first) + '</em>.</h1>' +
       '<span class="etd-sub">' + esc(date) + (tithi ? ' · ' + esc(tithi) : '') + ' · <button type="button" class="etd-pnb-guide etd-gl" data-act="gloss">New here? What the words mean</button></span></header>';
     if (!d) return state.failed ? out + '<p class="ept-err" role="status">We couldn’t load Today just now. Please refresh the page.</p>' : skeletonHtml();
+    out += coursesHtml();
     out += '<div class="etd-cols"><div class="etd-main"><div class="etd-div"><span class="ept-l">Your daily practice</span><span class="etd-rule"></span></div>' +
       heroHtml() + weekHtml() + podsHtml() + teachingHtml() + pnBand('etd-pn-phone') + enrolHtml() + '</div>' + railHtml() + '</div>' + pnBand('etd-pn-desk');
     // Circle admins: the Sahṛdaya Upāya cohort, below the student's page so it never crowds it

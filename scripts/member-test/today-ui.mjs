@@ -37,7 +37,7 @@ const probe = fs.readFileSync(new URL('../../public/circle/probe.js', import.met
 const b = await chromium.launch(); const errs = [];
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
 
-async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '', delay = 0, wait = true, offer = null } = {}) {
+async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = false, query = '', delay = 0, wait = true, offer = null, courses = null } = {}) {
   const ctx = await b.newContext({ viewport: { width: vw, height: h }, timezoneId: 'America/New_York' });
   const p = await ctx.newPage(); const calls = [], urls = [], frameSrcs = [], todayHeaders = [], scripts = [];
   p.on('pageerror', e => errs.push(`${tier}: ${e.message}`));
@@ -60,6 +60,7 @@ async function open(tier, { vw = 1366, h = 900, data, seasons = [], admin = fals
     if (path === '/api/hub/wisdom-school') return j({ plan: tier === 'wisdom_plus' ? 'plus' : 'ws', month: { index: 10, of: 12, name: 'October', theme: 'The Return with Wisdom', question: 'What are you carrying home?', lessonUrl: HOST + '/lessons/1', hasLesson: true },
       upNext: [{ id: 'a', startsAt: '2026-10-26T16:00:00Z', title: 'Meditation Monday: Somatic', teacher: 'Floss Harry', url: '' }, { id: 'b', startsAt: '2026-11-03T23:00:00Z', title: 'The Circle Reopens', teacher: 'Jacob Kyle', url: '' }] });
     if (path === '/api/member/cohort') return j({ today: TODAY, rows: [{ name: 'Carolyn', email: 'c@example.com', streak: 0, weekCount: 0, days8w: 0, minutes8w: 0, last: null, daysSince: null, grid: [] }], attention: [{ email: 'c@example.com', name: 'Carolyn', why: 'Hasn’t logged any practice yet' }] });
+    if (path === '/api/member/courses') return courses ? j({ courses, total: courses.length }) : r.fulfill({ status: 503, headers: CORS, contentType: 'application/json', body: '{}' });
     if (path === '/api/member/portfolio') return j({ pages: [] });
     if (path === '/api/member/travelogue') return j({ travelogue: m === 'POST' ? [{ id: '1', day: TODAY, text: JSON.parse(r.request().postData()).text }] : [] });
     return j({});
@@ -358,6 +359,29 @@ console.log('admin mentor view: ok');
 }
 console.log('location: ok');
 
+// ---- Your courses: what the member has been given in Circle, above the daily practice; four at most, the rest in the Library
+{
+  const mk = n => Array.from({ length: n }, (_, i) => ({ id: String(100 - i), title: i === 0 ? 'The Inner Saboteur: A Tantric Approach to Shadow Work' : 'Course ' + (i + 1), url: HOST + '/c/course-' + i, image: i % 2 ? '' : 'https://example.test/cover.jpg', group: 'Courses' }));
+  let { p, ctx } = await open('none', { courses: mk(8) });
+  await p.waitForSelector('.etd-yc-card');
+  assert.equal(await p.locator('.etd-yc-card').count(), 4, 'four cards at most');
+  assert.match(await p.locator('.etd-yc-all').innerText(), /See all 8 in your Library/i);
+  assert.match(await p.locator('.etd-yc-card').first().innerText(), /Inner Saboteur/);
+  assert.equal(await p.locator('.etd-yc-card').first().getAttribute('href'), HOST + '/c/course-0');
+  assert.ok(await p.evaluate(() => document.querySelector('.etd-yc').getBoundingClientRect().top < document.querySelector('.etd-cols').getBoundingClientRect().top), 'above the daily practice');
+  await p.screenshot({ path: `${OUT}/today-courses-desk.png` });
+  await ctx.close();
+  ({ p, ctx } = await open('none', { courses: mk(2), vw: 390, h: 844 }));
+  await p.waitForSelector('.etd-yc-card');
+  assert.ok(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 0, 'courses: no sideways scroll on a phone');
+  assert.match(await p.locator('.etd-yc-all').innerText(), /Your Library/i);
+  await p.screenshot({ path: `${OUT}/today-courses-phone.png` });
+  await ctx.close();
+  ({ p, ctx } = await open('none'));
+  await p.waitForTimeout(300);
+  assert.equal(await p.locator('.etd-yc').count(), 0, 'no courses (or Circle unavailable): no section');
+  await ctx.close();
+}
 // ---- phone width: no sideways scroll, targets at least 44px
 for (const tier of ['none', 'mentee']) {
   const { p, ctx } = await open(tier, { vw: 390, h: 844 });

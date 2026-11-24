@@ -843,7 +843,7 @@ function openGloss(from) {
     var more = list.length > YC_MAX ? '<a class="ept-l etd-yc-all" href="/c/library" target="_top">See all ' + list.length + ' in your Library →</a>' : '<a class="ept-l etd-yc-all" href="/c/library" target="_top">Your Library →</a>';
     return '<section class="etd-yc" aria-labelledby="etd-yc-h"><div class="etd-div"><h2 id="etd-yc-h" class="ept-l etd-yc-h">Your courses</h2><span class="etd-rule"></span>' + more + '</div>' +
       '<div class="etd-yc-grid">' + list.slice(0, YC_MAX).map(function (c) {
-        var pic = c.image ? '<span class="etd-yc-img" style="background-image:url(&quot;' + esc(c.image) + '&quot;)" aria-hidden="true"></span>' : '<span class="etd-yc-img etd-yc-plain" aria-hidden="true">' + esc(c.title.charAt(0)) + '</span>';
+        var pic = c.image ? '<span class="etd-yc-img" style="background-image:url(&quot;' + esc(c.image) + '&quot;)" aria-hidden="true"></span>' : '<span class="etd-yc-img etd-yc-plain" aria-hidden="true">' + esc(c.title.replace(/^(the|a|an)\s+/i, '').replace(/^[^A-Za-z0-9\u00C0-\u024F\u1E00-\u1EFF]+/, '').charAt(0) || c.title.charAt(0)) + '</span>';
         return '<a class="etd-yc-card" href="' + esc(c.url) + '" target="_top">' + pic + '<span class="etd-yc-t">' + esc(c.title) + '</span><span class="etd-yc-go">Open course →</span></a>';
       }).join('') + '</div></section>';
   }

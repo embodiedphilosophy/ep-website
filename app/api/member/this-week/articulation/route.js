@@ -6,6 +6,8 @@ import { rotationFor } from '@/lib/mentee/home';
 import { cleanToday } from '@/lib/member/practice';
 import { loadWeek } from '@/lib/mentee/load';
 import config from '@/data/mentee.json';
+import { currentPartnerEmails } from '@/lib/mentee/partners';
+import { cohortList } from '@/lib/mentee/cohortlist';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,12 +25,11 @@ export async function POST(req) {
     else {
       if (Date.now() - (last.get(me.uid) || 0) < 3000) return reply(req, { error: 'One moment, then try again.' }, 429);
       last.set(me.uid, Date.now());
-      // Who the mentee may name: their partners this rotation, and the rest of the cohort for a third person
-      const rows = await readTab(TABS.partners);
-      const rot = rotationFor(config.rotations, b.day && /^\d{4}-\d{2}-\d{2}$/.test(b.day) ? b.day : today);
-      const mine = partnerFor(rows, me.email, config.season, b.day || today, { rotation: rot?.n, profiles: profilesFrom([]) });
-      const partners = (mine?.partners || []).map(p => p.email);
-      const a = cleanArticulation(me.email, b, [...partners, ...cohortFrom(rows, config.season, me.email).map(c => c.email)], today);
+      // Who the mentee may name: anyone in the cohort (partners are chosen each month, and a three can form at any time)
+      const rows = await readTab(TABS.partners).catch(() => []);
+      const day = b.day && /^\d{4}-\d{2}-\d{2}$/.test(b.day) ? b.day : today, rot = rotationFor(config.rotations, day);
+      const [partners, cohort] = await Promise.all([currentPartnerEmails(me.email, day), cohortList()]);
+      const a = cleanArticulation(me.email, b, [...partners, ...cohort.map(c => c.email), ...cohortFrom(rows, config.season, me.email).map(c => c.email)], today);
       await addArticulation({ uid: me.uid, email: me.email, name: me.firstName }, a, { season: config.season, rotation: rot?.n ?? null });
     }
     return reply(req, await loadWeek(me, { today: b.today, tz: b.tz }));

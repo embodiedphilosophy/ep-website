@@ -19,9 +19,9 @@ assert.equal(h.immersion.practicum.id, 's1'); assert.equal(h.startHere, true);
 h = run('2026-10-31'); assert.equal(h.immersion.prepare.open, true, 'opens two weeks before the Saturday');
 assert.equal(run('2026-11-14').immersion.happening, true);
 assert.deepEqual(h.oneToOne.window, { from: '2026-10-26', to: '2026-10-30' }.to < '2026-10-31' ? { from: '2026-11-23', to: '2026-11-27' } : null, 'window passed → next one');
-assert.equal(H.windowFor(config.windows, '2026-10-28').from, '2026-10-26');
+assert.equal(H.windowFor(config.windows, '2026-10-28').from, '2026-11-23', 'the first one-to-ones are in November');
 assert.equal(H.windowFor(config.windows, '2027-06-01').from, '2027-06-07'); assert.equal(H.windowFor(config.windows, '2027-06-14').from, '2027-06-21', 'June has two windows');
-assert.equal(H.windowFor(config.windows, '2027-07-01'), null);
+assert.equal(H.windowFor(config.windows, '2027-07-01').from, '2027-07-26'); assert.equal(H.windowFor(config.windows, '2027-08-01'), null);
 
 const rows = [
   { season: 'fall-2026', month: 'November', email_a: 'Maya@x.com', email_b: 'sam@x.com', name_b: 'Sam', publish: '' },
@@ -136,7 +136,7 @@ const form = { total: 0.5, target: 100, components: [{ id: 'peer', target: 8 }],
   { component: 'peer', hours: 1, day: '2026-10-28', status: 'pending' }, { component: 'peer', hours: 1.5, day: '2026-09-01', status: 'credited' },
   { component: 'observation', hours: 1.5, day: '2026-10-28', status: 'pending' }] };
 const art = H.articulationFor(form, cfg, '2026-11-01');
-assert.deepEqual([art.sessions, art.target, art.hours, art.hoursTarget], [1, 2, 2.5, 8], 'one session in this rotation; 2.5 hrs logged for the year');
+assert.deepEqual([art.sessions, art.rotationSessions, art.target, art.hours, art.hoursTarget], [0, 1, 2, 2.5, 8], 'none yet this month (partners are monthly), one in the rotation; 2.5 hrs logged for the year');
 const peerForm = { entries: [{ component: 'peer', day: '2027-02-03', hours: 1 }, { component: 'peer', day: '2027-02-06', hours: 1 }, { component: 'peer', day: '2027-01-30', hours: 1 }], components: [] };
 assert.deepEqual(H.articulationFor(peerForm, cfg, '2027-02-08').month, { sessions: 2, last: '2027-02-06' }, 'this calendar month: two sessions, and the day of the latest for the "Done" row');
 assert.deepEqual(art.month, { sessions: 0, last: '' }, 'none logged in November');

@@ -51,7 +51,7 @@ const firsts = await month.locator('.esu-mrow .esu-rw-t').allInnerTexts();
 assert.deepEqual(firsts.slice(0, 2), ['Watch the orientation recording', 'Your first reflection, gently'], 'the order set in Ops');
 assert.ok(await month.getByText('Your first reflection, gently').count() && await month.getByText('One page is plenty.').count(), 'reworded row');
 // every open row has a checkbox and a skip, the buddy row included
-const buddy = month.locator('.esu-mrow', { hasText: 'Your articulation partner is on the way' });
+const buddy = month.locator('.esu-mrow', { hasText: 'Choose your articulation partner' });
 assert.equal(await buddy.getByRole('checkbox').count(), 1, 'the buddy row can be ticked');
 assert.equal(await buddy.getByRole('button', { name: 'skip' }).count(), 1, 'and skipped');
 const nOpen = await month.locator('.esu-mlist:not(.esu-mdone) > .esu-mrow').count();
@@ -71,15 +71,15 @@ await p.screenshot({ path: OUT + 'mentee-skip-ask.png' });
 const before = ticks.length;
 await q.getByRole('button', { name: 'Cancel' }).click();
 assert.equal(await p.getByRole('alertdialog').count(), 0); assert.equal(ticks.length, before, 'Cancel saves nothing');
-await month.locator('.esu-mrow', { hasText: 'Your articulation partner is on the way' }).getByRole('button', { name: 'skip' }).click();
+await month.locator('.esu-mrow', { hasText: 'Choose your articulation partner' }).getByRole('button', { name: 'skip' }).click();
 await p.getByRole('alertdialog').getByRole('button', { name: 'Yes' }).click();
 await month.locator('.esu-mdone').getByText('Skipped').waitFor({ timeout: 5000 });
 assert.deepEqual([ticked.id, ticked.status], ['m:2026-11:buddy', 'skipped']);
 assert.ok(await month.getByText(/· 1 skipped/).count(), 'the tally names the skip');
 await month.screenshot({ path: OUT + 'mentee-month-completed.png' });
 // Undo puts it back
-await month.locator('.esu-mdone .esu-mrow', { hasText: 'Your articulation partner is on the way' }).getByRole('button', { name: 'Undo' }).click();
-await month.locator('.esu-mlist:not(.esu-mdone) .esu-mrow', { hasText: 'Your articulation partner is on the way' }).waitFor({ timeout: 5000 });
+await month.locator('.esu-mdone .esu-mrow', { hasText: 'Choose your articulation partner' }).getByRole('button', { name: 'Undo' }).click();
+await month.locator('.esu-mlist:not(.esu-mdone) .esu-mrow', { hasText: 'Choose your articulation partner' }).waitFor({ timeout: 5000 });
 assert.deepEqual([ticked.id, ticked.status], ['m:2026-11:buddy', 'undone']);
 const hero = p.locator('.esu-mrow.hero').first();
 assert.equal(await hero.getByRole('checkbox').count(), 1, 'the immersion can be ticked too');

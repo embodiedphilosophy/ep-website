@@ -373,15 +373,24 @@
     if (soon) { var n = nx.required[0]; out.push({ k: '0-a2', w1: 'From ' + dm(nx.starts), tx: rwText('Read ' + esc(n.title), line(n, '')), bt: btnA('all-books', 'The book') }); }
     return out;
   }
+  // Articulation partners are chosen by the mentees each month (lib/mentee/pairing.js): what the row and the tile say when you have none yet
+  function monthWord(ym) { try { return new Date(ym + '-15T12:00:00Z').toLocaleDateString('en-GB', { month: 'long', timeZone: 'UTC' }); } catch (x) { return 'this month'; } }
+  function pairPrompt(h) {
+    var pg = h.pairing || {}, mo = monthWord(pg.month || '');
+    if (!pg.on) return { title: 'Choose your articulation partner', line: 'Partners are chosen by you each month. This opens as soon as the cohort list is connected.', bt: '' };
+    if (pg.open && pg.open.length) return { title: 'Choose your articulation partner for ' + mo, line: pg.open.length + (pg.open.length === 1 ? ' person is' : ' people are') + ' still free. Pick one, then send a hello and find an hour together.', bt: 'Choose' };
+    if (pg.alone && pg.joinable && pg.joinable.length) return { title: 'Join a pair for ' + mo, line: 'Everyone else has a partner, so you can join a pair and make a three.', bt: 'Join a pair' };
+    return { title: 'Your articulation partner for ' + mo, line: 'No one else is free yet. As soon as someone is, you can choose them here.', bt: '' };
+  }
   function buddyRow(w) {
     var h = w.home, p = h.partner, a = h.articulation, mo = (a && a.month) || { sessions: 0, last: '' };
     var o = ov(w, 'buddy'); if (o.hide) return null;
-    if (!p) return { k: '0-b', w1: 'Any time', tx: rwText(esc(o.title) || 'Your articulation partner is on the way', esc(o.line) || 'Jacob pairs everyone at the start of each rotation.') };
+    if (!p) { var pp0 = pairPrompt(h); return { k: '0-b', w1: 'This month', tx: rwText(esc(pp0.title), esc(pp0.line)), bt: pp0.bt ? btnA('open-pair', pp0.bt) : '' }; }
     var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email }], many = list.length > 1, nm = esc(nameList(list));
     if (mo.sessions > 0) return { k: '1-' + (mo.last || w.today), done: true, w1: 'Done', w2: mo.last ? dm(mo.last) : '', tx: rwText('Articulation session with ' + nm, 'Logged for ' + (many ? 'all of you' : 'both of you') + '.'), bt: btnA('open-articulation', 'Log another') };
     var win = p.window && p.window.spans && p.window.spans[0] ? '<br>A time that suits ' + (many ? 'all of you' : 'you both') + ': ' + esc(p.window.days) + ', ' + esc(p.window.spans[0].text) + ' ' + esc(p.window.spans[0].label) + '.' : '';
     var url = p.chatUrl || 'mailto:' + list.map(function (x) { return x.email; }).filter(Boolean).join(',');
-    return { k: '0-b', w1: 'Any time', tx: rwText((o.title ? esc(o.title) + ': ' : 'Meet your articulation ' + (many ? 'partners' : 'partner') + ', ') + nm, (esc(o.line) || 'An hour together: each of you explains one idea until the other could explain it too.') + win), bt: ext(url, 'Say hello', 'esu-btn out sm') };
+    return { k: '0-b', w1: 'Any time', tx: rwText((o.title ? esc(o.title) + ': ' : 'Meet your articulation ' + (many ? 'partners' : 'partner') + ', ') + nm, (esc(o.line) || 'About an hour together: each of you explains one teaching from the month through an analogy or image a new student could hold.') + win), bt: ext(url, 'Say hello', 'esu-btn out sm') + ((h.pairing || {}).on ? ' ' + btnA('open-pair', 'Change') : '') };
   }
   function heroRow(o) {
     return '<li class="esu-mrow hero">%%CHK%%<span class="esu-when"><b>' + esc(o.w1) + '</b>' + esc(o.w2 || '') + '</span><div class="tx"><div class="ey">' + esc(o.ey) + '</div><p class="esu-hero-t">' + esc(o.title) + '</p><p class="esu-hero-d">' + o.line + '</p></div><div class="bt">' + (o.bt || '') + '</div></li>';
@@ -438,7 +447,7 @@
     var fresh = r.unread ? '<p class="esu-rw-d">New in the cohort: ' + r.unread + (r.unread === 1 ? ' reflection' : ' reflections') + ' you haven’t read.</p>' : '';
     var open = function (label, cls) { return link(r.url, label, cls || 'esu-btn out sm'); };
     if (mine && mine.status === 'posted') return { k: '1-' + due, done: true, w1: 'Done', w2: mine.postedDay ? dm(mine.postedDay) : '', tx: rwText(title, 'Posted to Sādhana School.', fresh) };
-    var line = !mine ? (esc(ro.line) || 'Choose one or a few things from the assigned books that shifted your understanding, and deepen that shift with your reflection. Share it with the cohort when you’re ready.') : mine.status === 'shared' ? 'Shared with the cohort. Post it to Sādhana School when you’re ready.' : 'A draft is saved.';
+    var line = !mine ? (esc(ro.line) || 'Write on the month’s reading, or on something from the Practicum weekend teachings: one or a few things that shifted your understanding. Share it with the cohort, revise from their comments, then post it to Sādhana School.') : mine.status === 'shared' ? 'Shared with the cohort. Post it to Sādhana School when you’re ready.' : 'A draft is saved.';
     var bt = !safeUrl(r.url) ? '' : !mine ? open('Start writing') : mine.status === 'shared' ? link(r.url + (r.url.indexOf('?') < 0 ? '?' : '&') + 'post=' + encodeURIComponent(mine.id), 'Post to SS', 'esu-btn out sm') : open('Keep writing');
     return { k: '1-' + due, w1: 'By ' + dm(due), w2: dayFmt(due, { weekday: 'short' }), tx: rwText(title, line, fresh), bt: bt };
   }
@@ -591,7 +600,7 @@
       var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email }], many = list.length > 1;
       var url = p.chatUrl || 'mailto:' + list.map(function (x) { return x.email; }).filter(Boolean).join(',');
       tiles += tile('Articulation practice', 'This month’s ' + (many ? 'partners' : 'partner') + ': ' + esc(nameList(list)), 'Each explain one teaching through an image a new student could hold.', mo.sessions > 0 ? tlink('open-articulation', 'Log a session') : ext(url, 'Say hello', 'esu-tlink'));
-    } else tiles += tile('Articulation practice', 'Your articulation partner is on the way', 'Jacob pairs everyone at the start of each rotation.', '');
+    } else { var pp1 = pairPrompt(h); tiles += tile('Articulation practice', esc(pp1.title), esc(pp1.line), pp1.bt ? tlink('open-pair', pp1.bt) : ''); }
     // 2. Practicum pods: from Immersion 1
     var beforeI1 = !!im && im.n === 1 && !im.happening, d = state.pp, line = 'One teaches, the others give feedback.', links;
     if (beforeI1) { line += ' From Immersion 1.'; links = tlink('open-pp', 'Schedule a Practicum Pod'); }
@@ -822,6 +831,19 @@
     } else if (m.type === 'rec-all') {
       var ri = (w.home.recordings && w.home.recordings.items) || [];
       body = '<div class="esu-hd"><h2 class="esu-h2">All recordings</h2><button type="button" class="esu-btn out" data-act="close-modal">Close</button></div><div class="esu-reclist">' + ri.map(recTile).join('') + '</div>';
+    } else if (m.type === 'pair') {
+      var pg = w.home.pairing || {}, pa = w.home.partner, mw = monthWord(pg.month || ''), busyP = state.busy === 'modal' ? ' disabled' : '';
+      var first = function (n) { return esc(String(n || '').split(' ')[0]); };
+      var people = (pg.open || []).map(function (q) { return '<li class="esu-wl" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span class="esu-rw-t" style="flex:1;min-width:0">' + esc(q.name) + '</span><button type="button" class="esu-btn out sm" style="flex:none" data-act="pair-choose" data-email="' + esc(q.email) + '"' + busyP + '>Partner with ' + first(q.name) + '</button></li>'; }).join('');
+      var threes = pg.alone ? (pg.joinable || []).map(function (g) { return '<li class="esu-wl" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span class="esu-rw-t" style="flex:1;min-width:0">' + esc(g.names.join(' and ')) + '</span><button type="button" class="esu-btn out sm" style="flex:none" data-act="pair-join" data-id="' + esc(g.id) + '"' + busyP + '>Join them</button></li>'; }).join('') : '';
+      body = '<div class="esu-eye">Articulation · ' + esc(mw) + '</div><h2 class="esu-h2" style="margin:2px 0 4px">' + (pa ? 'Your partner for ' + esc(mw) : pg.alone && threes ? 'Join a pair for ' + esc(mw) : 'Choose your partner for ' + esc(mw)) + '</h2>' +
+        '<p class="esu-muted" style="font-size:13px">Each month you choose one partner from the people still free. If the cohort is an odd number, whoever is left joins a pair to make a three. Choosing pairs you straight away, so say hello soon after.</p>' +
+        (state.msg ? '<p class="esu-err" role="alert">' + esc(state.msg) + '</p>' : '') +
+        (pa ? '<p style="margin:12px 0 0">You’re with <b>' + esc(nameList(pa.partners || [])) + '</b> this month. If it isn’t working out, you can leave and choose again; your partner becomes free to choose someone else.</p><div class="esu-acts" style="margin-top:12px"><button type="button" class="esu-btn out" data-act="pair-leave"' + busyP + '>Leave this pair</button></div>'
+          : people ? '<ul class="esu-wlist" style="margin-top:12px">' + people + '</ul>'
+          : threes ? '<ul class="esu-wlist" style="margin-top:12px">' + threes + '</ul>'
+          : '<p style="margin:12px 0 0">No one else is free just now. Check back soon, or ask in the cohort chat.</p>') +
+        '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" data-act="close-modal">Close</button></div>';
     } else if (m.type === 'pp-about') {
       body = '<h2 class="esu-h2">What a practicum pod is</h2><p style="margin:10px 0 0">A small group of mentees who meet to practice teaching. One person teaches a short piece, the others give feedback, and you take turns.</p>' +
         '<p style="margin:10px 0 0">Anyone in the cohort can organize a pod, with no approval needed, and pods begin after Immersion 1. Your articulation partner is someone to explain ideas with; a pod is where you teach a group.</p>' +
@@ -1213,6 +1235,14 @@
       return;
     }
     if (a === 'open-articulation') { state.modal = { type: 'articulation' }; state.msg = ''; state.form = { day: localToday(), hours: '1', mine: '', terms: {}, with: {}, third: '', addThird: false, before: '', after: '', reflected: '' }; render(); return; }
+    if (a === 'open-pair') { state.modal = { type: 'pair' }; state.msg = ''; render(); return; }
+    if (a === 'pair-choose' || a === 'pair-join' || a === 'pair-leave') {
+      if (a === 'pair-leave' && !window.confirm('Leave this pair? Your partner will be free to choose someone else.')) return;
+      var pb = a === 'pair-choose' ? { action: 'choose', email: t.dataset.email } : a === 'pair-join' ? { action: 'join', group: t.dataset.id } : { action: 'leave' };
+      pb.today = localToday(); pb.tz = myZone();
+      act('modal', function () { return call('/api/member/this-week/pair', pb).then(function (d) { if (a !== 'pair-leave') state.modal = null; return d; }); }).then(function () { if (state.modal) render(); });
+      return;
+    }
     if (a === 'add-third') { state.form.addThird = true; render(); var th = root.querySelector('#esu-third'); if (th) th.focus(); return; }
     if (a === 'take-back') { var aid = t.dataset.id; if (!window.confirm('Take this session back? The hours go for everyone who was there.')) return; act('articulation', function () { return call('/api/member/this-week/articulation', { remove: aid, today: localToday(), tz: myZone() }); }); return; }
     if (a === 'save-articulation') {

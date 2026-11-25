@@ -33,6 +33,25 @@ export const pwyc = {
   meditationPassAddOn: { regular: 99, cyber: null }, // TODO: Cyber price; see HANDOFF.md §6.4
 };
 
+// The one suggested amount each Kit pay-what-you-can product shows, keyed by the last part of its Kit product URL
+// (the course's checkout_url in the Course Library). Copied from Kit on Nov 25, 2026; update here if a Kit price changes.
+// A course not listed here shows just "PWYC", with no number.
+export const kitSuggested = {
+  'shiva-sutras': 47, 'body-of-sadhana': 79, 'hamsa-sadhana': 79, 'tibetan-book-of-the-dead': 79,
+  'subtle-alignment': 79, 'inner-saboteur': 79, 'chakras-immersion': 47, 'build-your-happy-place': 47,
+  'navaratri-2026': 79, 'dream-yoga': 79, 'relishing-krishna': 79, 'ancient-greek-wisdom': 127,
+  'metaphor-mantra-meditation': 79, 'chakra-sadhana': 79, 'yogic-perception': 79, 'path-of-the-heart': 47,
+  'how-to-read-sacred-texts': 47, 'samkhya-karika-yoga-sutras': 47, 'healing-stress': 47,
+  'creating-sacred-moments': 47, 'the-supreme-goddess': 47, '30-day-sadhana': 47, 'loving-kindness': 47,
+  'demystifying-yoga': 47, 'subtle-body-anatomy': 147, 'sequencing-for-yoga-teachers': 79,
+  'introduction-to-sanskrit': 79, 'beyond-the-studio-model': 47, 'embodied-anatomy': 79,
+  'breath-mechanics': 129, 'prop-and-body-shops': 129,
+};
+export const suggestedFor = checkout => {
+  const m = String(checkout || '').match(/\/products\/([^/?#]+)/);
+  return m ? kitSuggested[m[1]] || null : null;
+};
+
 // `courseId` must match the id/slug the existing Course Library data uses, so title, teacher, hours,
 // description, course art and the PWYC Kit product URL are read from there — not retyped here.
 // `motif` is the Cyber Week illustration shown on the card (the course's own art is used in the modal).
@@ -134,7 +153,7 @@ export const copy = {
   },
   earlyBanner: { label: 'Early access for members', text: "You're seeing Cyber prices before Monday. Thank you for studying with us." },
   hero: {
-    eyebrow: { live: 'Cyber Week · Nov 30 – Dec 6', early: 'Member early access · Nov 27 – Dec 6', evergreen: 'The Open Library' },
+    eyebrow: { live: 'Cyber Week · Now through Dec 6', early: 'Member early access · Nov 27 – Dec 6', evergreen: 'The Open Library' },
     headline: ['The whole library, ', 'at whatever you can give.'], // [roman, italic turn]
     body: 'For one week, every Embodied Philosophy course opens on a pay-what-you-can basis. Study the traditions, start a practice, and pay what is right for you.',
     primary: 'Enter the Open Library',
@@ -150,7 +169,7 @@ export const copy = {
     eyebrow: 'The Open Library',
     headline: ['Every course, ', 'pay what you can.'],
     body: 'Choose an amount that fits your life. Every course is yours for good, with recordings, readings and practices in your Circle dashboard.',
-    pwycNote: 'The middle amount is what most students give. Same course, whatever you choose.',
+    pwycNote: 'Each course shows a suggested amount. Give that, or whatever is right for you. Same course, whatever you choose.',
     guarantee: '100% satisfaction guarantee. Any course or certificate, refunded within 30 days, no questions asked.',
   },
   tier2: {
@@ -186,7 +205,7 @@ export const copy = {
 };
 
 export const faqs = [
-  { q: 'How does pay what you can work?', a: 'Pick one of three suggested amounts, or type your own (minimum $[MIN]). Whatever you choose, you get the full course.' },
+  { q: 'How does pay what you can work?', a: 'Each course shows one suggested amount. Pay that, or type your own (minimum $[MIN]). Whatever you choose, you get the full course.' },
   { q: 'Do I keep access after Cyber Week?', a: 'Yes. Every course you buy this week is yours for good, with its recordings, readings and practices.' },
   { q: 'Where do my courses live?', a: 'In Circle. After checkout you land on your dashboard there. Please use Circle in a web browser for now, not the app.' },
   { q: 'What is the difference between one certificate and Wisdom School Plus?', a: 'One certificate ($147) unlocks a single program. Wisdom School Plus ($297 for the first year) includes all four certificates, every Learning Pathway, CE certificates, The Attention Project 2027 and Meditation Mondays.' },

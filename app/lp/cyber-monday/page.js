@@ -10,7 +10,7 @@ import KitForm from '@/components/KitForm';
 import MobileBar from './MobileBar';
 import PwycModal from './PwycModal';
 import { readRequest, remaining } from './state';
-import { dates, campaign, pwyc, featuredCourses, libraryExcludeTopics, certificates, archive, pullQuote, testimonials, copy, faqs, endedLinks } from './cyber-2026';
+import { dates, campaign, pwyc, featuredCourses, libraryExcludeTopics, certificates, archive, pullQuote, testimonials, copy, faqs, endedLinks, suggestedFor } from './cyber-2026';
 
 // Time-driven page: the state is worked out on the server from the clock (see state.js), so no wrong state flashes.
 export const dynamic = 'force-dynamic';
@@ -54,7 +54,7 @@ const squareThumb = url => {
 const modalCourse = (o, extra = {}) => ({
   id: o.id, title: o.title, topic: o.topics[0] || o.kind, checkout: o.checkout || '', thumb: squareThumb(o.cover),
   who: [o.teachers.map(t => t.name).join(', '), o.length].filter(Boolean).join(' · '),
-  desc: modalDesc(o), includes: o.included.slice(0, 5), line: o.promise || firstSentence(o.description), ...extra,
+  suggested: suggestedFor(o.checkout), desc: modalDesc(o), includes: o.included.slice(0, 5), line: o.promise || firstSentence(o.description), ...extra,
 });
 const firstSentence = s => { const t = (String(s || '').match(/^.*?[.!?](\s|$)/) || [String(s || '')])[0].trim(); return t.length > 150 ? t.slice(0, 147).replace(/\s+\S*$/, '') + '…' : t; };
 
@@ -170,7 +170,7 @@ export default async function CyberMonday({ searchParams }) {
                     <span className="top"><span>{n.n} · {when}</span>{icon}</span>
                     <span className="t">{n.title}</span>
                     <span className="p">
-                      {i === 0 && <>Every on-demand course, <strong>pay what you can</strong> <s>${campaign.regularCoursePrice}</s></>}
+                      {i === 0 && <>Every on-demand course, <strong>pay what you can</strong></>}
                       {i === 1 && <>One certificate for <strong>${certificates.single.cyber}</strong>, or all four with Wisdom School Plus for <strong>${certificates.plus.cyberFirstYear}</strong></>}
                       {i === 2 && <>Past seasons from <strong>${archive.prices.season.cyber}</strong>, credited toward this year&rsquo;s Path of Recognition</>}
                     </span>
@@ -191,7 +191,7 @@ export default async function CyberMonday({ searchParams }) {
                   <p className="cm-lede">{copy.tier1.body}</p>
                 </div>
                 <div className="cm-pwyc" role="group" aria-label="How pay what you can works">
-                  <div className="row"><b>How pay what you can works</b><span>Regular <s>${campaign.regularCoursePrice}</s></span></div>
+                  <div className="row"><b>How pay what you can works</b></div>
                   {pwyc.suggested.every(n => n > 0) && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                       {pwyc.suggested.map((n, i) => <span key={i} className={`cm-chip${i === 1 ? ' mid' : ''}`}>{money(n)}</span>)}
@@ -214,8 +214,8 @@ export default async function CyberMonday({ searchParams }) {
                         {who && <p className="who">{who}</p>}
                         {o && (o.promise || o.description) && <p className="line">{o.promise || firstSentence(o.description)}</p>}
                         <div className="buy">
-                          <span><s>${campaign.regularCoursePrice}</s> <strong>PWYC</strong></span>
-                          <PwycModal course={course} pwyc={pwyc} regular={campaign.regularCoursePrice} state={state} />
+                          <span><strong>PWYC</strong>{course.suggested ? <> · suggested {money(course.suggested)}</> : null}</span>
+                          <PwycModal course={course} pwyc={pwyc} state={state} />
                         </div>
                       </div>
                     </article>
@@ -231,7 +231,7 @@ export default async function CyberMonday({ searchParams }) {
                   </summary>
                   <div className="cm-rows">
                     {rest.map(o => (
-                      <PwycModal key={o.id} variant="row" course={modalCourse(o)} pwyc={pwyc} regular={campaign.regularCoursePrice} state={state} />
+                      <PwycModal key={o.id} variant="row" course={modalCourse(o)} pwyc={pwyc} state={state} />
                     ))}
                   </div>
                 </details>

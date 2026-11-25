@@ -16,9 +16,9 @@ assert.equal(data.steps.length, 22); assert.ok(data.steps.every(s => /^\d{4}-\d{
 assert.deepEqual(data.steps.map(s => s.date), [...data.steps.map(s => s.date)].sort(), 'steps are in date order');
 for (const m of data.months) for (const s of m.steps) { assert.match(s.date, /^\d{4}-\d{2}-\d{2}$/, 'month steps carry real dates'); assert.equal(s.date.slice(0, 7), m.id, 'and sit in their own month'); assert.ok(data.steps.some(r => r.date === s.date && r.title === s.text), 'and are in the dated table'); }
 assert.equal(data.months.reduce((n, m) => n + m.steps.length, 0), data.steps.length, 'the month cards and the dated table list the same steps');
-assert.ok(data.months.filter(m => m.id !== '2027-07').every(m => m.items.some(t => /one-to-one/i.test(t)) ), 'every month from October to June names the one-to-one');
+assert.ok(data.months.filter(m => m.id !== '2026-10').every(m => m.items.some(t => /one-to-one/i.test(t)) ), 'every month from November to July names the one-to-one');
 assert.ok(data.months.find(m => m.id === '2027-06').items.some(t => /Two one-to-ones/.test(t)), 'June has two');
-assert.ok(!data.months.find(m => m.id === '2027-07').items.some(t => /one-to-one/i.test(t)), 'July has none: ten in all');
+assert.ok(!data.months.find(m => m.id === '2026-10').items.some(t => /one-to-one/i.test(t)), 'none in October: ten in all');
 assert.ok(data.oneToOne.howTo.some(t => /last week of the month/.test(t)) && data.oneToOne.howTo.some(t => /Book early/.test(t)), 'book early, session in the last week');
 assert.equal(data.oneToOne.template.length, 5); assert.deepEqual(data.lanes.months, ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']);
 

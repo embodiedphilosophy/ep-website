@@ -9,7 +9,7 @@ import { kitAmountParam } from './cyber-2026';
 // Suggested amounts come from cyber-2026.js (pwyc). Until they are set, the dialog just says the amount is chosen at
 // checkout. If Kit takes a pre-filled amount (kitAmountParam), the chosen amount is passed through.
 // `variant="row"` renders the trigger as a row in the "See every course" list instead of a button.
-export default function PwycModal({ course, pwyc, regular, state, variant }) {
+export default function PwycModal({ course, pwyc, state, variant }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);
   const dialog = useRef(null);
@@ -80,7 +80,7 @@ export default function PwycModal({ course, pwyc, regular, state, variant }) {
                   {course.includes.map((x, i) => <li key={i}>{x}</li>)}
                 </ul>
               )}
-              <div className="cm-row"><strong>{amounts ? 'Choose what you can give' : 'You choose the amount'}</strong><span>Regular <s>${regular}</s></span></div>
+              <div className="cm-row"><strong>{amounts ? 'Choose what you can give' : 'You choose the amount'}</strong>{course.suggested ? <span>Suggested ${course.suggested}</span> : null}</div>
               {amounts ? (
                 <>
                   <div className="cm-amounts">

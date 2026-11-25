@@ -89,11 +89,22 @@ const FAQ = [
   ['What if it isn’t right for me?', 'If you gave a contribution and want it back, write to hello@embodiedphilosophy.com within 30 days and we’ll refund it within 5 business days.'],
 ];
 
-function Bindu({ className = '' }) {
+// Campaign art (MR27 collage series), one tile per day: [image, ground colour, text is dark?]
+const ART = n => `/mr27/collage-${n}.webp`;
+const DAY_ART = [
+  ['02', '#E790BB', true],   // the eye on the target: dhāraṇā
+  ['04', '#93BADB', true],   // moon over the waves: dhyāna
+  ['05', '#16151B', false],  // the figure dissolving into gold: samādhi
+  ['07', '#78B5B0', true],   // three circles held as one: saṃyama
+  ['03', '#EFB399', true],   // the wheel between two hands: recognition
+];
+
+function Rings() {
   return (
-    <div className={`mr-bindu ${className}`} aria-hidden="true">
-      <span className="r r3" /><span className="r r2" /><span className="r r1" /><span className="dot" />
-    </div>
+    <svg className="mr-target" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="56" /><circle cx="60" cy="60" r="40" /><circle cx="60" cy="60" r="24" />
+      <circle className="dot" cx="60" cy="60" r="9" />
+    </svg>
   );
 }
 
@@ -104,58 +115,82 @@ export default async function MeditationResolution() {
     <div className="mr">
       <style>{CSS}</style>
 
-      <section className="mr-hero">
-        <Bindu className="mr-hero-bindu" />
-        <div className="wrap mr-hero-in">
-          <p className="mr-kicker">January 1–5, 2027 · Pay what you can</p>
-          <h1>Meditation<br />Resolution</h1>
-          <p className="mr-sub">A New Year Symposium</p>
+      <section className="mr-sec mr-indigo mr-hero"><div className="wrap mr-split">
+        <div>
+          <span className="mr-label">Pay what you can</span>
+          <h1>Meditation Resolution 2027</h1>
+          <p className="mr-sub">A New Year Symposium on Saṃyama</p>
           <p className="mr-lede">Five guided meditations on the three inner limbs of yoga, <i>dhāraṇā</i>, <i>dhyāna</i> and <i>samādhi</i>. Five lectures on how the world’s traditions have practised them. One point to return to, all year.</p>
-          <ul className="mr-facts">
-            <li><b>5</b> meditations</li><li><b>5</b> lectures</li><li><b>Live</b> on Zoom, with replays</li>
-          </ul>
+          <ul className="mr-facts"><li>January 1–5, 2027</li><li>5 meditations · 5 lectures</li><li>Live on Zoom, with replays</li></ul>
           <div className="mr-btns">
-            <a className="mr-btn" href={checkout}>Save your place</a>
+            <a className="mr-btn mr-btn-gold" href={checkout}>Save your place</a>
             <a className="mr-btn mr-btn-line" href="#days">See the five days</a>
           </div>
         </div>
-      </section>
+        <img className="mr-art mr-hero-art" src={ART('01')} alt="A gold-leaf meditator with a bindu at the crown, inside concentric rings" />
+      </div></section>
 
-      <section className="mr-red"><div className="wrap mr-red-in">
-        <p className="mr-big">The mind wanders.<br /><em>Wandering, and returning, is the practice.</em></p>
-        <div className="mr-red-text">
+      <section className="mr-sec mr-orange"><div className="wrap mr-split mr-split-rev">
+        <img className="mr-art" src={ART('06')} alt="A collage of a seated yogi inside an arch, with a gold triangle at the heart" />
+        <div>
+          <h2 className="mr-big">Begin the new year with attention.</h2>
           <p>Each January, Embodied Philosophy opens the year with Meditation Resolution. We’ve sat with the five elements, the five kleśas and the five kośas. This year we go to the heart of meditation itself.</p>
-          <p>Most resolutions fail for the same reason most meditation sessions feel like failures: attention drifts. The yoga tradition doesn’t treat that as a problem to fix before practice begins. The third chapter of the <i>Yoga Sūtra</i> describes where the returning leads, and the symposium asks how other traditions have mapped the same road.</p>
+          <p>Most resolutions fail for the same reason most meditation sessions feel like failures: the mind wanders. The yoga tradition doesn’t treat that as a problem to fix before practice begins. Wandering, and returning, <i>is</i> the practice. The third chapter of the <i>Yoga Sūtra</i> describes where the returning leads, and the symposium asks how other traditions have mapped the same road.</p>
         </div>
       </div></section>
 
-      <section className="mr-dark" id="days"><div className="wrap">
-        <p className="mr-eyebrow">The five days</p>
-        <h2 className="mr-h2">A meditation and a lecture,<br />every day</h2>
+      <section className="mr-sec mr-cream" id="days"><div className="wrap">
+        <span className="mr-label mr-label-ink">The five days</span>
+        <h2 className="mr-h2">A meditation and a lecture, every day.</h2>
         <ol className="mr-days">
-          {DAYS.map(([n, date, limb, mt, skt, ref, md, trad, lt, ld]) => (
-            <li key={n} className="mr-day">
-              <div className="mr-day-n"><span>{n}</span><b>{date}</b><i>{limb}</i></div>
-              <div className="mr-day-col">
-                <p className="mr-tag">Meditation</p>
-                <h3>{mt}</h3>
-                <p className="mr-skt">{skt} <span>{ref}</span></p>
-                <p>{md}</p>
-              </div>
-              <div className="mr-day-col mr-lec">
-                <p className="mr-tag">Lecture · {trad}</p>
-                <h3>{lt}</h3>
-                <p>{ld}</p>
-              </div>
-            </li>
-          ))}
+          {DAYS.map(([n, date, limb, mt, skt, ref, md, trad, lt, ld], i) => {
+            const [img, ground, dark] = DAY_ART[i];
+            return (
+              <li key={n} className={`mr-day${dark ? '' : ' mr-day-light'}`} style={{ background: ground }}>
+                <div className="mr-day-art"><img src={ART(img)} alt="" /><span className="mr-day-n">{n}</span></div>
+                <div className="mr-day-body">
+                  <p className="mr-day-when">{date} · <i>{limb}</i></p>
+                  <div className="mr-day-cols">
+                    <div>
+                      <p className="mr-tag">Meditation</p>
+                      <h3>{mt}</h3>
+                      <p className="mr-skt">{skt} <span>{ref}</span></p>
+                      <p>{md}</p>
+                    </div>
+                    <div>
+                      <p className="mr-tag">Lecture · {trad}</p>
+                      <h3>{lt}</h3>
+                      <p>{ld}</p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
         </ol>
       </div></section>
 
-      <section className="mr-black" id="teachers"><div className="wrap">
-        <p className="mr-eyebrow">Your teachers</p>
-        <h2 className="mr-h2">Five teachers, five traditions</h2>
-        <p className="mr-teach-lede">The symposium is led by Embodied Philosophy faculty, each bringing a lineage and a way of sitting. More teachers may be announced.</p>
+      <section className="mr-sec mr-paper"><div className="wrap mr-split mr-split-rev">
+        <figure className="mr-limbs">
+          <img className="mr-art" src={ART('09')} alt="Three collage panels: a target on pink, a seated sage on blue, and gold leaf" />
+          <figcaption><span><b>Dhāraṇā</b>concentration</span><span><b>Dhyāna</b>meditation</span><span><b>Samādhi</b>absorption</span></figcaption>
+        </figure>
+        <div>
+          <h2 className="mr-big mr-ink">Three limbs. One practice.</h2>
+          <p><i>Dhāraṇā</i> comes from <i>√dhṛ</i>, to hold. <i>Dhyāna</i> from <i>√dhyai</i>, to contemplate. <i>Samādhi</i> is a “placing together,” and <i>saṃyama</i> a “holding together.” Concentration that deepens becomes meditation; meditation that deepens becomes absorption.</p>
+          <p>Patañjali calls these the <i>inner</i> limbs, then says that even they are outer compared with seedless (<i>nirbīja</i>) samādhi (<i>Yoga Sūtra</i> 3.8). In Kashmir, Kṣemarāja rewrote each limb as a mode of recognition: samādhi is not something you build but something you recognize. <a href="https://read.tarkajournal.com/p/patanjalis-eight-limbs-are-only-one">Read more in Tarka →</a></p>
+        </div>
+      </div></section>
+
+      <section className="mr-sec mr-plum" id="teachers"><div className="wrap">
+        <div className="mr-head-art">
+          <div>
+            <span className="mr-label">Your teachers</span>
+            <h2 className="mr-h2">Five teachers, five traditions.</h2>
+            <p className="mr-intro">The symposium is led by Embodied Philosophy faculty, each bringing a lineage and a way of sitting. More teachers may be announced.</p>
+          </div>
+          <img className="mr-art mr-corner" src={ART('10')} alt="" />
+        </div>
         <div className="mr-teachers">
           {TEACHERS.map(([name, role, bio]) => {
             const photo = site.photos?.[photoKey(name)] || PHOTOS[photoKey(name)];
@@ -171,53 +206,46 @@ export default async function MeditationResolution() {
         </div>
       </div></section>
 
-      <section className="mr-dark"><div className="wrap mr-rings-in">
-        <svg className="mr-rings" viewBox="0 0 400 400" aria-hidden="true">
-          <circle cx="200" cy="200" r="190" /><circle cx="200" cy="200" r="130" /><circle cx="200" cy="200" r="70" />
-          <circle className="core" cx="200" cy="200" r="12" />
-          <text x="200" y="38">dhāraṇā</text><text x="200" y="98">dhyāna</text><text x="200" y="158">samādhi</text>
-        </svg>
+      <section className="mr-sec mr-cream"><div className="wrap mr-sutra-wrap">
         <div>
-          <p className="mr-eyebrow">Three words for one movement</p>
-          <h2 className="mr-h2">Concentration deepens into meditation. Meditation deepens into absorption.</h2>
-          <p><i>Dhāraṇā</i> comes from <i>√dhṛ</i>, to hold. <i>Dhyāna</i> from <i>√dhyai</i>, to contemplate. <i>Samādhi</i> is a “placing together,” and <i>saṃyama</i> a “holding together.” Patañjali calls these three the <i>inner</i> limbs, then says that even they are outer compared with seedless (<i>nirbīja</i>) samādhi (<i>Yoga Sūtra</i> 3.8). The practice keeps opening inward.</p>
-          <p>In Kashmir, Kṣemarāja rewrote each limb as a mode of recognition: samādhi is not something you build but something you recognize. <a href="https://read.tarkajournal.com/p/patanjalis-eight-limbs-are-only-one">Read more in Tarka →</a></p>
+          <span className="mr-label mr-label-ink">The source</span>
+          <h2 className="mr-h2">Six sūtras that hold the whole practice.</h2>
+          <ol className="mr-sutras">
+            {SUTRAS.map(([n, skt, en]) => (
+              <li key={n}><span>YS {n}</span><p className="mr-skt">{skt}</p><p>{en}</p></li>
+            ))}
+          </ol>
+          <p className="mr-fine">Translations by Embodied Philosophy.</p>
         </div>
+        <img className="mr-art mr-tree" src={ART('08')} alt="A collage of a tree of the subtle body rooted in two hands" />
       </div></section>
 
-      <section className="mr-black"><div className="wrap">
-        <p className="mr-eyebrow">The source</p>
-        <h2 className="mr-h2">Six sūtras that hold the whole practice</h2>
-        <ol className="mr-sutras">
-          {SUTRAS.map(([n, skt, en]) => (
-            <li key={n}><span>YS {n}</span><p className="mr-skt">{skt}</p><p>{en}</p></li>
-          ))}
-        </ol>
-        <p className="mr-fine">Translations by Embodied Philosophy.</p>
-        <blockquote className="mr-quote">“Yoga is known through yoga. Yoga arises from yoga. Whoever is attentive in yoga delights in yoga for a long time.”<cite>Yoga Bhāṣya on Yoga Sūtra 3.6</cite></blockquote>
+      <section className="mr-sec mr-indigo mr-quote-sec"><div className="wrap">
+        <Rings />
+        <blockquote className="mr-quote">Yoga is known through yoga. Yoga arises from yoga. Whoever is attentive in yoga delights in yoga for a long time.<cite>Yoga Bhāṣya on Yoga Sūtra 3.6</cite></blockquote>
       </div></section>
 
-      <section className="mr-red" id="join"><div className="wrap">
-        <p className="mr-eyebrow mr-on-red">Pay what you can</p>
+      <section className="mr-sec mr-pink" id="join"><div className="wrap">
+        <span className="mr-label mr-label-ink">Pay what you can</span>
         <h2 className="mr-h2">No one is kept out by price.</h2>
-        <p className="mr-red-lede">A set price keeps out exactly the people a new-year practice is for. So we ask everyone to give what’s true for them, and trust that it balances out. Every teacher who leads a session is paid for their time.</p>
+        <p className="mr-intro">A set price keeps out exactly the people a new-year practice is for. So we ask everyone to give what’s true for them, and trust that it balances out. Every teacher who leads a session is paid for their time.</p>
         <div className="mr-tiers">
           {TIERS.map(([name, amt, desc, suggested]) => (
             <article key={name} className={`mr-tier${suggested ? ' on' : ''}`}>
-              {suggested && <span className="mr-badge">Suggested</span>}
+              {suggested && <span className="mr-label mr-badge">Suggested</span>}
               <h3>{name}</h3><div className="amt">{amt}</div><p>{desc}</p>
             </article>
           ))}
         </div>
         <div className="mr-center">
-          <a className="mr-btn mr-btn-ivory" href={checkout}>Save your place — choose your amount</a>
+          <a className="mr-btn mr-btn-indigo" href={checkout}>Save your place — choose your amount</a>
           <p>Choose your amount when you register. Everyone receives all ten sessions.</p>
         </div>
       </div></section>
 
-      <section className="mr-dark"><div className="wrap">
-        <p className="mr-eyebrow">After the five days</p>
-        <h2 className="mr-h2">Keep the resolution</h2>
+      <section className="mr-sec mr-blue"><div className="wrap">
+        <span className="mr-label mr-label-ink">After the five days</span>
+        <h2 className="mr-h2">Keep the resolution.</h2>
         <div className="mr-next">
           {NEXT.map(([h, p, href]) => (
             <a key={h} href={href} className="mr-next-card"><h3>{h}</h3><p>{p}</p><span>Learn more →</span></a>
@@ -225,159 +253,163 @@ export default async function MeditationResolution() {
         </div>
       </div></section>
 
-      <section className="mr-black"><div className="wrap mr-faq">
+      <section className="mr-sec mr-paper"><div className="wrap mr-faq">
         <h2 className="mr-h2">Questions</h2>
         {FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
       </div></section>
 
-      <section className="mr-close">
-        <Bindu className="mr-close-bindu" />
-        <div className="wrap">
-          <p className="mr-skt">trayam ekatra saṃyamaḥ</p>
-          <h2>Three limbs. One point.<br />A whole year.</h2>
-          <a className="mr-btn" href={checkout}>Save your place</a>
-        </div>
-      </section>
+      <section className="mr-sec mr-black mr-close"><div className="wrap">
+        <Rings />
+        <p className="mr-skt">trayam ekatra saṃyamaḥ</p>
+        <h2>Three limbs. One point. A whole year.</h2>
+        <a className="mr-btn mr-btn-gold" href={checkout}>Save your place</a>
+      </div></section>
     </div>
   );
 }
 
+// Palette sampled from the MR27 campaign images.
 const CSS = `
-.mr{--night:#0E0B09;--night2:#17120E;--saffron:#EBA329;--verm:#C2401F;--ivory:#FAF5EB;color:var(--ivory);background:var(--night)}
-.mr a{color:inherit}
-.mr i,.mr em{font-style:italic}
-.mr-eyebrow{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--saffron);font-weight:600;margin:0 0 18px}
-.mr-h2{font-family:var(--font-serif),serif;font-weight:600;font-size:clamp(34px,4.6vw,60px);line-height:1.02;letter-spacing:-.5px;margin:0 0 28px;color:var(--ivory)}
+.mr{--indigo:#2A234F;--pink:#E790BB;--peach:#EFB399;--sky:#93BADB;--black:#16151B;--orange:#E8603A;--teal:#78B5B0;--cream:#F2ECE0;--paper:#F8F5EE;--plum:#582550;--gold:#D9A93A;--ivory:#FBF8F1;--ink:var(--indigo);color:var(--ink);background:var(--paper)}
 .mr p{line-height:1.6}
-.mr .mr-big,.mr .mr-quote{line-height:1.08}.mr .mr-skt{line-height:1.35}
+.mr i{font-style:italic}
+.mr a{color:inherit}
+.mr-sec{padding:104px 0}
+.mr-indigo{background:var(--indigo);color:var(--ivory)}.mr-orange{background:var(--orange);color:var(--ivory)}
+.mr-cream{background:var(--cream)}.mr-paper{background:var(--paper)}.mr-plum{background:var(--plum);color:var(--ivory)}
+.mr-pink{background:var(--pink)}.mr-blue{background:var(--sky)}.mr-black{background:var(--black);color:var(--ivory)}
 
-/* hero */
-.mr-hero{position:relative;overflow:hidden;padding:120px 0 130px;background:radial-gradient(ellipse at 78% 45%,#3A1A0E 0%,var(--night) 58%)}
-.mr-hero-in{position:relative;z-index:2}
-.mr-kicker{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--saffron);font-weight:600;margin:0 0 26px}
-.mr-hero h1{font-family:var(--font-serif),serif;font-weight:600;font-size:clamp(64px,11vw,156px);line-height:.86;letter-spacing:-2px;margin:0;color:var(--ivory)}
-.mr-sub{font-family:var(--font-serif),serif;font-style:italic;font-size:clamp(26px,3.4vw,44px);color:var(--saffron);margin:18px 0 0}
-.mr-lede{max-width:560px;font-size:19px;color:rgba(250,245,235,.82);margin:30px 0 0}
-.mr-facts{list-style:none;display:flex;flex-wrap:wrap;gap:10px 28px;padding:0;margin:28px 0 0;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:rgba(250,245,235,.7)}
-.mr-facts b{color:var(--ivory);font-size:16px}
-.mr-btns{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
-.mr-btn{display:inline-block;padding:17px 30px;background:var(--saffron);color:var(--night)!important;font-weight:700;font-size:15px;letter-spacing:.3px;text-decoration:none;border:1.5px solid var(--saffron);transition:transform .2s,background .2s}
-.mr-btn:hover{transform:translateY(-2px);background:#F7BA4A}
-.mr-btn-line{background:transparent;color:var(--ivory)!important;border-color:rgba(250,245,235,.5)}
-.mr-btn-line:hover{background:rgba(250,245,235,.08)}
-.mr-btn-ivory{background:var(--ivory);border-color:var(--ivory);color:var(--verm)!important}
-.mr-btn-ivory:hover{background:#fff}
+/* type: italic serif display, small sans labels */
+.mr h1,.mr-h2,.mr-big,.mr h3,.mr-sub,.mr-quote,.mr-close h2{font-family:var(--font-serif),serif;font-style:italic;font-weight:500;letter-spacing:-.3px}
+.mr h1{font-size:clamp(54px,7.4vw,104px);line-height:.95;margin:22px 0 0;color:var(--ivory)}
+.mr-sub{font-size:clamp(22px,2.4vw,30px);color:var(--gold);margin:16px 0 0}
+.mr-h2{font-size:clamp(36px,4.4vw,58px);line-height:1.02;margin:14px 0 26px;color:inherit}
+.mr .mr-big{font-size:clamp(38px,4.6vw,62px);line-height:1.02;margin:0 0 26px;color:inherit}
+.mr-ink{color:var(--indigo)}
+.mr-label{display:inline-block;background:var(--gold);color:var(--black);font-family:var(--font-sans),sans-serif;font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;padding:6px 10px}
+.mr-label-ink{background:var(--indigo);color:var(--ivory)}
+.mr-intro{max-width:640px;font-size:17.5px;margin:-6px 0 40px;opacity:.9}
+.mr-lede{max-width:540px;font-size:18.5px;color:rgba(251,248,241,.85);margin:26px 0 0}
+.mr-facts{list-style:none;padding:0;margin:24px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.mr-facts li{border:1px solid rgba(251,248,241,.35);font-size:13px;padding:7px 12px;color:rgba(251,248,241,.9)}
 
-/* bindu */
-.mr-bindu{position:absolute;pointer-events:none}
-.mr-bindu .dot{position:absolute;inset:0;margin:auto;width:22%;height:22%;border-radius:50%;background:radial-gradient(circle,#FFE6A8 0%,var(--saffron) 35%,var(--verm) 70%,transparent 72%);box-shadow:0 0 80px 30px rgba(235,163,41,.35),0 0 200px 80px rgba(194,64,31,.25);animation:mrBreath 7s ease-in-out infinite}
-.mr-bindu .r{position:absolute;inset:0;margin:auto;border-radius:50%;border:1px solid rgba(235,163,41,.28)}
-.mr-bindu .r1{width:44%;height:44%}.mr-bindu .r2{width:70%;height:70%;border-color:rgba(235,163,41,.18)}.mr-bindu .r3{width:100%;height:100%;border-color:rgba(235,163,41,.1)}
-.mr-hero-bindu{width:min(780px,90vw);height:min(780px,90vw);right:-140px;top:50%;transform:translateY(-50%)}
-@keyframes mrBreath{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.12);opacity:1}}
-@media (prefers-reduced-motion:reduce){.mr-bindu .dot{animation:none}}
+/* collage pieces: white torn-paper edge, soft shadow */
+.mr-art{display:block;width:100%;height:auto}
+.mr-split{display:grid;grid-template-columns:1.05fr .95fr;gap:72px;align-items:center}
+.mr-split-rev{grid-template-columns:.9fr 1.1fr}
+.mr-orange p,.mr-paper .mr-split p{font-size:17.5px;margin:0 0 16px}
+.mr-orange p{color:rgba(251,248,241,.95)}
+.mr-paper .mr-split a{text-decoration:underline;text-underline-offset:3px}
 
-/* bands */
-.mr-red{background:var(--verm);padding:110px 0;color:var(--ivory)}
-.mr-red-in{display:grid;grid-template-columns:1.15fr 1fr;gap:64px;align-items:center}
-.mr-big{font-family:var(--font-serif),serif;font-size:clamp(38px,5vw,68px);line-height:1.02;font-weight:600;margin:0}
-.mr-big em{color:#FFE2B0}
-.mr-red-text p{font-size:17px;margin:0 0 16px;color:rgba(250,245,235,.92)}
-.mr-on-red{color:#FFE2B0}
-.mr-red-lede{max-width:680px;font-size:18px;color:rgba(250,245,235,.9);margin:0 0 44px}
-.mr-dark{background:var(--night2);padding:110px 0}
-.mr-black{background:var(--night);padding:110px 0}
+/* buttons */
+.mr-btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.mr-btn{display:inline-block;padding:16px 28px;font-weight:700;font-size:15px;text-decoration:none;border:1.5px solid transparent;transition:transform .2s,filter .2s}
+.mr-btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.mr-btn-gold{background:var(--gold);color:var(--black)!important}
+.mr-btn-line{border-color:rgba(251,248,241,.6);color:var(--ivory)!important}
+.mr-btn-indigo{background:var(--indigo);color:var(--ivory)!important}
 
-/* days */
-.mr-days{list-style:none;padding:0;margin:20px 0 0;border-top:1px solid rgba(235,163,41,.25)}
-.mr-day{display:grid;grid-template-columns:170px 1fr 1fr;gap:44px;padding:44px 0;border-bottom:1px solid rgba(235,163,41,.25)}
-.mr-day-n span{display:block;font-family:var(--font-serif),serif;font-size:96px;line-height:.8;color:var(--saffron)}
-.mr-day-n b{display:block;margin-top:14px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(250,245,235,.6)}
-.mr-day-n i{display:block;margin-top:6px;font-family:var(--font-serif),serif;font-size:22px;color:var(--ivory)}
-.mr-tag{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--saffron);margin:0 0 10px}
-.mr-lec .mr-tag{color:#F07A55}
-.mr-day h3{font-family:var(--font-serif),serif;font-size:30px;line-height:1.08;font-weight:600;margin:0 0 10px;color:var(--ivory)}
-.mr-day-col>p:last-child{font-size:15.5px;color:rgba(250,245,235,.72);margin:0}
-.mr-lec{border-left:1px solid rgba(250,245,235,.12);padding-left:44px}
-.mr-skt{font-family:var(--font-serif),serif;font-style:italic;font-size:19px;color:var(--saffron);margin:0 0 12px;line-height:1.35}
-.mr-skt span{font-family:var(--font-sans),sans-serif;font-style:normal;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(250,245,235,.45);margin-left:6px}
+/* days: one coloured panel per day, with its collage */
+.mr-days{list-style:none;padding:0;margin:0;display:grid;gap:22px}
+.mr-day{display:grid;grid-template-columns:300px 1fr;color:var(--indigo);box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.mr-day-light{color:var(--ivory)}
+.mr-day-art{position:relative}
+.mr-day-art img{display:block;width:100%;height:100%;object-fit:cover}
+.mr-day-n{position:absolute;left:18px;bottom:6px;font-family:var(--font-serif),serif;font-style:italic;font-size:88px;line-height:1;color:var(--ivory);text-shadow:0 2px 14px rgba(0,0,0,.25)}
+.mr-day-body{padding:34px 38px}
+.mr-day-when{font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;margin:0 0 14px}
+.mr-day-when i{font-family:var(--font-serif),serif;font-size:20px;letter-spacing:0;text-transform:none;font-weight:500}
+.mr-day-cols{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+.mr-day-cols>div+div{border-left:1px solid currentColor;padding-left:34px;border-color:rgba(42,35,79,.25)}
+.mr-day-light .mr-day-cols>div+div{border-color:rgba(251,248,241,.25)}
+.mr-tag{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px;opacity:.75}
+.mr-day h3{font-size:28px;line-height:1.08;margin:0 0 8px}
+.mr-day-cols p:last-child{font-size:15px;margin:0;opacity:.88}
+.mr-skt{font-family:var(--font-serif),serif;font-style:italic;font-size:18px;line-height:1.35!important;margin:0 0 10px}
+.mr-skt span{font-family:var(--font-sans),sans-serif;font-style:normal;font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;opacity:.65;margin-left:4px}
+.mr-day-light .mr-skt{color:var(--gold)}
 
-/* rings */
-.mr-rings-in{display:grid;grid-template-columns:420px 1fr;gap:72px;align-items:center}
-.mr-rings{width:100%;max-width:420px}
-.mr-rings circle{fill:none;stroke:rgba(235,163,41,.45);stroke-width:1}
-.mr-rings circle.core{fill:var(--saffron);stroke:none;filter:drop-shadow(0 0 14px rgba(235,163,41,.8))}
-.mr-rings text{fill:rgba(250,245,235,.75);font-family:var(--font-serif),serif;font-style:italic;font-size:17px;text-anchor:middle}
-.mr-rings-in p:not(.mr-eyebrow){font-size:17px;color:rgba(250,245,235,.8);margin:0 0 14px}
-.mr-rings-in a{color:var(--saffron);text-decoration:underline;text-underline-offset:3px}
+/* three limbs */
+.mr-limbs{margin:0}
+.mr-limbs figcaption{display:grid;grid-template-columns:repeat(3,1fr);margin-top:-6px;padding:0 6%;text-align:left}
+.mr-limbs figcaption span{font-size:12px;color:#6D6488}
+.mr-limbs figcaption b{display:block;font-family:var(--font-serif),serif;font-size:20px;font-weight:600;color:var(--indigo)}
 
 /* teachers */
-.mr-teach-lede{max-width:640px;font-size:17px;color:rgba(250,245,235,.75);margin:-8px 0 44px}
-.mr-teachers{display:grid;grid-template-columns:repeat(5,1fr);gap:28px}
-.mr-teacher{min-width:0}
-.mr-teacher img,.mr-initials{display:flex;align-items:center;justify-content:center;width:132px;height:132px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--night),0 0 0 3.5px var(--saffron),0 0 40px rgba(235,163,41,.25)}
-.mr-initials{background:radial-gradient(circle at 35% 30%,#3A1A0E,var(--night2));font-family:var(--font-serif),serif;font-size:42px;color:var(--saffron)}
-.mr-teacher h3{font-family:var(--font-serif),serif;font-size:26px;font-weight:600;line-height:1.1;margin:24px 0 6px;color:var(--ivory)}
-.mr .mr-role{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#F07A55;margin:0 0 12px;line-height:1.5}
-.mr-teacher p:last-child{font-size:14.5px;color:rgba(250,245,235,.72);margin:0}
+.mr-head-art{display:grid;grid-template-columns:1fr 260px;gap:40px;align-items:center}
+.mr-corner{width:260px;margin-top:-40px}
+.mr-teachers{display:grid;grid-template-columns:repeat(5,1fr);gap:28px;margin-top:10px}
+.mr-teacher img,.mr-initials{display:flex;align-items:center;justify-content:center;width:128px;height:128px;border-radius:50%;object-fit:cover;border:5px solid var(--ivory);box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.mr-initials{background:radial-gradient(circle at 35% 30%,#F0C766,var(--gold) 55%,#B9862A);font-family:var(--font-serif),serif;font-style:italic;font-size:44px;color:var(--plum)}
+.mr-teacher h3{font-size:26px;line-height:1.1;margin:22px 0 6px;color:var(--ivory)}
+.mr .mr-role{font-size:10.5px;letter-spacing:1.8px;text-transform:uppercase;font-weight:700;color:var(--gold);margin:0 0 10px;line-height:1.5}
+.mr-teacher p:last-child{font-size:14.5px;color:rgba(251,248,241,.8);margin:0}
 
 /* sūtras */
-.mr-sutras{list-style:none;padding:0;margin:10px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(235,163,41,.22);border:1px solid rgba(235,163,41,.22)}
-.mr-sutras li{background:var(--night);padding:30px 28px}
-.mr-sutras span{font-size:11px;letter-spacing:3px;font-weight:700;color:#F07A55}
-.mr-sutras .mr-skt{font-size:22px;margin:12px 0 10px}
-.mr-sutras p:last-child{font-size:15px;color:rgba(250,245,235,.75);margin:0}
-.mr-fine{font-size:13px;color:rgba(250,245,235,.45);margin:16px 0 0}
-.mr-quote{margin:70px auto 0;max-width:820px;text-align:center;font-family:var(--font-serif),serif;font-style:italic;font-size:clamp(26px,3.2vw,40px);line-height:1.2;color:var(--ivory)}
-.mr-quote cite{display:block;margin-top:18px;font-family:var(--font-sans),sans-serif;font-style:normal;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--saffron)}
+.mr-sutra-wrap{display:grid;grid-template-columns:1fr 330px;gap:56px;align-items:start}
+.mr-tree{position:sticky;top:110px}
+.mr-sutras{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mr-sutras li{background:var(--ivory);padding:22px 22px 20px;box-shadow:0 1px 0 rgba(42,35,79,.08)}
+.mr-sutras span{font-size:10.5px;letter-spacing:2px;font-weight:700;color:var(--orange)}
+.mr-sutras .mr-skt{font-size:20px;margin:8px 0 6px;color:var(--plum)}
+.mr-sutras p:last-child{font-size:15px;margin:0;color:#4B4469}
+.mr-fine{font-size:13px;color:#6D6488;margin:14px 0 0}
 
-/* tiers */
-.mr-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-.mr-tier{position:relative;border:1.5px solid rgba(250,245,235,.55);padding:30px 26px}
-.mr-tier h3{font-family:var(--font-serif),serif;font-size:26px;font-weight:600;margin:0;line-height:1.1}
-.mr-tier .amt{font-family:var(--font-serif),serif;font-size:58px;font-weight:600;line-height:1;margin:16px 0 14px}
-.mr-tier p{font-size:15px;margin:0;color:rgba(250,245,235,.88)}
-.mr-tier.on{background:var(--ivory);color:var(--night);border-color:var(--ivory)}
-.mr-tier.on .amt{color:var(--verm)}.mr-tier.on p{color:#4A4036}
-.mr-badge{position:absolute;top:-12px;left:24px;background:var(--night);color:var(--saffron);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:5px 10px}
-.mr-center{text-align:center;margin-top:44px}
-.mr-center p{font-size:14px;color:rgba(250,245,235,.85);margin:14px 0 0}
+/* quote */
+.mr-quote-sec{text-align:center;padding:96px 0}
+.mr-target{width:110px;height:110px;margin:0 auto 26px;display:block}
+.mr-target circle{fill:none;stroke:rgba(251,248,241,.55);stroke-width:1}
+.mr-target circle.dot{fill:var(--gold);stroke:var(--ivory);stroke-width:3}
+.mr-quote{max-width:820px;margin:0 auto;font-size:clamp(26px,3.2vw,40px);line-height:1.18;color:var(--ivory)}
+.mr-quote cite{display:block;margin-top:18px;font-family:var(--font-sans),sans-serif;font-style:normal;font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold)}
+
+/* pay what you can */
+.mr-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.mr-tier{position:relative;background:var(--ivory);padding:30px 24px 26px}
+.mr-tier h3{font-size:25px;margin:0;line-height:1.1}
+.mr-tier .amt{font-family:var(--font-serif),serif;font-size:56px;font-weight:600;line-height:1;margin:14px 0 12px;color:var(--plum)}
+.mr-tier p{font-size:15px;margin:0;color:#4B4469}
+.mr-tier.on{background:var(--indigo);color:var(--ivory)}
+.mr-tier.on .amt{color:var(--gold)}.mr-tier.on p{color:rgba(251,248,241,.85)}
+.mr-badge{position:absolute;top:-12px;left:22px}
+.mr-center{text-align:center;margin-top:42px}
+.mr-center p{font-size:14px;margin:14px 0 0}
 
 /* next */
-.mr-next{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.mr-next-card{display:block;padding:34px 30px;border:1px solid rgba(235,163,41,.3);text-decoration:none;transition:background .2s,border-color .2s}
-.mr-next-card:hover{background:rgba(235,163,41,.07);border-color:var(--saffron)}
-.mr-next-card h3{font-family:var(--font-serif),serif;font-size:30px;font-weight:600;margin:0 0 10px}
-.mr-next-card p{font-size:15.5px;color:rgba(250,245,235,.72);margin:0 0 18px}
-.mr-next-card span{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--saffron)}
+.mr-next{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.mr-next-card{display:block;background:var(--ivory);padding:32px 28px;text-decoration:none;transition:transform .2s}
+.mr-next-card:hover{transform:translateY(-3px)}
+.mr-next-card h3{font-size:30px;margin:0 0 10px}
+.mr-next-card p{font-size:15px;color:#4B4469;margin:0 0 16px}
+.mr-next-card span{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--orange)}
 
 /* faq */
 .mr-faq{max-width:820px}
-.mr-faq details{border-bottom:1px solid rgba(235,163,41,.25);padding:20px 0}
-.mr-faq summary{font-size:19px;font-weight:600;cursor:pointer;color:var(--ivory)}
-.mr-faq details p{margin:12px 0 0;color:rgba(250,245,235,.78);font-size:16px}
+.mr-faq details{border-bottom:1px solid rgba(42,35,79,.18);padding:20px 0}
+.mr-faq summary{font-size:19px;font-weight:600;cursor:pointer}
+.mr-faq details p{margin:12px 0 0;font-size:16px;color:#4B4469}
 
 /* close */
-.mr-close{position:relative;overflow:hidden;background:var(--night);text-align:center;padding:170px 0}
-.mr-close-bindu{width:620px;height:620px;left:50%;top:50%;transform:translate(-50%,-50%);opacity:.6}
-.mr-close .wrap{position:relative;z-index:2}
-.mr-close .mr-skt{font-size:24px}
-.mr-close h2{font-family:var(--font-serif),serif;font-weight:600;font-size:clamp(40px,6vw,80px);line-height:1;margin:10px 0 40px;color:var(--ivory)}
+.mr-close{text-align:center;padding:130px 0}
+.mr-close .mr-skt{color:var(--gold);font-size:22px}
+.mr-close h2{font-size:clamp(40px,5.6vw,76px);line-height:1;margin:8px 0 38px;color:var(--ivory)}
+.mr-close .mr-target circle.dot{fill:var(--orange)}
 
 @media(max-width:980px){
-  .mr-red-in,.mr-rings-in{grid-template-columns:1fr;gap:40px}
-  .mr-rings{max-width:300px;margin:0 auto}
-  .mr-day{grid-template-columns:1fr 1fr;gap:28px}.mr-day-n{grid-column:1/-1;display:flex;align-items:baseline;gap:16px}
-  .mr-day-n span{font-size:64px}.mr-day-n b,.mr-day-n i{margin:0}
-  .mr-sutras,.mr-next{grid-template-columns:1fr 1fr}.mr-tiers{grid-template-columns:1fr 1fr}.mr-teachers{grid-template-columns:repeat(3,1fr)}
+  .mr-split,.mr-split-rev,.mr-sutra-wrap{grid-template-columns:1fr;gap:44px}
+  .mr-hero-art{max-width:460px}
+  .mr-tree{position:static;max-width:320px}
+  .mr-day{grid-template-columns:220px 1fr}
+  .mr-day-cols{grid-template-columns:1fr;gap:22px}.mr-day-cols>div+div{border-left:0;padding-left:0;border-top:1px solid;padding-top:22px}
+  .mr-teachers{grid-template-columns:repeat(3,1fr)}.mr-tiers{grid-template-columns:1fr 1fr}.mr-next{grid-template-columns:1fr}
+  .mr-head-art{grid-template-columns:1fr 180px}.mr-corner{width:180px}
 }
 @media(max-width:720px){
-  .mr-hero{padding:80px 0 90px}.mr-hero-bindu{right:-45vw;top:28%;opacity:.55}
-  .mr-red,.mr-dark,.mr-black{padding:76px 0}
-  .mr-day{grid-template-columns:1fr;padding:34px 0}.mr-lec{border-left:0;padding-left:0;border-top:1px solid rgba(250,245,235,.12);padding-top:24px}
-  .mr-day-n{flex-wrap:wrap;gap:6px 14px}
-  .mr-sutras,.mr-next,.mr-tiers{grid-template-columns:1fr}.mr-teachers{grid-template-columns:1fr 1fr;gap:34px 20px}.mr-teacher img,.mr-initials{width:104px;height:104px}
+  .mr-sec{padding:72px 0}
+  .mr-day{grid-template-columns:1fr}.mr-day-art{height:260px}.mr-day-body{padding:26px 22px}
+  .mr-head-art{grid-template-columns:1fr}.mr-corner{display:none}
+  .mr-teachers{grid-template-columns:1fr 1fr;gap:32px 18px}.mr-teacher img,.mr-initials{width:100px;height:100px}
+  .mr-sutras,.mr-tiers{grid-template-columns:1fr}
   .mr-btn{width:100%;text-align:center}
-  .mr-close{padding:120px 0}.mr-close-bindu{width:420px;height:420px}
 }
 `;

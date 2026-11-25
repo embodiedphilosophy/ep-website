@@ -246,8 +246,8 @@ export default function SahrdayaUpayaPage() {
           </div>
           <div className="season-grid">
             <div className="season-card"><div className="season-when">Fall 2026</div><h3>The Heart of Recognition</h3><p>Kṣemarāja&apos;s Pratyabhijñāhṛdaya. Wed, Oct 21 – Wed, Dec 9.</p></div>
-            <div className="season-card"><div className="season-when">Winter 2027</div><h3>Poetry as Philosophy</h3><p>Utpaladeva&apos;s Śivastotrāvalī, the &quot;Garland of Hymns.&quot;</p></div>
-            <div className="season-card"><div className="season-when">Spring 2027</div><h3>The Many Faces of Kālī</h3><p>The fierce wisdom teachings on the Goddess Kālī.</p></div>
+            <div className="season-card"><div className="season-when">Winter 2027</div><h3>The Many Faces of Kālī</h3><p>The fierce wisdom teachings on the Goddess Kālī.</p></div>
+            <div className="season-card"><div className="season-when">Spring 2027</div><h3>Poetry as Philosophy</h3><p>Utpaladeva&apos;s Śivastotrāvalī, the &quot;Garland of Hymns.&quot;</p></div>
             <div className="season-card"><div className="season-when">Summer 2027</div><h3>Being With the Heart</h3><p>The Sahṛdaya Summer Immersion. Sat, Jul 10 – Fri, Jul 16.</p></div>
           </div>
           <ul className="su-includes">

@@ -3,8 +3,8 @@
 // The Kit product below still has to be created (pay what you want, minimum $0); until the sheet row exists,
 // the buttons use this fallback.
 const lp = {
-  title: 'Meditation Resolution 2027: Saṃyama',
-  teacher: 'Jacob Kyle',
+  title: 'Meditation Resolution 2027: A New Year Symposium',
+  teacher: 'Embodied Philosophy faculty',
   startsAt: '2027-01-01',
   endsAt: '2027-01-05',
   checkoutKey: 'medresCheckout',

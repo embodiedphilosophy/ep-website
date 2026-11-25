@@ -4,7 +4,7 @@
 // the buttons use this fallback.
 const lp = {
   title: 'Meditation Resolution 2027: A New Year Symposium',
-  teacher: 'Embodied Philosophy faculty',
+  teacher: 'Nataraj Chaitanya, Tova Olsson, Floss Harry, Oneika Mays, Dr. Abha Rajbhandari',
   startsAt: '2027-01-01',
   endsAt: '2027-01-05',
   checkoutKey: 'medresCheckout',

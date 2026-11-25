@@ -1,4 +1,4 @@
-import { getSite } from '@/lib/content';
+import { getSite, photoKey } from '@/lib/content';
 import lp from './lp';
 
 export const revalidate = 300;
@@ -38,6 +38,23 @@ const DAYS = [
     'Kashmir Śaivism', 'Meditation as recognition',
     'How Abhinavagupta and Kṣemarāja reread the limbs of yoga, and why the Pratyabhijñā tradition treats the goal of meditation as something recognized, not produced.'],
 ];
+
+// The symposium faculty. Photos come from the Teachers tab (site.photos); a teacher without one shows initials.
+const TEACHERS = [
+  ['Nataraj Chaitanya', 'Faculty, Wisdom School & Sādhana School',
+    'Has led retreats, kīrtans and teacher trainings for more than twenty years. A formal initiate and custodian of the meditation tradition of Bhagavan Nityananda of Ganeshpuri; based in Melbourne.'],
+  ['Tova Olsson', 'Founder, Saraswati Studies',
+    'Scholar of religion, author and yoga teacher with over twenty years in education. Author of Yoga and Tantra: History, Philosophy and Mythology, and co-teacher of our Navarātri immersion in the Devī Gītā.'],
+  ['Floss Harry', 'Faculty, Meditation Mondays',
+    'Yoga teacher and embodied philosophy facilitator (MPhil, Cambridge) who approaches philosophy as lived practice, drawing on the wisdom traditions of East and West. Leads the Somatic stream of Meditation Mondays.'],
+  ['Oneika Mays', 'Faculty, Meditation Mondays',
+    'Leads the Metta stream of Meditation Mondays: loving-kindness practice that widens care from yourself outward, one breath at a time.'],
+  ['Dr. Abha Rajbhandari', 'Faculty, Meditation Mondays',
+    'Leads the Neuroscience & Yoga stream of Meditation Mondays, teaching what attention, breath and stillness do in the nervous system, and how to use them.'],
+];
+// Photos already on ep-media, used if the Teachers tab has none.
+const PHOTOS = { 'floss harry': 'https://nustrh8agxtgmkrb.public.blob.vercel-storage.com/teachers/floss-harry.jpg' };
+const initials = n => n.replace(/^Dr\.?\s+/, '').split(/\s+/).map(w => w[0]).slice(0, 2).join('');
 
 const SUTRAS = [
   ['3.1', 'deśabandhaś cittasya dhāraṇā', 'Dhāraṇā is binding the mind to a place.'],
@@ -135,7 +152,26 @@ export default async function MeditationResolution() {
         </ol>
       </div></section>
 
-      <section className="mr-black"><div className="wrap mr-rings-in">
+      <section className="mr-black" id="teachers"><div className="wrap">
+        <p className="mr-eyebrow">Your teachers</p>
+        <h2 className="mr-h2">Five teachers, five traditions</h2>
+        <p className="mr-teach-lede">The symposium is led by Embodied Philosophy faculty, each bringing a lineage and a way of sitting. More teachers may be announced.</p>
+        <div className="mr-teachers">
+          {TEACHERS.map(([name, role, bio]) => {
+            const photo = site.photos?.[photoKey(name)] || PHOTOS[photoKey(name)];
+            return (
+              <article key={name} className="mr-teacher">
+                {photo ? <img src={photo} alt={name} /> : <span className="mr-initials" aria-hidden="true">{initials(name)}</span>}
+                <h3>{name}</h3>
+                <p className="mr-role">{role}</p>
+                <p>{bio}</p>
+              </article>
+            );
+          })}
+        </div>
+      </div></section>
+
+      <section className="mr-dark"><div className="wrap mr-rings-in">
         <svg className="mr-rings" viewBox="0 0 400 400" aria-hidden="true">
           <circle cx="200" cy="200" r="190" /><circle cx="200" cy="200" r="130" /><circle cx="200" cy="200" r="70" />
           <circle className="core" cx="200" cy="200" r="12" />
@@ -149,7 +185,7 @@ export default async function MeditationResolution() {
         </div>
       </div></section>
 
-      <section className="mr-dark"><div className="wrap">
+      <section className="mr-black"><div className="wrap">
         <p className="mr-eyebrow">The source</p>
         <h2 className="mr-h2">Six sūtras that hold the whole practice</h2>
         <ol className="mr-sutras">
@@ -275,9 +311,19 @@ const CSS = `
 .mr-rings-in p:not(.mr-eyebrow){font-size:17px;color:rgba(250,245,235,.8);margin:0 0 14px}
 .mr-rings-in a{color:var(--saffron);text-decoration:underline;text-underline-offset:3px}
 
+/* teachers */
+.mr-teach-lede{max-width:640px;font-size:17px;color:rgba(250,245,235,.75);margin:-8px 0 44px}
+.mr-teachers{display:grid;grid-template-columns:repeat(5,1fr);gap:28px}
+.mr-teacher{min-width:0}
+.mr-teacher img,.mr-initials{display:flex;align-items:center;justify-content:center;width:132px;height:132px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--night),0 0 0 3.5px var(--saffron),0 0 40px rgba(235,163,41,.25)}
+.mr-initials{background:radial-gradient(circle at 35% 30%,#3A1A0E,var(--night2));font-family:var(--font-serif),serif;font-size:42px;color:var(--saffron)}
+.mr-teacher h3{font-family:var(--font-serif),serif;font-size:26px;font-weight:600;line-height:1.1;margin:24px 0 6px;color:var(--ivory)}
+.mr .mr-role{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#F07A55;margin:0 0 12px;line-height:1.5}
+.mr-teacher p:last-child{font-size:14.5px;color:rgba(250,245,235,.72);margin:0}
+
 /* sūtras */
 .mr-sutras{list-style:none;padding:0;margin:10px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(235,163,41,.22);border:1px solid rgba(235,163,41,.22)}
-.mr-sutras li{background:var(--night2);padding:30px 28px}
+.mr-sutras li{background:var(--night);padding:30px 28px}
 .mr-sutras span{font-size:11px;letter-spacing:3px;font-weight:700;color:#F07A55}
 .mr-sutras .mr-skt{font-size:22px;margin:12px 0 10px}
 .mr-sutras p:last-child{font-size:15px;color:rgba(250,245,235,.75);margin:0}
@@ -323,14 +369,14 @@ const CSS = `
   .mr-rings{max-width:300px;margin:0 auto}
   .mr-day{grid-template-columns:1fr 1fr;gap:28px}.mr-day-n{grid-column:1/-1;display:flex;align-items:baseline;gap:16px}
   .mr-day-n span{font-size:64px}.mr-day-n b,.mr-day-n i{margin:0}
-  .mr-sutras,.mr-next{grid-template-columns:1fr 1fr}.mr-tiers{grid-template-columns:1fr 1fr}
+  .mr-sutras,.mr-next{grid-template-columns:1fr 1fr}.mr-tiers{grid-template-columns:1fr 1fr}.mr-teachers{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:720px){
   .mr-hero{padding:80px 0 90px}.mr-hero-bindu{right:-45vw;top:28%;opacity:.55}
   .mr-red,.mr-dark,.mr-black{padding:76px 0}
   .mr-day{grid-template-columns:1fr;padding:34px 0}.mr-lec{border-left:0;padding-left:0;border-top:1px solid rgba(250,245,235,.12);padding-top:24px}
   .mr-day-n{flex-wrap:wrap;gap:6px 14px}
-  .mr-sutras,.mr-next,.mr-tiers{grid-template-columns:1fr}
+  .mr-sutras,.mr-next,.mr-tiers{grid-template-columns:1fr}.mr-teachers{grid-template-columns:1fr 1fr;gap:34px 20px}.mr-teacher img,.mr-initials{width:104px;height:104px}
   .mr-btn{width:100%;text-align:center}
   .mr-close{padding:120px 0}.mr-close-bindu{width:420px;height:420px}
 }

@@ -197,7 +197,7 @@ export default async function CyberMonday({ searchParams }) {
                       {pwyc.suggested.map((n, i) => <span key={i} className={`cm-chip${i === 1 ? ' mid' : ''}`}>{money(n)}</span>)}
                     </div>
                   )}
-                  <p className="fine">{copy.tier1.pwycNote}{min ? ` Minimum $${min}.` : ''}</p>
+                  <p className="fine">{copy.tier1.pwycNote}</p>
                 </div>
               </div>
 
@@ -214,7 +214,7 @@ export default async function CyberMonday({ searchParams }) {
                         {who && <p className="who">{who}</p>}
                         {o && (o.promise || o.description) && <p className="line">{o.promise || firstSentence(o.description)}</p>}
                         <div className="buy">
-                          <span><strong>PWYC</strong>{course.suggested ? <> · suggested {money(course.suggested)}</> : null}</span>
+                          <span><strong>Pay what you can</strong> · from {money(min || 1)}</span>
                           <PwycModal course={course} pwyc={pwyc} state={state} />
                         </div>
                       </div>

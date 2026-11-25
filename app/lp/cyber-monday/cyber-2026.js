@@ -169,7 +169,7 @@ export const copy = {
     eyebrow: 'The Open Library',
     headline: ['Every course, ', 'pay what you can.'],
     body: 'Choose an amount that fits your life. Every course is yours for good, with recordings, readings and practices in your Circle dashboard.',
-    pwycNote: 'Each course shows a suggested amount. Give that, or whatever is right for you. Same course, whatever you choose.',
+    pwycNote: "Choose any amount from $1. Each course shows one suggested amount if you'd like a guide. It's the same course whatever you choose, and it's yours for good.",
     guarantee: '100% satisfaction guarantee. Any course or certificate, refunded within 30 days, no questions asked.',
   },
   tier2: {
@@ -205,7 +205,7 @@ export const copy = {
 };
 
 export const faqs = [
-  { q: 'How does pay what you can work?', a: 'Each course shows one suggested amount. Pay that, or type your own (minimum $[MIN]). Whatever you choose, you get the full course.' },
+  { q: 'How does pay what you can work?', a: "Choose any amount from $1, or go with the suggested amount if you'd like a guide. It's the same course whatever you choose." },
   { q: 'Do I keep access after Cyber Week?', a: 'Yes. Every course you buy this week is yours for good, with its recordings, readings and practices.' },
   { q: 'Where do my courses live?', a: 'In Circle. After checkout you land on your dashboard there. Please use Circle in a web browser for now, not the app.' },
   { q: 'What is the difference between one certificate and Wisdom School Plus?', a: 'One certificate ($147) unlocks a single program. Wisdom School Plus ($297 for the first year) includes all four certificates, every Learning Pathway, CE certificates, The Attention Project 2027 and Meditation Mondays.' },

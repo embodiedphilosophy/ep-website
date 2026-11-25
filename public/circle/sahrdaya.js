@@ -34,7 +34,7 @@
   var KINDS = {
     observation: ['Observation', 'Watching a senior teacher lead, with notes. Up to 10 hours.', 'Who and what you observed'],
     'practice-teaching': ['Practice-teaching', 'Teaching or co-holding a session. Up to 10 hours.', 'Who and what you taught'],
-    peer: ['Peer articulation', 'Time with your articulation buddy between immersions. Up to 8 hours.', 'Who you practiced with, and on what'],
+    peer: ['Peer articulation', 'Time with your articulation partner between immersions. Up to 8 hours.', 'Who you practiced with, and on what'],
     retreat: ['Retreat practicum', 'The summer retreat, in person or online. Up to 11 hours.', 'Which retreat sessions']
   };
   function fmtTime(iso, opts) { try { return new Date(iso).toLocaleString(undefined, Object.assign({ timeZone: myZone() }, opts)); } catch (e) { return ''; } }
@@ -376,12 +376,12 @@
   function buddyRow(w) {
     var h = w.home, p = h.partner, a = h.articulation, mo = (a && a.month) || { sessions: 0, last: '' };
     var o = ov(w, 'buddy'); if (o.hide) return null;
-    if (!p) return { k: '0-b', w1: 'Any time', tx: rwText(esc(o.title) || 'Your buddy is on the way', esc(o.line) || 'Jacob pairs everyone at the start of each rotation.') };
+    if (!p) return { k: '0-b', w1: 'Any time', tx: rwText(esc(o.title) || 'Your articulation partner is on the way', esc(o.line) || 'Jacob pairs everyone at the start of each rotation.') };
     var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email }], many = list.length > 1, nm = esc(nameList(list));
-    if (mo.sessions > 0) return { k: '1-' + (mo.last || w.today), done: true, w1: 'Done', w2: mo.last ? dm(mo.last) : '', tx: rwText('Buddy session with ' + nm, 'Logged for ' + (many ? 'all of you' : 'both of you') + '.'), bt: btnA('open-articulation', 'Log another') };
+    if (mo.sessions > 0) return { k: '1-' + (mo.last || w.today), done: true, w1: 'Done', w2: mo.last ? dm(mo.last) : '', tx: rwText('Articulation session with ' + nm, 'Logged for ' + (many ? 'all of you' : 'both of you') + '.'), bt: btnA('open-articulation', 'Log another') };
     var win = p.window && p.window.spans && p.window.spans[0] ? '<br>A time that suits ' + (many ? 'all of you' : 'you both') + ': ' + esc(p.window.days) + ', ' + esc(p.window.spans[0].text) + ' ' + esc(p.window.spans[0].label) + '.' : '';
     var url = p.chatUrl || 'mailto:' + list.map(function (x) { return x.email; }).filter(Boolean).join(',');
-    return { k: '0-b', w1: 'Any time', tx: rwText((o.title ? esc(o.title) + ': ' : 'Meet your ' + (many ? 'buddies' : 'buddy') + ', ') + nm, (esc(o.line) || 'An hour together: each of you explains one idea until the other could explain it too.') + win), bt: ext(url, 'Say hello', 'esu-btn out sm') };
+    return { k: '0-b', w1: 'Any time', tx: rwText((o.title ? esc(o.title) + ': ' : 'Meet your articulation ' + (many ? 'partners' : 'partner') + ', ') + nm, (esc(o.line) || 'An hour together: each of you explains one idea until the other could explain it too.') + win), bt: ext(url, 'Say hello', 'esu-btn out sm') };
   }
   function heroRow(o) {
     return '<li class="esu-mrow hero">%%CHK%%<span class="esu-when"><b>' + esc(o.w1) + '</b>' + esc(o.w2 || '') + '</span><div class="tx"><div class="ey">' + esc(o.ey) + '</div><p class="esu-hero-t">' + esc(o.title) + '</p><p class="esu-hero-d">' + o.line + '</p></div><div class="bt">' + (o.bt || '') + '</div></li>';
@@ -409,7 +409,7 @@
     return out;
   }
   function oneRow(w) {
-    var h = w.home, o = h.oneToOne, y = YR(w) || { oneToOne: {} }, yo = y.oneToOne || {}, bk = o.booked, win = o.window, sum = yo.summary, oo = ov(w, 'one-to-one'), title = esc(oo.title) || 'One-to-one with Jacob';
+    var h = w.home, o = h.oneToOne, y = YR(w) || { oneToOne: {} }, yo = y.oneToOne || {}, bk = o.booked, win = o.window, sum = yo.summary, oo = ov(w, 'one-to-one'), title = esc(oo.title) || 'One-to-one with your mentor';
     if (oo.hide) return null;
     var np = w.today.slice(0, 7).split('-').map(Number), nxt = np[1] === 12 ? (np[0] + 1) + '-01' : np[0] + '-' + String(np[1] + 1).padStart(2, '0'), nextName = dayFmt(nxt + '-15', { month: 'long' });
     if (bk && Date.parse(bk.start) + 36e5 < Date.now()) return { k: '1-' + localDay(bk.start), done: true, w1: 'Done', w2: dm(localDay(bk.start)), tx: rwText(title, 'Thank you. Your next one is in ' + esc(nextName) + '.') };
@@ -432,7 +432,7 @@
   }
   function reflectionRow(w) {
     var h = w.home, r = h.reflection, y = YR(w), m = y && y.month, ym = w.today.slice(0, 7), mine = r.mine;
-    var due = (m && m.reflectionDue) || lastMonday(ym), fm = h.formation || { n: 0 };
+    var due = (m && m.reflectionDue) || lastDay(ym), fm = h.formation || { n: 0 };
     var ro = ov(w, 'reflection'); if (ro.hide) return null;
     var title = ro.title ? esc(ro.title) : fm.n === 1 ? 'Write your first reflection' : 'Write your ' + dayFmt(ym + '-01', { month: 'long' }) + ' reflection';
     var fresh = r.unread ? '<p class="esu-rw-d">New in the cohort: ' + r.unread + (r.unread === 1 ? ' reflection' : ' reflections') + ' you haven’t read.</p>' : '';
@@ -590,8 +590,8 @@
     if (p) {
       var list = p.partners && p.partners.length ? p.partners : [{ name: p.name, email: p.email }], many = list.length > 1;
       var url = p.chatUrl || 'mailto:' + list.map(function (x) { return x.email; }).filter(Boolean).join(',');
-      tiles += tile('Articulation practice', 'This month’s ' + (many ? 'buddies' : 'buddy') + ': ' + esc(nameList(list)), 'Explain one idea to each other until it lands.', mo.sessions > 0 ? tlink('open-articulation', 'Log a session') : ext(url, 'Say hello', 'esu-tlink'));
-    } else tiles += tile('Articulation practice', 'Your buddy is on the way', 'Jacob pairs everyone at the start of each rotation.', '');
+      tiles += tile('Articulation practice', 'This month’s ' + (many ? 'partners' : 'partner') + ': ' + esc(nameList(list)), 'Each explain one teaching through an image a new student could hold.', mo.sessions > 0 ? tlink('open-articulation', 'Log a session') : ext(url, 'Say hello', 'esu-tlink'));
+    } else tiles += tile('Articulation practice', 'Your articulation partner is on the way', 'Jacob pairs everyone at the start of each rotation.', '');
     // 2. Practicum pods: from Immersion 1
     var beforeI1 = !!im && im.n === 1 && !im.happening, d = state.pp, line = 'One teaches, the others give feedback.', links;
     if (beforeI1) { line += ' From Immersion 1.'; links = tlink('open-pp', 'Schedule a Practicum Pod'); }
@@ -604,7 +604,7 @@
     // 3. Study pods with Sādhana School students (hidden when they are off)
     var sp = state.pods;
     if (sp && sp.on) tiles += tile('Optional deepening', 'Study pods', 'Small groups with Sādhana School students.', link(sp.url, 'Browse current Pods', 'esu-tlink'));
-    return '<section class="esu-card" aria-labelledby="esu-p-h"><h2 class="esu-h2" id="esu-p-h">Practice with others</h2><p class="esu-rw-d" style="margin-top:4px">Three ways to practice between immersions. Start with your buddy.</p><div class="esu-tiles">' + tiles + '</div></section>';
+    return '<section class="esu-card" aria-labelledby="esu-p-h"><h2 class="esu-h2" id="esu-p-h">Practice with others</h2><p class="esu-rw-d" style="margin-top:4px">Three ways to practice between immersions. Start with your articulation partner.</p><div class="esu-tiles">' + tiles + '</div></section>';
   }
   // The practicum pods in full (opened from "See all pods"), and a short explainer (opened from "What a pod is")
   function ppRows(d) {
@@ -670,6 +670,7 @@
       '<p class="esu-muted" style="font-size:13px">Ticking a step is optional. It tells Jacob you’ve done it; the evidence is for your next one-to-one.' + (y.doneCount ? ' ' + y.doneCount + ' of ' + y.total + ' steps done.' : '') + '</p>' + (y.ticksOk === false ? '<p class="esu-err" style="margin-top:6px">Your ticks couldn’t be loaded just now. The steps are still right.</p>' : '') + (yrState.msg && yrState.msgFor === 'tick' ? '<p class="esu-err" role="alert" style="margin-top:6px">' + esc(yrState.msg) + '</p>' : '') + body +
       '<p id="reminders" class="esu-muted" style="font-size:13px;margin-top:14px">Reminders by email: <b>' + (y.reminders ? 'on' : 'off') + '</b> · <button type="button" class="esu-lnk" data-act="yr-remind">' + (y.reminders ? 'Turn off' : 'Turn on') + '</button></p></div></div>';
   }
+  function lastDay(ym) { var p = ym.split('-').map(Number); return new Date(Date.UTC(p[0], p[1], 0)).toISOString().slice(0, 10); }
   function lastMonday(ym) { var p = ym.split('-').map(Number), d = new Date(Date.UTC(p[0], p[1], 0)); while (d.getUTCDay() !== 1) d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); }
   // Practicum pods: mentees organize a time to practice teaching each other (no approval); others join. Different from articulation buddies (the pair or trio for the rotation).
   function ppWhen(iso) { return dmyT(iso) + ', ' + hmT(iso); }
@@ -823,7 +824,7 @@
       body = '<div class="esu-hd"><h2 class="esu-h2">All recordings</h2><button type="button" class="esu-btn out" data-act="close-modal">Close</button></div><div class="esu-reclist">' + ri.map(recTile).join('') + '</div>';
     } else if (m.type === 'pp-about') {
       body = '<h2 class="esu-h2">What a practicum pod is</h2><p style="margin:10px 0 0">A small group of mentees who meet to practice teaching. One person teaches a short piece, the others give feedback, and you take turns.</p>' +
-        '<p style="margin:10px 0 0">Anyone in the cohort can organize a pod, with no approval needed, and pods begin after Immersion 1. Your articulation buddy is someone to explain ideas with; a pod is where you teach a group.</p>' +
+        '<p style="margin:10px 0 0">Anyone in the cohort can organize a pod, with no approval needed, and pods begin after Immersion 1. Your articulation partner is someone to explain ideas with; a pod is where you teach a group.</p>' +
         '<div class="esu-acts" style="margin-top:14px"><button type="button" class="esu-btn out" data-act="close-modal">Close</button></div>';
     } else if (m.type === 'feedback') {
       body = feedbackModal(w);

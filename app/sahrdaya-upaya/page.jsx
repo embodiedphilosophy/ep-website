@@ -132,7 +132,7 @@ export default function SahrdayaUpayaPage() {
               <div className="who">Open to all year-long Sādhana School students</div>
             </article>
             <article className="su-day mentee">
-              <div className="when"><span className="day">Sunday · 10am ET</span><span className="hrs">2<small>hours</small></span></div>
+              <div className="when"><span className="day">Sunday · 10am ET</span><span className="hrs">2.5<small>hours</small></span></div>
               <h3 style={{ color: 'var(--ivory)' }}>The Practicum</h3>
               <p>Saturday&apos;s teachings become exercises. You rehearse, embody and translate concepts into teaching skill, with supervision and feedback from Jacob and the cohort.</p>
               <div className="who" style={{ color: 'var(--ochre)' }}>Sahṛdaya Upāya apprentices only</div>
@@ -158,7 +158,7 @@ export default function SahrdayaUpayaPage() {
             <div className="evt"><div className="date-chip"><div className="m">Mar</div><div className="d">13–14</div></div><div><div className="ttl">Dying Before Death</div><div className="host">Embracing dissolution on the path of sādhana</div><div className="meta"><span className="pill focus">Embodied observation &amp; holding intensity</span></div></div><div className="num">v</div></div>
             <div className="evt"><div className="date-chip"><div className="m">Apr</div><div className="d">10–11</div></div><div><div className="ttl">Grace &amp; Initiation</div><div className="host">Śaktipāta, dīkṣā and the timing of transmission</div><div className="meta"><span className="pill focus">Thresholds, rituals &amp; curriculum design</span></div></div><div className="num">vi</div></div>
             <div className="evt"><div className="date-chip"><div className="m">May</div><div className="d">8–9</div></div><div><div className="ttl">Cult or Community?</div><div className="host">Authority, consent and dependency in spiritual groups</div><div className="meta"><span className="pill focus">Institutional structures, consent &amp; community dynamics</span></div></div><div className="num">vii</div></div>
-            <div className="evt"><div className="date-chip"><div className="m">May</div><div className="d">29–30</div></div><div><div className="ttl">The Spectre of Authenticity</div><div className="host">On inheriting a tradition you were not born into</div><div className="meta"><span className="pill focus">Lineage-informed creativity &amp; teaching integrity</span></div></div><div className="num">viii</div></div>
+            <div className="evt"><div className="date-chip"><div className="m">May</div><div className="d">29–30</div></div><div><div className="ttl">The Practice (&amp; Spectre) of Authenticity</div><div className="host">On inheriting a tradition you were not born into</div><div className="meta"><span className="pill focus">Lineage-informed creativity &amp; teaching integrity</span></div></div><div className="num">viii</div></div>
           </div>
         </div>
       </section>
@@ -193,7 +193,7 @@ export default function SahrdayaUpayaPage() {
             <div><span className="k">Monthly</span><h3>Reflection</h3><p>A written post on what is ripening in your practice and your teaching.</p></div>
             <div><span className="k">Between immersions</span><h3>Peer practicum</h3><p>Partnered and small-group languaging practice.</p></div>
             <div><span className="k">Summer 2027</span><h3>Retreat practicum</h3><p>Teach workshops at the Sādhana School summer retreat, in person or online.</p></div>
-            <div><span className="k">Spring 2027</span><h3>Final project</h3><p>A 60-minute teaching, delivered live and recorded, plus a reflective essay on lineage, positionality and your application of SLBT.</p></div>
+            <div><span className="k">July 2027</span><h3>Final projects</h3><p>A 60-minute specialized talk, delivered live and recorded; a three-session offering to a real group, which certifies you to teach Sahṛdaya Meditation; and a final report on lineage, positionality and your application of SLBT.</p></div>
           </div>
         </div>
       </section>
@@ -358,7 +358,7 @@ export default function SahrdayaUpayaPage() {
             <details><summary>What does Sahṛdaya Upāya cost?</summary><div className="ans">$1,300, in addition to the $1,797 Sādhana School year. You apply first, then enroll in both together; if you&apos;re not accepted, you receive a full refund. Pay-over-time options are available at checkout.</div></details>
             <details><summary>What if I&apos;m not accepted?</summary><div className="ans">You receive a full refund. If you&apos;d like to stay on in Sādhana School, we simply refund the $1,300 apprenticeship tuition instead.</div></details>
             <details><summary>Is it online?</summary><div className="ans">Yes. The program runs October 2026 to July 2027 online. The retreat practicum can be completed in person or in the online facilitated version.</div></details>
-            <details><summary>How much time does it take each week?</summary><div className="ans">On average, about 2–3 hours a week on top of Sādhana School. Immersion weekends carry the most, with a 2.5-hour Open Session and a 2-hour Practicum. Alongside this you keep your Sādhana School commitments: the weekly 150-minute live session during each 8-week term, and a daily Sahṛdaya practice of 20–40 minutes split between two sits.</div></details>
+            <details><summary>How much time does it take each week?</summary><div className="ans">On average, about 2–3 hours a week on top of Sādhana School. Immersion weekends carry the most, with a 2.5-hour Open Session and a 2.5-hour Practicum. Alongside this you keep your Sādhana School commitments: the weekly 150-minute live session during each 8-week term, and a daily Sahṛdaya practice of 20–40 minutes split between two sits.</div></details>
             <details><summary>Do I need to know Sanskrit?</summary><div className="ans">No.</div></details>
           </div>
         </div>

@@ -232,7 +232,7 @@ function OneToOne({ w }) {
   const o = w.oneToOne;
   const range = o && `${dayName(o.from, { day: 'numeric' })}–${dayName(o.to, { day: 'numeric', month: 'long' })}`;
   return (
-    <Card title="One-to-one with Jacob">
+    <Card title="One-to-one with your mentor">
       <p className="tw-muted">45 minutes, in the last week of the month, in the UK evening.</p>
       {o ? <><p className="tw-strong">Book for {range}</p><A className="sch-btn" href={o.url} circle={false}>Choose a time</A></> : <p className="tw-muted">Booking opens about three weeks before the last week of the month.</p>}
     </Card>

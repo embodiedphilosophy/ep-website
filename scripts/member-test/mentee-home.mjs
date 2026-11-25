@@ -20,7 +20,8 @@ h = run('2026-10-31'); assert.equal(h.immersion.prepare.open, true, 'opens two w
 assert.equal(run('2026-11-14').immersion.happening, true);
 assert.deepEqual(h.oneToOne.window, { from: '2026-10-26', to: '2026-10-30' }.to < '2026-10-31' ? { from: '2026-11-23', to: '2026-11-27' } : null, 'window passed → next one');
 assert.equal(H.windowFor(config.windows, '2026-10-28').from, '2026-10-26');
-assert.equal(H.windowFor(config.windows, '2027-06-01'), null);
+assert.equal(H.windowFor(config.windows, '2027-06-01').from, '2027-06-07'); assert.equal(H.windowFor(config.windows, '2027-06-14').from, '2027-06-21', 'June has two windows');
+assert.equal(H.windowFor(config.windows, '2027-07-01'), null);
 
 const rows = [
   { season: 'fall-2026', month: 'November', email_a: 'Maya@x.com', email_b: 'sam@x.com', name_b: 'Sam', publish: '' },

@@ -267,7 +267,7 @@
   }
   function oneSide(w) {
     var o = w.oneToOne;
-    return '<section class="etw-card sm"><span class="etw-lab">One-to-one with Jacob</span>' + (o ? '<div class="etw-h3">Book for ' + esc(range(o.from, o.to)) + '</div>' : '') + '<p class="etw-muted">' + (o ? '45 minutes on a UK evening. Bring your practice log.' : 'Booking opens about three weeks before the last week of the month. 45 minutes on a UK evening.') + '</p>' + (o ? link(o.url, 'Choose a time', 'etw-btn dark', true) : '') + '</section>';
+    return '<section class="etw-card sm"><span class="etw-lab">One-to-one with your mentor</span>' + (o ? '<div class="etw-h3">Book for ' + esc(range(o.from, o.to)) + '</div>' : '') + '<p class="etw-muted">' + (o ? '45 minutes on a UK evening. Bring your practice log.' : 'Booking opens about three weeks before the last week of the month. 45 minutes on a UK evening.') + '</p>' + (o ? link(o.url, 'Choose a time', 'etw-btn dark', true) : '') + '</section>';
   }
   function travelCard(w) {
     var b = state.busy === 'line', out = '<span class="etw-lab">Inner Travelogue · Private</span><div class="etw-h3">One line, before the day begins.</div><p class="etw-muted">Only you can see it.</p>';

@@ -42,6 +42,14 @@
     {
       "from": "2027-05-24",
       "to": "2027-05-28"
+    },
+    {
+      "from": "2027-06-07",
+      "to": "2027-06-11"
+    },
+    {
+      "from": "2027-06-21",
+      "to": "2027-06-25"
     }
   ],
   "immersions": [
@@ -89,7 +97,7 @@
     },
     {
       "n": 8,
-      "title": "The Spectre of Authenticity",
+      "title": "The Practice (& Spectre) of Authenticity",
       "sat": "2027-05-29",
       "sun": "2027-05-30"
     }

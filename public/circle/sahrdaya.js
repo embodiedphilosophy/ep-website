@@ -169,10 +169,16 @@
       '.esu-stack{display:flex;flex-direction:column;gap:18px}.esu-duo{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start}',
       '.esu-alink{font-weight:500;color:#A5432A;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}.esu-tlink{background:none;border:0;padding:0;font:500 13.5px "IBM Plex Sans",system-ui,sans-serif;color:#A5432A;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}.esu-tlink:disabled{opacity:.55;cursor:default}a.esu-tlink{font:500 13.5px "IBM Plex Sans",system-ui,sans-serif}',
       '.esu-btn.sm{min-height:36px;padding:0 14px;font-size:13.5px}.esu-onlist{font-size:13px;color:#C9D1CB}.esu-skrow{height:56px;margin:10px 0}',
-      '.esu-month .esu-mrow{display:grid;grid-template-columns:22px 110px minmax(0,1fr) auto;gap:4px 16px;align-items:center;padding:16px 0;border-top:1px solid #E3D8C6}',
+      '.esu-month .esu-mrow{display:grid;grid-template-columns:32px 110px minmax(0,1fr) auto;gap:4px 16px;align-items:center;padding:16px 0;border-top:1px solid #E3D8C6}',
       '.esu-month .esu-mrow:first-child{border-top:0}.esu-mlist{list-style:none;margin:8px 0 0;padding:0}',
       '.esu-ring{width:22px;height:22px;border-radius:50%;border:1.5px solid #B9AC94;display:inline-flex;align-items:center;justify-content:center;flex:none}',
-      '.esu-ring.done{background:#2E5A4B;border-color:#2E5A4B}',
+      '.esu-ring.done{background:#2E5A4B;border-color:#2E5A4B}.esu-ring.skip{background:#EFE7DA;border-color:#B9AC94;color:#5A5346;font-size:13px;line-height:1}',
+      '.esu-chk{display:flex;flex-direction:column;align-items:center;gap:3px;align-self:center}',
+      '.esu-ringbtn{padding:0;background:#fff;cursor:pointer;transition:border-color .15s,background .15s}.esu-ringbtn:hover,.esu-ringbtn:focus-visible{border-color:#2E5A4B;background:#EAF2EE;outline:none}',
+      '.esu-mrow.hero .esu-ringbtn{background:transparent}.esu-mrow.hero .esu-ringbtn:hover{background:rgba(217,179,106,.18)}',
+      '.esu-skip{border:0;background:none;padding:0 2px;font:500 10.5px "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:lowercase;color:#8A7F6C;cursor:pointer;text-decoration:underline;text-underline-offset:2px}.esu-skip:hover{color:#A5432A}',
+      '.esu-mrow.hero .esu-skip{color:#C9D1CB}.esu-mrow.hero .esu-skip:hover{color:#D9B36A}',
+      '.esu-comp{display:block!important;margin-top:10px;border-top:1px solid #E3D8C6;padding-top:10px}.esu-comp>.esu-tlink{display:inline-block}.esu-comp>.esu-mdone{display:block;width:100%;margin-top:6px}.esu-mdone .esu-mrow{padding:10px 0;opacity:.85}.esu-mdone .esu-rw-t{font-size:15px}.esu-mrow.skipped .esu-rw-t{text-decoration:line-through;text-decoration-color:#B9AC94}',
       '.esu-when{font:500 12px "IBM Plex Mono",monospace;color:#5A5346;text-transform:uppercase;letter-spacing:.06em;line-height:1.35}',
       '.esu-when b{display:block;color:#1E1A14;font-weight:500}',
       '.esu-mrow.hero{background:#22352D;color:#F4EDE1;border-radius:10px;padding:20px;margin:4px 0 6px;border-top:0}',
@@ -253,7 +259,7 @@
       '.esu-wi{grid-template-columns:44px minmax(0,1fr)}.esu-wi .pl{grid-column:1 / -1}.esu-strip{padding:10px 16px}.esu-strip .cr{display:none}.esu-strip .esu-seg{width:100%;max-width:100%}',
       '.esu-srow,.esu-sess{grid-template-columns:56px minmax(0,1fr)}.esu-srow > .bt,.esu-sess > .bt{grid-column:2}.esu-sess > .bt{align-items:flex-start}',
       '.esu-tiles3{grid-template-columns:minmax(0,1fr)}.esu-tiles3 .esu-rec,.esu-reclist .esu-rec{flex-direction:row}.esu-rec .th{height:auto;min-height:92px;width:112px;flex:none}',
-      '.esu-month .esu-mrow{grid-template-columns:22px minmax(0,1fr)}.esu-month .esu-mrow > .tx,.esu-month .esu-mrow > .bt{grid-column:1 / -1}',
+      '.esu-month .esu-mrow{grid-template-columns:32px minmax(0,1fr)}.esu-month .esu-mrow > .tx,.esu-month .esu-mrow > .bt{grid-column:1 / -1}',
       '}',
       '@media (max-width:860px){.esu-duo{grid-template-columns:minmax(0,1fr)}}'
     ].join('\n');
@@ -322,10 +328,18 @@
   function rwText(title, line, extra) { return '<p class="esu-rw-t">' + title + '</p>' + (line ? '<p class="esu-rw-d">' + line + '</p>' : '') + (extra || ''); }
   var btnA = function (act, label, extra) { return '<button type="button" class="esu-btn out sm" data-act="' + act + '"' + (extra || '') + '>' + label + '</button>'; };
 
-  // One row of "This month": a ring (decoration only), when, the words, one button
+  // One row of "This month": the checkbox (with a small Skip under it), when, the words, one button.
+  // o.chk is the checkbox block from chkBox(); without it the ring is decoration only.
   function mrow(o) {
-    return '<li class="esu-mrow' + (o.hero ? ' hero' : '') + '"><span class="esu-ring' + (o.done ? ' done' : '') + '" aria-hidden="true">' + (o.done ? TICK : '') + '</span>' +
+    var ring = o.chk || '<span class="esu-ring' + (o.done ? ' done' : '') + (o.skipped ? ' skip' : '') + '" aria-hidden="true">' + (o.done ? TICK : o.skipped ? '–' : '') + '</span>';
+    return '<li class="esu-mrow' + (o.hero ? ' hero' : '') + (o.skipped ? ' skipped' : '') + '">' + ring +
       '<span class="esu-when"><b>' + esc(o.w1) + '</b>' + esc(o.w2 || '') + '</span><div class="tx">' + o.tx + '</div><div class="bt">' + (o.bt || '') + '</div></li>';
+  }
+  // The checkbox for an open row: ticking marks it done; "Skip" (under it) asks first, then records it as not completed
+  function chkBox(id, label) {
+    var busy = yrState.busy === 'm:' + id;
+    return '<span class="esu-chk"><button type="button" class="esu-ring esu-ringbtn" role="checkbox" aria-checked="false" aria-label="Mark “' + esc(label) + '” done" data-act="yr-mtick" data-id="' + esc(id) + '"' + (busy ? ' disabled' : '') + '></button>' +
+      '<button type="button" class="esu-skip" data-act="yr-mskip" data-id="' + esc(id) + '"' + (busy ? ' disabled' : '') + '>skip</button></span>';
   }
 
   // The notes to bring to a one-to-one (nothing to tick). The mid-year and readiness months add one line.
@@ -370,7 +384,7 @@
     return { k: '0-b', w1: 'Any time', tx: rwText((o.title ? esc(o.title) + ': ' : 'Meet your ' + (many ? 'buddies' : 'buddy') + ', ') + nm, (esc(o.line) || 'An hour together: each of you explains one idea until the other could explain it too.') + win), bt: ext(url, 'Say hello', 'esu-btn out sm') };
   }
   function heroRow(o) {
-    return '<li class="esu-mrow hero"><span class="esu-ring" aria-hidden="true"></span><span class="esu-when"><b>' + esc(o.w1) + '</b>' + esc(o.w2 || '') + '</span><div class="tx"><div class="ey">' + esc(o.ey) + '</div><p class="esu-hero-t">' + esc(o.title) + '</p><p class="esu-hero-d">' + o.line + '</p></div><div class="bt">' + (o.bt || '') + '</div></li>';
+    return '<li class="esu-mrow hero">%%CHK%%<span class="esu-when"><b>' + esc(o.w1) + '</b>' + esc(o.w2 || '') + '</span><div class="tx"><div class="ey">' + esc(o.ey) + '</div><p class="esu-hero-t">' + esc(o.title) + '</p><p class="esu-hero-d">' + o.line + '</p></div><div class="bt">' + (o.bt || '') + '</div></li>';
   }
   function immersionRows(w) {
     var h = w.home, im = h.immersion, ym = w.today.slice(0, 7), out = [];
@@ -386,12 +400,12 @@
       var satBtn = satV ? '<button type="button" class="esu-btn lite" data-act="play" data-v="' + esc(satV) + '" data-t="' + esc(satRec.title) + '">Watch Saturday’s recording</button>' : satU ? ext(satU, 'Watch Saturday’s recording', 'esu-btn lite') : im.satLink ? ext(im.satLink, 'Join Saturday’s Open Session', 'esu-btn lite') : '';
       var live = satBtn + (im.sunLink ? ext(im.sunLink, 'Join Sunday’s Practicum', 'esu-btn lite') : '');
       var bt = (prepOpen ? ext(p.url, p.done ? 'Review the Prepare lesson' : 'Open the Prepare lesson', p.done ? 'esu-btn out' : 'esu-btn gold') : '') + live + rsvp + '<a class="esu-tlink on-dark" href="' + MP + '?view=schedule" data-act="view" data-view="schedule">Full schedule</a>';
-      out.push({ k: '1-' + im.sat, hero: true, html: heroRow({ w1: span(im.sat, im.sun), w2: 'Sat & Sun', ey: 'Next immersion · ' + im.n + ' of ' + im.of + ' · ' + when, title: im.title, line: line, bt: bt }) });
+      out.push({ k: '1-' + im.sat, hero: true, title: 'Immersion ' + im.n + ' · ' + im.title, html: heroRow({ w1: span(im.sat, im.sun), w2: 'Sat & Sun', ey: 'Next immersion · ' + im.n + ' of ' + im.of + ' · ' + when, title: im.title, line: line, bt: bt }) });
     }
     var g = h.integrate;
-    if (g) out.push({ k: '1-' + (g.sat || w.today), hero: true, html: heroRow({ w1: g.sat ? span(g.sat, g.sun) : '', w2: 'Sat & Sun', ey: 'Integrate · Immersion ' + g.n, title: g.title, line: 'Take a few quiet minutes to integrate the weekend.' + (h.recordings && h.recordings.items.length ? ' <button type="button" class="esu-tlink on-dark" data-act="goto-rec">Missed a part? The recordings are just below.</button>' : ''), bt: ext(g.url, 'Open the Integrate lesson', 'esu-btn gold') }) });
+    if (g) out.push({ k: '1-' + (g.sat || w.today), hero: true, id: 'immersion-' + g.n, title: 'Integrate · Immersion ' + g.n + ' · ' + g.title, html: heroRow({ w1: g.sat ? span(g.sat, g.sun) : '', w2: 'Sat & Sun', ey: 'Integrate · Immersion ' + g.n, title: g.title, line: 'Take a few quiet minutes to integrate the weekend.' + (h.recordings && h.recordings.items.length ? ' <button type="button" class="esu-tlink on-dark" data-act="goto-rec">Missed a part? The recordings are just below.</button>' : ''), bt: ext(g.url, 'Open the Integrate lesson', 'esu-btn gold') }) });
     var d = h.integrated;
-    if (d) out.push({ k: '1-' + d.sat, done: true, w1: 'Done', w2: dm(d.sun), tx: rwText('Immersion ' + d.n + ' · ' + esc(d.title), 'You’ve completed the weekend and its Integrate lesson.') });
+    if (d) out.push({ k: '1-' + d.sat, id: 'immersion-' + d.n, done: true, w1: 'Done', w2: dm(d.sun), tx: rwText('Immersion ' + d.n + ' · ' + esc(d.title), 'You’ve completed the weekend and its Integrate lesson.') });
     return out;
   }
   function oneRow(w) {
@@ -442,9 +456,8 @@
   function taskRows(w) {
     var y = YR(w);
     return (y && y.tasks || []).map(function (t) {
-      var d = t.status === 'done', go = safeUrl(t.link) ? ext(t.link, 'Open', 'esu-btn out sm') : '';
-      var tick = '<button type="button" class="esu-btn out sm" data-act="yr-tick" data-id="' + esc(t.id) + '" aria-pressed="' + (d ? 'true' : 'false') + '">' + (d ? 'Done ✓' : 'Mark done') + '</button>';
-      return { id: t.id, k: '1-' + t.date, done: d, w1: d ? 'Done' : 'By ' + dm(t.date), w2: d ? '' : dayFmt(t.date, { weekday: 'short' }), tx: rwText(esc(t.title), t.detail ? esc(t.detail) : ''), bt: '<span style="display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end">' + go + tick + '</span>' };
+      var go = safeUrl(t.link) ? ext(t.link, 'Open', 'esu-btn out sm') : '';
+      return { id: t.id, task: t, title: t.title, k: '1-' + t.date, w1: 'By ' + dm(t.date), w2: dayFmt(t.date, { weekday: 'short' }), tx: rwText(esc(t.title), t.detail ? esc(t.detail) : ''), bt: go };
     });
   }
 
@@ -456,7 +469,7 @@
     if (y && !y.started) return '<section class="esu-card esu-month"><h2 class="esu-h2">This month</h2><p class="esu-muted" style="margin-top:6px">The year is complete. Thank you for your presence.</p></section>';
     var rows = [], add = function (r) { if (r) rows.push(r); };
     // Each row carries the key Ops uses for it (lib/mentee/monthlist.js), so the order set in Ops → Mentee year applies here
-    var tag = function (r, id) { if (r) r.id = id; return r; }, B = h.books || {}, im = h.immersion;
+    var tag = function (r, id) { if (r) r.id = id || r.id || ''; return r; }, B = h.books || {}, im = h.immersion;
     readRow(w).forEach(function (r, i) { var b = i === 0 && B.current && B.current.required.length && r.k === '0-a' ? B.current.required[0] : B.next && B.next.required[0]; add(tag(r, b ? 'book-' + slugK(b.title) : '')); });
     add(tag(buddyRow(w), 'buddy')); immersionRows(w).forEach(function (r) { add(tag(r, r.hero && im && r.k === '1-' + im.sat ? 'immersion-' + im.n : '')); });
     add(tag(oneRow(w), 'one-to-one')); add(tag(reflectionRow(w), 'reflection'));
@@ -465,11 +478,45 @@
     rows.forEach(function (r, i) { r.i = i; });
     rows.sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
     if (ord.length) { rows.forEach(function (r, i) { r.i = i; }); rows.sort(function (a, b) { var x = a.id in at ? at[a.id] : 1e6 + a.i, y = b.id in at ? at[b.id] : 1e6 + b.i; return x - y; }); }
-    var done = rows.filter(function (r) { return r.done; }).length, n = rows.length, th = y && y.month && y.month.theme;
+    // Each row is open, done (the page saw it happen, or the mentee ticked it) or skipped. Done and skipped rows leave the list for "Completed".
+    rows.forEach(function (r) {
+      var m = r.id ? markOf(y, r) : null;
+      r.state = r.done ? 'done' : m ? m.status : 'open'; r.manual = !r.done && !!m;
+      if (r.done && r.id && !r.task && !(y && y.marks && y.marks[r.id]) && !yrState.autoSent[r.id]) autoMark(r.id);
+    });
+    var open = rows.filter(function (r) { return r.state === 'open'; }), closed = rows.filter(function (r) { return r.state !== 'open'; });
+    var done = rows.filter(function (r) { return r.state === 'done'; }).length, skipped = closed.length - done, n = rows.length, th = y && y.month && y.month.theme;
+    var label = function (r) { return r.title || String(r.tx || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80); };
+    var openHtml = open.map(function (r) {
+      var chk = r.id && y && y.ticksOk !== false ? chkBox(r.id, label(r)) : '<span class="esu-ring" aria-hidden="true"></span>';
+      return r.html ? r.html.replace('%%CHK%%', chk) : mrow(Object.assign({}, r, { chk: chk }));
+    }).join('');
+    var doneHtml = closed.map(function (r) {
+      var sk = r.state === 'skipped', undo = r.manual ? '<button type="button" class="esu-tlink" data-act="yr-mundo" data-id="' + esc(r.id) + '">Undo</button>' : '';
+      var tx = r.html ? rwText(esc(r.title || '')) : r.tx;
+      return mrow({ done: !sk, skipped: sk, w1: sk ? 'Skipped' : 'Done', w2: r.manual && r.mark && r.mark.at ? dm(localDay(r.mark.at)) : r.state === 'done' ? r.w2 || '' : '', tx: tx + (sk ? '<p class="esu-rw-d">Shown on your record as not completed.</p>' : ''), bt: undo || (r.manual || r.html ? '' : r.bt || '') });
+    }).join('');
     var eye = dayFmt(ym + '-01', { month: 'long' }) + (fm.n >= 1 ? ' · month ' + fm.n + ' of your formation' : '');
-    return '<section class="esu-card esu-month" aria-labelledby="esu-m-h"><div class="esu-hd" style="margin-bottom:2px"><div><p class="esu-eye">' + esc(eye) + '</p><h2 class="esu-h2" id="esu-m-h" style="margin-top:4px;font-size:27px">' + (done ? 'This month' : 'This month, ' + (NUM[n] || n) + (n === 1 ? ' thing' : ' things')) + '</h2></div>' + (done ? '<span class="esu-mono">' + done + ' of ' + n + ' done</span>' : '') + '</div>' +
+    var tally = closed.length ? '<span class="esu-mono">' + done + ' of ' + n + ' done' + (skipped ? ' · ' + skipped + ' skipped' : '') + '</span>' : '';
+    var comp = closed.length ? '<div class="esu-comp"><button type="button" class="esu-tlink" data-act="yr-comp" aria-expanded="' + !!yrState.comp + '">' + (yrState.comp ? 'Hide completed' : 'Completed tasks (' + closed.length + ')') + '</button>' +
+      (yrState.comp ? '<ul class="esu-mlist esu-mdone">' + doneHtml + '</ul>' : '') + '</div>' : '';
+    return '<section class="esu-card esu-month" aria-labelledby="esu-m-h"><div class="esu-hd" style="margin-bottom:2px"><div><p class="esu-eye">' + esc(eye) + '</p><h2 class="esu-h2" id="esu-m-h" style="margin-top:4px;font-size:27px">' + (closed.length ? 'This month' : 'This month, ' + (NUM[n] || n) + (n === 1 ? ' thing' : ' things')) + '</h2></div>' + tally + '</div>' +
       (th ? '<p class="esu-rw-d" style="font-style:italic;margin-top:2px">' + esc(th) + '</p>' : '') +
-      '<ul class="esu-mlist">' + rows.map(function (r) { return r.html || mrow(r); }).join('') + '</ul></section>';
+      (yrState.msg && yrState.msgFor === 'mark' ? '<p class="esu-err" role="alert" style="margin-top:6px">' + esc(yrState.msg) + '</p>' : '') +
+      (open.length ? '<ul class="esu-mlist">' + openHtml + '</ul>' : '<p class="esu-muted" style="margin-top:10px">Everything for this month is done. Well done.</p>') + comp + skipModal() + '</section>';
+  }
+  // A row's own mark (ticked or skipped by the mentee): tasks carry it in their status, other rows in year.marks (both from the Step Status tab)
+  function markOf(y, r) {
+    if (!y) return null;
+    var m = r.task ? (r.task.status === 'done' || r.task.status === 'skipped' ? { status: r.task.status, at: r.task.at || '' } : null) : (y.marks || {})[r.id] || null;
+    r.mark = m; return m;
+  }
+  // The "Skip" question
+  function skipModal() {
+    var id = yrState.skipAsk; if (!id) return '';
+    return '<div class="esu-ov" data-act="yr-mskip-no" data-bg="1"><div class="esu-dlg" role="alertdialog" aria-modal="true" aria-labelledby="esu-skip-q" style="max-width:440px">' +
+      '<p id="esu-skip-q" style="margin:0;font-size:16px;line-height:1.5">If you skip this, it will go onto your student report as not having been completed. Do you want to Skip?</p>' +
+      '<div class="esu-acts" style="margin-top:16px;justify-content:flex-end"><button type="button" class="esu-btn out" data-act="yr-mskip-no">Cancel</button><button type="button" class="esu-btn pri" data-act="yr-mskip-yes" data-id="' + esc(id) + '">Yes</button></div></div></div>';
   }
 
   // ---- Recordings: the newest three, filled in automatically after every weekend (lib/mentee/recordings.js) ----
@@ -597,7 +644,7 @@
 
   // ---- The mentee year: next project steps, this month, the two lanes, the quarterly review, and the one-to-one summary (docs/sahrdaya-upaya-page.md) ----
   var PROJ = { both: ['Both projects', '#4B4F8C'], talk: ['60-minute talk', '#B8801C'], offering: ['Three-session offering', '#2F6B4F'] };
-  var yrState = { all: false, keep: {}, editing: false, text: '', msg: '', busy: '' };
+  var yrState = { all: false, keep: {}, editing: false, text: '', msg: '', busy: '', comp: false, skipAsk: '', autoSent: {} };
   function dmy(d) { return wd(d) + ' ' + dayFmt(d, { month: 'short' }); }
   function dm(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'short' }); }
   function dml(d) { return dayFmt(d, { day: 'numeric' }) + ' ' + dayFmt(d, { month: 'long' }); }
@@ -678,8 +725,31 @@
     set(now); yrState.msg = ''; yrState.busy = ''; render();
     call('/api/member/year/tick', { id: id, done: now, today: localToday() }).catch(function (e) { set(was); yrState.msg = e.message || 'That didn’t save. Please try again.'; yrState.msgFor = 'tick'; render(); });
   }
+  // A "This month" row ticked, skipped or put back: saved at once, rolled back with a message if the save fails.
+  // Tasks keep their own id (their status lives on the task); every other row is m:<YYYY-MM>:<key>, kept in year.marks.
+  function markSave(id, status, auto) {
+    var y = YR(state.data); if (!y) return;
+    var task = (y.tasks || []).filter(function (x) { return x.id === id; })[0], ym = state.data.today.slice(0, 7);
+    y.marks = y.marks || {};
+    var was = task ? task.status : y.marks[id] ? y.marks[id].status : 'open', at = new Date().toISOString();
+    var put = function (v) { if (task) { task.status = v === 'undone' ? 'open' : v; task.at = at; } else if (v === 'undone' || v === 'open') delete y.marks[id]; else y.marks[id] = { status: v, at: at }; };
+    if (!auto) { put(status); yrState.msg = ''; yrState.busy = ''; render(); }
+    else y.marks[id] = { status: 'done', at: at, auto: true };
+    return call('/api/member/year/tick', { id: task ? id : 'm:' + ym + ':' + id, status: status, auto: !!auto, today: localToday() }).catch(function (e) {
+      if (auto) { delete y.marks[id]; return; }
+      put(was); yrState.msg = e.message || 'That didn’t save. Please try again.'; yrState.msgFor = 'mark'; render();
+    });
+  }
+  // A row the page already shows as done on its own (a reflection posted, a buddy session logged, a hand-in in): told to Ops once, quietly
+  function autoMark(id) { yrState.autoSent[id] = true; setTimeout(function () { markSave(id, 'done', true); }, 0); }
   function yrClick(a, t, e) {
     var y = YR(state.data);
+    if (a === 'yr-mtick') { markSave(t.dataset.id, 'done'); return; }
+    if (a === 'yr-mskip') { yrState.skipAsk = t.dataset.id; render(); var yes = root.querySelector('[data-act="yr-mskip-yes"]'); if (yes) yes.focus(); return; }
+    if (a === 'yr-mskip-no') { if (t.dataset.bg && e.target !== t) return; yrState.skipAsk = ''; render(); return; }
+    if (a === 'yr-mskip-yes') { var sid = yrState.skipAsk; yrState.skipAsk = ''; markSave(sid, 'skipped'); return; }
+    if (a === 'yr-mundo') { markSave(t.dataset.id, 'undone'); return; }
+    if (a === 'yr-comp') { yrState.comp = !yrState.comp; render(); return; }
     if (a === 'yr-tick') { yrTick(t.dataset.id); return; }
     if (a === 'yr-all') { yrState.all = true; render(); return; }
     if (a === 'yr-close') { if (t.dataset.bg && e.target !== t) return; yrState.all = false; render(); return; }

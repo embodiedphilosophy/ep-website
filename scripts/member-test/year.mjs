@@ -117,3 +117,28 @@ console.log('year: ok');
   assert.ok(isEditablePath('months.1.items.0') && !isEditablePath('months.1.steps.0.text'));
 }
 console.log('year content: ok');
+
+// ---- "This month" ticks and skips (m:<ym>:<key>), and what Ops shows of them ----
+{
+  const Y = await import('../../lib/mentee/year.js');
+  const st = [
+    { email: 'Maya@x.test', step_id: 'm:2026-11:buddy', status: 'skipped', updated_at: '2026-11-20T10:00:00Z' },
+    { email: 'maya@x.test', step_id: 'm:2026-11:reflection', status: 'done', done_at: '2026-11-21T10:00:00Z', note: 'auto' },
+    { email: 'maya@x.test', step_id: 'm:2026-10:buddy', status: 'done', done_at: '2026-10-21T10:00:00Z' },
+    { email: 'maya@x.test', step_id: 't-1', status: 'skipped', updated_at: '2026-11-22T10:00:00Z' },
+    { email: 'ruth@x.test', step_id: 'm:2026-11:buddy', status: 'undone' },
+  ];
+  const yr = Y.buildYear({ scheduleRows: [{ step_id: 't-1', kind: 'task', date: '2026-11-25', title: 'Watch it', publish: 'TRUE' }], monthRows: [], statusRows: st, email: 'maya@x.test', today: '2026-11-25' });
+  assert.deepEqual(Object.keys(yr.marks).sort(), ['buddy', 'reflection'], 'only this month');
+  assert.equal(yr.marks.buddy.status, 'skipped');
+  assert.equal(yr.tasks[0].status, 'skipped'); assert.equal(yr.tasks[0].overdue, false);
+  assert.ok(Y.MARK_RE.test('m:2026-11:handin-final-talk')); assert.ok(!Y.MARK_RE.test('m:2026-11:../x'));
+  const mentees = [{ name: 'Maya', email: 'maya@x.test' }, { name: 'Ruth', email: 'ruth@x.test' }];
+  const rows = [{ key: 'buddy', kind: 'buddy', circle: true, title: 'Meet your buddy' }, { key: 'reflection', kind: 'reflection', circle: true, title: 'Write' }, { key: 't-1', kind: 'task', circle: true, title: 'Watch it' }, { key: 'x', kind: 'note', circle: false, title: 'Only on the page' }];
+  const pr = Y.monthProgress(rows, '2026-11', mentees, st);
+  assert.deepEqual(pr.map(r => [r.key, r.done, r.skipped]), [['buddy', 0, 1], ['reflection', 1, 0], ['t-1', 0, 1]]);
+  assert.equal(pr[1].by[0].auto, true); assert.equal(pr[0].by[1].status, 'open', 'undone counts as open');
+  const rep = Y.skipReport({ '2026-11': rows, '2026-10': [{ key: 'buddy', kind: 'buddy', circle: true, title: 'Meet your buddy' }] }, mentees, st);
+  assert.deepEqual(rep[0].items.map(i => i.id), ['m:2026-11:buddy', 't-1']); assert.deepEqual(rep[1].items, []);
+  console.log('year marks: ok');
+}

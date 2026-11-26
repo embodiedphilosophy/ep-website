@@ -70,7 +70,23 @@ assert.ok(ws.comingNext.includes('The Attention Project'));
 
 // ---- a month with no lesson: theme and "recording coming", no link ----
 const nov = buildWisdomHub({ cfg, plan: 'ws', rows: seed, yearSections, courses, rawEvents, urls, seen: {}, today: '2026-11-04', now: Date.parse('2026-11-04T14:00:00Z') });
-assert.equal(nov.month.name, 'November'); assert.equal(nov.month.theme, 'Gratitude'); assert.equal(nov.month.lessonUrl, null); assert.equal(nov.month.hasLesson, false);
+assert.equal(nov.month.name, 'November'); assert.equal(nov.month.theme, 'The Circle Reopens', 'the lecture title from Ops heads the card'); assert.equal(nov.month.lessonUrl, null); assert.equal(nov.month.hasLesson, false);
+// ---- once November's lecture is a week past, the card features December's lecture, with November one click away ----
+{
+  const withDec = [...rawEvents, ev(20, 'Sanctifying the World', C.live_space_id, '2026-12-01T23:00:00Z', 90, { host: 'Ryan LeMere' })];
+  const novRec = yearSections.map(s => s.id === String(C.month_sections[10]) ? { ...s, lessons: [{ id: 1, name: 'Set-up', at: '2026-10-30T10:00:00Z', url: 'https://ss.example/l/1' }, { id: 2, name: 'Recording', at: '2026-11-05T10:00:00Z', url: 'https://ss.example/l/2' }] } : s);
+  const late = buildWisdomHub({ cfg, plan: 'ws', rows: seed, yearSections: novRec, courses, rawEvents: withDec, urls, seen: {}, today: '2026-11-26', now: Date.parse('2026-11-26T17:00:00Z') });
+  assert.equal(late.month.upcoming, true); assert.equal(late.month.name, 'December'); assert.equal(late.month.index, 12);
+  assert.equal(late.month.theme, 'Sanctifying the World'); assert.equal(late.month.lessonUrl, null);
+  assert.equal(late.month.previous.name, 'November'); assert.equal(late.month.previous.theme, 'The Circle Reopens'); assert.equal(late.month.previous.url, 'https://ss.example/l/2');
+  // within the week after the lecture, November's recording keeps the top spot
+  const early = buildWisdomHub({ cfg, plan: 'ws', rows: seed, yearSections: novRec, courses, rawEvents: withDec, urls, seen: {}, today: '2026-11-06', now: Date.parse('2026-11-06T17:00:00Z') });
+  assert.equal(early.month.upcoming, false); assert.equal(early.month.theme, 'The Circle Reopens'); assert.equal(early.month.previous, null);
+  // no next lecture in Circle yet: stays on November
+  const none = buildWisdomHub({ cfg, plan: 'ws', rows: seed, yearSections: novRec, courses, rawEvents, urls, seen: {}, today: '2026-11-26', now: Date.parse('2026-11-26T17:00:00Z') });
+  assert.equal(none.month.upcoming, false); assert.equal(none.month.name, 'November');
+  console.log('ok: next month\'s lecture takes over a week after this month\'s');
+}
 assert.equal(nov.months[10].url, null);
 
 // ---- Up next: Mon 26 Oct meditation, then Mon 2 Nov, then Tue 3 Nov lecture (UTC instants; the page shows the viewer's own zone) ----

@@ -88,6 +88,20 @@
   function frameEl() { return document.getElementById('ep-hub-frame') || document.getElementById('ep-season-frame'); }
   function user() { var u = window.circleUser; return u && u.identityToken ? u : null; }
   function key() { return 'ep_warm_' + (user() ? user().email : ''); }
+  // Circle's identity token only lives 5 minutes and Circle sets it once, when its page loads. After that, posting it to us fails
+  // ("Circle sign-in has expired"). fresh() reads its expiry so we never send a stale one.
+  function fresh() {
+    try { var p = user().identityToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(atob(p)).exp * 1000 > Date.now() + 20000; } catch (e) { return false; }
+  }
+  // Reconnect: reload the Circle page, which hands us a new token. At most once every 2 minutes, so it can never loop.
+  function reconnect() {
+    var last = 0; try { last = Number(sessionStorage.getItem('ep_reconnect') || 0); } catch (e) {}
+    if (Date.now() - last < 120000) return false;
+    try { sessionStorage.setItem('ep_reconnect', String(Date.now())); } catch (e) {}
+    store(key(), null);
+    location.reload();
+    return true;
+  }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
 
   function post(path, target) {
@@ -101,7 +115,7 @@
 
   // Sign the member in quietly as soon as any Circle page loads, so the season view can open straight away
   function warm() {
-    if (!user() || !document.body) return Promise.resolve();
+    if (!user() || !document.body || !fresh()) return Promise.resolve();
     if (Date.now() - Number(store(key()) || 0) < WARM_MS) return Promise.resolve();
     if (warming) return warming;
     warming = new Promise(function (resolve) {
@@ -179,7 +193,8 @@
   function soon() { if (queued) return; queued = true; setTimeout(function () { lastTick = Date.now(); tick(); }, Math.max(0, 400 - (Date.now() - lastTick))); }
   function tooMany() { var now = Date.now(); builds = builds.filter(function (t) { return now - t < 15000; }); builds.push(now); return builds.length > 4; }
 
-  // If the quiet sign-in has expired, the frame asks to sign in again once
+  // If our sign-in has run out, the frame asks to sign in again: with a fresh Circle token we sign in straight away (once a
+  // minute at most); with a stale one (the Circle tab has been open more than 5 minutes) we reload Circle for a new token.
   window.addEventListener('message', function (e) {
     if (e.origin === ORIGIN && e.data) {
       if (e.data.ep === 'ready' || e.data.ep === 'height') state.ready = true;
@@ -189,8 +204,10 @@
     }
     if (e.origin !== ORIGIN || !e.data || e.data.ep !== 'need-signin') return;
     var frame = frameEl();
-    if (!frame || frame.getAttribute('data-retried') || !user()) return;
-    frame.setAttribute('data-retried', '1');
+    if (!frame || !user()) return;
+    var tried = Number(frame.getAttribute('data-retried') || 0);
+    if (!fresh() || Date.now() - tried < 60000) { reconnect(); return; }
+    frame.setAttribute('data-retried', String(Date.now()));
     store(key(), null);
     post(frame.getAttribute('data-path'), frame.id);
   });

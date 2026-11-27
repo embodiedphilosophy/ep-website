@@ -19,6 +19,8 @@ const nextConfig = {
       afterFiles: [
         // Kalighat cutouts live in public/ (copied from the Practice Report app).
         { source: '/kalighat/:file', destination: '/:file' },
+        // Teachers' supplement: a static page in public/samyama/ (Next doesn't serve index.html for a folder)
+        { source: '/samyama', destination: '/samyama/index.html' },
       ],
       fallback: ARCHIVE ? [{ source: '/:path*', destination: `${ARCHIVE}/:path*` }] : [],
     };

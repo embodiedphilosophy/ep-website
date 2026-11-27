@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Yoga Sūtra 3.1–3.8 on saṃyama with the commentaries of Vyāsa, Vācaspati Miśra and Bhoja. A teachers' supplement for Meditation Resolution 2027.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saṃyama in the Yoga Sūtra: Sūtras 3.1–3.8 with Three Commentaries · Embodied Philosophy</title>
+<style>
+
+@font-face{font-family:'Cormorant Garamond';src:url(/samyama/assets/cormorant.woff2) format('woff2');font-weight:300 700;font-style:normal;font-display:swap}
+@font-face{font-family:'Cormorant Garamond';src:url(/samyama/assets/cormorant-italic.woff2) format('woff2');font-weight:300 700;font-style:italic;font-display:swap}
+@font-face{font-family:'Inter';src:url(/samyama/assets/inter.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Noto Serif Devanagari';src:url(/samyama/assets/noto-deva.woff2) format('woff2');font-weight:100 900;font-display:swap}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+html{color-scheme:light}
+body{margin:0;background:#FAF5EB;font-family:'Inter',Arial,sans-serif;color:#1E1A14}
+a{color:#A5432A}a:hover{color:#83341F}
+.top{position:sticky;top:0;z-index:20;background:#20302A;border-bottom:1px solid #31453C}
+.top .in{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:24px}
+.top img{height:30px;width:auto;display:block}
+.top .t{flex:1;min-width:0;font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;font-weight:600;color:#EADDC6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .25s}
+.top.scrolled .t{opacity:1}
+.btn{margin-left:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;background:#A5432A;color:#FAF5EB;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-radius:2px;white-space:nowrap}
+.btn:hover{background:#83341F;color:#FAF5EB}
+.btn svg{width:16px;height:16px}
+.hero{background:#20302A;color:#FAF5EB;overflow:hidden}
+.hero .in{max-width:1240px;margin:0 auto;padding:56px 32px 0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px;align-items:end}
+.hero .txt{padding-bottom:64px;display:flex;flex-direction:column;gap:18px;max-width:640px}
+.hero .eb{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B98A3E;margin:0}
+.hero h1{margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(44px,6vw,76px);line-height:1;letter-spacing:-.5px}
+.hero h1 i{color:#D9A86A}
+.hero .sub{margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(21px,2.4vw,27px);line-height:1.3;color:#EADDC6}
+.hero .meta{margin:8px 0 0;font-size:13px;letter-spacing:.5px;color:#C9BBA2}
+.hero figure{margin:0;align-self:end}
+.hero figure img{display:block;width:100%;height:auto;margin-bottom:-6px}
+.layout{max-width:1240px;margin:0 auto;padding:56px 32px 96px;display:flex;flex-wrap:wrap;gap:64px;align-items:flex-start}
+.toc{flex:1 1 220px;max-width:250px;position:sticky;top:96px;max-height:calc(100vh - 120px);overflow:auto}
+.toc .h{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#A5432A;margin:0 0 12px}
+.toc ul{list-style:none;margin:0;padding:0;border-left:1px solid #D8C9AE}
+.toc a{display:grid;grid-template-columns:54px 1fr;column-gap:4px;padding:8px 12px 8px 16px;margin-left:-1px;border-left:2px solid transparent;text-decoration:none;color:#5A5346;font-size:14px;line-height:1.3}
+.toc a .n{font-size:11px;font-weight:600;letter-spacing:1px;color:#8A7F6A;padding-top:2px}
+.toc a .l{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:600;color:#1E1A14}
+.toc a .d{grid-column:2;font-size:12px;color:#8A7F6A}
+.toc a:hover{background:#F2E8D6}
+.toc a.on{border-left-color:#A5432A;background:#F2E8D6}
+.toc a.on .n,.toc a.on .l{color:#A5432A}
+.doc{flex:999 1 560px;min-width:0;max-width:740px;display:flex;flex-direction:column;gap:44px}
+
+.doc h1,.doc h2,.doc h3,.doc p,.doc ol,.doc ul,.doc blockquote{margin:0}
+.doc section{display:flex;flex-direction:column;gap:16px}
+.doc p,.doc li{font-size:16px;line-height:1.65;color:#2E2A22;text-wrap:pretty}
+.doc .eyebrow{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#A5432A}
+.doc h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:36px;line-height:1.1;color:#1E1A14;text-wrap:balance}
+.doc h2 i{color:#A5432A;font-weight:600}
+.doc h3{font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#20302A;padding-top:14px;margin-top:6px;border-top:1px solid #D8C9AE}
+.doc h3 span{color:#83341F;font-weight:500;letter-spacing:.5px;text-transform:none;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;margin-left:4px}
+.doc .deva{font-family:'Noto Serif Devanagari',serif;font-weight:500;font-size:27px;line-height:1.5;color:#20302A}
+.doc .iast{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:22px;line-height:1.4;color:#5A5346}
+.doc .sutra{font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:600;line-height:1.3;color:#1E1A14;text-wrap:balance}
+.doc .skt{background:#F2E8D6;padding:16px 20px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;line-height:1.55;color:#3C362C}
+.doc blockquote{padding:0 0 0 32px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:20px;line-height:1.5;color:#3C362C}
+.doc .gloss{font-size:14.5px;line-height:1.55;color:#5A5346}
+.doc table{width:100%;border-collapse:collapse;font-size:14.5px;line-height:1.5;color:#2E2A22}
+.doc th{background:#EADDC6;text-align:left;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#20302A;padding:10px 12px;border-bottom:1px solid #C9B693}
+.doc td{padding:10px 12px;border-bottom:1px solid #D8C9AE;vertical-align:top}
+.doc td.t{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:19px;color:#1E1A14}
+.doc .orn{display:flex;align-items:center;gap:16px;color:#B98A3E}
+.doc .orn div{flex:1;height:1px;background:#D8C9AE}
+.doc .orn span{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px}
+.doc .panel{background:#F2E8D6;padding:36px 32px}
+.doc ol,.doc ul{padding-left:22px;display:flex;flex-direction:column;gap:12px}
+
+.doc .tw{overflow-x:auto}
+.foot{background:#EADDC6;border-top:1px solid #D8C9AE}
+.foot .in{max-width:1240px;margin:0 auto;padding:40px 32px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.foot img{height:34px;width:auto}
+.foot p{margin:0;font-size:13px;line-height:1.6;color:#5A5346}
+@media (max-width:900px){
+  .hero .in{grid-template-columns:minmax(0,1fr) 180px;gap:24px}
+  .toc{position:sticky;top:73px;z-index:10;flex:1 1 100%;max-width:none;max-height:none;margin:-56px -32px 0;padding:0;background:#FAF5EB;border-bottom:1px solid #D8C9AE;overflow-x:auto}
+  .toc .h{display:none}
+  .toc ul{display:flex;border-left:0;padding:0 20px}
+  .toc a{display:flex;gap:6px;align-items:baseline;white-space:nowrap;border-left:0;border-bottom:2px solid transparent;padding:14px 10px;margin:0}
+  .toc a .d{display:none}
+  .toc a.on{border-bottom-color:#A5432A;background:none}
+  html{scroll-padding-top:140px}
+}
+@media (max-width:600px){
+  .top .in{padding:12px 20px} .top .t{display:none} .btn span{display:none}
+  .hero .in{grid-template-columns:1fr;padding:40px 20px 0} .hero figure{width:150px;justify-self:end;margin-top:-40px} .hero .txt{padding-bottom:0}
+  .layout{padding:40px 20px 72px} .toc{margin:-40px -20px 0}
+  .doc .panel{padding:28px 20px} .doc blockquote{padding-left:18px}
+}
+@media print{.top,.toc{display:none}}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+<div class="in">
+<a href="#" aria-label="Back to top"><img src="/samyama/assets/ep-logo-ivory.png" alt="Embodied Philosophy"></a>
+<div class="t">Saṃyama in the Yoga Sūtra · 3.1–3.8</div>
+<a class="btn" href="/samyama/samyama-yoga-sutra-3.1-3.8.pdf" download><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Download PDF</span></a>
+</div>
+</header>
+<section class="hero">
+<div class="in">
+<div class="txt">
+<p class="eb">Teachers' supplement · Meditation Resolution 2027</p>
+<h1>Saṃyama in the <i>Yoga Sūtra</i></h1>
+<p class="sub">Sūtras 3.1–3.8 with three commentaries: Vyāsa, Vācaspati Miśra and Bhoja</p>
+<p class="meta">Jacob Kyle · Embodied Philosophy · 27 November 2026</p>
+</div>
+<figure><img src="/samyama/assets/kalighat-shiva.webp" alt="Kalighat painting of Śiva seated in meditation" width="634" height="960"></figure>
+</div>
+</section>
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+<p class="h">Contents</p>
+<ul>
+<li><a href="#introduction" data-id="introduction"><span class="n"></span><span class="l">How to use this supplement</span></a></li>
+<li><a href="#ys-3-1" data-id="ys-3-1"><span class="n">3.1</span><span class="l">Dhāraṇā</span><span class="d">Fri 1 Jan</span></a></li>
+<li><a href="#ys-3-2" data-id="ys-3-2"><span class="n">3.2</span><span class="l">Dhyāna</span><span class="d">Sat 2 Jan</span></a></li>
+<li><a href="#ys-3-3" data-id="ys-3-3"><span class="n">3.3</span><span class="l">Samādhi</span><span class="d">Sun 3 Jan</span></a></li>
+<li><a href="#ys-3-4" data-id="ys-3-4"><span class="n">3.4</span><span class="l">Saṃyama</span><span class="d">Mon 4 Jan</span></a></li>
+<li><a href="#ys-3-5" data-id="ys-3-5"><span class="n">3.5</span><span class="l">Prajñāloka</span><span class="d">Mon 4 Jan</span></a></li>
+<li><a href="#ys-3-6" data-id="ys-3-6"><span class="n">3.6</span><span class="l">Viniyoga</span><span class="d">Tue 5 Jan</span></a></li>
+<li><a href="#ys-3-7" data-id="ys-3-7"><span class="n">3.7</span><span class="l">Antaraṅga</span><span class="d">Frame</span></a></li>
+<li><a href="#ys-3-8" data-id="ys-3-8"><span class="n">3.8</span><span class="l">Bahiraṅga</span><span class="d">Frame</span></a></li>
+<li><a href="#teaching-notes" data-id="teaching-notes"><span class="n"></span><span class="l">Teaching notes</span></a></li>
+<li><a href="#glossary" data-id="glossary"><span class="n"></span><span class="l">Glossary</span></a></li>
+<li><a href="#notes-on-the-text" data-id="notes-on-the-text"><span class="n"></span><span class="l">Notes on the text</span></a></li>
+</ul>
+</nav>
+<main class="doc">
+<section id="introduction">
+<p class="eyebrow">Introduction</p>
+<h2>How to use <i>this supplement</i></h2>
+<p>The eight sūtras that open the Vibhūtipāda (YS 3.1–3.8) define saṃyama and place it on the path. They are given here with complete translations of the three commentaries printed together in the Ānandāśrama edition.</p>
+<div class="tw"><table>
+<thead><tr><th style="width: 22%">Commentary</th><th style="width: 19%">Author</th><th style="width: 13%">Date</th><th>Character</th></tr></thead>
+<tbody>
+<tr><td class="t">Yogabhāṣya</td><td>Vyāsa</td><td>c. 400 CE</td><td>The root commentary. Many scholars now read sūtra and bhāṣya as one work, the <i>Pātañjalayogaśāstra</i>.</td></tr>
+<tr><td class="t">Tattvavaiśāradī</td><td>Vācaspati Miśra</td><td>10th c.</td><td>A sub-commentary on the Bhāṣya. Here it quotes <i>Viṣṇu Purāṇa</i> 6.7 at length, turning the definitions into a visualisation practice.</td></tr>
+<tr><td class="t">Rājamārtaṇḍa</td><td>Bhoja of Dhārā</td><td>11th c.</td><td>An independent, compact gloss on the sūtras. Often the clearest for a first reading.</td></tr>
+</tbody>
+</table></div>
+<p>The five symposium days follow the sūtras in order:</p>
+<div class="tw"><table>
+<thead><tr><th style="width: 22%">Day</th><th style="width: 32%">Limb</th><th>Sūtras here</th></tr></thead>
+<tbody>
+<tr><td>Fri 1 Jan</td><td class="t">Dhāraṇā</td><td>3.1</td></tr>
+<tr><td>Sat 2 Jan</td><td class="t">Dhyāna</td><td>3.2</td></tr>
+<tr><td>Sun 3 Jan</td><td class="t">Samādhi</td><td>3.3</td></tr>
+<tr><td>Mon 4 Jan</td><td class="t">Saṃyama</td><td>3.4–3.5</td></tr>
+<tr><td>Tue 5 Jan</td><td class="t">Recognition</td><td>3.6, with 3.7–3.8 as the frame</td></tr>
+</tbody>
+</table></div>
+<p>Each sūtra is given in Devanagari and IAST with a translation. Vyāsa's Bhāṣya follows in IAST and translation, since it is the text teachers will most often cite. Vācaspati and Bhoja follow in translation. Square brackets mark words supplied for sense. Short lead-ins by the commentators ("He now states…") are kept, because they show how each reads the sequence.</p>
+<div style="background: #EADDC6; padding: 18px 22px; display: flex; flex-direction: column; gap: 6px">
+<p class="eyebrow" style="color: #83341F">Source</p>
+<p class="gloss" style="color: #3C362C"><i>Pātañjalayogasūtrāṇi</i>, with Vyāsa's Bhāṣya, Vācaspati's Ṭīkā and Bhoja's Vṛtti, ed. Kāśīnātha Śāstrī Āgāśe (Poona: Ānandāśrama Sanskrit Series 47, 1904). Vyāsa and Vācaspati: pp. 118–122. Bhoja: pp. 31–33 of the separately paginated <i>Rājamārtaṇḍa</i>. Translations by Embodied Philosophy, made from the printed text.</p>
+</div>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-1">
+<p class="eyebrow">YS 3.1 · Fri 1 January</p>
+<h2>Dhāraṇā: <i>binding to a place</i></h2>
+<p class="deva">देशबन्धश्चित्तस्य धारणा ॥ १ ॥</p>
+<p class="iast">deśabandhaś cittasya dhāraṇā</p>
+<p class="sutra">Dhāraṇā is the binding of the mind to a place.</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">uktāni pañca bahiraṅgāṇi sādhanāni. dhāraṇā vaktavyā — … nābhicakre hṛdayapuṇḍarīke mūrdhni jyotiṣi nāsikāgre jihvāgra ity evamādiṣu deśeṣu bāhye vā viṣaye cittasya vṛttimātreṇa bandha iti dhāraṇā.</p>
+<p>The five outer means have been stated. Dhāraṇā must now be stated.</p>
+<p>The binding of the mind, by its activity alone, to places such as the wheel of the navel, the lotus of the heart, the light in the head, the tip of the nose, the tip of the tongue, and so on, or else to an external object: that is dhāraṇā.</p>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>The first and second pādas taught samādhi and the means to it. In the third pāda the powers (<i>vibhūti</i>) must be taught. They support the practice of samādhi and cause faith to arise, and they are accomplished by saṃyama. Saṃyama is the combination of dhāraṇā, dhyāna and samādhi.</p>
+<p>So the three are presented here for two reasons: they are the means to the powers, and they are distinguished as inner (<i>antaraṅga</i>) in relation to the five outer (<i>bahiraṅga</i>) limbs of yoga. Among the three, dhāraṇā, dhyāna and samādhi stand in a fixed order as cause and effect. The order of presentation follows that order, so dhāraṇā must be defined first. That is why he says, "The five outer means have been stated…"</p>
+<p>"Dhāraṇā is the binding of the mind to a place." He names an internal place: "the wheel of the navel". The words "and so on" take in the palate and the like. Binding means connection. He names an external place: "an external object". The mind cannot be connected to an external thing in its own nature, so he says "by its activity alone", that is, by cognition alone.</p>
+<p>On this, too, there is a Purāṇa:</p>
+<blockquote>Having mastered the breath by prāṇāyāma and the senses by pratyāhāra, one should then make the mind dwell on an auspicious support.</blockquote>
+<p>The external auspicious supports are Hiraṇyagarbha, Vāsava (Indra), Prajāpati and the like. And this is said there:</p>
+<blockquote style="display: flex; flex-direction: column; gap: 12px">
+<span>The embodied form of the Lord, which leaves no longing for any other support: know that this indeed is dhāraṇā, when the mind is held there.</span>
+<span>And hear, O king, of that embodied form of Hari which is to be contemplated. Dhāraṇā without a support is not possible.</span>
+<span>His face serene, his eyes like lovely lotus petals, fine-cheeked, his broad forehead shining, lovely earrings set evenly at the ends of his ears;</span>
+<span>his neck like a conch, his broad chest marked with the Śrīvatsa, his belly folded, his navel deep; Viṣṇu with long arms, eight or else four;</span>
+<span>thighs and shanks set evenly, his lotus feet placed crosswise: one should contemplate him as brahman, clothed in spotless yellow;</span>
+<span>adorned with crown, lovely armlets, bracelets and the rest, bearing the bow Śārṅga, discus, mace, sword, conch and rosary.</span>
+<span>Absorbed in him, the yogin should contemplate him, having placed the mind there, until, O king, dhāraṇā has become firm in that very place.</span>
+<span>When the mind does not leave it, whether one is standing still or doing some other action at will, then one should consider dhāraṇā accomplished.</span>
+</blockquote>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>He now begins to define the three limbs, dhāraṇā and the rest, named earlier. He sets them out under the name saṃyama, in order to teach the powers, external, internal and so on. First he states the nature of dhāraṇā.</p>
+<p>In a place such as the wheel of the navel or the tip of the nose, the mind is bound: it is made steady by excluding every other object. That is called the dhāraṇā of the mind.</p>
+<p>The meaning is this. The yogin has an inner faculty perfumed by the mind's preparations, friendliness and the rest. He keeps the restraints and observances, has mastered the posture, has set aside the scattering of the breath, and has withdrawn the troop of the senses. In an unobstructed spot, body straight, the pairs of opposites mastered, he should make the mind steady at the tip of the nose or the like, in order to practise samprajñāta samādhi.</p>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-2">
+<p class="eyebrow">YS 3.2 · Sat 2 January</p>
+<h2>Dhyāna: <i>the unbroken stream</i></h2>
+<p class="deva">तत्र प्रत्ययैकतानता ध्यानम् ॥ २ ॥</p>
+<p class="iast">tatra pratyayaikatānatā dhyānam</p>
+<p class="sutra">There, the cognition running as a single unbroken thread is dhyāna.</p>
+<p class="gloss"><i>Ekatāna</i> is literally "one stretch" or "one strand": a single extended tone or thread, with no break and no second strand woven in.</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">tasmin deśe dhyeyālambanasya pratyayasyaikatānatā sadṛśaḥ pravāhaḥ pratyayāntareṇāparāmṛṣṭo dhyānam.</p>
+<p>In that place, the single-threadedness of the cognition whose support is the object of meditation, that is, a stream of like cognitions untouched by any other cognition, is dhyāna.</p>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>He defines dhyāna, which is accomplished by means of dhāraṇā: "There, the cognition running as a single unbroken thread is dhyāna." <i>Ekatānatā</i> means one-pointedness (<i>ekāgratā</i>). The Bhāṣya is easy to follow.</p>
+<p>Here too there is a Purāṇa:</p>
+<blockquote>A continuous succession of cognitions, one-pointed on that form, with no longing for anything else: that is dhyāna, O king, brought about by the first six limbs.</blockquote>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>Having stated dhāraṇā, he now states dhyāna.</p>
+<p>There: in that place where the mind has been held. The cognition running as a single unbroken thread: cognition, that is, knowledge, keeps arising without interval, taking as its support just what was made the support in dhāraṇā, by setting aside any transformation unlike it. That is called dhyāna.</p>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-3">
+<p class="eyebrow">YS 3.3 · Sun 3 January</p>
+<h2>Samādhi: <i>only the object shines</i></h2>
+<p class="deva">तदेवार्थमात्रनिर्भासं स्वरूपशून्यमिव समाधिः ॥ ३ ॥</p>
+<p class="iast">tad evārthamātranirbhāsaṃ svarūpaśūnyam iva samādhiḥ</p>
+<p class="sutra">That same [dhyāna], when it shines forth as the object alone, as if empty of its own form, is samādhi.</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">dhyānam eva dhyeyākāranirbhāsaṃ pratyayātmakena svarūpeṇa śūnyam iva yadā bhavati dhyeyasvabhāvāveśāt tadā samādhir ity ucyate.</p>
+<p>When dhyāna itself, shining forth in the form of the object of meditation, becomes as if empty of its own form as a cognition, because it has entered into the nature of the object, then it is called samādhi.</p>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>He defines samādhi, which is accomplished by means of dhyāna: "That same [dhyāna], when it shines forth as the object alone, as if empty of its own form, is samādhi."</p>
+<p>He explains: "dhyāna itself". Shining forth in the form of the object: only the form of the object appears, not the form of the meditation. For that very reason he says <i>empty</i>.</p>
+<p>Objection: if it is empty, how can it illuminate the object? To this he says <i>as if</i>. He gives the reason for this: because it has entered into the nature of the object.</p>
+<p>Here too there is a Purāṇa:</p>
+<blockquote>That grasping of its very form, free of conceptual construction, which the mind brings about through dhyāna: that is called samādhi.</blockquote>
+<p>The meaning: conceptual construction (<i>kalpanā</i>) is the difference between the meditation and the object meditated on. Samādhi is free of it.</p>
+<p>Having taught the eight-limbed yoga to Khāṇḍikya, Keśidhvaja concluded:</p>
+<blockquote>The knower of the field is the agent; knowledge is the instrument, and it is non-conscious. Having accomplished the work of liberation, its task done, it ceases.</blockquote>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>He states samādhi, the last limb of yoga.</p>
+<p>It is that same dhyāna, as defined above, when it shines forth as the object alone. Absorbed into the form of the object, the object's form comes forward and the cognition's own form recedes. So it becomes as if empty of its own form. That is called samādhi.</p>
+<p>[As to the word:] samādhi is that in which the mind is rightly placed (<i>samyag ādhīyate</i>), that is, made one-pointed, with its distractions set aside.</p>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-4">
+<p class="eyebrow">YS 3.4 · Mon 4 January</p>
+<h2>Saṃyama: <i>the three held as one</i></h2>
+<p class="deva">त्रयमेकत्र संयमः ॥ ४ ॥</p>
+<p class="iast">trayam ekatra saṃyamaḥ</p>
+<p class="sutra">The three on a single [object] is saṃyama.</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">tad etad dhāraṇādhyānasamādhitrayam ekatra saṃyamaḥ. ekaviṣayāṇi trīṇi sādhanāni saṃyama ity ucyate. tad asya trayasya tāntrikī paribhāṣā saṃyama iti.</p>
+<p>This triad of dhāraṇā, dhyāna and samādhi on a single [object] is saṃyama. The three means, when they have one object, are called saṃyama. So saṃyama is this system's technical term for the triad.</p>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>The triad of dhāraṇā, dhyāna and samādhi will be applied to one object after another. To name each one separately every time would be cumbersome. So, for brevity, he introduces a sūtra that fixes a technical term: "The three on a single [object] is saṃyama."</p>
+<p>He explains: "when they have one object". With "So saṃyama is …" he removes any doubt about what the word denotes [in ordinary usage, <i>saṃyama</i> means restraint]. <i>Tantra</i> is the treatise by which yoga is taught; <i>tāntrikī</i> means belonging to it. The places where saṃyama is used are passages such as "from saṃyama on the three transformations" [YS 3.16].</p>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>For ease of use, he gives the triad of limbs just defined a technical name within his own treatise.</p>
+<p>When dhāraṇā, dhyāna and samādhi proceed together on a single object, the treatise refers to the triad by the name saṃyama.</p>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-5">
+<p class="eyebrow">YS 3.5 · Mon 4 January</p>
+<h2>Prajñāloka: <i>the light of insight</i></h2>
+<p class="deva">तज्जयात्प्रज्ञालोकः ॥ ५ ॥</p>
+<p class="iast">tajjayāt prajñālokaḥ</p>
+<p class="sutra">From mastery of it, the light of insight.</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">tasya saṃyamasya jayāt samādhiprajñāyā bhavaty āloko yathā yathā saṃyamaḥ sthirapado bhavati tathā tathā samādhiprajñā viśāradī bhavati.</p>
+<p>From mastery of that saṃyama, the light of samādhi-insight arises. The more firmly saṃyama takes its footing, the clearer samādhi-insight becomes.</p>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>He states the fruit of mastering saṃyama, a mastery whose means is repeated practice: "From mastery of it, the light of insight."</p>
+<p>The light of insight is its abiding in a stainless flow, not overpowered by any other cognition. The Bhāṣya is easy to follow.</p>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>He states its fruit.</p>
+<p>From mastery of that saṃyama, that is, from making it second nature (<i>sātmya</i>) through practice, the light of discriminating insight (<i>vivekakhyāti</i>) dawns in the faculty of insight. The meaning: insight illuminates what is to be known exactly as it is.</p>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-6">
+<p class="eyebrow">YS 3.6 · Tue 5 January</p>
+<h2>Viniyoga: <i>applied stage by stage</i></h2>
+<p class="deva">तस्य भूमिषु विनियोगः ॥ ६ ॥</p>
+<p class="iast">tasya bhūmiṣu viniyogaḥ</p>
+<p class="sutra">Its application is to the levels, [one after another].</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">tasya saṃyamasya jitabhūmer yā 'nantarā bhūmis tatra viniyogaḥ. na hy ajitādharabhūmir anantarabhūmiṃ vilaṅghya prāntabhūmiṣu saṃyamaṃ labhate. tadabhāvāc ca kutas tasya prajñālokaḥ. īśvaraprasādāj jitottarabhūmikasya ca nādharabhūmiṣu paracittajñānādiṣu saṃyamo yuktaḥ. kasmāt, tadarthasyānyata evāvagatatvāt. bhūmer asyā iyam anantarā bhūmir ity atra yoga evopādhyāyaḥ. katham. evaṃ hy uktam —<br><br>yogena yogo jñātavyo yogo yogāt pravartate |<br>yo 'pramattas tu yogena sa yoge ramate ciram ||</p>
+<p>The application of that saṃyama is to the level that comes right after the level already mastered. One who has not mastered a lower level cannot leap over the next level and gain saṃyama on the farthest ones. And without that, how could the light of insight be his?</p>
+<p>Again, for one who has mastered a higher level by the grace of Īśvara, saṃyama on lower levels, such as knowing another's mind, is not fitting. Why? Because what it is for has already been gained from elsewhere.</p>
+<p>As for knowing that this level comes right after that one, here yoga itself is the teacher. How? For it has been said:</p>
+<blockquote>Yoga is to be known by yoga; yoga proceeds from yoga. Whoever is not careless with yoga delights in yoga for a long time.</blockquote>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>Where, then, is saṃyama applied, so that it yields this fruit? To this he says: "Its application is to the levels."</p>
+<p>The author of the Bhāṣya specifies the level: "of that…". Application is to the level, that is, the state, which comes right after a mastered level and is not yet mastered. When samādhi on a gross object with verbal thought (<i>savitarka</i>) has been brought under control by saṃyama, saṃyama is applied to the unmastered level without verbal thought (<i>nirvitarka</i>). When that too is under control, it is applied to the level with subtle reflection (<i>savicāra</i>), and in the same way to the level without it (<i>nirvicāra</i>). That is the meaning.</p>
+<p>This is exactly why the Purāṇa, once absorption on the gross object has succeeded, introduces samādhi on a subtle object by removing the weapons and ornaments one by one:</p>
+<blockquote style="display: flex; flex-direction: column; gap: 12px">
+<span>Then the wise one should contemplate the Lord's form without conch, mace, discus, bow and the rest: peaceful, holding a rosary.</span>
+<span>And when dhāraṇā has settled there, he should call him to mind without ornaments such as crown and armlets.</span>
+<span>Then the wise one should [contemplate] the god as a single limb, and next as "I am He". After that, he should be intent on contemplation as "I".</span>
+</blockquote>
+<p>Why is the higher level won only after the lower one, and not the other way round? To this he says: "One who has not mastered a lower level…". Someone who sets out from Śilāhrada for the Gaṅgā does not reach the Gaṅgā without first reaching Meghavana.</p>
+<p>"And for one who has mastered a higher level by the grace of Īśvara…": why [is saṃyama on lower levels not fitting]? Because what it is for, the mastery of the higher level, has come close and is gained from elsewhere, namely from devotion to Īśvara (<i>īśvarapraṇidhāna</i>) alone. Once the act is accomplished, a means that can make no further difference has no work left to do.</p>
+<p>Objection: scripture may tell us about the levels in general, but how is the order of their finer subdivisions known? To this he says: "As for knowing that this level…". The earlier yoga, once mastered, is the cause of knowing, entering and attaining the later yoga. The verse is cited with the understanding that the stage and what stands in that stage are one and the same [which is why yoga can appear on both sides of it].</p>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>He states its use.</p>
+<p>Saṃyama is to be applied to the levels, that is, to the states of mind that stand distinguished by gross and subtle supports. Each time one knows that a lower level of mind has been mastered, saṃyama is to be done on the next higher level. One who has not made the lower level his own does not reap the fruit by doing saṃyama on a higher one.</p>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-7">
+<p class="eyebrow">YS 3.7 · The frame</p>
+<h2>Antaraṅga: <i>the inner limbs</i></h2>
+<p class="deva">त्रयमन्तरङ्गं पूर्वेभ्यः ॥ ७ ॥</p>
+<p class="iast">trayam antaraṅgaṃ pūrvebhyaḥ</p>
+<p class="sutra">The three are inner limbs, relative to the preceding ones.</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">tad etad dhāraṇādhyānasamādhitrayam antaraṅgaṃ samprajñātasya samādheḥ pūrvebhyo yamādibhyaḥ pañcabhyaḥ sādhanebhya iti.</p>
+<p>This triad of dhāraṇā, dhyāna and samādhi is the inner limb of samprajñāta samādhi, relative to the five preceding means, yama and the rest.</p>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>All eight are equally limbs of yoga. Why, then, is saṃyama applied to this or that object, and not the other five? To this he says: "The three are inner limbs, relative to the preceding ones."</p>
+<p>These three means are inner because they have the same object as what they bring about. Yama and the rest are not like that, so they are outer. That is the meaning.</p>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>In the Sādhanapāda he listed eight limbs of yoga but defined only five. Why not the other three? Anticipating this doubt, he says:</p>
+<p>The preceding limbs, yama and the rest, help samādhi indirectly. Relative to them, the triad of limbs beginning with dhāraṇā is inner to samprajñāta samādhi, because it produces the very form of samādhi.</p>
+</section>
+
+<div class="orn" aria-hidden="true"><div></div><span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px">❦</span><div></div></div>
+
+<section id="ys-3-8">
+<p class="eyebrow">YS 3.8 · The frame</p>
+<h2>Bahiraṅga: <i>outer, relative to the seedless</i></h2>
+<p class="deva">तदपि बहिरङ्गं निर्बीजस्य ॥ ८ ॥</p>
+<p class="iast">tad api bahiraṅgaṃ nirbījasya</p>
+<p class="sutra">Even that is an outer limb of the seedless [samādhi].</p>
+<h3>Vyāsa <span>Yogabhāṣya</span></h3>
+<p class="skt">tad apy antaraṅgaṃ sādhanatrayaṃ nirbījasya yogasya bahiraṅgaṃ bhavati. kasmāt, tadabhāve bhāvād iti.</p>
+<p>Even that inner triad of means is an outer limb of seedless yoga. Why? Because [seedless yoga] occurs when the triad is absent.</p>
+<h3>Vācaspati Miśra <span>Tattvavaiśāradī</span></h3>
+<p>The triad of means is inner only to samprajñāta samādhi, not to asamprajñāta. There are two reasons. Asamprajñāta is seedless, so it does not share an object with the three. And it arises only after they have long been stilled, right after the highest dispassion (<i>paravairāgya</i>), whose form is the clarity of knowledge (<i>jñānaprasāda</i>), another name for the culmination of samprajñāta. So he says: "Even that is an outer limb of the seedless."</p>
+<p>What makes a limb inner here is sharing the same object, not coming right before the result. Coming right before is not a fixed rule, since the seedless state also follows the outer limb of devotion to Īśvara. With that settled, saṃyama lacks even that looser mark of innerness: it does not come right before the seedless state. So, to show how far saṃyama is from being inner to asamprajñāta, the Bhāṣya says "because it occurs when the triad is absent".</p>
+<h3>Bhoja <span>Rājamārtaṇḍa</span></h3>
+<p>He states that even this triad is outer in relation to another samādhi.</p>
+<p>The seedless samādhi has no support; another name for it is "meditation on emptiness" (<i>śūnyabhāvanā</i>). For it, even this triad of limbs is outer, because the triad helps only indirectly.</p>
+</section>
+
+<section id="teaching-notes" class="panel">
+<p class="eyebrow">For teachers</p>
+<h2>Teaching <i>notes</i></h2>
+<p>Each day's guided meditation can take one phrase from that day's commentary as its anchor.</p>
+<div class="tw"><table>
+<thead><tr><th style="width: 22%">Day</th><th>Phrase to work with</th><th style="width: 22%">Source</th></tr></thead>
+<tbody>
+<tr><td><b>Fri 1 Jan</b><br>Dhāraṇā</td><td><i>"by its activity alone"</i> (vṛttimātreṇa): the mind does not travel to the object; only its attention is bound there</td><td>Vyāsa and Vācaspati on 3.1</td></tr>
+<tr><td><b>Sat 2 Jan</b><br>Dhyāna</td><td><i>"a stream of like cognitions untouched by any other"</i>: continuity, not intensity</td><td>Vyāsa on 3.2</td></tr>
+<tr><td><b>Sun 3 Jan</b><br>Samādhi</td><td><i>"as if empty"</i>: the cognition still shines, or the object could not appear</td><td>Vācaspati on 3.3</td></tr>
+<tr><td><b>Mon 4 Jan</b><br>Saṃyama</td><td><i>"one object"</i>: saṃyama is the three run on a single support, not a fourth state</td><td>Vyāsa and Bhoja on 3.4</td></tr>
+<tr><td><b>Tue 5 Jan</b><br>Recognition</td><td><i>"yoga itself is the teacher"</i>: the next level is found by practice, not by map</td><td>Vyāsa on 3.6</td></tr>
+</tbody>
+</table></div>
+<p>Three points come up often in teaching.</p>
+<ol style="padding-left: 22px; display: flex; flex-direction: column; gap: 12px">
+<li><b>The Purāṇa sequence is a ready-made practice.</b> Vācaspati's quotations from <i>Viṣṇu Purāṇa</i> 6.7 run from a fully adorned form (3.1), to a form with emblems and ornaments removed (3.6), to a single limb, then "I am He", then "I". It moves from gross to subtle support, the very progression 3.6 describes.</li>
+<li><b>"Inner" and "outer" are relative.</b> The three limbs are inner to samādhi with an object (3.7) and outer to seedless samādhi (3.8). Vācaspati's test is shared object: dhāraṇā, dhyāna and samādhi share the object of the samādhi they produce; the seedless state has no object to share.</li>
+<li><b>Grace can shortcut the ladder.</b> Vyāsa and Vācaspati both allow that devotion to Īśvara can bring a higher level without climbing the lower ones. This is a natural bridge to the Kashmir Śaiva lecture on 5 January.</li>
+</ol>
+</section>
+
+<section id="glossary">
+<p class="eyebrow">Reference</p>
+<h2>Glossary</h2>
+<div class="tw"><table>
+<thead><tr><th style="width: 30%">Term</th><th>Gloss used here</th><th style="width: 30%">Root sense</th></tr></thead>
+<tbody>
+<tr><td class="t">dhāraṇā</td><td>binding [attention] to a place</td><td>√dhṛ, to hold</td></tr>
+<tr><td class="t">dhyāna</td><td>unbroken stream of cognition on that object</td><td>√dhyā, to contemplate</td></tr>
+<tr><td class="t">samādhi</td><td>absorption; only the object shines</td><td>sam + ā + √dhā, to place together</td></tr>
+<tr><td class="t">saṃyama</td><td>the three on one object</td><td>sam + √yam, to hold together</td></tr>
+<tr><td class="t">pratyaya</td><td>cognition, a single moment of awareness</td><td></td></tr>
+<tr><td class="t">ekatānatā</td><td>single-threadedness; one unbroken strand</td><td>eka + tāna, one stretch</td></tr>
+<tr><td class="t">prajñāloka</td><td>the light of insight</td><td>prajñā + āloka</td></tr>
+<tr><td class="t">viniyoga</td><td>application, directing [saṃyama]</td><td>vi + ni + √yuj</td></tr>
+<tr><td class="t">bhūmi</td><td>level, stage of practice</td><td>"ground"</td></tr>
+<tr><td class="t">antaraṅga / bahiraṅga</td><td>inner limb / outer limb</td><td></td></tr>
+<tr><td class="t">samprajñāta / asamprajñāta</td><td>samādhi with an object / without one</td><td></td></tr>
+<tr><td class="t">nirbīja</td><td>seedless; leaving no latent impressions</td><td>nir + bīja, without seed</td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section id="notes-on-the-text">
+<p class="eyebrow">Reference</p>
+<h2>Notes on <i>the text</i></h2>
+<ul style="margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px">
+<li>The edition reads <i>meghavana</i> ("Meghavana") in Vācaspati's pilgrimage example on 3.6. The place has not been identified here; the point is only that the stages of a road cannot be skipped.</li>
+<li>Vācaspati's closing line on 3.6 (<i>avasthaivāvasthāvān</i>) is compressed. It is translated here as explaining why yoga stands on both sides of the verse; another reading is possible.</li>
+<li>Vācaspati quotes the Purāṇa without naming it. The verses are Keśidhvaja's teaching to Khāṇḍikya in <i>Viṣṇu Purāṇa</i> 6.7, as his own remark on 3.3 makes clear.</li>
+</ul>
+</section>
+
+
+</main>
+</div>
+<footer class="foot">
+<div class="in">
+<img src="/samyama/assets/ep-logo-black.png" alt="Embodied Philosophy">
+<p>Meditation Resolution 2027 · Teachers' supplement<br>Translations © Embodied Philosophy · <a href="https://embodiedphilosophy.com">embodiedphilosophy.com</a></p>
+</div>
+</footer>
+<script>
+(function(){
+  var top=document.getElementById('top');
+  var links=[].slice.call(document.querySelectorAll('.toc a'));
+  var secs=links.map(function(a){return document.getElementById(a.dataset.id)});
+  function onScroll(){
+    top.classList.toggle('scrolled', window.scrollY>260);
+    var cur=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i].getBoundingClientRect().top<=170) cur=i; }
+    if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4) cur=secs.length-1;
+    links.forEach(function(a,i){
+      var on=i===cur; if(on!==a.classList.contains('on')){
+        a.classList.toggle('on',on);
+        if(on){a.setAttribute('aria-current','true'); var t=a.closest('.toc'); if(t.scrollWidth>t.clientWidth){t.scrollTo({left:a.offsetLeft-40,behavior:'smooth'})} } else a.removeAttribute('aria-current');
+      }
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
+</script>
+</body>
+</html>

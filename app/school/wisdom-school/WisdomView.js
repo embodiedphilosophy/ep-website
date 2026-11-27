@@ -205,7 +205,7 @@ function Month({ ctx, fresh }) {
       <div className="wsh-main">
         {m.name && (
           <section className="wsh-hero" aria-label="This month">
-            <p className="wsh-kick">This month · {m.name} · {m.index} of {m.of}</p>
+            <p className="wsh-kick">{m.upcoming ? 'Next lecture' : 'This month'} · {m.name}{m.index ? ` · ${m.index} of ${m.of}` : ''}</p>
             {m.lecture?.note && <p className="wsh-kick" style={{ marginTop: 4 }}>{m.lecture.note}</p>}
             <h2>{m.theme || m.name}</h2>
             {m.lecture && (m.lecture.startsAt || m.lecture.teacher) && <p className="wsh-q" style={{ fontWeight: 600 }}>{[m.lecture.startsAt ? whenOf(m.lecture.startsAt, tz) : '', m.lecture.teacher ? `with ${m.lecture.teacher}` : ''].filter(Boolean).join(' · ')}</p>}
@@ -215,7 +215,9 @@ function Month({ ctx, fresh }) {
               // Before and during the live lecture: its Circle event (Wisdom School · Live), where the Zoom link is. Afterwards: the recording
               : m.lecture?.url && Date.now() < Date.parse(m.lecture.endsAt || m.lecture.startsAt) + 30 * 60 * 1000 ? <a className="sch-btn" href={m.lecture.url} target="_top">Join the live lecture</a>
               : m.lessonUrl ? <a className="sch-btn" href={m.lessonUrl} target="_top" onClick={() => ctx.seen(m.sectionId)}>Watch the recording</a>
+              : m.upcoming ? null
               : <p className="wsh-soon">Recording coming after the lecture</p>}
+            {m.previous && <p className="wsh-q" style={{ marginTop: 16, fontSize: 14 }}>Catch up on {m.previous.name}: <a href={m.previous.url} target="_top" style={{ color: 'inherit' }} onClick={() => ctx.seen(m.previous.sectionId)}>{m.previous.theme || `${m.previous.name}’s lecture`}</a></p>}
           </section>
         )}
 

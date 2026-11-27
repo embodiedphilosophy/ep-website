@@ -21,6 +21,8 @@ const nextConfig = {
         { source: '/kalighat/:file', destination: '/:file' },
         // Teachers' supplement: a static page in public/samyama/ (Next doesn't serve index.html for a folder)
         { source: '/samyama', destination: '/samyama/index.html' },
+        // Way of the Waves retreat landing page: a standalone static page (no site nav) in public/retreats/way-of-the-waves/
+        { source: '/retreats/way-of-the-waves', destination: '/retreats/way-of-the-waves/index.html' },
       ],
       fallback: ARCHIVE ? [{ source: '/:path*', destination: `${ARCHIVE}/:path*` }] : [],
     };

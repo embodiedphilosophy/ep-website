@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=Inter:wght@400;500;600&amp;family=Montserrat:wght@300&amp;display=swap">
 <style>
 body{margin:0}
 a{color:inherit}a:hover{color:inherit}
@@ -55,11 +55,12 @@ a{color:inherit}a:hover{color:inherit}
 .logo{display:inline-flex;align-items:center;height:30px}
 .logo img{height:100%;width:auto;display:block}
 .logo .lt{font:600 .78rem/1.1 var(--body);letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
-.logo.lsy .lt{color:var(--sea)}
+.logo.lsy{gap:9px}
+.logo.lsy .lt{color:var(--sea);font-family:Montserrat,var(--body);font-weight:300;font-size:.95rem;letter-spacing:.12em}
 .bar .btn{padding:11px 18px;font-size:.85rem}
 .bar .when{font-size:.85rem;color:var(--ink-soft);white-space:nowrap}
 @media (max-width:720px){.bar .when{display:none}.brands .x{font-size:1rem}.logo{height:24px}}
-@media (max-width:440px){.logo .lt{font-size:.66rem;letter-spacing:.1em}.bar .btn{padding:10px 14px}}
+@media (max-width:440px){.logo .lt,.logo.lsy .lt{font-size:.66rem;letter-spacing:.1em}.logo.lsy{gap:6px}.bar .btn{padding:10px 14px}}
 
 .ph{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--glass),var(--sand-2));border-radius:6px}
 .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -200,7 +201,7 @@ a{color:inherit}a:hover{color:inherit}
     <div class="brands" aria-label="Co-hosted by Embodied Philosophy and Love Surf Yoga">
       <span class="logo ep"><img src="/brand/ep-wordmark-black.png" alt="Embodied Philosophy"></span>
       <span class="x" aria-hidden="true">×</span>
-      <span class="logo lsy"><span class="lt">Love Surf Yoga</span></span>
+      <span class="logo lsy"><img src="/retreats/way-of-the-waves/lsy-mark-dark.png" alt=""><span class="lt">Love Surf Yoga</span></span>
     </div>
     <span class="when">Mar 11–18, 2027 · Santa Teresa</span>
     <a class="btn" href="#pricing">Reserve</a>
@@ -303,7 +304,7 @@ a{color:inherit}a:hover{color:inherit}
         <h3>Patricia Pinto</h3>
         <p class="role">Founder, Love Surf Yoga</p>
         <p>Patricia has led more than sixty retreats and teacher trainings across the world, from Mexico and Colombia to Yosemite. Her classes blend yoga, Pilates-inspired movement, meditation, yoga nidra and sound, and she has a gift for making first-time surfers and first-time yogis feel at home on the same mat.</p>
-        <div class="plat"><span class="logo lsy"><span class="lt">Love Surf Yoga</span></span></div>
+        <div class="plat"><span class="logo lsy"><img src="/retreats/way-of-the-waves/lsy-mark-light.png" alt=""><span class="lt">Love Surf Yoga</span></span></div>
       </article>
       <article class="host">
         <img class="face" src="/retreats/way-of-the-waves/images/headshot-jacob.jpg" alt="Jacob Kyle" style="object-position: 50% 40%">
@@ -448,7 +449,7 @@ a{color:inherit}a:hover{color:inherit}
     <div class="brands">
       <span class="logo ep"><img src="/brand/ep-wordmark-white.png" alt="Embodied Philosophy"></span>
       <span class="x" aria-hidden="true" style="color: rgba(246,241,231,.6)">×</span>
-      <span class="logo lsy"><span class="lt">Love Surf Yoga</span></span>
+      <span class="logo lsy"><img src="/retreats/way-of-the-waves/lsy-mark-light.png" alt=""><span class="lt">Love Surf Yoga</span></span>
     </div>
     <span>A co-hosted retreat · Santa Teresa, Costa Rica · 2027</span>
   </div>
